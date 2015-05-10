@@ -1,17 +1,24 @@
 package com.yyon.grapplinghook;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.resources.model.ModelResourceLocation;
+import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.creativetab.CreativeTabs;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.EnumAction;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.BlockPos;
 import net.minecraft.world.World;
+import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.event.world.BlockEvent.BreakEvent;
+import net.minecraftforge.fml.common.FMLCommonHandler;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.common.gameevent.TickEvent;
 
-class grappleBow extends Item {
-
-	public grappleArrow entityarrow = null;
+public class grappleBow extends Item {
 	
 	
 	public grappleBow() {
@@ -22,8 +29,10 @@ class grappleBow extends Item {
 		
 		this.setMaxDamage(500);
 		
-//		func_111022_d("grappling");
 		setCreativeTab(CreativeTabs.tabCombat);
+		
+		MinecraftForge.EVENT_BUS.register(this);
+		FMLCommonHandler.instance().bus().register(this);
 	}
 	
 	public int getMaxItemUseDuration(ItemStack par1ItemStack)
@@ -31,69 +40,72 @@ class grappleBow extends Item {
 		return 72000;
 	}
 	
+	public grappleArrow getArrow(ItemStack stack, World world) {
+		NBTTagCompound compound = stack.getSubCompound("grapplebow", true);
+		int id = compound.getInteger("arrow");
+		if (id == 0) {
+			return null;
+		}
+		Entity e = world.getEntityByID(id);
+		if (e instanceof grappleArrow) {
+			return (grappleArrow) e;
+		} else {
+			return null;
+		}
+	}
+	
+	public void setArrow(ItemStack stack, grappleArrow arrow) {
+		int id = 0;
+		if (arrow != null) {
+			id = arrow.getEntityId();
+		}
+		
+		NBTTagCompound compound = stack.getSubCompound("grapplebow", true);
+		compound.setInteger("arrow", id);
+	}
+	
 	
 	public void dorightclick(ItemStack stack, World worldIn, EntityPlayer playerIn) {
         if (!worldIn.isRemote) {
         	
+        	grappleArrow entityarrow = getArrow(stack, worldIn);
+        	
         	if (entityarrow != null) {
         		if (entityarrow.shootingEntity == null) {
-        			entityarrow = null;
+        			setArrow(stack, null);
         		}
         	}
         	
 			float f = 2.0F;
 			if (entityarrow == null) {
-				this.createarrow(stack, worldIn, playerIn);
-	
-//				entityarrow.setIsCritical(false);
-//				entityarrow.setDamage(0.0);
-//				entityarrow.setKnockbackStrength(0);
+				entityarrow = this.createarrow(stack, worldIn, playerIn);
+				setArrow(stack, entityarrow);
 	
 				stack.damageItem(1, playerIn);
 				worldIn.playSoundAtEntity(playerIn, "random.bow", 1.0F, 1.0F / (itemRand.nextFloat() * 0.4F + 1.2F) + f * 0.5F);
 				
-//				entityarrow.canBePickedUp = 0;
-				
 				worldIn.spawnEntityInWorld(entityarrow);
 			} else {
 				entityarrow.grappleend();
-				entityarrow = null;
+				setArrow(stack, null);
 			}
-		//            if (flag)
-		//            {
-		//                entityarrow.canBePickedUp = 2;
-		//            }
-		//            else
-		//            {
-		//                par3EntityPlayer.inventory.consumeInventoryItem(Items.arrow);
-		//            }
-
-//			worldIn.spawnEntityInWorld(entityarrow);
     	}
-//		World world = worldIn;
-//		EntityPlayer entity = par3EntityPlayer;
-//		int i = (int)entity.posX;
-//		int j = (int)entity.posY;
-//		int k = (int)entity.posZ;
 	}
 	
-	public void createarrow(ItemStack stack, World worldIn, EntityPlayer playerIn) {
-		entityarrow = new grappleArrow(worldIn, playerIn, 0);
+	public grappleArrow createarrow(ItemStack stack, World worldIn, EntityPlayer playerIn) {
+		return new grappleArrow(worldIn, playerIn, 0);
+	}
+	
+	
+	public void leftclick(ItemStack stack, World world, EntityPlayer player) {
+
 	}
 	
     public void onPlayerStoppedUsing(ItemStack stack, World worldIn, EntityPlayer playerIn, int timeLeft)
     {
-    	
-//        int j = this.getMaxItemUseDuration(stack) - timeLeft;
-//        net.minecraftforge.event.entity.player.ArrowLooseEvent event = new net.minecraftforge.event.entity.player.ArrowLooseEvent(playerIn, stack, j);
-//        if (net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(event)) return;
-        
     }
     
 	public ItemStack onItemRightClick(ItemStack stack, World worldIn, final EntityPlayer playerIn){
-//        net.minecraftforge.event.entity.player.ArrowNockEvent event = new net.minecraftforge.event.entity.player.ArrowNockEvent(playerIn, stack);
-//        if (net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(event)) return event.result;
-        
         playerIn.setItemInUse(stack, this.getMaxItemUseDuration(stack));
         
         this.dorightclick(stack, worldIn, playerIn);
@@ -114,4 +126,52 @@ class grappleBow extends Item {
 	{
 		return EnumAction.NONE;
 	}
+	
+    public boolean onLeftClickEntity(ItemStack stack, EntityPlayer player, Entity entity)
+    {
+    	return true;
+    }
+   
+    public boolean onEntitySwing(EntityLiving entityLiving, ItemStack stack)
+    {
+    	return true;
+    }
+   
+    public boolean onBlockStartBreak(ItemStack itemstack, BlockPos k, EntityPlayer player)
+    {
+      return true;
+    }
+   
+    public boolean onItemUseFirst(ItemStack stack, EntityPlayer player, World world, int x, int y, int z, int side, float hitX, float hitY, float hitZ)
+    {
+      return true;
+    }
+    
+    @SubscribeEvent
+    public void onBlockBreak(BreakEvent event){
+    	EntityPlayer player = event.getPlayer();
+    	ItemStack stack = player.getHeldItem();
+    	if (stack != null) {
+    		Item item = stack.getItem();
+    		if (item instanceof grappleBow) {
+    			event.setCanceled(true);
+    		}
+    	}
+    }
+    
+	@SubscribeEvent
+	public void onPlayerTick(TickEvent.PlayerTickEvent event) {
+		EntityPlayer player = event.player;
+		if (player != null) {
+			ItemStack stack = player.getHeldItem();
+			if (stack != null) {
+				Item item = stack.getItem();
+				if (item instanceof grappleBow) {
+					if (player.isSwingInProgress) {
+						this.leftclick(stack, player.worldObj, player);
+					}
+				}
+			}
+		}
+    }
 }

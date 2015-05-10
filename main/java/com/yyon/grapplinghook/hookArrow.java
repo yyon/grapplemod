@@ -129,4 +129,9 @@ public class hookArrow extends grappleArrow
 			}
 		}
 	}
+	
+    protected float getVelocity()
+    {
+        return 20F;
+    }
 }

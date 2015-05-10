@@ -1,11 +1,13 @@
 package com.yyon.grapplinghook;
 
+import net.minecraft.client.Minecraft;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.EnumAction;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.play.server.S12PacketEntityVelocity;
 import net.minecraft.util.BlockPos;
 import net.minecraft.util.EnumFacing;
@@ -16,11 +18,11 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent.PlayerTickEvent;
 
-class launcherItem extends Item {
+public class launcherItem extends Item {
 	
-	EntityPlayer playerused = null;
-	int reusetimer = 0;
-	int reusetime = 100;
+//	EntityPlayer playerused = null;
+//	int reusetimer = 0;
+	int reusetime = 7000;
 
 	public launcherItem() {
 		super();
@@ -48,9 +50,12 @@ class launcherItem extends Item {
 	
 	public void dorightclick(ItemStack stack, World worldIn, EntityPlayer player) {
 		if (!worldIn.isRemote) {
-			if (playerused == null) {
-				playerused = player;
-				reusetimer = reusetime;
+			NBTTagCompound compound = stack.getSubCompound("launcher", true);
+			long timer = Minecraft.getSystemTime() - compound.getLong("lastused");
+			if (timer > reusetime) {
+//				playerused = player;
+//				reusetimer = reusetime;
+				compound.setLong("lastused", Minecraft.getSystemTime());
 				
 	        	Vec3 facing = player.getLookVec();
 				Vec3 playermotion = new Vec3(player.motionX, player.motionY, player.motionZ);
@@ -99,6 +104,26 @@ class launcherItem extends Item {
 	}
 	
 	@SubscribeEvent
+	public void onPlayerTick(TickEvent.PlayerTickEvent event) {
+		if (!event.player.worldObj.isRemote) {
+			ItemStack stack = event.player.getHeldItem();
+			if (stack != null) {
+				Item item = stack.getItem();
+				if (item instanceof launcherItem) {
+					if (event.player.onGround) {
+						NBTTagCompound compound = stack.getSubCompound("launcher", true);
+						if (compound.getLong("lastused") != 0) {
+							long timer = Minecraft.getSystemTime() - compound.getLong("lastused");
+							if (timer > 1000) {
+								compound.setLong("lastused", 0);
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+/*	@SubscribeEvent
 	public void onWorldTick(TickEvent.WorldTickEvent event) {
 		if (reusetimer > 0) {
 			reusetimer--;
@@ -108,5 +133,5 @@ class launcherItem extends Item {
 				playerused = null;
 			}
 		}
-	}
+	}*/
 }

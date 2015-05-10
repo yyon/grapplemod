@@ -34,6 +34,7 @@ public class grapplemod {
     
     public static Item grapplebowitem;
     public static Item hookshotitem;
+    public static Item enderhookitem;
     public static Item launcheritem;
     public static Item longfallboots;
     
@@ -47,24 +48,24 @@ public class grapplemod {
 	@EventHandler
 	public void load(FMLInitializationEvent event){
 		GameRegistry.addRecipe(new ItemStack(grapplebowitem, 1), new Object[]{
-			"XX2", 
-			"X4X", 
-			"XXX", Character.valueOf('2'), new ItemStack(Items.iron_pickaxe, 1), Character.valueOf('4'), new ItemStack(Items.lead, 1), 
+			"X2", 
+			"4X", Character.valueOf('2'), new ItemStack(Items.iron_pickaxe, 1), Character.valueOf('4'), new ItemStack(Items.lead, 1), 
 		});
 		GameRegistry.addRecipe(new ItemStack(hookshotitem, 1), new Object[]{
-			"XX2", 
-			"X4X", 
-			"XXX", Character.valueOf('2'), new ItemStack(grapplebowitem, 1), Character.valueOf('4'), new ItemStack(Blocks.piston, 1), 
+			"X2", 
+			"4X", Character.valueOf('2'), new ItemStack(grapplebowitem, 1), Character.valueOf('4'), new ItemStack(Blocks.piston, 1), 
 		});
 		GameRegistry.addRecipe(new ItemStack(launcheritem, 1), new Object[]{
-			"XX2", 
-			"X4X", 
-			"XXX", Character.valueOf('2'), new ItemStack(Items.ender_pearl, 1), Character.valueOf('4'), new ItemStack(Blocks.piston, 1), 
+			"X2", 
+			"4X", Character.valueOf('2'), new ItemStack(Items.ender_pearl, 1), Character.valueOf('4'), new ItemStack(Blocks.piston, 1), 
+		});
+		GameRegistry.addRecipe(new ItemStack(enderhookitem, 1), new Object[]{
+			"X2", 
+			"4X", Character.valueOf('2'), new ItemStack(grapplebowitem, 1), Character.valueOf('4'), new ItemStack(launcheritem, 1), 
 		});
 		GameRegistry.addRecipe(new ItemStack(longfallboots, 1), new Object[]{
-			"X2X", 
-			"X4X", 
-			"XXX", Character.valueOf('2'), new ItemStack(Items.diamond_boots, 1), Character.valueOf('4'), new ItemStack(Blocks.wool, 1), 
+			"2", 
+			"4", Character.valueOf('2'), new ItemStack(Items.diamond_boots, 1), Character.valueOf('4'), new ItemStack(Blocks.wool, 1), 
 		});
 	}
 
@@ -79,14 +80,16 @@ public class grapplemod {
 	
 	@EventHandler
 	public void preInit(FMLPreInitializationEvent event){
-		grapplebowitem = (new grappleBow());
-		hookshotitem = (new hookBow());
-		launcheritem = (new launcherItem());
+		grapplebowitem = new grappleBow();
+		hookshotitem = new hookBow();
+		launcheritem = new launcherItem();
 		longfallboots = new LongFallBoots(ItemArmor.ArmorMaterial.DIAMOND, 3);
-		GameRegistry.registerItem(grapplebowitem, "grapplinghook"); // addObject		
+		enderhookitem = new enderBow();
+		GameRegistry.registerItem(grapplebowitem, "grapplinghook"); // addObject
 		GameRegistry.registerItem(hookshotitem, "hookshot"); // addObject
 		GameRegistry.registerItem(launcheritem, "launcheritem"); // addObject
 		GameRegistry.registerItem(longfallboots, "longfallboots");
+		GameRegistry.registerItem(enderhookitem, "enderhook"); // addObject
 		registerEntity(grappleArrow.class, "grappleArrow");
 		registerEntity(hookArrow.class, "hookArrow");
 		proxy.preInit(event);
@@ -102,6 +105,7 @@ public class grapplemod {
 		Minecraft.getMinecraft().getRenderItem().getItemModelMesher().register(hookshotitem, 0, new ModelResourceLocation("grapplemod:hookshot", "inventory"));
 		Minecraft.getMinecraft().getRenderItem().getItemModelMesher().register(launcheritem, 0, new ModelResourceLocation("grapplemod:launcheritem", "inventory"));
 		Minecraft.getMinecraft().getRenderItem().getItemModelMesher().register(longfallboots, 0, new ModelResourceLocation("grapplemod:longfallboots", "inventory"));
+		Minecraft.getMinecraft().getRenderItem().getItemModelMesher().register(enderhookitem, 0, new ModelResourceLocation("grapplemod:enderhook", "inventory"));
 		proxy.init(event);
 	}
 	
