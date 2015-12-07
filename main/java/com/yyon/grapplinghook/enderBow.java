@@ -39,22 +39,24 @@ public class enderBow extends grappleBow {
 		NBTTagCompound compound = stack.getSubCompound("launcher", true);
 		long timer = Minecraft.getSystemTime() - compound.getLong("lastused");
 		if (timer > reusetime) {
-//			playerused = player;
-//			reusetimer = reusetime;
-			compound.setLong("lastused", Minecraft.getSystemTime());
-			
-        	Vec3 facing = player.getLookVec();
-			Vec3 playermotion = new Vec3(player.motionX, player.motionY, player.motionZ);
-			Vec3 newvec = playermotion.add(multvec(facing, 3));
-			
-			grappleArrow arrow = this.getArrow(stack, world);
-			if (arrow == null || !arrow.attached) {
-				player.setVelocity(newvec.xCoord, newvec.yCoord, newvec.zCoord);
-				if (player instanceof EntityPlayerMP) {
-					((EntityPlayerMP) player).playerNetServerHandler.sendPacket(new S12PacketEntityVelocity(player));
+			if (player.getHeldItem().getItem() instanceof enderBow) {
+	//			playerused = player;
+	//			reusetimer = reusetime;
+				compound.setLong("lastused", Minecraft.getSystemTime());
+				
+	        	Vec3 facing = player.getLookVec();
+				Vec3 playermotion = new Vec3(player.motionX, player.motionY, player.motionZ);
+				Vec3 newvec = playermotion.add(multvec(facing, 3));
+				
+				grappleArrow arrow = this.getArrow(stack, world);
+				if (arrow == null || !arrow.attached) {
+					player.setVelocity(newvec.xCoord, newvec.yCoord, newvec.zCoord);
+					if (player instanceof EntityPlayerMP) {
+						((EntityPlayerMP) player).playerNetServerHandler.sendPacket(new S12PacketEntityVelocity(player));
+					}
+				} else {
+					arrow.motion = arrow.motion.add(newvec);
 				}
-			} else {
-				arrow.motion = arrow.motion.add(newvec);
 			}
 		}
 	}
