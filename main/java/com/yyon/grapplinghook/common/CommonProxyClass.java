@@ -1,5 +1,6 @@
 package com.yyon.grapplinghook.common;
 
+import com.yyon.grapplinghook.grappleArrow;
 import com.yyon.grapplinghook.grapplemod;
 
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
@@ -19,6 +20,6 @@ public class CommonProxyClass {
 		
 	}
 	
-	public static void sendplayermovementmessage(int playerid, int arrowid) {
+	public void sendplayermovementmessage(grappleArrow grappleArrow, int playerid, int arrowid) {
 	}
 }

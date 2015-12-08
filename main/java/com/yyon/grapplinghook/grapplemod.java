@@ -111,6 +111,7 @@ public class grapplemod {
 		network = NetworkRegistry.INSTANCE.newSimpleChannel("grapplemodchannel");
 		network.registerMessage(PlayerPosMessage.Handler.class, PlayerPosMessage.class, 0, Side.CLIENT);
 		network.registerMessage(PlayerMovementMessage.Handler.class, PlayerMovementMessage.class, 1, Side.SERVER);
+		network.registerMessage(GrappleAttachMessage.Handler.class, GrappleAttachMessage.class, 2, Side.CLIENT);
 	}
 	
 	@EventHandler

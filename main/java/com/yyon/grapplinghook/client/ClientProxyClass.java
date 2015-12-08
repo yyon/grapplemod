@@ -39,10 +39,12 @@ public class ClientProxyClass extends CommonProxyClass {
 		
 	}
 	
-	public static void sendplayermovementmessage(int playerid, int arrowid) {
+	@Override
+	public void sendplayermovementmessage(grappleArrow grappleArrow, int playerid, int arrowid) {
 		EntityPlayer player = Minecraft.getMinecraft().thePlayer;
 		if (player.getEntityId() == playerid) {
 			grapplemod.network.sendToServer(new PlayerMovementMessage(arrowid, player.moveStrafing, player.moveForward, ((EntityPlayerSP) player).movementInput.jump));
+			grappleArrow.receivePlayerMovementMessage(player.moveStrafing, player.moveForward, ((EntityPlayerSP) player).movementInput.jump);
 		}
 	}
 }
