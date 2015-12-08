@@ -1,10 +1,7 @@
 package com.yyon.grapplinghook;
 
-import net.minecraft.client.Minecraft;
-import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.item.EnumAction;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -16,7 +13,7 @@ import net.minecraftforge.fml.common.gameevent.TickEvent;
 
 public class enderBow extends grappleBow {
 	
-	int reusetime = 7000;
+	int reusetime = 30;
 	
 	public enderBow() {
 		super();
@@ -37,12 +34,12 @@ public class enderBow extends grappleBow {
 	
 	public void leftclick(ItemStack stack, World world, EntityPlayer player) {
 		NBTTagCompound compound = stack.getSubCompound("launcher", true);
-		long timer = Minecraft.getSystemTime() - compound.getLong("lastused");
+		long timer = world.getTotalWorldTime() - compound.getLong("lastused");
 		if (timer > reusetime) {
 			if (player.getHeldItem().getItem() instanceof enderBow) {
 	//			playerused = player;
 	//			reusetimer = reusetime;
-				compound.setLong("lastused", Minecraft.getSystemTime());
+				compound.setLong("lastused", world.getTotalWorldTime());
 				
 	        	Vec3 facing = player.getLookVec();
 				Vec3 playermotion = new Vec3(player.motionX, player.motionY, player.motionZ);
@@ -50,7 +47,11 @@ public class enderBow extends grappleBow {
 				
 				grappleArrow arrow = this.getArrow(stack, world);
 				if (arrow == null || !arrow.attached) {
-					player.setVelocity(newvec.xCoord, newvec.yCoord, newvec.zCoord);
+//					player.setVelocity(newvec.xCoord, newvec.yCoord, newvec.zCoord);
+					player.motionX = newvec.xCoord;
+					player.motionY = newvec.yCoord;
+					player.motionZ = newvec.zCoord;
+					
 					if (player instanceof EntityPlayerMP) {
 						((EntityPlayerMP) player).playerNetServerHandler.sendPacket(new S12PacketEntityVelocity(player));
 					}
@@ -72,7 +73,7 @@ public class enderBow extends grappleBow {
 					if (event.player.onGround) {
 						NBTTagCompound compound = stack.getSubCompound("launcher", true);
 						if (compound.getLong("lastused") != 0) {
-							long timer = Minecraft.getSystemTime() - compound.getLong("lastused");
+							long timer = event.player.worldObj.getTotalWorldTime() - compound.getLong("lastused");
 							if (timer > 1000) {
 								compound.setLong("lastused", 0);
 							}

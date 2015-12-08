@@ -1,10 +1,6 @@
 package com.yyon.grapplinghook;
 
-import org.lwjgl.input.Keyboard;
-
 import io.netty.buffer.ByteBuf;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
@@ -62,8 +58,8 @@ public class grappleArrow extends EntityThrowable implements IEntityAdditionalSp
 		this.shootingEntity = shooter;
 		if (this.shootingEntity instanceof EntityPlayer) {
 			this.shootingplayer = (EntityPlayer) this.shootingEntity;
-			this.shootingEntityID = this.shootingEntity.getEntityId();
 		}
+		this.shootingEntityID = this.shootingEntity.getEntityId();
 	}
 	
 	public void onEntityUpdate(){
@@ -74,7 +70,10 @@ public class grappleArrow extends EntityThrowable implements IEntityAdditionalSp
 		}
 		
 		if (this.attached && this.firstattach) {
-			this.setVelocity(0, 0, 0);
+//			this.ocity(0, 0, 0);
+			this.motionX = 0;
+			this.motionY = 0;
+			this.motionZ = 0;
 			this.firstattach = false;
 		}
 		
@@ -87,18 +86,19 @@ public class grappleArrow extends EntityThrowable implements IEntityAdditionalSp
 	
 	@SubscribeEvent
 	public void onClientTick(TickEvent.ClientTickEvent event) {
-		EntityPlayer player = Minecraft.getMinecraft().thePlayer;
-		if (player.getEntityId() == this.shootingEntityID) {
-			grapplemod.network.sendToServer(new PlayerMovementMessage(this.getEntityId(), player.moveStrafing, player.moveForward, ((EntityPlayerSP) player).movementInput.jump));
-		}
+		grapplemod.proxy.sendplayermovementmessage(this.shootingEntityID, this.getEntityId());
+//		EntityPlayer player = Minecraft.getMinecraft().thePlayer;
+//		if (player.getEntityId() == this.shootingEntityID) {
+//			grapplemod.network.sendToServer(new PlayerMovementMessage(this.getEntityId(), player.moveStrafing, player.moveForward, ((EntityPlayerSP) player).movementInput.jump));
+//		}
 	}
 	
 	@SubscribeEvent
 	public void onPlayerTick(TickEvent.PlayerTickEvent event) {
 		if (event.player.getEntityId() == this.shootingEntityID) {
-			if (!this.worldObj.isRemote && this.worldObj == event.player.worldObj) {
+//			if (!this.worldObj.isRemote && this.worldObj == event.player.worldObj) {
 				this.updatePlayerPos(event.player);
-			}
+//			}
 		}
 	}
 	
@@ -171,9 +171,15 @@ public class grappleArrow extends EntityThrowable implements IEntityAdditionalSp
 							if (r < 2 || player.onGround || player.isCollided) {
 								jumppower = 0.5;
 							}
-							player.setVelocity(player.motionX, player.motionY + jumppower, player.motionZ);
 							
 							this.grappleend();
+							
+//							player.ocity(player.motionX, player.motionY + jumppower, player.motionZ);
+							player.motionY = player.motionY + jumppower;
+							if (entity instanceof EntityPlayerMP) {
+								((EntityPlayerMP) entity).playerNetServerHandler.sendPacket(new S12PacketEntityVelocity(entity));
+							}
+							
 							return;
 						} else if (this.shootingEntity.isSneaking()) {
 							motion = multvec(motion, 0.9);
@@ -193,7 +199,10 @@ public class grappleArrow extends EntityThrowable implements IEntityAdditionalSp
 					motion = removealong(motion, spherevec);
 					Vec3 newmotion = motion.add(additionalmotion);
 					
-					entity.setVelocity(newmotion.xCoord, newmotion.yCoord, newmotion.zCoord);
+//					entity.setVelocity(newmotion.xCoord, newmotion.yCoord, newmotion.zCoord);
+					entity.motionX = newmotion.xCoord;
+					entity.motionY = newmotion.yCoord;
+					entity.motionZ = newmotion.zCoord;
 					
 					if (entity instanceof EntityPlayerMP) {
 						

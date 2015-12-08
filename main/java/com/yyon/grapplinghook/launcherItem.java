@@ -1,6 +1,5 @@
 package com.yyon.grapplinghook;
 
-import net.minecraft.client.Minecraft;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -22,7 +21,7 @@ public class launcherItem extends Item {
 	
 //	EntityPlayer playerused = null;
 //	int reusetimer = 0;
-	int reusetime = 7000;
+	int reusetime = 30;
 
 	public launcherItem() {
 		super();
@@ -51,17 +50,22 @@ public class launcherItem extends Item {
 	public void dorightclick(ItemStack stack, World worldIn, EntityPlayer player) {
 		if (!worldIn.isRemote) {
 			NBTTagCompound compound = stack.getSubCompound("launcher", true);
-			long timer = Minecraft.getSystemTime() - compound.getLong("lastused");
+			long timer = worldIn.getTotalWorldTime() - compound.getLong("lastused");
+			System.out.println(worldIn.getTotalWorldTime());
 			if (timer > reusetime) {
 //				playerused = player;
 //				reusetimer = reusetime;
-				compound.setLong("lastused", Minecraft.getSystemTime());
+				compound.setLong("lastused", worldIn.getTotalWorldTime());
 				
 	        	Vec3 facing = player.getLookVec();
 				Vec3 playermotion = new Vec3(player.motionX, player.motionY, player.motionZ);
 				Vec3 newvec = playermotion.add(multvec(facing, 3));
 				
-				player.setVelocity(newvec.xCoord, newvec.yCoord, newvec.zCoord);
+//				player.setVelocity(newvec.xCoord, newvec.yCoord, newvec.zCoord);
+				player.motionX = newvec.xCoord;
+				player.motionY = newvec.yCoord;
+				player.motionZ = newvec.zCoord;
+				
 				if (player instanceof EntityPlayerMP) {
 					((EntityPlayerMP) player).playerNetServerHandler.sendPacket(new S12PacketEntityVelocity(player));
 				}
@@ -113,7 +117,7 @@ public class launcherItem extends Item {
 					if (event.player.onGround) {
 						NBTTagCompound compound = stack.getSubCompound("launcher", true);
 						if (compound.getLong("lastused") != 0) {
-							long timer = Minecraft.getSystemTime() - compound.getLong("lastused");
+							long timer = event.player.worldObj.getTotalWorldTime() - compound.getLong("lastused");
 							if (timer > 1000) {
 								compound.setLong("lastused", 0);
 							}

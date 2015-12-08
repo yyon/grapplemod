@@ -3,7 +3,9 @@ package com.yyon.grapplinghook;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
+import net.minecraft.util.IThreadListener;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldServer;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
@@ -41,15 +43,31 @@ public class PlayerPosMessage implements IMessage {
     }
 
     public static class Handler implements IMessageHandler<PlayerPosMessage, IMessage> {
+    	public class runner implements Runnable {
+    		PlayerPosMessage message;
+    		MessageContext ctx;
+    		public runner(PlayerPosMessage message, MessageContext ctx) {
+    			super();
+    			this.message = message;
+    			this.ctx = ctx;
+    		}
+    		
+            @Override
+            public void run() {
+            	World world = Minecraft.getMinecraft().theWorld;
+            	Entity player = world.getEntityByID(message.id);
+            	player.setPosition(message.x, message.y, message.z);
+            }
+    	}
+    	
        
         @Override
         public IMessage onMessage(PlayerPosMessage message, MessageContext ctx) {
 //            System.out.println(String.format("Received %s from %s", message.text, ctx.getServerHandler().playerEntity.getDisplayName()));
-//        	World world = ctx.getClientHandler().playerEntity.worldObj;
-        	World world = Minecraft.getMinecraft().theWorld;
-        	Entity player = world.getEntityByID(message.id);
-        	player.setPosition(message.x, message.y, message.z);
-//            Entity arrowentity = world.getEntityByID(message.arrowId);
+        	IThreadListener mainThread = Minecraft.getMinecraft(); // or Minecraft.getMinecraft() on the client
+            mainThread.addScheduledTask(new runner(message, ctx));
+            
+        	//            Entity arrowentity = world.getEntityByID(message.arrowId);
 //            if (arrowentity instanceof grappleArrow) {
 //            	((grappleArrow) arrowentity).receivePlayerMovementMessage(message.strafe, message.forward);
 //            }

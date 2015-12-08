@@ -2,8 +2,6 @@ package com.yyon.grapplinghook;
 
 import java.util.Random;
 
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.resources.model.ModelResourceLocation;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.item.Item;
@@ -23,6 +21,23 @@ import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.fml.relauncher.Side;
 
 import com.yyon.grapplinghook.common.CommonProxyClass;
+
+/*
+ * This file is part of GrappleMod.
+
+    GrappleMod is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    GrappleMod is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with GrappleMod.  If not, see <http://www.gnu.org/licenses/>.
+ */
 
 @Mod(modid = grapplemod.MODID, version = grapplemod.VERSION)
 public class grapplemod {
@@ -93,20 +108,14 @@ public class grapplemod {
 		registerEntity(grappleArrow.class, "grappleArrow");
 		registerEntity(hookArrow.class, "hookArrow");
 		proxy.preInit(event);
-		
-		network = NetworkRegistry.INSTANCE.newSimpleChannel("MyChannel");
-		network.registerMessage(PlayerMovementMessage.Handler.class, PlayerMovementMessage.class, 0, Side.SERVER);
-		network.registerMessage(PlayerPosMessage.Handler.class, PlayerPosMessage.class, 1, Side.CLIENT);
+		network = NetworkRegistry.INSTANCE.newSimpleChannel("grapplemodchannel");
+		network.registerMessage(PlayerPosMessage.Handler.class, PlayerPosMessage.class, 0, Side.CLIENT);
+		network.registerMessage(PlayerMovementMessage.Handler.class, PlayerMovementMessage.class, 1, Side.SERVER);
 	}
 	
 	@EventHandler
 	public void Init(FMLInitializationEvent event) {
-		Minecraft.getMinecraft().getRenderItem().getItemModelMesher().register(grapplebowitem, 0, new ModelResourceLocation("grapplemod:grapplinghook", "inventory"));
-		Minecraft.getMinecraft().getRenderItem().getItemModelMesher().register(hookshotitem, 0, new ModelResourceLocation("grapplemod:hookshot", "inventory"));
-		Minecraft.getMinecraft().getRenderItem().getItemModelMesher().register(launcheritem, 0, new ModelResourceLocation("grapplemod:launcheritem", "inventory"));
-		Minecraft.getMinecraft().getRenderItem().getItemModelMesher().register(longfallboots, 0, new ModelResourceLocation("grapplemod:longfallboots", "inventory"));
-		Minecraft.getMinecraft().getRenderItem().getItemModelMesher().register(enderhookitem, 0, new ModelResourceLocation("grapplemod:enderhook", "inventory"));
-		proxy.init(event);
+		proxy.init(event, this);
 	}
 	
 	public void registerEntity(Class entityClass, String name)

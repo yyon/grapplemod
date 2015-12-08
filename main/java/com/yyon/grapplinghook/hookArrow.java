@@ -72,7 +72,8 @@ public class hookArrow extends grappleArrow
 						if (dist < 2 || player.onGround || player.isCollided) {
 							jumppower = 0.5;
 						}
-						player.setVelocity(player.motionX, player.motionY + jumppower, player.motionZ);
+//						player.setVelocity(player.motionX, player.motionY + jumppower, player.motionZ);
+						player.motionY = player.motionY + jumppower;
 						
 						this.grappleend();
 						return;
@@ -116,8 +117,10 @@ public class hookArrow extends grappleArrow
 					
 					newmotion = motion;
 						
-					entity.setVelocity(newmotion.xCoord, newmotion.yCoord, newmotion.zCoord);
-					
+//					entity.setVelocity(newmotion.xCoord, newmotion.yCoord, newmotion.zCoord);
+					entity.motionX = newmotion.xCoord;
+					entity.motionY = newmotion.yCoord;
+					entity.motionZ = newmotion.zCoord;
 					
 					if (player instanceof EntityPlayerMP) {
 						
