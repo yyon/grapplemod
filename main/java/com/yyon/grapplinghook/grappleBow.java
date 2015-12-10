@@ -65,12 +65,14 @@ public class grappleBow extends Item {
 	
 	public void dorightclick(ItemStack stack, World worldIn, EntityPlayer playerIn) {
         if (!worldIn.isRemote) {
-        	
         	grappleArrow entityarrow = getArrow(stack, worldIn);
+        	
+        	System.out.println("right click");
         	
         	if (entityarrow != null) {
         		if (entityarrow.shootingEntity == null) {
         			setArrow(stack, null);
+        			entityarrow = null;
         		}
         	}
         	
@@ -84,6 +86,8 @@ public class grappleBow extends Item {
 				
 				worldIn.spawnEntityInWorld(entityarrow);
 			} else {
+				System.out.println("right click unattach");
+				System.out.println(entityarrow);
 				entityarrow.grappleend();
 				setArrow(stack, null);
 			}
@@ -91,6 +95,7 @@ public class grappleBow extends Item {
 	}
 	
 	public grappleArrow createarrow(ItemStack stack, World worldIn, EntityPlayer playerIn) {
+		System.out.println("Creating arrow!");
 		return new grappleArrow(worldIn, playerIn, 0);
 	}
 	

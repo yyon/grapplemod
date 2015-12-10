@@ -112,6 +112,7 @@ public class grapplemod {
 		network.registerMessage(PlayerPosMessage.Handler.class, PlayerPosMessage.class, 0, Side.CLIENT);
 		network.registerMessage(PlayerMovementMessage.Handler.class, PlayerMovementMessage.class, 1, Side.SERVER);
 		network.registerMessage(GrappleAttachMessage.Handler.class, GrappleAttachMessage.class, 2, Side.CLIENT);
+		network.registerMessage(GrappleEndMessage.Handler.class, GrappleEndMessage.class, 3, Side.CLIENT);
 	}
 	
 	@EventHandler

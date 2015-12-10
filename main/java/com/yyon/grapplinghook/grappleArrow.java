@@ -51,6 +51,7 @@ public class grappleArrow extends EntityThrowable implements IEntityAdditionalSp
 	public grappleArrow(World worldIn) {
 		super(worldIn);
 		FMLCommonHandler.instance().bus().register(this);
+		System.out.println("init (1) " + this.toString());
 	}
 	
 	public grappleArrow(World worldIn, EntityLivingBase shooter,
@@ -62,7 +63,17 @@ public class grappleArrow extends EntityThrowable implements IEntityAdditionalSp
 			this.shootingplayer = (EntityPlayer) this.shootingEntity;
 		}
 		this.shootingEntityID = this.shootingEntity.getEntityId();
+		System.out.println("init (2) " + this.toString());
 	}
+	
+	public grappleArrow(World world, EntityLivingBase shooter) {
+		this(world, shooter, 0);
+		System.out.println("ERROR! init (3)");
+	}
+    public grappleArrow(World worldIn, double x, double y, double z) {
+    	this(worldIn);
+		System.out.println("ERROR! init (4)");
+    }
 	
 	public void onEntityUpdate(){
 		super.onEntityUpdate();
@@ -88,7 +99,9 @@ public class grappleArrow extends EntityThrowable implements IEntityAdditionalSp
 	
 	@SubscribeEvent
 	public void onClientTick(TickEvent.ClientTickEvent event) {
-		grapplemod.proxy.sendplayermovementmessage(this, this.shootingEntityID, this.getEntityId());
+		if (this.attached) {
+			grapplemod.proxy.sendplayermovementmessage(this, this.shootingEntityID, this.getEntityId());
+		}
 //		EntityPlayer player = Minecraft.getMinecraft().thePlayer;
 //		if (player.getEntityId() == this.shootingEntityID) {
 //			this.updatePlayerPos(player);
@@ -149,7 +162,13 @@ public class grappleArrow extends EntityThrowable implements IEntityAdditionalSp
 		if (this.attached) {
 			if(entity != null) {
 				if (true) {
-					Vec3 arrowpos = this.getPositionVector();
+					counter++;
+					if (counter > 1000) {
+						counter = 0;
+						System.out.println("pulling " + this.toString());
+					}
+					
+					Vec3 arrowpos = this.thispos;//this.getPositionVector();
 					Vec3 playerpos = entity.getPositionVector();
 					Vec3 playermotion = new Vec3(entity.motionX, entity.motionY, entity.motionZ);
 					
@@ -158,7 +177,7 @@ public class grappleArrow extends EntityThrowable implements IEntityAdditionalSp
 					Vec3 spherechange = spherevec.subtract(oldspherevec);
 					Vec3 spherepos = spherevec.add(arrowpos);
 					
-					Vec3 additionalmotion = spherechange;
+					Vec3 additionalmotion = new Vec3(0,0,0);
 					
 					double dist = oldspherevec.lengthVector();
 					
@@ -200,6 +219,7 @@ public class grappleArrow extends EntityThrowable implements IEntityAdditionalSp
 					}
 					
 					motion = removealong(motion, spherevec);
+					
 					Vec3 newmotion = motion.add(additionalmotion);
 					
 //					entity.setVelocity(newmotion.xCoord, newmotion.yCoord, newmotion.zCoord);
@@ -209,7 +229,7 @@ public class grappleArrow extends EntityThrowable implements IEntityAdditionalSp
 					
 					if (entity instanceof EntityPlayerMP) {
 						
-						((EntityPlayerMP) entity).playerNetServerHandler.sendPacket(new S12PacketEntityVelocity(entity));
+//						((EntityPlayerMP) entity).playerNetServerHandler.sendPacket(new S12PacketEntityVelocity(entity));
 						
 						/*
 						counter++;
@@ -227,22 +247,27 @@ public class grappleArrow extends EntityThrowable implements IEntityAdditionalSp
 	}
 	
 	public void grappleend() {
-		System.out.println("GrappleEnd");
+		if (!this.worldObj.isRemote) {
+			this.unattach();
+			grapplemod.network.sendToAll(new GrappleEndMessage(this.getEntityId()));
+		}
+	}
+	
+	public void unattach() { // call grappleend, not this
+		System.out.println("GrappleEnd " + this.toString());
+		
+		Thread.dumpStack();
+		
 //		if (this.shootingEntity != null && this.shootingEntity instanceof EntityPlayerMP) {
 //			((EntityPlayerMP) this.shootingEntity).playerNetServerHandler.sendPacket(new S12PacketEntityVelocity(this.shootingEntity));
 //		}
 		
-		this.kill();
-	}
-	
-	@Override
-    public void setDead() {
-		super.setDead();
-		
-		System.out.println("dead-ing");
 		this.shootingEntity = null;
 		this.attached = false;
+		
 		FMLCommonHandler.instance().bus().unregister(this);
+		
+		this.kill();
 	}
 	
 	@Override
@@ -259,6 +284,11 @@ public class grappleArrow extends EntityThrowable implements IEntityAdditionalSp
 	    
 	    this.shootingplayer = (EntityPlayer) this.shootingEntity;
     }
+	
+	@Override
+	public String toString() {
+		return super.toString() + String.valueOf(System.identityHashCode(this)) + "]";
+	}
 
 	@Override
 	protected void onImpact(MovingObjectPosition movingobjectposition) {
@@ -276,6 +306,7 @@ public class grappleArrow extends EntityThrowable implements IEntityAdditionalSp
 			}
 			
 			this.attached = true;
+			System.out.println("attaching! (server) " + this.toString());
 			
 	        Vec3 vec31 = new Vec3(this.posX, this.posY, this.posZ);
 	        Vec3 vec3 = new Vec3(this.posX + this.motionX, this.posY + this.motionY, this.posZ + this.motionZ);
@@ -293,14 +324,27 @@ public class grappleArrow extends EntityThrowable implements IEntityAdditionalSp
 			r = this.getDistanceToEntity(this.shootingEntity);
 			motion = new Vec3(this.shootingEntity.motionX, this.shootingEntity.motionY, this.shootingEntity.motionZ);
 			
-			grapplemod.network.sendToAll(new GrappleAttachMessage(this.getEntityId(), this.r, motion.xCoord, motion.yCoord, motion.zCoord));
+			grapplemod.network.sendToAll(new GrappleAttachMessage(this.getEntityId(), this.r, this.posX, this.posY, this.posZ, this.shootingEntity.motionX, this.shootingEntity.motionY, this.shootingEntity.motionZ));
 		}
 	}
 	
-	public void clientAttach(double r, double x, double y, double z) {
+	public void clientAttach(double r, double x, double y, double z, double mx, double my, double mz) {
+		System.out.println("attaching! (client) " + this.toString());
+		
 		this.attached = true;
-		this.r = r;
-		this.motion = new Vec3(x, y, z);
+		
+		this.setPositionAndUpdate(x, y, z);
+		this.motionX = 0;
+		this.motionY = 0;
+		this.motionZ = 0;
+		this.thispos = new Vec3(x, y, z);
+//		this.doposupdate = true;
+//		this.r = r;
+//		this.motion = new Vec3(mx, my, mz);
+		
+		this.r = this.getDistanceToEntity(this.shootingEntity);
+		this.motion = new Vec3(this.shootingEntity.motionX, this.shootingEntity.motionY, this.shootingEntity.motionZ);
+//		System.out.println(motion);
 	}
 	
 	@Override
