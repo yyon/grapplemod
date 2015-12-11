@@ -37,6 +37,7 @@ public class enderBow extends grappleBow {
 		long timer = world.getTotalWorldTime() - compound.getLong("lastused");
 		if (timer > reusetime) {
 			if (player.getHeldItem().getItem() instanceof enderBow) {
+				
 	//			playerused = player;
 	//			reusetimer = reusetime;
 				compound.setLong("lastused", world.getTotalWorldTime());
@@ -46,7 +47,7 @@ public class enderBow extends grappleBow {
 				Vec3 newvec = playermotion.add(multvec(facing, 3));
 				
 				grappleArrow arrow = this.getArrow(stack, world);
-				if (arrow == null || !arrow.attached) {
+				if (arrow == null) {
 //					player.setVelocity(newvec.xCoord, newvec.yCoord, newvec.zCoord);
 					player.motionX = newvec.xCoord;
 					player.motionY = newvec.yCoord;
@@ -56,7 +57,10 @@ public class enderBow extends grappleBow {
 						((EntityPlayerMP) player).playerNetServerHandler.sendPacket(new S12PacketEntityVelocity(player));
 					}
 				} else {
-					arrow.motion = arrow.motion.add(newvec);
+					System.out.println("Sending EnderGrappleLaunchMessage");
+					facing = multvec(facing, 3);
+					grapplemod.network.sendToAll(new EnderGrappleLaunchMessage(arrow.shootingEntityID, facing.xCoord, facing.yCoord, facing.zCoord));
+//					arrow.control.motion = arrow.control.motion.add(newvec);
 				}
 			}
 		}

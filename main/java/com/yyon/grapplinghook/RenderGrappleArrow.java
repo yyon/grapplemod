@@ -23,8 +23,6 @@ public class RenderGrappleArrow extends Render
 {
     protected final Item field_177084_a;
     private final RenderItem field_177083_e;
-    private static final String __OBFID = "CL_00001008";
-
     public RenderGrappleArrow(RenderManager p_i46137_1_, Item p_i46137_2_, RenderItem p_i46137_3_)
     {
         super(p_i46137_1_);
@@ -79,8 +77,8 @@ public class RenderGrappleArrow extends Render
                 float f11 = (((EntityLivingBase) ga.shootingEntity).prevRenderYawOffset + (((EntityLivingBase) ga.shootingEntity).renderYawOffset - ((EntityLivingBase) ga.shootingEntity).prevRenderYawOffset) * p_76986_8_) * (float)Math.PI / 180.0F;
                 double d7 = (double)MathHelper.sin(f11);
                 double d9 = (double)MathHelper.cos(f11);
-                double d11 = 0.35D;
-                double d13 = 0.8D;
+//                double d11 = 0.35D;
+//                double d13 = 0.8D;
                 d3 = ga.shootingEntity.prevPosX + (ga.shootingEntity.posX - ga.shootingEntity.prevPosX) * (double)p_76986_8_ - d9 * 0.35D - d7 * 0.8D;
                 d4 = ga.shootingEntity.prevPosY + d6 + (ga.shootingEntity.posY - ga.shootingEntity.prevPosY) * (double)p_76986_8_ - 0.45D;
                 d5 = ga.shootingEntity.prevPosZ + (ga.shootingEntity.posZ - ga.shootingEntity.prevPosZ) * (double)p_76986_8_ - d7 * 0.35D + d9 * 0.8D;

@@ -1,7 +1,10 @@
 package com.yyon.grapplinghook;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Random;
 
+import net.minecraft.entity.Entity;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.item.Item;
@@ -12,6 +15,7 @@ import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventHandler;
 import net.minecraftforge.fml.common.SidedProxy;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
+import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
@@ -56,6 +60,9 @@ public class grapplemod {
 	public static Object instance;
 	
 	public static SimpleNetworkWrapper network;
+	
+	public static HashMap<Integer, grappleController> controllers = new HashMap<Integer, grappleController>(); // client side
+	public static ArrayList<Integer> attached = new ArrayList<Integer>(); // server side
 	
 	@SidedProxy(clientSide="com.yyon.grapplinghook.client.ClientProxyClass", serverSide="com.yyon.grapplinghook.common.CommonProxyClass")
 	public static CommonProxyClass proxy;
@@ -106,29 +113,70 @@ public class grapplemod {
 		GameRegistry.registerItem(longfallboots, "longfallboots");
 		GameRegistry.registerItem(enderhookitem, "enderhook"); // addObject
 		registerEntity(grappleArrow.class, "grappleArrow");
+		registerEntity(enderArrow.class, "enderArrow");
 		registerEntity(hookArrow.class, "hookArrow");
 		proxy.preInit(event);
 		network = NetworkRegistry.INSTANCE.newSimpleChannel("grapplemodchannel");
-		network.registerMessage(PlayerPosMessage.Handler.class, PlayerPosMessage.class, 0, Side.CLIENT);
-		network.registerMessage(PlayerMovementMessage.Handler.class, PlayerMovementMessage.class, 1, Side.SERVER);
-		network.registerMessage(GrappleAttachMessage.Handler.class, GrappleAttachMessage.class, 2, Side.CLIENT);
-		network.registerMessage(GrappleEndMessage.Handler.class, GrappleEndMessage.class, 3, Side.CLIENT);
+		int id = 0;
+		network.registerMessage(PlayerPosMessage.Handler.class, PlayerPosMessage.class, id++, Side.CLIENT);
+		network.registerMessage(PlayerMovementMessage.Handler.class, PlayerMovementMessage.class, id++, Side.SERVER);
+		network.registerMessage(GrappleAttachMessage.Handler.class, GrappleAttachMessage.class, id++, Side.CLIENT);
+		network.registerMessage(GrappleEndMessage.Handler.class, GrappleEndMessage.class, id++, Side.SERVER);
+		network.registerMessage(GrappleClickMessage.Handler.class, GrappleClickMessage.class, id++, Side.CLIENT);
+		network.registerMessage(EnderGrappleLaunchMessage.Handler.class, EnderGrappleLaunchMessage.class, id++, Side.CLIENT);
+		
 	}
 	
 	@EventHandler
 	public void Init(FMLInitializationEvent event) {
 		proxy.init(event, this);
 	}
-	
-	public void registerEntity(Class entityClass, String name)
+	@EventHandler
+	public void postInit(FMLPostInitializationEvent event) {
+		proxy.postInit(event);
+	}
+
+	public void registerEntity(Class<? extends Entity> entityClass, String name)
 	{
 		int entityID = EntityRegistry.findGlobalUniqueEntityId();
-		long seed = name.hashCode();
-		Random rand = new Random(seed);
-		int primaryColor = rand.nextInt() * 16777215;
-		int secondaryColor = rand.nextInt() * 16777215;
+//		long seed = name.hashCode();
+//		Random rand = new Random(seed);
+//		int primaryColor = rand.nextInt() * 16777215;
+//		int secondaryColor = rand.nextInt() * 16777215;
 		
 		EntityRegistry.registerGlobalEntityID(entityClass, name, entityID);
 		EntityRegistry.registerModEntity(entityClass, name, entityID, this, 64, 1, true);
+	}
+	
+	public static void registerController(int entityId, grappleController controller) {
+		if (controllers.containsKey(entityId)) {
+			controllers.get(entityId).unattach();
+		}
+		
+		controllers.put(entityId, controller);
+	}
+	
+	public static void unregisterController(int entityId) {
+		controllers.remove(entityId);
+	}
+
+	public static void receiveGrappleClick(int id,
+			boolean leftclick) {
+		grappleController controller = controllers.get(id);
+		if (controller != null) {
+			controller.receiveGrappleClick(leftclick);
+		} else {
+			System.out.println("Couldn't find controller");
+		}
+	}
+
+	public static void receiveEnderLaunch(int id, double x, double y, double z) {
+		System.out.println("Received EnderGrappleLaunchMessage");
+		grappleController controller = controllers.get(id);
+		if (controller != null) {
+			controller.receiveEnderLaunch(x, y, z);
+		} else {
+			System.out.println("Couldn't find controller");
+		}
 	}
 }

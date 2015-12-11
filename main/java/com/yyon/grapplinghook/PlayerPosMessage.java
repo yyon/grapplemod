@@ -5,7 +5,6 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.IThreadListener;
 import net.minecraft.world.World;
-import net.minecraft.world.WorldServer;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
@@ -56,7 +55,7 @@ public class PlayerPosMessage implements IMessage {
             public void run() {
             	World world = Minecraft.getMinecraft().theWorld;
             	Entity player = world.getEntityByID(message.id);
-            	player.setPosition(message.x, message.y, message.z);
+        		player.setPosition(message.x, message.y, message.z);
             }
     	}
     	

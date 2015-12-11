@@ -12,34 +12,48 @@ import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 
 public class PlayerMovementMessage implements IMessage {
    
-    private int arrowId;
-    private double strafe;
-    private double forward;
-    private boolean jump;
-
-    public PlayerMovementMessage() { }
-
-    public PlayerMovementMessage(int arrowId, double strafe, double forward, boolean jump) {
-        this.arrowId = arrowId;
-        this.strafe = strafe;
-        this.forward = forward;
-        this.jump = jump;
+	public int entityId;
+	public double x;
+	public double y;
+	public double z;
+	public double mx;
+	public double my;
+	public double mz;
+	
+	public PlayerMovementMessage() {
+	}
+	
+    public PlayerMovementMessage(int entityId, double x, double y, double z, double mx, double my, double mz) {
+    	this.entityId = entityId;
+    	this.x = x;
+    	this.y = y;
+    	this.z = z;
+    	this.mx = mx;
+    	this.my = my;
+    	this.mz = mz;
+    	
     }
 
     @Override
     public void fromBytes(ByteBuf buf) {
-        arrowId = buf.readInt();
-        strafe = buf.readDouble();
-        forward = buf.readDouble();
-        jump = buf.readBoolean();
+    	this.entityId = buf.readInt();
+    	this.x = buf.readDouble();
+    	this.y = buf.readDouble();
+    	this.z = buf.readDouble();
+    	this.mx = buf.readDouble();
+    	this.my = buf.readDouble();
+    	this.mz = buf.readDouble();
     }
 
     @Override
     public void toBytes(ByteBuf buf) {
-        buf.writeInt(arrowId);
-        buf.writeDouble(strafe);
-        buf.writeDouble(forward);
-        buf.writeBoolean(jump);
+        buf.writeInt(entityId);
+        buf.writeDouble(x);
+        buf.writeDouble(y);
+        buf.writeDouble(z);
+        buf.writeDouble(mx);
+        buf.writeDouble(my);
+        buf.writeDouble(mz);
     }
 
     public static class Handler implements IMessageHandler<PlayerMovementMessage, IMessage> {
@@ -56,10 +70,14 @@ public class PlayerMovementMessage implements IMessage {
             @Override
             public void run() {
                 World world = ctx.getServerHandler().playerEntity.worldObj;
-                Entity arrowentity = world.getEntityByID(message.arrowId);
-                if (arrowentity instanceof grappleArrow) {
-                	((grappleArrow) arrowentity).receivePlayerMovementMessage(message.strafe, message.forward, message.jump);
-                }
+                Entity entity = world.getEntityByID(message.entityId);
+//                entity.setPositionAndUpdate(message.x, message.y, message.z);
+                entity.posX = message.x;
+                entity.posY = message.y;
+                entity.posZ = message.z;
+                entity.motionX = message.mx;
+                entity.motionY = message.my;
+                entity.motionZ = message.mz;
             }
     	}
     	

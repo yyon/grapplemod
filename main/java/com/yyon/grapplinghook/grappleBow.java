@@ -70,7 +70,9 @@ public class grappleBow extends Item {
         	System.out.println("right click");
         	
         	if (entityarrow != null) {
-        		if (entityarrow.shootingEntity == null) {
+        		int id = entityarrow.shootingEntityID;
+        		if (!grapplemod.attached.contains(id)) {
+//        		if (entityarrow.isDead) {
         			setArrow(stack, null);
         			entityarrow = null;
         		}
@@ -88,8 +90,13 @@ public class grappleBow extends Item {
 			} else {
 				System.out.println("right click unattach");
 				System.out.println(entityarrow);
-				entityarrow.grappleend();
-				setArrow(stack, null);
+//				if (entityarrow.control != null) {
+//					entityarrow.control.unattach();
+//				} else {
+//					entityarrow.removeServer();
+//				}
+				grapplemod.network.sendToAll(new GrappleClickMessage(entityarrow.shootingEntityID, false));
+//				setArrow(stack, null);
 			}
     	}
 	}
