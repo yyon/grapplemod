@@ -139,7 +139,6 @@ public class grappleArrow extends EntityThrowable implements IEntityAdditionalSp
 	
 	public void remove() {
 		this.kill();
-		grapplemod.network.sendToServer(new GrappleEndMessage(this.getEntityId()));
 	}
 	
 	@Override
