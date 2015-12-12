@@ -1,7 +1,5 @@
 package com.yyon.grapplinghook;
 
-import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Random;
@@ -47,6 +45,15 @@ import com.yyon.grapplinghook.common.CommonProxyClass;
     You should have received a copy of the GNU General Public License
     along with GrappleMod.  If not, see <http://www.gnu.org/licenses/>.
  */
+
+//TODO
+// upgrade to 1.8.8
+// add license
+// stop when collided
+// inside sphere
+// really high jumps
+//make sure SMP works
+// ghost hooks
 
 @Mod(modid = grapplemod.MODID, version = grapplemod.VERSION)
 public class grapplemod {
@@ -135,6 +142,7 @@ public class grapplemod {
 		network.registerMessage(GrappleEndMessage.Handler.class, GrappleEndMessage.class, id++, Side.SERVER);
 		network.registerMessage(GrappleClickMessage.Handler.class, GrappleClickMessage.class, id++, Side.CLIENT);
 		network.registerMessage(EnderGrappleLaunchMessage.Handler.class, EnderGrappleLaunchMessage.class, id++, Side.CLIENT);
+		network.registerMessage(GrappleAttachPosMessage.Handler.class, GrappleAttachPosMessage.class, id++, Side.CLIENT);
 	}
 	
 	@EventHandler
@@ -208,25 +216,6 @@ public class grapplemod {
 		try {
 			ctor = theclass.getConstructor(Integer.class, Integer.class, World.class, Vec3.class);
 			control = ctor.newInstance(arrowid, entityid, world, pos);
-		} catch (NoSuchMethodException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (SecurityException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (InstantiationException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IllegalAccessException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IllegalArgumentException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (InvocationTargetException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
 		*/
 		grappleController control = null;
 		if (id == GRAPPLEID) {

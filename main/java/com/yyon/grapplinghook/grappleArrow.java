@@ -9,12 +9,6 @@ import net.minecraft.util.Vec3;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.registry.IEntityAdditionalSpawnData;
 
-//TODO
-// stop when collided
-// inside sphere
-// starting velocity incorrect
-// fighting
-//make sure SMP works
 
 public class grappleArrow extends EntityThrowable implements IEntityAdditionalSpawnData
 {
@@ -39,7 +33,7 @@ public class grappleArrow extends EntityThrowable implements IEntityAdditionalSp
 	
 //	public int counter = 0;
 	
-	public grappleController control;
+//	public grappleController control;
 	private boolean firstattach = false;
 	public Vec3 thispos;
 	
@@ -194,20 +188,16 @@ public class grappleArrow extends EntityThrowable implements IEntityAdditionalSp
 			System.out.println(grapplemod.attached);
 			
 			grapplemod.sendtocorrectclient(new GrappleAttachMessage(this.getEntityId(), this.posX, this.posY, this.posZ, this.getControlId(), this.shootingEntityID), this.shootingEntityID, this.worldObj);
+			grapplemod.network.sendToAll(new GrappleAttachPosMessage(this.getEntityId(), this.posX, this.posY, this.posZ));
 		}
 	}
 	
 	public void clientAttach(double x, double y, double z) {
 		System.out.println("attaching! (client) " + this.toString());
 		
+		this.setAttachPos(x, y, z);
 //		this.attached = true;
 		
-		this.setPositionAndUpdate(x, y, z);
-		this.motionX = 0;
-		this.motionY = 0;
-		this.motionZ = 0;
-		this.firstattach = true;
-        this.thispos = new Vec3(x, y, z);
 //		this.thispos = ;
 //		this.doposupdate = true;
 //		this.r = r;
@@ -244,5 +234,14 @@ public class grappleArrow extends EntityThrowable implements IEntityAdditionalSp
 	
 	public int getControlId() {
 		return grapplemod.GRAPPLEID;
+	}
+
+	public void setAttachPos(double x, double y, double z) {
+		this.setPositionAndUpdate(x, y, z);
+		this.motionX = 0;
+		this.motionY = 0;
+		this.motionZ = 0;
+		this.firstattach = true;
+        this.thispos = new Vec3(x, y, z);
 	}
 }

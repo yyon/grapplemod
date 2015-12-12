@@ -104,15 +104,25 @@ public class grappleController {
 					if (entity instanceof EntityPlayer) {
 						EntityPlayer player = (EntityPlayer) entity;
 						if (playerjump) {
-							Vec3 jump = new Vec3(0, 0.5, 0);
+							double maxjump = 1;
+							Vec3 jump = new Vec3(0, maxjump, 0);
 							jump = proj(jump, spherevec);
 							double jumppower = jump.yCoord;
+							System.out.println("JUMP");
+							System.out.println(jumppower);
 							if (jumppower < 0) {
 								jumppower = 0;
 							}
-							if (r < 2 || player.onGround || player.isCollided) {
-								jumppower = 0.5;
+							if (player.isCollided) {
+								jumppower = maxjump;
 							}
+							if (r < 5) {
+								jumppower = maxjump;
+							}
+							if (player.onGround) {
+								jumppower = 0;
+							}
+							System.out.println(jumppower);
 							
 							this.unattach();
 							
@@ -126,7 +136,18 @@ public class grappleController {
 							
 							return;
 						} else if (entity.isSneaking()) {
-							motion = multvec(motion, 0.9);
+//							motion = multvec(motion, 0.9);
+							Vec3 motiontorwards = changelen(spherevec, -0.1);
+							motiontorwards = new Vec3(motiontorwards.xCoord, 0, motiontorwards.zCoord);
+							if (motion.dotProduct(motiontorwards) < 0) {
+								motion = motion.add(motiontorwards);
+							}
+							
+//							motion = multvec(motion, 0.98);
+							Vec3 newmotion = proj(motion, motiontorwards);
+							double dampening = 0.05;
+							motion = new Vec3(newmotion.xCoord*dampening + motion.xCoord*(1-dampening), motion.yCoord, newmotion.zCoord*dampening + motion.zCoord*(1-dampening));
+							
 							if (this.playerforward != 0) {
 								additionalmotion = new Vec3(0, this.playerforward, 0);
 								this.r = dist;
