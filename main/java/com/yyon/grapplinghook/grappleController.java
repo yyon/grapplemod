@@ -11,7 +11,7 @@ public class grappleController {
 	public World world;
 	public Vec3 pos;
 	
-	public grappleArrow arrow;
+//	public grappleArrow arrow;
 	public Entity entity;
 	
 	public boolean attached = true;
@@ -34,7 +34,6 @@ public class grappleController {
 		this.world = world;
 		this.pos = pos;
 		
-		this.arrow = (grappleArrow) world.getEntityByID(arrowId);
 		this.entity = world.getEntityByID(entityId);
 		
 		this.r = this.pos.subtract(entity.getPositionVector()).lengthVector();
@@ -48,9 +47,17 @@ public class grappleController {
 		
 		this.attached = false;
 		
-		arrow.remove();
+		grappleArrow arrow = getArrow();
+		if (arrow != null) {
+			arrow.remove();
+		}
 		
+		grapplemod.unregisterController(this.entityId);
 		grapplemod.network.sendToServer(new GrappleEndMessage(this.entityId, this.arrowId));
+	}
+	
+	public grappleArrow getArrow() {
+		return (grappleArrow) world.getEntityByID(arrowId);
 	}
 	
 	public void doClientTick() {
@@ -87,10 +94,10 @@ public class grappleController {
 					
 					Vec3 oldspherevec = playerpos.subtract(arrowpos);
 					Vec3 spherevec = changelen(oldspherevec, r);
-//					Vec3 spherechange = spherevec.subtract(oldspherevec);
+					Vec3 spherechange = spherevec.subtract(oldspherevec);
 //					Vec3 spherepos = spherevec.add(arrowpos);
 					
-					Vec3 additionalmotion = new Vec3(0,0,0);
+					Vec3 additionalmotion = spherechange;//new Vec3(0,0,0);
 					
 					double dist = oldspherevec.lengthVector();
 					

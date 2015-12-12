@@ -4,6 +4,7 @@ import io.netty.buffer.ByteBuf;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.IThreadListener;
+import net.minecraft.util.Vec3;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
@@ -16,18 +17,22 @@ public class GrappleAttachMessage implements IMessage {
 	public double x;
 	public double y;
 	public double z;
+	public int controlid;
+	public int entityid;
 //	public double mx;
 //	public double my;
 //	public double mz;
 
     public GrappleAttachMessage() { }
 
-    public GrappleAttachMessage(int id, double x, double y, double z) {
+    public GrappleAttachMessage(int id, double x, double y, double z, int controlid, int entityid) {
     	this.id = id;
 //    	this.r = r;
         this.x = x;
         this.y = y;
         this.z = z;
+        this.controlid = controlid;
+        this.entityid = entityid;
 //        this.mx = mx;
 //        this.my = my;
 //        this.mz = mz;
@@ -40,6 +45,8 @@ public class GrappleAttachMessage implements IMessage {
         this.x = buf.readDouble();
         this.y = buf.readDouble();
         this.z = buf.readDouble();
+        this.controlid = buf.readInt();
+        this.entityid = buf.readInt();
 //        this.mx = buf.readDouble();
 //        this.my = buf.readDouble();
 //        this.mz = buf.readDouble();
@@ -52,6 +59,8 @@ public class GrappleAttachMessage implements IMessage {
         buf.writeDouble(this.x);
         buf.writeDouble(this.y);
         buf.writeDouble(this.z);
+        buf.writeInt(this.controlid);
+        buf.writeInt(this.entityid);
 //        buf.writeDouble(this.mx);
 //        buf.writeDouble(this.my);
 //        buf.writeDouble(this.mz);
@@ -73,7 +82,12 @@ public class GrappleAttachMessage implements IMessage {
             	Entity grapple = world.getEntityByID(message.id);
             	if (grapple instanceof grappleArrow) {
 	            	((grappleArrow) grapple).clientAttach(message.x, message.y, message.z);
+            	} else {
+            		System.out.println("Couldn't find grappleArrow");
+            		System.out.println(message.id);
             	}
+            	
+            	grapplemod.createControl(message.controlid, message.id, message.entityid, world, new Vec3(message.x, message.y, message.z));
             }
     	}
     	

@@ -1,7 +1,6 @@
 package com.yyon.grapplinghook;
 
 import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.util.Vec3;
 import net.minecraft.world.World;
 
 public class enderArrow extends grappleArrow
@@ -20,9 +19,16 @@ public class enderArrow extends grappleArrow
         return 20F;
     }
     
+	
+    @Override
+	public int getControlId() {
+		return grapplemod.ENDERID;
+	}
+    /*
     @Override
 	public void createControl() {
 		System.out.println("Creating ender controller");
 		this.control = new enderController(this.getEntityId(), this.shootingEntity.getEntityId(), this.worldObj, new Vec3(this.posX, this.posY, this.posZ));
 	}
+	*/
 }

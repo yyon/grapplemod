@@ -54,6 +54,7 @@ public class GrappleEndMessage implements IMessage {
 					grapplemod.attached.remove(new Integer(id));
 				} else {
 					System.out.println("Tried to disattach but couldn't");
+					System.out.println(grapplemod.attached);
 				}
 				
 				World world = ctx.getServerHandler().playerEntity.worldObj;

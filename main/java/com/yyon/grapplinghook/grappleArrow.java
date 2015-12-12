@@ -43,7 +43,6 @@ public class grappleArrow extends EntityThrowable implements IEntityAdditionalSp
 	private boolean firstattach = false;
 	public Vec3 thispos;
 	
-	
 	public grappleArrow(World worldIn) {
 		super(worldIn);
 		System.out.println("init (1) " + this.toString());
@@ -61,6 +60,7 @@ public class grappleArrow extends EntityThrowable implements IEntityAdditionalSp
 		System.out.println("init (2) " + this.toString());
 	}
 	
+	/*
 	public grappleArrow(World world, EntityLivingBase shooter) {
 		this(world, shooter, 0);
 		System.out.println("ERROR! init (3)");
@@ -69,10 +69,14 @@ public class grappleArrow extends EntityThrowable implements IEntityAdditionalSp
     	this(worldIn);
 		System.out.println("ERROR! init (4)");
     }
+    */
 	
 	public void onEntityUpdate(){
 		super.onEntityUpdate();
 		
+		if (this.shootingEntityID == 0) { // removes ghost grappling hooks
+			this.kill();
+		}
 //		if(this.shootingEntity == null || !(this.shootingEntity instanceof Entity)) {
 //			this.grappleend();
 //		}
@@ -187,7 +191,9 @@ public class grappleArrow extends EntityThrowable implements IEntityAdditionalSp
 //			motion = new Vec3(this.shootingEntity.motionX, this.shootingEntity.motionY, this.shootingEntity.motionZ);
 			
 			grapplemod.attached.add(this.shootingEntityID);
-			grapplemod.network.sendToAll(new GrappleAttachMessage(this.getEntityId(), this.posX, this.posY, this.posZ));
+			System.out.println(grapplemod.attached);
+			
+			grapplemod.sendtocorrectclient(new GrappleAttachMessage(this.getEntityId(), this.posX, this.posY, this.posZ, this.getControlId(), this.shootingEntityID), this.shootingEntityID, this.worldObj);
 		}
 	}
 	
@@ -207,15 +213,15 @@ public class grappleArrow extends EntityThrowable implements IEntityAdditionalSp
 //		this.r = r;
 //		this.motion = new Vec3(mx, my, mz);
 		
-		this.createControl();
+//		this.createControl();
 		
 //		System.out.println(motion);
 	}
 	
-	public void createControl() {
-		System.out.println("Creating grapple controller");
-		this.control = new grappleController(this.getEntityId(), this.shootingEntity.getEntityId(), this.worldObj, new Vec3(this.posX, this.posY, this.posZ));
-	}
+//	public void createControl() {
+//		System.out.println("Creating grapple controller");
+//		this.control = new grappleController(this.getEntityId(), this.shootingEntity.getEntityId(), this.worldObj, new Vec3(this.posX, this.posY, this.posZ));
+//	}
 	
 	@Override
     protected float getGravityVelocity()
@@ -234,5 +240,9 @@ public class grappleArrow extends EntityThrowable implements IEntityAdditionalSp
 	
 	public Vec3 multvec(Vec3 a, double changefactor) {
 		return new Vec3(a.xCoord * changefactor, a.yCoord * changefactor, a.zCoord * changefactor);
+	}
+	
+	public int getControlId() {
+		return grapplemod.GRAPPLEID;
 	}
 }

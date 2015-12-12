@@ -1,15 +1,19 @@
 package com.yyon.grapplinghook;
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Random;
 
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemArmor;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.Vec3;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventHandler;
@@ -19,6 +23,7 @@ import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
+import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 import net.minecraftforge.fml.common.network.simpleimpl.SimpleNetworkWrapper;
 import net.minecraftforge.fml.common.registry.EntityRegistry;
 import net.minecraftforge.fml.common.registry.GameRegistry;
@@ -63,6 +68,12 @@ public class grapplemod {
 	
 	public static HashMap<Integer, grappleController> controllers = new HashMap<Integer, grappleController>(); // client side
 	public static ArrayList<Integer> attached = new ArrayList<Integer>(); // server side
+	
+	private static int controllerid;
+	public static int GRAPPLEID = controllerid++;
+	public static int ENDERID = controllerid++;
+	public static int HOOKID = controllerid++;
+	
 	
 	@SidedProxy(clientSide="com.yyon.grapplinghook.client.ClientProxyClass", serverSide="com.yyon.grapplinghook.common.CommonProxyClass")
 	public static CommonProxyClass proxy;
@@ -124,7 +135,6 @@ public class grapplemod {
 		network.registerMessage(GrappleEndMessage.Handler.class, GrappleEndMessage.class, id++, Side.SERVER);
 		network.registerMessage(GrappleClickMessage.Handler.class, GrappleClickMessage.class, id++, Side.CLIENT);
 		network.registerMessage(EnderGrappleLaunchMessage.Handler.class, EnderGrappleLaunchMessage.class, id++, Side.CLIENT);
-		
 	}
 	
 	@EventHandler
@@ -178,5 +188,54 @@ public class grapplemod {
 		} else {
 			System.out.println("Couldn't find controller");
 		}
+	}
+	
+	public static void sendtocorrectclient(IMessage message, int playerid, World w) {
+		Entity entity = w.getEntityByID(playerid);
+		if (entity instanceof EntityPlayerMP) {
+			grapplemod.network.sendTo(message, (EntityPlayerMP) entity);
+		} else {
+			System.out.println("ERROR! couldn't find player");
+			System.out.println(playerid);
+		}
+	}
+	
+	public static grappleController createControl(int id, int arrowid, int entityid, World world, Vec3 pos) {
+		/*
+		Class<? extends grappleController> theclass = grapplecontrolsclasses.get(id);
+		Constructor<? extends grappleController> ctor;
+		grappleController control = null;
+		try {
+			ctor = theclass.getConstructor(Integer.class, Integer.class, World.class, Vec3.class);
+			control = ctor.newInstance(arrowid, entityid, world, pos);
+		} catch (NoSuchMethodException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (SecurityException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (InstantiationException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IllegalAccessException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IllegalArgumentException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (InvocationTargetException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		*/
+		grappleController control = null;
+		if (id == GRAPPLEID) {
+			control = new grappleController(arrowid, entityid, world, pos);
+		} else if (id == ENDERID) {
+			control = new enderController(arrowid, entityid, world, pos);
+		} else if (id == HOOKID) {
+			control = new hookControl(arrowid, entityid, world, pos);
+		}
+		return control;
 	}
 }

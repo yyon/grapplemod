@@ -1,7 +1,6 @@
 package com.yyon.grapplinghook;
 
 import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.util.Vec3;
 import net.minecraft.world.World;
 
 public class hookArrow extends grappleArrow
@@ -21,7 +20,13 @@ public class hookArrow extends grappleArrow
     }
     
     @Override
+	public int getControlId() {
+		return grapplemod.HOOKID;
+	}
+    /*
+    @Override
 	public void createControl() {
 		this.control = new hookControl(this.getEntityId(), this.shootingEntity.getEntityId(), this.worldObj, new Vec3(this.posX, this.posY, this.posZ));
 	}
+	*/
 }

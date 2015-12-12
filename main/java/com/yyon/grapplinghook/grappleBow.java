@@ -95,7 +95,8 @@ public class grappleBow extends Item {
 //				} else {
 //					entityarrow.removeServer();
 //				}
-				grapplemod.network.sendToAll(new GrappleClickMessage(entityarrow.shootingEntityID, false));
+				grapplemod.sendtocorrectclient(new GrappleClickMessage(entityarrow.shootingEntityID, false), entityarrow.shootingEntityID, entityarrow.worldObj);
+				grapplemod.attached.remove(new Integer(entityarrow.shootingEntityID));
 //				setArrow(stack, null);
 			}
     	}
