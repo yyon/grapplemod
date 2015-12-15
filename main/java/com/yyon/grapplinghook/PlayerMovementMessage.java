@@ -9,6 +9,22 @@ import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 
+/*
+ * This file is part of GrappleMod.
+
+    GrappleMod is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    GrappleMod is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with GrappleMod.  If not, see <http://www.gnu.org/licenses/>.
+ */
 
 public class PlayerMovementMessage implements IMessage {
    
@@ -32,17 +48,24 @@ public class PlayerMovementMessage implements IMessage {
     	this.my = my;
     	this.mz = mz;
     	
+//    	System.out.println("Creating PlayerMovementMessage");
     }
 
     @Override
     public void fromBytes(ByteBuf buf) {
-    	this.entityId = buf.readInt();
-    	this.x = buf.readDouble();
-    	this.y = buf.readDouble();
-    	this.z = buf.readDouble();
-    	this.mx = buf.readDouble();
-    	this.my = buf.readDouble();
-    	this.mz = buf.readDouble();
+    	try {
+	    	this.entityId = buf.readInt();
+	    	this.x = buf.readDouble();
+	    	this.y = buf.readDouble();
+	    	this.z = buf.readDouble();
+	    	this.mx = buf.readDouble();
+	    	this.my = buf.readDouble();
+	    	this.mz = buf.readDouble();
+    	} catch (Exception e) {
+    		System.out.println(buf);
+    	}
+    	
+//    	System.out.println("Receiving PlayerMovementMessage");
     }
 
     @Override
@@ -54,6 +77,8 @@ public class PlayerMovementMessage implements IMessage {
         buf.writeDouble(mx);
         buf.writeDouble(my);
         buf.writeDouble(mz);
+        
+//    	System.out.println("Sending PlayerMovementMessage");
     }
 
     public static class Handler implements IMessageHandler<PlayerMovementMessage, IMessage> {

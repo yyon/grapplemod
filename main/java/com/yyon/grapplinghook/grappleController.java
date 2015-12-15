@@ -5,6 +5,23 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.Vec3;
 import net.minecraft.world.World;
 
+/*
+ * This file is part of GrappleMod.
+
+    GrappleMod is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    GrappleMod is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with GrappleMod.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 public class grappleController {
 	public int arrowId;
 	public int entityId;
@@ -97,60 +114,37 @@ public class grappleController {
 					Vec3 spherechange = spherevec.subtract(oldspherevec);
 //					Vec3 spherepos = spherevec.add(arrowpos);
 					
-					Vec3 additionalmotion = spherechange;//new Vec3(0,0,0);
+					Vec3 additionalmotion;
+					if (arrowpos.subtract(playerpos).lengthVector() < this.r) {
+						additionalmotion = new Vec3(0,0,0);
+					} else {
+						additionalmotion = spherechange;//new Vec3(0,0,0);
+					}
 					
 					double dist = oldspherevec.lengthVector();
 					
 					if (entity instanceof EntityPlayer) {
 						EntityPlayer player = (EntityPlayer) entity;
 						if (playerjump) {
-							double maxjump = 1;
-							Vec3 jump = new Vec3(0, maxjump, 0);
-							jump = proj(jump, spherevec);
-							double jumppower = jump.yCoord;
-							System.out.println("JUMP");
-							System.out.println(jumppower);
-							if (jumppower < 0) {
-								jumppower = 0;
-							}
-							if (player.isCollided) {
-								jumppower = maxjump;
-							}
-							if (r < 5) {
-								jumppower = maxjump;
-							}
-							if (player.onGround) {
-								jumppower = 0;
-							}
-							System.out.println(jumppower);
-							
-							this.unattach();
-							
-//							player.ocity(player.motionX, player.motionY + jumppower, player.motionZ);
-							player.motionY = player.motionY + jumppower;
-//							if (entity instanceof EntityPlayerMP) {
-//								((EntityPlayerMP) entity).playerNetServerHandler.sendPacket(new S12PacketEntityVelocity(entity));
-//							}
-							
-							this.updateServerPos();
-							
+							this.dojump(player, spherevec);
 							return;
 						} else if (entity.isSneaking()) {
-//							motion = multvec(motion, 0.9);
-							Vec3 motiontorwards = changelen(spherevec, -0.1);
-							motiontorwards = new Vec3(motiontorwards.xCoord, 0, motiontorwards.zCoord);
-							if (motion.dotProduct(motiontorwards) < 0) {
-								motion = motion.add(motiontorwards);
-							}
-							
-//							motion = multvec(motion, 0.98);
-							Vec3 newmotion = proj(motion, motiontorwards);
-							double dampening = 0.05;
-							motion = new Vec3(newmotion.xCoord*dampening + motion.xCoord*(1-dampening), motion.yCoord, newmotion.zCoord*dampening + motion.zCoord*(1-dampening));
-							
-							if (this.playerforward != 0) {
-								additionalmotion = new Vec3(0, this.playerforward, 0);
-								this.r = dist;
+							if (arrowpos.yCoord > playerpos.yCoord) {
+	//							motion = multvec(motion, 0.9);
+								Vec3 motiontorwards = changelen(spherevec, -0.1);
+								motiontorwards = new Vec3(motiontorwards.xCoord, 0, motiontorwards.zCoord);
+								if (motion.dotProduct(motiontorwards) < 0) {
+									motion = motion.add(motiontorwards);
+								}
+								
+								Vec3 newmotion = dampenmotion(motion, motiontorwards);
+								motion = new Vec3(newmotion.xCoord, motion.yCoord, newmotion.zCoord);
+	//							motion = multvec(motion, 0.98);
+								
+								if (this.playerforward != 0) {
+										additionalmotion = new Vec3(0, this.playerforward, 0);
+										this.r = dist;
+								}
 							}
 						} else {
 							motion = motion.add(changelen(this.playermovement, 0.01));
@@ -161,9 +155,11 @@ public class grappleController {
 						motion = motion.addVector(0, -0.05, 0);
 					}
 					
-					motion = removealong(motion, spherevec);
-					
 					Vec3 newmotion = motion.add(additionalmotion);
+					
+					if (arrowpos.subtract(playerpos.add(motion)).lengthVector() > r) { // moving away
+						motion = removealong(motion, spherevec);
+					}
 					
 //					entity.setVelocity(newmotion.xCoord, newmotion.yCoord, newmotion.zCoord);
 					entity.motionX = newmotion.xCoord;
@@ -189,6 +185,62 @@ public class grappleController {
 				}
 			}
 		}
+	}
+	
+	public void dojump(Entity player, Vec3 spherevec) {
+		/*
+		if (player.onGround) {
+			System.out.println("jumping normally");
+			return;
+		}
+		*/
+		
+		double maxjump = 1;
+		Vec3 jump = new Vec3(0, maxjump, 0);
+		jump = proj(jump, spherevec);
+		double jumppower = jump.yCoord;
+		System.out.println("JUMP");
+		System.out.println(jumppower);
+		if (jumppower < 0) {
+			jumppower = 0;
+		}
+		if (spherevec.yCoord > 0) {
+			jumppower = 0;
+		}
+		if (player.isCollided) {
+			jumppower = maxjump;
+		}
+		if (r < 5) {
+			jumppower = maxjump;
+		}
+		if (player.onGround) {
+			jumppower = 0;
+		}
+		System.out.println(jumppower);
+		
+		this.unattach();
+		
+//		player.ocity(player.motionX, player.motionY + jumppower, player.motionZ);
+		if (jumppower > 0) {
+			if (jumppower > player.motionY) {
+				player.motionY = jumppower;
+			} else {
+				player.motionY += jumppower;
+			}
+		}
+//		if (entity instanceof EntityPlayerMP) {
+//			((EntityPlayerMP) entity).playerNetServerHandler.sendPacket(new S12PacketEntityVelocity(entity));
+//		}
+		
+		this.updateServerPos();
+		
+		return;
+	}
+
+	public Vec3 dampenmotion(Vec3 motion, Vec3 forward) {
+		Vec3 newmotion = proj(motion, forward);
+		double dampening = 0.05;
+		return new Vec3(newmotion.xCoord*dampening + motion.xCoord*(1-dampening), newmotion.yCoord*dampening + motion.yCoord*(1-dampening), newmotion.zCoord*dampening + motion.zCoord*(1-dampening));
 	}
 	
 	public void updateServerPos() {
