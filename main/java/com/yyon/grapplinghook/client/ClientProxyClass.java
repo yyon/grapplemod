@@ -6,7 +6,6 @@ import net.minecraft.client.resources.model.ModelResourceLocation;
 import net.minecraft.entity.Entity;
 import net.minecraft.init.Items;
 import net.minecraftforge.fml.client.registry.RenderingRegistry;
-import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
@@ -22,11 +21,12 @@ import com.yyon.grapplinghook.common.CommonProxyClass;
 public class ClientProxyClass extends CommonProxyClass {
 	@Override
 	public void preInit(FMLPreInitializationEvent event) {
-		
+		super.preInit(event);
 	}
 	
 	@Override
 	public void init(FMLInitializationEvent event, grapplemod grappleModInst) {
+		super.init(event, grappleModInst);
 		Minecraft.getMinecraft().getRenderItem().getItemModelMesher().register(grapplemod.grapplebowitem, 0, new ModelResourceLocation("grapplemod:grapplinghook", "inventory"));
 		Minecraft.getMinecraft().getRenderItem().getItemModelMesher().register(grapplemod.hookshotitem, 0, new ModelResourceLocation("grapplemod:hookshot", "inventory"));
 		Minecraft.getMinecraft().getRenderItem().getItemModelMesher().register(grapplemod.launcheritem, 0, new ModelResourceLocation("grapplemod:launcheritem", "inventory"));
@@ -39,7 +39,7 @@ public class ClientProxyClass extends CommonProxyClass {
 	
 	@Override
 	public void postInit(FMLPostInitializationEvent event) {
-		FMLCommonHandler.instance().bus().register(this);
+		super.postInit(event);
 	}
 	
 	/*

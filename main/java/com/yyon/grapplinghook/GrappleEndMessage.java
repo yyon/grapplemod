@@ -79,6 +79,9 @@ public class GrappleEndMessage implements IMessage {
           		if (grapple instanceof grappleArrow) {
           			((grappleArrow) grapple).removeServer();
           		}
+          		
+          		Entity entity = world.getEntityByID(id);
+          		entity.fallDistance = 0;
             }
     	}
     	

@@ -179,7 +179,7 @@ public class grappleController {
 						*/
 //					}
 					
-					entity.fallDistance = 0;
+//					entity.fallDistance = 0;
 					
 					this.updateServerPos();
 				}

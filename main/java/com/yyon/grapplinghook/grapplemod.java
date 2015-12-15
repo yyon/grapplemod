@@ -80,7 +80,7 @@ public class grapplemod {
 	public static int HOOKID = controllerid++;
 	
 	
-	@SidedProxy(clientSide="com.yyon.grapplinghook.client.ClientProxyClass", serverSide="com.yyon.grapplinghook.common.CommonProxyClass")
+	@SidedProxy(clientSide="com.yyon.grapplinghook.client.ClientProxyClass", serverSide="com.yyon.grapplinghook.ServerProxyClass")
 	public static CommonProxyClass proxy;
 	
 	@EventHandler
@@ -135,6 +135,7 @@ public class grapplemod {
 		network = NetworkRegistry.INSTANCE.newSimpleChannel("grapplemodchannel");
 		int id = 0;
 //		network.registerMessage(PlayerPosMessage.Handler.class, PlayerPosMessage.class, id++, Side.CLIENT);
+		network.registerMessage(DummyMessage.Handler.class, DummyMessage.class, id++, Side.SERVER);
 		network.registerMessage(PlayerMovementMessage.Handler.class, PlayerMovementMessage.class, id++, Side.SERVER);
 		network.registerMessage(GrappleAttachMessage.Handler.class, GrappleAttachMessage.class, id++, Side.CLIENT);
 		network.registerMessage(GrappleEndMessage.Handler.class, GrappleEndMessage.class, id++, Side.SERVER);
@@ -147,8 +148,11 @@ public class grapplemod {
 	public void Init(FMLInitializationEvent event) {
 		proxy.init(event, this);
 	}
+	
 	@EventHandler
 	public void postInit(FMLPostInitializationEvent event) {
+		System.out.println("post init");
+		System.out.println(proxy);
 		proxy.postInit(event);
 	}
 
