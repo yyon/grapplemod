@@ -6,6 +6,7 @@ import java.util.List;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.entity.projectile.EntityThrowable;
 import net.minecraft.server.MinecraftServer;
@@ -229,6 +230,10 @@ public class grappleArrow extends EntityThrowable implements IEntityAdditionalSp
 		System.out.println("attaching! (client) " + this.toString());
 		
 		this.setAttachPos(x, y, z);
+		
+		if (this.shootingEntity instanceof EntityPlayer) {
+			grapplemod.proxy.resetlaunchertime((EntityPlayer) this.shootingEntity);
+		}
 //		this.attached = true;
 		
 //		this.thispos = ;

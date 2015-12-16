@@ -11,8 +11,6 @@ import net.minecraft.network.play.server.S12PacketEntityVelocity;
 import net.minecraft.util.Vec3;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.FMLCommonHandler;
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-import net.minecraftforge.fml.common.gameevent.TickEvent;
 
 /*
  * This file is part of GrappleMod.
@@ -35,7 +33,7 @@ public class launcherItem extends Item {
 	
 //	EntityPlayer playerused = null;
 //	int reusetimer = 0;
-	int reusetime = 30;
+	int reusetime = 50;
 
 	public launcherItem() {
 		super();
@@ -62,7 +60,7 @@ public class launcherItem extends Item {
 	}
 	
 	public void dorightclick(ItemStack stack, World worldIn, EntityPlayer player) {
-		if (!worldIn.isRemote) {
+		if (worldIn.isRemote) {
 			NBTTagCompound compound = stack.getSubCompound("launcher", true);
 			long timer = worldIn.getTotalWorldTime() - compound.getLong("lastused");
 			System.out.println(worldIn.getTotalWorldTime());
@@ -82,6 +80,8 @@ public class launcherItem extends Item {
 				
 				if (player instanceof EntityPlayerMP) {
 					((EntityPlayerMP) player).playerNetServerHandler.sendPacket(new S12PacketEntityVelocity(player));
+				} else {
+					grapplemod.network.sendToServer(new PlayerMovementMessage(player.getEntityId(), player.posX, player.posY, player.posZ, player.motionX, player.motionY, player.motionZ));
 				}
 			}
 		}
@@ -121,26 +121,26 @@ public class launcherItem extends Item {
 		return EnumAction.NONE;
 	}
 	
+	/*
 	@SubscribeEvent
 	public void onPlayerTick(TickEvent.PlayerTickEvent event) {
-		if (!event.player.worldObj.isRemote) {
-			ItemStack stack = event.player.getHeldItem();
-			if (stack != null) {
-				Item item = stack.getItem();
-				if (item instanceof launcherItem) {
-					if (event.player.onGround) {
-						NBTTagCompound compound = stack.getSubCompound("launcher", true);
-						if (compound.getLong("lastused") != 0) {
-							long timer = event.player.worldObj.getTotalWorldTime() - compound.getLong("lastused");
-							if (timer > 1000) {
-								compound.setLong("lastused", 0);
-							}
+		ItemStack stack = event.player.getHeldItem();
+		if (stack != null) {
+			Item item = stack.getItem();
+			if (item instanceof launcherItem) {
+				if (event.player.onGround) {
+					NBTTagCompound compound = stack.getSubCompound("launcher", true);
+					if (compound.getLong("lastused") != 0) {
+						long timer = event.player.worldObj.getTotalWorldTime() - compound.getLong("lastused");
+						if (timer > 1000) {
+							compound.setLong("lastused", 0);
 						}
 					}
 				}
 			}
 		}
 	}
+	*/
 /*	@SubscribeEvent
 	public void onWorldTick(TickEvent.WorldTickEvent event) {
 		if (reusetimer > 0) {

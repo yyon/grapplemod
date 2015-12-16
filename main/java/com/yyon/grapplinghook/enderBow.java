@@ -2,14 +2,11 @@ package com.yyon.grapplinghook;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.play.server.S12PacketEntityVelocity;
 import net.minecraft.util.Vec3;
 import net.minecraft.world.World;
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-import net.minecraftforge.fml.common.gameevent.TickEvent;
 
 /*
  * This file is part of GrappleMod.
@@ -30,7 +27,7 @@ import net.minecraftforge.fml.common.gameevent.TickEvent;
 
 public class enderBow extends grappleBow {
 	
-	int reusetime = 30;
+	int reusetime = 50;
 	
 	public enderBow() {
 		super();
@@ -50,39 +47,49 @@ public class enderBow extends grappleBow {
 	}
 	
 	public void leftclick(ItemStack stack, World world, EntityPlayer player) {
-		NBTTagCompound compound = stack.getSubCompound("launcher", true);
-		long timer = world.getTotalWorldTime() - compound.getLong("lastused");
-		if (timer > reusetime) {
-			if (player.getHeldItem().getItem() instanceof enderBow) {
-				
-	//			playerused = player;
-	//			reusetimer = reusetime;
-				compound.setLong("lastused", world.getTotalWorldTime());
-				
-	        	Vec3 facing = player.getLookVec();
-				Vec3 playermotion = new Vec3(player.motionX, player.motionY, player.motionZ);
-				Vec3 newvec = playermotion.add(multvec(facing, 3));
-				
-				grappleArrow arrow = this.getArrow(stack, world);
-				if (arrow == null) {
-//					player.setVelocity(newvec.xCoord, newvec.yCoord, newvec.zCoord);
-					player.motionX = newvec.xCoord;
-					player.motionY = newvec.yCoord;
-					player.motionZ = newvec.zCoord;
+		if (player.worldObj.isRemote) {
+			NBTTagCompound compound = stack.getSubCompound("launcher", true);
+			long timer = world.getTotalWorldTime() - compound.getLong("lastused");
+			if (timer > reusetime) {
+				if (player.getHeldItem().getItem() instanceof enderBow) {
 					
-					if (player instanceof EntityPlayerMP) {
-						((EntityPlayerMP) player).playerNetServerHandler.sendPacket(new S12PacketEntityVelocity(player));
+		//			playerused = player;
+		//			reusetimer = reusetime;
+					compound.setLong("lastused", world.getTotalWorldTime());
+					
+		        	Vec3 facing = player.getLookVec();
+					Vec3 playermotion = new Vec3(player.motionX, player.motionY, player.motionZ);
+					Vec3 newvec = playermotion.add(multvec(facing, 3));
+					
+					grappleArrow arrow = this.getArrow(stack, world);
+					if (arrow == null) {
+	//					player.setVelocity(newvec.xCoord, newvec.yCoord, newvec.zCoord);
+						player.motionX = newvec.xCoord;
+						player.motionY = newvec.yCoord;
+						player.motionZ = newvec.zCoord;
+						
+						if (player instanceof EntityPlayerMP) {
+							((EntityPlayerMP) player).playerNetServerHandler.sendPacket(new S12PacketEntityVelocity(player));
+						} else {
+							grapplemod.network.sendToServer(new PlayerMovementMessage(player.getEntityId(), player.posX, player.posY, player.posZ, player.motionX, player.motionY, player.motionZ));
+						}
+					} else {
+						facing = multvec(facing, 3);
+						if (player instanceof EntityPlayerMP) {
+							System.out.println("Sending EnderGrappleLaunchMessage");
+							grapplemod.sendtocorrectclient(new EnderGrappleLaunchMessage(player.getEntityId(), facing.xCoord, facing.yCoord, facing.zCoord), player.getEntityId(), player.worldObj);
+						} else {
+							grapplemod.receiveEnderLaunch(player.getEntityId(), facing.xCoord, facing.yCoord, facing.zCoord);
+						}
+	
+	//					arrow.control.motion = arrow.control.motion.add(newvec);
 					}
-				} else {
-					System.out.println("Sending EnderGrappleLaunchMessage");
-					facing = multvec(facing, 3);
-					grapplemod.sendtocorrectclient(new EnderGrappleLaunchMessage(player.getEntityId(), facing.xCoord, facing.yCoord, facing.zCoord), player.getEntityId(), player.worldObj);
-//					arrow.control.motion = arrow.control.motion.add(newvec);
 				}
 			}
 		}
 	}
 	
+	/*
 	@SubscribeEvent
 	public void onPlayerTick(TickEvent.PlayerTickEvent event) {
 		super.onPlayerTick(event);
@@ -104,4 +111,5 @@ public class enderBow extends grappleBow {
 			}
 		}
 	}
+	*/
 }

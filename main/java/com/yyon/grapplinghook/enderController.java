@@ -32,7 +32,7 @@ public class enderController extends grappleController {
 	
 	@Override
 	public void receiveEnderLaunch(double x, double y, double z) {
-		System.out.println("now launching");
+//		System.out.println("now launching");
 		this.motion = this.motion.addVector(x, y, z);
 	}
 }

@@ -4,7 +4,11 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.resources.model.ModelResourceLocation;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Items;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraftforge.fml.client.registry.RenderingRegistry;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
@@ -13,9 +17,11 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
 
 import com.yyon.grapplinghook.RenderGrappleArrow;
+import com.yyon.grapplinghook.enderBow;
 import com.yyon.grapplinghook.grappleArrow;
 import com.yyon.grapplinghook.grappleController;
 import com.yyon.grapplinghook.grapplemod;
+import com.yyon.grapplinghook.launcherItem;
 import com.yyon.grapplinghook.common.CommonProxyClass;
 
 public class ClientProxyClass extends CommonProxyClass {
@@ -73,5 +79,8 @@ public class ClientProxyClass extends CommonProxyClass {
 		for (grappleController controller : grapplemod.controllers.values()) {
 			controller.doClientTick();
 		}
+		
+		EntityPlayer player = Minecraft.getMinecraft().thePlayer;
+		resetlaunchertime(player);
 	}
 }

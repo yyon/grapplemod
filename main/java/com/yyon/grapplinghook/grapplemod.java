@@ -207,6 +207,7 @@ public class grapplemod {
 		} else {
 			System.out.println("ERROR! couldn't find player");
 			System.out.println(playerid);
+			System.out.println(entity);
 		}
 	}
 	
