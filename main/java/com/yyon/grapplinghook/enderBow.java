@@ -76,7 +76,7 @@ public class enderBow extends grappleBow {
 				} else {
 					System.out.println("Sending EnderGrappleLaunchMessage");
 					facing = multvec(facing, 3);
-					grapplemod.sendtocorrectclient(new EnderGrappleLaunchMessage(arrow.shootingEntityID, facing.xCoord, facing.yCoord, facing.zCoord), arrow.shootingEntityID, arrow.worldObj);
+					grapplemod.sendtocorrectclient(new EnderGrappleLaunchMessage(player.getEntityId(), facing.xCoord, facing.yCoord, facing.zCoord), player.getEntityId(), player.worldObj);
 //					arrow.control.motion = arrow.control.motion.add(newvec);
 				}
 			}

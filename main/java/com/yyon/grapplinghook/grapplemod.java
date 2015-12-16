@@ -133,9 +133,9 @@ public class grapplemod {
 		registerEntity(hookArrow.class, "hookArrow");
 		proxy.preInit(event);
 		network = NetworkRegistry.INSTANCE.newSimpleChannel("grapplemodchannel");
-		int id = 0;
+		byte id = 0;
 //		network.registerMessage(PlayerPosMessage.Handler.class, PlayerPosMessage.class, id++, Side.CLIENT);
-		network.registerMessage(DummyMessage.Handler.class, DummyMessage.class, id++, Side.SERVER);
+//		network.registerMessage(DummyMessage.Handler.class, DummyMessage.class, id++, Side.SERVER);
 		network.registerMessage(PlayerMovementMessage.Handler.class, PlayerMovementMessage.class, id++, Side.SERVER);
 		network.registerMessage(GrappleAttachMessage.Handler.class, GrappleAttachMessage.class, id++, Side.CLIENT);
 		network.registerMessage(GrappleEndMessage.Handler.class, GrappleEndMessage.class, id++, Side.SERVER);

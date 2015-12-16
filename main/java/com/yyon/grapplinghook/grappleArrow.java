@@ -1,9 +1,14 @@
 package com.yyon.grapplinghook;
 
 import io.netty.buffer.ByteBuf;
+
+import java.util.List;
+
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.entity.projectile.EntityThrowable;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.util.Vec3;
 import net.minecraft.world.World;
@@ -204,7 +209,19 @@ public class grappleArrow extends EntityThrowable implements IEntityAdditionalSp
 			System.out.println(grapplemod.attached);
 			
 			grapplemod.sendtocorrectclient(new GrappleAttachMessage(this.getEntityId(), this.posX, this.posY, this.posZ, this.getControlId(), this.shootingEntityID), this.shootingEntityID, this.worldObj);
-			grapplemod.network.sendToAll(new GrappleAttachPosMessage(this.getEntityId(), this.posX, this.posY, this.posZ));
+//			grapplemod.network.sendToAll(new GrappleAttachPosMessage(this.getEntityId(), this.posX, this.posY, this.posZ));
+			if (this.shootingEntity instanceof EntityPlayerMP) { // fixes strange bug in LAN
+				EntityPlayerMP sender = (EntityPlayerMP) this.shootingEntity;
+				int dimension = sender.dimension;
+				MinecraftServer minecraftServer = sender.mcServer;
+				for (EntityPlayerMP player : (List<EntityPlayerMP>)minecraftServer.getConfigurationManager().playerEntityList) {
+					GrappleAttachPosMessage msg = new GrappleAttachPosMessage(this.getEntityId(), this.posX, this.posY, this.posZ);   // must generate a fresh message for every player!
+					if (dimension == player.dimension) {
+//						StartupCommon.simpleNetworkWrapper.sendTo(msg, player);
+						grapplemod.sendtocorrectclient(msg, player.getEntityId(), player.worldObj);
+					}
+				}
+			}
 		}
 	}
 	
