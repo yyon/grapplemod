@@ -1,5 +1,6 @@
 package com.yyon.grapplinghook;
 
+import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLiving;
@@ -8,13 +9,13 @@ import net.minecraft.item.EnumAction;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.world.BlockEvent.BreakEvent;
-import net.minecraftforge.fml.common.FMLCommonHandler;
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-import net.minecraftforge.fml.common.gameevent.TickEvent;
+import cpw.mods.fml.common.FMLCommonHandler;
+import cpw.mods.fml.common.eventhandler.SubscribeEvent;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 
 /*
  * This file is part of GrappleMod.
@@ -33,7 +34,7 @@ import net.minecraftforge.fml.common.gameevent.TickEvent;
     along with GrappleMod.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-public class grappleBow extends Item {
+public class grappleBow extends Item implements clickitem {
 	
 	
 	public grappleBow() {
@@ -50,13 +51,22 @@ public class grappleBow extends Item {
 		FMLCommonHandler.instance().bus().register(this);
 	}
 	
+	@Override
 	public int getMaxItemUseDuration(ItemStack par1ItemStack)
 	{
 		return 72000;
 	}
 	
+	@Override
+    @SideOnly(Side.CLIENT)
+    public void registerIcons(IIconRegister iconRegister)
+    {
+        itemIcon = iconRegister.registerIcon("grapplemod:grapplinghook");
+    }
+	
 	public grappleArrow getArrow(ItemStack stack, World world) {
-		NBTTagCompound compound = stack.getSubCompound("grapplebow", true);
+		NBTTagCompound compound = grapplemod.getCompound(stack);
+//		NBTTagCompound compound = stack.getSubCompound("grapplebow", true);
 		int id = compound.getInteger("arrow");
 		if (id == 0) {
 			return null;
@@ -75,7 +85,8 @@ public class grappleBow extends Item {
 			id = arrow.getEntityId();
 		}
 		
-		NBTTagCompound compound = stack.getSubCompound("grapplebow", true);
+		NBTTagCompound compound = grapplemod.getCompound(stack);
+//		NBTTagCompound compound = stack.getSubCompound("grapplebow", true);
 		compound.setInteger("arrow", id);
 	}
 	
@@ -119,6 +130,12 @@ public class grappleBow extends Item {
     	}
 	}
 	
+	public boolean onItemUse(ItemStack p_77648_1_, EntityPlayer p_77648_2_, World p_77648_3_, int p_77648_4_, int p_77648_5_, int p_77648_6_, int p_77648_7_, float p_77648_8_, float p_77648_9_, float p_77648_10_)
+    {
+		System.out.println("on use");
+		return false;
+    }
+	
 	public grappleArrow createarrow(ItemStack stack, World worldIn, EntityPlayer playerIn) {
 		System.out.println("Creating arrow!");
 		return new grappleArrow(worldIn, playerIn, 0);
@@ -129,10 +146,12 @@ public class grappleBow extends Item {
 
 	}
 	
+	@Override
     public void onPlayerStoppedUsing(ItemStack stack, World worldIn, EntityPlayer playerIn, int timeLeft)
     {
     }
     
+	@Override
 	public ItemStack onItemRightClick(ItemStack stack, World worldIn, final EntityPlayer playerIn){
         playerIn.setItemInUse(stack, this.getMaxItemUseDuration(stack));
         
@@ -140,7 +159,7 @@ public class grappleBow extends Item {
         
 		return stack;
 	}
-
+	
     public ItemStack onItemUseFinish(ItemStack stack, World worldIn, EntityPlayer playerIn)
     {
         return stack;
@@ -150,9 +169,10 @@ public class grappleBow extends Item {
 	/**
 	 * returns the action that specifies what animation to play when the items is being used
 	 */
+	@Override
 	public EnumAction getItemUseAction(ItemStack par1ItemStack)
 	{
-		return EnumAction.NONE;
+		return EnumAction.none;
 	}
 	
     public boolean onLeftClickEntity(ItemStack stack, EntityPlayer player, Entity entity)
@@ -164,16 +184,17 @@ public class grappleBow extends Item {
     {
     	return true;
     }
-   
-    public boolean onBlockStartBreak(ItemStack itemstack, BlockPos k, EntityPlayer player)
+    
+	@Override
+    public boolean onBlockStartBreak(ItemStack itemstack, int X, int Y, int Z, EntityPlayer player)
     {
       return true;
     }
    
-    public boolean onItemUseFirst(ItemStack stack, EntityPlayer player, World world, int x, int y, int z, int side, float hitX, float hitY, float hitZ)
-    {
-      return true;
-    }
+//    public boolean onItemUseFirst(ItemStack stack, EntityPlayer player, World world, int x, int y, int z, int side, float hitX, float hitY, float hitZ)
+//    {
+//      return true;
+//    }
     
     @SubscribeEvent
     public void onBlockBreak(BreakEvent event){
@@ -187,19 +208,30 @@ public class grappleBow extends Item {
     	}
     }
     
+    /*
 	@SubscribeEvent
 	public void onPlayerTick(TickEvent.PlayerTickEvent event) {
 		EntityPlayer player = event.player;
-		if (player != null) {
-			ItemStack stack = player.getHeldItem();
-			if (stack != null) {
-				Item item = stack.getItem();
-				if (item instanceof grappleBow) {
-					if (player.isSwingInProgress) {
-						this.leftclick(stack, player.worldObj, player);
+		if (player.worldObj.isRemote) {
+			if (player == Minecraft.getMinecraft().thePlayer) {
+				if (player != null) {
+					ItemStack stack = player.getHeldItem();
+					if (stack != null) {
+						Item item = stack.getItem();
+						if (item instanceof grappleBow) {
+							if (player.isSwingInProgress) {
+								this.leftclick(stack, player.worldObj, player);
+							}
+						}
 					}
 				}
 			}
 		}
     }
+    */
+
+	@Override
+	public void onLeftClick(ItemStack stack, EntityPlayer player) {
+		this.leftclick(stack, player.worldObj, player);
+	}
 }

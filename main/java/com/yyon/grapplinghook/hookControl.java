@@ -54,11 +54,13 @@ public class hookControl extends grappleController {
 				if (true) {
 					
 					Vec3 arrowpos = this.pos;
-					Vec3 playerpos = player.getPositionVector();
+					Vec3 playerpos = getPositionVector(player);
 					
-					Vec3 oldspherevec = playerpos.subtract(arrowpos);
+					Vec3 oldspherevec = subvec(playerpos, arrowpos);
+					System.out.println(oldspherevec);
 					Vec3 spherevec = changelen(oldspherevec, r);
-//					Vec3 spherechange = spherevec.subtract(oldspherevec);
+					
+//					Vec3 spherechange = subvec(spherevec, oldspherevec);
 //					Vec3 spherepos = spherevec.add(arrowpos);
 					
 					double dist = oldspherevec.lengthVector();
@@ -75,7 +77,7 @@ public class hookControl extends grappleController {
 							System.out.println(this.r);
 						}*/
 					} else {
-						motion = motion.add(changelen(this.playermovement, 0.01));
+						motion = addvec(motion, changelen(this.playermovement, 0.01));
 					}
 					
 					Vec3 newmotion;
@@ -98,7 +100,7 @@ public class hookControl extends grappleController {
 						}
 					}
 					
-					motion = motion.add(changelen(arrowpos.subtract(playerpos), acceleration));
+					motion = addvec(motion, changelen(spherevec, -acceleration));
 					
 					double speed = proj(motion, oldspherevec).lengthVector();
 					
@@ -139,5 +141,15 @@ public class hookControl extends grappleController {
 		}
 	}
 	
+	public Vec3 getPositionVector(Entity entity) {
+		return Vec3.createVectorHelper(entity.posX, entity.posY, entity.posZ);
+	}
 
+	public Vec3 addvec(Vec3 a, Vec3 b) {
+		return Vec3.createVectorHelper(a.xCoord + b.xCoord, a.yCoord + b.yCoord, a.zCoord + b.zCoord);
+	}
+	public Vec3 subvec(Vec3 a, Vec3 b) {
+		return Vec3.createVectorHelper(a.xCoord - b.xCoord, a.yCoord - b.yCoord, a.zCoord - b.zCoord);
+	}
+	
 }

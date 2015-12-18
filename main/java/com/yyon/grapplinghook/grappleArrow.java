@@ -13,7 +13,7 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.util.Vec3;
 import net.minecraft.world.World;
-import net.minecraftforge.fml.common.registry.IEntityAdditionalSpawnData;
+import cpw.mods.fml.common.registry.IEntityAdditionalSpawnData;
 
 /*
  * This file is part of GrappleMod.
@@ -87,6 +87,7 @@ public class grappleArrow extends EntityThrowable implements IEntityAdditionalSp
     }
     */
 	
+	@Override
 	public void onEntityUpdate(){
 		super.onEntityUpdate();
 		
@@ -172,9 +173,9 @@ public class grappleArrow extends EntityThrowable implements IEntityAdditionalSp
 			if (movingobjectposition.typeOfHit == MovingObjectPosition.MovingObjectType.ENTITY) {
 				// hit entity
 				Entity entityhit = movingobjectposition.entityHit;
-				Vec3 playerpos = this.shootingEntity.getPositionVector();
-				Vec3 entitypos = entityhit.getPositionVector();
-				Vec3 yank = multvec(playerpos.subtract(entitypos), 0.4);
+				Vec3 playerpos = getPositionVector(this.shootingEntity);
+				Vec3 entitypos = getPositionVector(entityhit);
+				Vec3 yank = multvec(subvec(playerpos, entitypos), 0.4);
 				entityhit.addVelocity(yank.xCoord, Math.min(yank.yCoord, 2), yank.zCoord);
 				
 				this.removeServer();
@@ -185,22 +186,22 @@ public class grappleArrow extends EntityThrowable implements IEntityAdditionalSp
 			System.out.println("attaching! (server) " + this.toString());
 			
 //	        Vec3 vec31 = new Vec3(this.posX, this.posY, this.posZ);
-	        Vec3 vec3 = new Vec3(this.posX + this.motionX, this.posY + this.motionY, this.posZ + this.motionZ);
+	        Vec3 vec3 = Vec3.createVectorHelper(this.posX + this.motionX, this.posY + this.motionY, this.posZ + this.motionZ);
 	        
 	        if (movingobjectposition != null)
 	        {
-	            vec3 = new Vec3(movingobjectposition.hitVec.xCoord, movingobjectposition.hitVec.yCoord, movingobjectposition.hitVec.zCoord);
+	            vec3 = Vec3.createVectorHelper(movingobjectposition.hitVec.xCoord, movingobjectposition.hitVec.yCoord, movingobjectposition.hitVec.zCoord);
 	            
 //	            doposupdate = true;
 	            
-	            this.setPositionAndUpdate(vec3.xCoord, vec3.yCoord, vec3.zCoord);
+	            this.setPosition(vec3.xCoord, vec3.yCoord, vec3.zCoord);
 	        }
 	        
 	        this.motionX = 0;
 	        this.motionY = 0;
 	        this.motionZ = 0;
 	        
-	        this.thispos = new Vec3(this.posX, this.posY, this.posZ);
+	        this.thispos = Vec3.createVectorHelper(this.posX, this.posY, this.posZ);
 			this.firstattach = true;
 	        
 //			r = this.getDistanceToEntity(this.shootingEntity);
@@ -257,7 +258,8 @@ public class grappleArrow extends EntityThrowable implements IEntityAdditionalSp
         return 0F;
     }
 	
-    protected float getVelocity()
+	@Override
+    protected float func_70182_d()
     {
         return 5F;
     }
@@ -267,7 +269,7 @@ public class grappleArrow extends EntityThrowable implements IEntityAdditionalSp
 	}
 	
 	public Vec3 multvec(Vec3 a, double changefactor) {
-		return new Vec3(a.xCoord * changefactor, a.yCoord * changefactor, a.zCoord * changefactor);
+		return Vec3.createVectorHelper(a.xCoord * changefactor, a.yCoord * changefactor, a.zCoord * changefactor);
 	}
 	
 	public int getControlId() {
@@ -275,11 +277,18 @@ public class grappleArrow extends EntityThrowable implements IEntityAdditionalSp
 	}
 
 	public void setAttachPos(double x, double y, double z) {
-		this.setPositionAndUpdate(x, y, z);
+		this.setPosition(x, y, z);
 		this.motionX = 0;
 		this.motionY = 0;
 		this.motionZ = 0;
 		this.firstattach = true;
-        this.thispos = new Vec3(x, y, z);
+        this.thispos = Vec3.createVectorHelper(x, y, z);
+	}
+	
+	public Vec3 subvec(Vec3 a, Vec3 b) {
+		return Vec3.createVectorHelper(a.xCoord - b.xCoord, a.yCoord - b.yCoord, a.zCoord - b.zCoord);
+	}
+	public Vec3 getPositionVector(Entity entity) {
+		return Vec3.createVectorHelper(entity.posX, entity.posY, entity.posZ);
 	}
 }

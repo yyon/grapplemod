@@ -1,5 +1,8 @@
 package com.yyon.grapplinghook;
 
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
+import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.world.World;
@@ -31,4 +34,11 @@ public class hookBow extends grappleBow {
 	public grappleArrow createarrow(ItemStack satack, World worldIn, EntityPlayer playerIn) {
 		return new hookArrow(worldIn, playerIn, 0);
 	}
+	@Override
+    @SideOnly(Side.CLIENT)
+    public void registerIcons(IIconRegister iconRegister)
+    {
+        itemIcon = iconRegister.registerIcon("grapplemod:hookshot");
+    }
+	
 }

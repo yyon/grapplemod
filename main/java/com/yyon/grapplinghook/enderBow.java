@@ -1,5 +1,8 @@
 package com.yyon.grapplinghook;
 
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
+import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.ItemStack;
@@ -36,19 +39,21 @@ public class enderBow extends grappleBow {
 	
 	@Override
 	public grappleArrow createarrow(ItemStack stack, World worldIn, EntityPlayer playerIn) {
-		NBTTagCompound compound = stack.getSubCompound("launcher", true);
+		NBTTagCompound compound = grapplemod.getCompound(stack);
+//		NBTTagCompound compound = stack.getSubCompound("launcher", true);
 		compound.setLong("lastused", 0);
 		
 		return new enderArrow(worldIn, playerIn, 0);
 	}
 	
 	public Vec3 multvec(Vec3 a, double changefactor) {
-		return new Vec3(a.xCoord * changefactor, a.yCoord * changefactor, a.zCoord * changefactor);
+		return Vec3.createVectorHelper(a.xCoord * changefactor, a.yCoord * changefactor, a.zCoord * changefactor);
 	}
 	
 	public void leftclick(ItemStack stack, World world, EntityPlayer player) {
 		if (player.worldObj.isRemote) {
-			NBTTagCompound compound = stack.getSubCompound("launcher", true);
+			NBTTagCompound compound = grapplemod.getCompound(stack);
+//			NBTTagCompound compound = stack.getSubCompound("launcher", true);
 			long timer = world.getTotalWorldTime() - compound.getLong("lastused");
 			if (timer > reusetime) {
 				if (player.getHeldItem().getItem() instanceof enderBow) {
@@ -58,8 +63,8 @@ public class enderBow extends grappleBow {
 					compound.setLong("lastused", world.getTotalWorldTime());
 					
 		        	Vec3 facing = player.getLookVec();
-					Vec3 playermotion = new Vec3(player.motionX, player.motionY, player.motionZ);
-					Vec3 newvec = playermotion.add(multvec(facing, 3));
+					Vec3 playermotion = Vec3.createVectorHelper(player.motionX, player.motionY, player.motionZ);
+					Vec3 newvec = addvec(playermotion, multvec(facing, 3));
 					
 					grappleArrow arrow = this.getArrow(stack, world);
 					if (arrow == null) {
@@ -88,6 +93,17 @@ public class enderBow extends grappleBow {
 			}
 		}
 	}
+	
+	public Vec3 addvec(Vec3 a, Vec3 b) {
+		return Vec3.createVectorHelper(a.xCoord + b.xCoord, a.yCoord + b.yCoord, a.zCoord + b.zCoord);
+	}
+	
+	@Override
+    @SideOnly(Side.CLIENT)
+    public void registerIcons(IIconRegister iconRegister)
+    {
+        itemIcon = iconRegister.registerIcon("grapplemod:enderhook");
+    }
 	
 	/*
 	@SubscribeEvent

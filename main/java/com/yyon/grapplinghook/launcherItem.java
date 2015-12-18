@@ -1,5 +1,6 @@
 package com.yyon.grapplinghook;
 
+import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -10,7 +11,9 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.play.server.S12PacketEntityVelocity;
 import net.minecraft.util.Vec3;
 import net.minecraft.world.World;
-import net.minecraftforge.fml.common.FMLCommonHandler;
+import cpw.mods.fml.common.FMLCommonHandler;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 
 /*
  * This file is part of GrappleMod.
@@ -56,12 +59,13 @@ public class launcherItem extends Item {
 	
 	
 	public Vec3 multvec(Vec3 a, double changefactor) {
-		return new Vec3(a.xCoord * changefactor, a.yCoord * changefactor, a.zCoord * changefactor);
+		return Vec3.createVectorHelper(a.xCoord * changefactor, a.yCoord * changefactor, a.zCoord * changefactor);
 	}
 	
 	public void dorightclick(ItemStack stack, World worldIn, EntityPlayer player) {
 		if (worldIn.isRemote) {
-			NBTTagCompound compound = stack.getSubCompound("launcher", true);
+			NBTTagCompound compound = grapplemod.getCompound(stack);
+//			NBTTagCompound compound = stack.getSubCompound("launcher", true);
 			long timer = worldIn.getTotalWorldTime() - compound.getLong("lastused");
 			System.out.println(worldIn.getTotalWorldTime());
 			if (timer > reusetime) {
@@ -70,8 +74,8 @@ public class launcherItem extends Item {
 				compound.setLong("lastused", worldIn.getTotalWorldTime());
 				
 	        	Vec3 facing = player.getLookVec();
-				Vec3 playermotion = new Vec3(player.motionX, player.motionY, player.motionZ);
-				Vec3 newvec = playermotion.add(multvec(facing, 3));
+				Vec3 playermotion = Vec3.createVectorHelper(player.motionX, player.motionY, player.motionZ);
+				Vec3 newvec = addvec(playermotion, multvec(facing, 3));
 				
 //				player.setVelocity(newvec.xCoord, newvec.yCoord, newvec.zCoord);
 				player.motionX = newvec.xCoord;
@@ -87,6 +91,14 @@ public class launcherItem extends Item {
 		}
 	}
 	
+	@Override
+    @SideOnly(Side.CLIENT)
+    public void registerIcons(IIconRegister iconRegister)
+    {
+        itemIcon = iconRegister.registerIcon("grapplemod:launcheritem");
+    }
+	
+	@Override
     public void onPlayerStoppedUsing(ItemStack stack, World worldIn, EntityPlayer playerIn, int timeLeft)
     {
     	
@@ -96,6 +108,7 @@ public class launcherItem extends Item {
         
     }
     
+	@Override
 	public ItemStack onItemRightClick(ItemStack stack, World worldIn, final EntityPlayer playerIn){
 //        net.minecraftforge.event.entity.player.ArrowNockEvent event = new net.minecraftforge.event.entity.player.ArrowNockEvent(playerIn, stack);
 //        if (net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(event)) return event.result;
@@ -112,13 +125,18 @@ public class launcherItem extends Item {
         return stack;
     }
 
+	public Vec3 addvec(Vec3 a, Vec3 b) {
+		return Vec3.createVectorHelper(a.xCoord + b.xCoord, a.yCoord + b.yCoord, a.zCoord + b.zCoord);
+	}
+	
 
 	/**
 	 * returns the action that specifies what animation to play when the items is being used
 	 */
+	@Override
 	public EnumAction getItemUseAction(ItemStack par1ItemStack)
 	{
-		return EnumAction.NONE;
+		return EnumAction.none;
 	}
 	
 	/*

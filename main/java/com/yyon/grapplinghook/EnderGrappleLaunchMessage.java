@@ -1,11 +1,9 @@
 package com.yyon.grapplinghook;
 
 import io.netty.buffer.ByteBuf;
-import net.minecraft.client.Minecraft;
-import net.minecraft.util.IThreadListener;
-import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
-import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
-import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
+import cpw.mods.fml.common.network.simpleimpl.IMessage;
+import cpw.mods.fml.common.network.simpleimpl.IMessageHandler;
+import cpw.mods.fml.common.network.simpleimpl.MessageContext;
 
 /*
  * This file is part of GrappleMod.
@@ -76,31 +74,10 @@ public class EnderGrappleLaunchMessage implements IMessage {
     }
 
     public static class Handler implements IMessageHandler<EnderGrappleLaunchMessage, IMessage> {
-    	public class runner implements Runnable {
-    		EnderGrappleLaunchMessage message;
-    		MessageContext ctx;
-    		public runner(EnderGrappleLaunchMessage message, MessageContext ctx) {
-    			super();
-    			this.message = message;
-    			this.ctx = ctx;
-    		}
-    		
-            @Override
-            public void run() {
-            	grapplemod.receiveEnderLaunch(message.id, message.x, message.y, message.z);
-//            	Entity grapple = world.getEntityByID(message.id);
-//            	if (grapple instanceof grappleArrow) {
-//	            	((grappleArrow) grapple).clientAttach(message.x, message.y, message.z);
- //           	}
-            }
-    	}
-    	
-       
         @Override
         public IMessage onMessage(EnderGrappleLaunchMessage message, MessageContext ctx) {
 //            System.out.println(String.format("Received %s from %s", message.text, ctx.getServerHandler().playerEntity.getDisplayName()));
-        	IThreadListener mainThread = Minecraft.getMinecraft(); // or Minecraft.getMinecraft() on the client
-            mainThread.addScheduledTask(new runner(message, ctx));
+        	grapplemod.receiveEnderLaunch(message.id, message.x, message.y, message.z);
             
         	//            Entity arrowentity = world.getEntityByID(message.arrowId);
 //            if (arrowentity instanceof grappleArrow) {
