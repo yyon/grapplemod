@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Random;
 
+import net.minecraft.block.Block;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.init.Blocks;
@@ -82,6 +83,8 @@ public class grapplemod {
 	public static int HOOKID = controllerid++;
 	
 	public static int grapplingLength = 0;
+	public static boolean anyblocks = true;
+	public static ArrayList<Block> grapplingblocks;
 	
 	@SidedProxy(clientSide="com.yyon.grapplinghook.client.ClientProxyClass", serverSide="com.yyon.grapplinghook.ServerProxyClass")
 	public static CommonProxyClass proxy;
@@ -120,10 +123,41 @@ public class grapplemod {
 	
 	public void serverLoad(FMLServerStartingEvent event){
 		MinecraftServer.getServer().worldServerForDimension(0).getGameRules().addGameRule("grapplingLength", "0", GameRules.ValueType.NUMERICAL_VALUE);
+		MinecraftServer.getServer().worldServerForDimension(0).getGameRules().addGameRule("grapplingBlocks", "any", GameRules.ValueType.ANY_VALUE);
 	}
 	
 	public static void updateMaxLen() {
 		grapplemod.grapplingLength = MinecraftServer.getServer().worldServerForDimension(0).getGameRules().getInt("grapplingLength");
+	}
+	
+	public static void updateGrapplingBlocks() {
+		String s = MinecraftServer.getServer().worldServerForDimension(0).getGameRules().getGameRuleStringValue("grapplingBlocks");
+		if (s.equals("any")) {
+			anyblocks = true;
+		} else {
+			anyblocks = false;
+			String[] blockstr = s.split(",");
+			
+			grapplingblocks = new ArrayList<Block>();
+			
+		    for(String str:blockstr){
+		    	str = str.trim();
+		    	String modid;
+		    	String name;
+		    	if (str.contains(":")) {
+		    		String[] splitstr = str.split(":");
+		    		modid = splitstr[0];
+		    		name = splitstr[1];
+		    	} else {
+		    		modid = "minecraft";
+		    		name = str;
+		    	}
+		    	
+		    	Block b = GameRegistry.findBlock(modid, name);
+		    	
+		        grapplingblocks.add(b);
+		    }
+		}
 	}
 	
 	@EventHandler

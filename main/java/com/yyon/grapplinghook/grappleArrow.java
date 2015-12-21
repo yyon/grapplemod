@@ -4,6 +4,7 @@ import io.netty.buffer.ByteBuf;
 
 import java.util.List;
 
+import net.minecraft.block.Block;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
@@ -76,6 +77,7 @@ public class grappleArrow extends EntityThrowable implements IEntityAdditionalSp
 		System.out.println("init (2) " + this.toString());
 		
 		grapplemod.updateMaxLen();
+		grapplemod.updateGrapplingBlocks();
 	}
 	
 	/*
@@ -199,6 +201,17 @@ public class grappleArrow extends EntityThrowable implements IEntityAdditionalSp
 					
 					this.removeServer();
 					return;
+				}
+				
+				if (movingobjectposition.typeOfHit == MovingObjectPosition.MovingObjectType.BLOCK) {
+					if (!grapplemod.anyblocks) {
+						Block block = this.worldObj.getBlockState(movingobjectposition.getBlockPos()).getBlock();
+						if (!grapplemod.grapplingblocks.contains(block)) {
+							System.out.println("Hit invalid block");
+							this.removeServer();
+							return;
+						}
+					}
 				}
 				
 	//			this.attached = true;
