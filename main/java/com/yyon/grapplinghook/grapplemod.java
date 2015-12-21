@@ -61,7 +61,7 @@ public class grapplemod {
 	public grapplemod(){}
 
     public static final String MODID = "grapplemod";
-    public static final String VERSION = "1.0";
+    public static final String VERSION = "1.8-maxlen";
     
     public static Item grapplebowitem;
     public static Item hookshotitem;
