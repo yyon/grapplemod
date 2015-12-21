@@ -19,7 +19,6 @@ import net.minecraftforge.fml.common.SidedProxy;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
-import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 import net.minecraftforge.fml.common.network.simpleimpl.SimpleNetworkWrapper;
@@ -79,6 +78,8 @@ public class grapplemod {
 	public static int ENDERID = controllerid++;
 	public static int HOOKID = controllerid++;
 	
+//	public static int grapplingLength = 0;
+	
 	
 	@SidedProxy(clientSide="com.yyon.grapplinghook.client.ClientProxyClass", serverSide="com.yyon.grapplinghook.ServerProxyClass")
 	public static CommonProxyClass proxy;
@@ -114,7 +115,15 @@ public class grapplemod {
 	public int addFuel(ItemStack fuel){
 		return 0;
 	}
-	public void serverLoad(FMLServerStartingEvent event){}
+	/*
+	public void serverLoad(FMLServerStartingEvent event){
+		MinecraftServer.getServer().worldServerForDimension(0).getGameRules().addGameRule("grapplingLength", "0", GameRules.ValueType.NUMERICAL_VALUE);
+	}
+	
+	public static void updateMaxLen() {
+		grapplemod.grapplingLength = MinecraftServer.getServer().worldServerForDimension(0).getGameRules().getInt("grapplingLength");
+	}
+	*/
 	
 	@EventHandler
 	public void preInit(FMLPreInitializationEvent event){

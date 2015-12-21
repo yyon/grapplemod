@@ -74,6 +74,8 @@ public class grappleArrow extends EntityThrowable implements IEntityAdditionalSp
 //		}
 		this.shootingEntityID = this.shootingEntity.getEntityId();
 		System.out.println("init (2) " + this.toString());
+		
+//		grapplemod.updateMaxLen();
 	}
 	
 	/*
@@ -106,6 +108,21 @@ public class grappleArrow extends EntityThrowable implements IEntityAdditionalSp
 			System.out.println("Re-updated pos");
 		}
 		
+		/*
+		if (!this.worldObj.isRemote) {
+			if (!grapplemod.attached.contains(this.shootingEntityID)) {
+				if (grapplemod.grapplingLength != 0) {
+					double d = new Vec3(this.posX, this.posY, this.posZ).subtract(new Vec3(this.shootingEntity.posX, this.shootingEntity.posY, this.shootingEntity.posZ)).lengthVector();
+					if (d > grapplemod.grapplingLength) {
+						System.out.println("Removing: too much length");
+						System.out.println(grapplemod.grapplingLength);
+						System.out.println(d);
+						this.removeServer();
+					}
+				}
+			}
+		}
+		*/
 		
 //		if (this.doposupdate) {
 //			this.doposupdate = false;

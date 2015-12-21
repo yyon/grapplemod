@@ -42,6 +42,8 @@ public class grappleController {
 	public Vec3 playermovement = new Vec3(0,0,0);
 	
 	public int counter = 0;
+	public int ongroundtimer = 0;
+	
 	
 	public grappleController(int arrowId, int entityId, World world, Vec3 pos) {
 		System.out.println("GrappleStart " + this.toString());
@@ -55,6 +57,8 @@ public class grappleController {
 		
 		this.r = this.pos.subtract(entity.getPositionVector()).lengthVector();
 		this.motion = new Vec3(this.entity.motionX, this.entity.motionY, this.entity.motionZ);
+		
+		this.ongroundtimer = 0;
 		
 		grapplemod.registerController(entityId, this);
 	}
@@ -103,6 +107,17 @@ public class grappleController {
 					if (counter > 1000) {
 						counter = 0;
 						System.out.println("pulling " + this.toString());
+					}
+					
+					if (entity.onGround) {
+						ongroundtimer = 20;
+						if (this.motion.yCoord < 0) {
+							this.motion = new Vec3(this.motion.xCoord, 0, this.motion.zCoord);
+						}
+					} else {
+						if (this.ongroundtimer > 0) {
+							ongroundtimer--;
+						}
 					}
 					
 					Vec3 arrowpos = this.pos;//this.getPositionVector();
@@ -188,12 +203,9 @@ public class grappleController {
 	}
 	
 	public void dojump(Entity player, Vec3 spherevec) {
-		/*
-		if (player.onGround) {
-			System.out.println("jumping normally");
+		if (ongroundtimer > 0) { // on ground: jump normally
 			return;
 		}
-		*/
 		
 		double maxjump = 1;
 		Vec3 jump = new Vec3(0, maxjump, 0);
