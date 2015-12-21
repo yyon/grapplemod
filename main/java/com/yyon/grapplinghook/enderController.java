@@ -21,8 +21,8 @@ import net.minecraft.world.World;
  */
 
 public class enderController extends grappleController {
-	public enderController(int arrowId, int entityId, World world, Vec3 pos) {
-		super(arrowId, entityId, world, pos);
+	public enderController(int arrowId, int entityId, World world, Vec3 pos, int maxlen) {
+		super(arrowId, entityId, world, pos, maxlen);
 	}
 
 	public void receiveGrappleClick(boolean leftclick) {

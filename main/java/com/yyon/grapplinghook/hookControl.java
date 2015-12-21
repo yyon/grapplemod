@@ -23,8 +23,8 @@ import net.minecraft.world.World;
  */
 
 public class hookControl extends grappleController {
-	public hookControl(int arrowId, int entityId, World world, Vec3 pos) {
-		super(arrowId, entityId, world, pos);
+	public hookControl(int arrowId, int entityId, World world, Vec3 pos, int maxlen) {
+		super(arrowId, entityId, world, pos, maxlen);
 	}
 
 	public double maxspeed = 4;

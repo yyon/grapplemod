@@ -36,13 +36,14 @@ public class GrappleAttachMessage implements IMessage {
 	public double z;
 	public int controlid;
 	public int entityid;
+	public int maxlen;
 //	public double mx;
 //	public double my;
 //	public double mz;
 
     public GrappleAttachMessage() { }
 
-    public GrappleAttachMessage(int id, double x, double y, double z, int controlid, int entityid) {
+    public GrappleAttachMessage(int id, double x, double y, double z, int controlid, int entityid, int maxlen) {
     	this.id = id;
 //    	this.r = r;
         this.x = x;
@@ -50,6 +51,7 @@ public class GrappleAttachMessage implements IMessage {
         this.z = z;
         this.controlid = controlid;
         this.entityid = entityid;
+        this.maxlen = maxlen;
 //        this.mx = mx;
 //        this.my = my;
 //        this.mz = mz;
@@ -64,6 +66,7 @@ public class GrappleAttachMessage implements IMessage {
         this.z = buf.readDouble();
         this.controlid = buf.readInt();
         this.entityid = buf.readInt();
+        this.maxlen = buf.readInt();
 //        this.mx = buf.readDouble();
 //        this.my = buf.readDouble();
 //        this.mz = buf.readDouble();
@@ -78,6 +81,7 @@ public class GrappleAttachMessage implements IMessage {
         buf.writeDouble(this.z);
         buf.writeInt(this.controlid);
         buf.writeInt(this.entityid);
+        buf.writeInt(this.maxlen);
 //        buf.writeDouble(this.mx);
 //        buf.writeDouble(this.my);
 //        buf.writeDouble(this.mz);
@@ -104,7 +108,7 @@ public class GrappleAttachMessage implements IMessage {
             		System.out.println(message.id);
             	}
             	
-            	grapplemod.createControl(message.controlid, message.id, message.entityid, world, new Vec3(message.x, message.y, message.z));
+            	grapplemod.createControl(message.controlid, message.id, message.entityid, world, new Vec3(message.x, message.y, message.z), message.maxlen);
             }
     	}
     	

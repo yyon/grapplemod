@@ -11,7 +11,9 @@ import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemArmor;
 import net.minecraft.item.ItemStack;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.Vec3;
+import net.minecraft.world.GameRules;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventHandler;
@@ -19,6 +21,7 @@ import net.minecraftforge.fml.common.SidedProxy;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
+import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 import net.minecraftforge.fml.common.network.simpleimpl.SimpleNetworkWrapper;
@@ -78,8 +81,7 @@ public class grapplemod {
 	public static int ENDERID = controllerid++;
 	public static int HOOKID = controllerid++;
 	
-//	public static int grapplingLength = 0;
-	
+	public static int grapplingLength = 0;
 	
 	@SidedProxy(clientSide="com.yyon.grapplinghook.client.ClientProxyClass", serverSide="com.yyon.grapplinghook.ServerProxyClass")
 	public static CommonProxyClass proxy;
@@ -115,7 +117,7 @@ public class grapplemod {
 	public int addFuel(ItemStack fuel){
 		return 0;
 	}
-	/*
+	
 	public void serverLoad(FMLServerStartingEvent event){
 		MinecraftServer.getServer().worldServerForDimension(0).getGameRules().addGameRule("grapplingLength", "0", GameRules.ValueType.NUMERICAL_VALUE);
 	}
@@ -123,7 +125,6 @@ public class grapplemod {
 	public static void updateMaxLen() {
 		grapplemod.grapplingLength = MinecraftServer.getServer().worldServerForDimension(0).getGameRules().getInt("grapplingLength");
 	}
-	*/
 	
 	@EventHandler
 	public void preInit(FMLPreInitializationEvent event){
@@ -220,7 +221,7 @@ public class grapplemod {
 		}
 	}
 	
-	public static grappleController createControl(int id, int arrowid, int entityid, World world, Vec3 pos) {
+	public static grappleController createControl(int id, int arrowid, int entityid, World world, Vec3 pos, int maxlen) {
 		/*
 		Class<? extends grappleController> theclass = grapplecontrolsclasses.get(id);
 		Constructor<? extends grappleController> ctor;
@@ -231,11 +232,11 @@ public class grapplemod {
 		*/
 		grappleController control = null;
 		if (id == GRAPPLEID) {
-			control = new grappleController(arrowid, entityid, world, pos);
+			control = new grappleController(arrowid, entityid, world, pos, maxlen);
 		} else if (id == ENDERID) {
-			control = new enderController(arrowid, entityid, world, pos);
+			control = new enderController(arrowid, entityid, world, pos, maxlen);
 		} else if (id == HOOKID) {
-			control = new hookControl(arrowid, entityid, world, pos);
+			control = new hookControl(arrowid, entityid, world, pos, maxlen);
 		}
 		return control;
 	}
