@@ -44,13 +44,16 @@ public class grappleController {
 	public int counter = 0;
 	public int ongroundtimer = 0;
 	
-	public grappleController(int arrowId, int entityId, World world, Vec3 pos) {
+	public int maxlen;
+	
+	public grappleController(int arrowId, int entityId, World world, Vec3 pos, int maxlen) {
 		System.out.println("GrappleStart " + this.toString());
 		
 		this.arrowId = arrowId;
 		this.entityId = entityId;
 		this.world = world;
 		this.pos = pos;
+		this.maxlen = maxlen;
 		
 		this.entity = world.getEntityByID(entityId);
 		
@@ -158,8 +161,10 @@ public class grappleController {
 	//							motion = multvec(motion, 0.98);
 								
 								if (this.playerforward != 0) {
+									if (dist < maxlen || this.playerforward > 0 || maxlen == 0) {
 										additionalmotion = Vec3.createVectorHelper(0, this.playerforward, 0);
 										this.r = dist;
+									}
 								}
 							}
 						} else {

@@ -21,7 +21,7 @@ public class GrappleAttachMessageHandler implements IMessageHandler<GrappleAttac
     		System.out.println(message.id);
     	}
     	
-    	grapplemod.createControl(message.controlid, message.id, message.entityid, world, Vec3.createVectorHelper(message.x, message.y, message.z));
+    	grapplemod.createControl(message.controlid, message.id, message.entityid, world, Vec3.createVectorHelper(message.x, message.y, message.z), message.maxlen);
         
     	//            Entity arrowentity = world.getEntityByID(message.arrowId);
 //        if (arrowentity instanceof grappleArrow) {

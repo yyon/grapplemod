@@ -74,6 +74,8 @@ public class grappleArrow extends EntityThrowable implements IEntityAdditionalSp
 //		}
 		this.shootingEntityID = this.shootingEntity.getEntityId();
 		System.out.println("init (2) " + this.toString());
+		
+		grapplemod.updateMaxLen();
 	}
 	
 	/*
@@ -107,7 +109,9 @@ public class grappleArrow extends EntityThrowable implements IEntityAdditionalSp
 			System.out.println("Re-updated pos");
 		}
 		
-		
+		if (this.toofaraway()) {
+			this.removeServer();
+		}
 //		if (this.doposupdate) {
 //			this.doposupdate = false;
 //            this.setPositionAndUpdate(this.thispos.xCoord, this.thispos.yCoord, this.thispos.zCoord);
@@ -123,6 +127,22 @@ public class grappleArrow extends EntityThrowable implements IEntityAdditionalSp
 		super.setPosition(x, y, z);
 	}
 	
+	public boolean toofaraway() {
+ 		if (!this.worldObj.isRemote) {
+ 			if (this.shootingEntityID != 0) {
+	 			if (!grapplemod.attached.contains(this.shootingEntityID)) {
+	 				if (grapplemod.grapplingLength != 0) {
+	 					double d = Vec3.createVectorHelper(this.posX, this.posY, this.posZ).subtract(Vec3.createVectorHelper(this.shootingEntity.posX, this.shootingEntity.posY, this.shootingEntity.posZ)).lengthVector();
+	 					if (d > grapplemod.grapplingLength) {
+							return true;
+	 					}
+	 				}
+	 			}
+ 			}
+ 		}
+ 		return false;
+	}
+
 	/*
 	public void receivePlayerMovementMessage(double strafe, double forward, boolean jump) {
 		if (this.shootingEntity != null) {
@@ -170,57 +190,59 @@ public class grappleArrow extends EntityThrowable implements IEntityAdditionalSp
 	@Override
 	protected void onImpact(MovingObjectPosition movingobjectposition) {
 		if (!this.worldObj.isRemote) {
-			if (movingobjectposition.typeOfHit == MovingObjectPosition.MovingObjectType.ENTITY) {
-				// hit entity
-				Entity entityhit = movingobjectposition.entityHit;
-				Vec3 playerpos = getPositionVector(this.shootingEntity);
-				Vec3 entitypos = getPositionVector(entityhit);
-				Vec3 yank = multvec(subvec(playerpos, entitypos), 0.4);
-				entityhit.addVelocity(yank.xCoord, Math.min(yank.yCoord, 2), yank.zCoord);
+			if (this.shootingEntityID != 0) {
+				if (movingobjectposition.typeOfHit == MovingObjectPosition.MovingObjectType.ENTITY) {
+					// hit entity
+					Entity entityhit = movingobjectposition.entityHit;
+					Vec3 playerpos = getPositionVector(this.shootingEntity);
+					Vec3 entitypos = getPositionVector(entityhit);
+					Vec3 yank = multvec(subvec(playerpos, entitypos), 0.4);
+					entityhit.addVelocity(yank.xCoord, Math.min(yank.yCoord, 2), yank.zCoord);
+					
+					this.removeServer();
+					return;
+				}
 				
-				this.removeServer();
-				return;
-			}
-			
-//			this.attached = true;
-			System.out.println("attaching! (server) " + this.toString());
-			
-//	        Vec3 vec31 = new Vec3(this.posX, this.posY, this.posZ);
-	        Vec3 vec3 = Vec3.createVectorHelper(this.posX + this.motionX, this.posY + this.motionY, this.posZ + this.motionZ);
-	        
-	        if (movingobjectposition != null)
-	        {
-	            vec3 = Vec3.createVectorHelper(movingobjectposition.hitVec.xCoord, movingobjectposition.hitVec.yCoord, movingobjectposition.hitVec.zCoord);
-	            
-//	            doposupdate = true;
-	            
-	            this.setPosition(vec3.xCoord, vec3.yCoord, vec3.zCoord);
-	        }
-	        
-	        this.motionX = 0;
-	        this.motionY = 0;
-	        this.motionZ = 0;
-	        
-	        this.thispos = Vec3.createVectorHelper(this.posX, this.posY, this.posZ);
-			this.firstattach = true;
-	        
-//			r = this.getDistanceToEntity(this.shootingEntity);
-//			motion = new Vec3(this.shootingEntity.motionX, this.shootingEntity.motionY, this.shootingEntity.motionZ);
-			
-			grapplemod.attached.add(this.shootingEntityID);
-			System.out.println(grapplemod.attached);
-			
-			grapplemod.sendtocorrectclient(new GrappleAttachMessage(this.getEntityId(), this.posX, this.posY, this.posZ, this.getControlId(), this.shootingEntityID), this.shootingEntityID, this.worldObj);
-//			grapplemod.network.sendToAll(new GrappleAttachPosMessage(this.getEntityId(), this.posX, this.posY, this.posZ));
-			if (this.shootingEntity instanceof EntityPlayerMP) { // fixes strange bug in LAN
-				EntityPlayerMP sender = (EntityPlayerMP) this.shootingEntity;
-				int dimension = sender.dimension;
-				MinecraftServer minecraftServer = sender.mcServer;
-				for (EntityPlayerMP player : (List<EntityPlayerMP>)minecraftServer.getConfigurationManager().playerEntityList) {
-					GrappleAttachPosMessage msg = new GrappleAttachPosMessage(this.getEntityId(), this.posX, this.posY, this.posZ);   // must generate a fresh message for every player!
-					if (dimension == player.dimension) {
-//						StartupCommon.simpleNetworkWrapper.sendTo(msg, player);
-						grapplemod.sendtocorrectclient(msg, player.getEntityId(), player.worldObj);
+	//			this.attached = true;
+				System.out.println("attaching! (server) " + this.toString());
+				
+	//	        Vec3 vec31 = new Vec3(this.posX, this.posY, this.posZ);
+		        Vec3 vec3 = Vec3.createVectorHelper(this.posX + this.motionX, this.posY + this.motionY, this.posZ + this.motionZ);
+		        
+		        if (movingobjectposition != null)
+		        {
+		            vec3 = Vec3.createVectorHelper(movingobjectposition.hitVec.xCoord, movingobjectposition.hitVec.yCoord, movingobjectposition.hitVec.zCoord);
+		            
+	//	            doposupdate = true;
+		            
+		            this.setPosition(vec3.xCoord, vec3.yCoord, vec3.zCoord);
+		        }
+		        
+		        this.motionX = 0;
+		        this.motionY = 0;
+		        this.motionZ = 0;
+		        
+		        this.thispos = Vec3.createVectorHelper(this.posX, this.posY, this.posZ);
+				this.firstattach = true;
+		        
+	//			r = this.getDistanceToEntity(this.shootingEntity);
+	//			motion = new Vec3(this.shootingEntity.motionX, this.shootingEntity.motionY, this.shootingEntity.motionZ);
+				
+				grapplemod.attached.add(this.shootingEntityID);
+				System.out.println(grapplemod.attached);
+				
+				grapplemod.sendtocorrectclient(new GrappleAttachMessage(this.getEntityId(), this.posX, this.posY, this.posZ, this.getControlId(), this.shootingEntityID, grapplemod.grapplingLength), this.shootingEntityID, this.worldObj);
+	//			grapplemod.network.sendToAll(new GrappleAttachPosMessage(this.getEntityId(), this.posX, this.posY, this.posZ));
+				if (this.shootingEntity instanceof EntityPlayerMP) { // fixes strange bug in LAN
+					EntityPlayerMP sender = (EntityPlayerMP) this.shootingEntity;
+					int dimension = sender.dimension;
+					MinecraftServer minecraftServer = sender.mcServer;
+					for (EntityPlayerMP player : (List<EntityPlayerMP>)minecraftServer.getConfigurationManager().playerEntityList) {
+						GrappleAttachPosMessage msg = new GrappleAttachPosMessage(this.getEntityId(), this.posX, this.posY, this.posZ);   // must generate a fresh message for every player!
+						if (dimension == player.dimension) {
+	//						StartupCommon.simpleNetworkWrapper.sendTo(msg, player);
+							grapplemod.sendtocorrectclient(msg, player.getEntityId(), player.worldObj);
+						}
 					}
 				}
 			}
@@ -266,6 +288,7 @@ public class grappleArrow extends EntityThrowable implements IEntityAdditionalSp
 
 	public void removeServer() {
 		this.kill();
+		this.shootingEntityID = 0;
 	}
 	
 	public Vec3 multvec(Vec3 a, double changefactor) {

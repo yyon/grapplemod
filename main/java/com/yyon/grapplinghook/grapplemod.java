@@ -12,7 +12,9 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemArmor;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.Vec3;
+import net.minecraft.world.GameRules;
 import net.minecraft.world.World;
 
 import com.yyon.grapplinghook.common.CommonProxyClass;
@@ -61,7 +63,7 @@ public class grapplemod {
 	public grapplemod(){}
 
     public static final String MODID = "grapplemod";
-    public static final String VERSION = "1.0";
+    public static final String VERSION = "1.8-maxlen";
     
     public static Item grapplebowitem;
     public static Item hookshotitem;
@@ -81,6 +83,7 @@ public class grapplemod {
 	public static int ENDERID = controllerid++;
 	public static int HOOKID = controllerid++;
 	
+	public static int grapplingLength = 0;
 	
 	@SidedProxy(clientSide="com.yyon.grapplinghook.client.ClientProxyClass", serverSide="com.yyon.grapplinghook.ServerProxyClass")
 	public static CommonProxyClass proxy;
@@ -116,7 +119,19 @@ public class grapplemod {
 	public int addFuel(ItemStack fuel){
 		return 0;
 	}
-	public void serverLoad(FMLServerStartingEvent event){}
+	@EventHandler
+	public void serverLoad(FMLServerStartingEvent e) {
+		MinecraftServer.getServer().worldServerForDimension(0).getGameRules().addGameRule("grapplingLength", "0");
+ 	}
+ 	
+ 	public static void updateMaxLen() {
+ 		String s = MinecraftServer.getServer().worldServerForDimension(0).getGameRules().getGameRuleStringValue("grapplingLength");
+ 		if (s.equals("")) {
+ 			grapplemod.grapplingLength = 0;
+ 		} else {
+	 		grapplemod.grapplingLength = Integer.parseInt(s);
+ 		}
+ 	}
 	
 	@EventHandler
 	public void preInit(FMLPreInitializationEvent event){
@@ -213,7 +228,7 @@ public class grapplemod {
 		}
 	}
 	
-	public static grappleController createControl(int id, int arrowid, int entityid, World world, Vec3 pos) {
+	public static grappleController createControl(int id, int arrowid, int entityid, World world, Vec3 pos, int maxlen) {
 		/*
 		Class<? extends grappleController> theclass = grapplecontrolsclasses.get(id);
 		Constructor<? extends grappleController> ctor;
@@ -224,11 +239,11 @@ public class grapplemod {
 		*/
 		grappleController control = null;
 		if (id == GRAPPLEID) {
-			control = new grappleController(arrowid, entityid, world, pos);
+			control = new grappleController(arrowid, entityid, world, pos, maxlen);
 		} else if (id == ENDERID) {
-			control = new enderController(arrowid, entityid, world, pos);
+			control = new enderController(arrowid, entityid, world, pos, maxlen);
 		} else if (id == HOOKID) {
-			control = new hookControl(arrowid, entityid, world, pos);
+			control = new hookControl(arrowid, entityid, world, pos, maxlen);
 		}
 		return control;
 	}
