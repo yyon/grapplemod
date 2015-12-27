@@ -147,7 +147,7 @@ public class grapplemod {
 	
 	public static void updateGrapplingBlocks() {
 		String s = MinecraftServer.getServer().worldServerForDimension(0).getGameRules().getGameRuleStringValue("grapplingBlocks");
-		if (s.equals("any")) {
+		if (s.equals("any") || s.equals("")) {
 			anyblocks = true;
 		} else {
 			anyblocks = false;
