@@ -41,7 +41,6 @@ import com.yyon.grapplinghook.items.enderBow;
 import com.yyon.grapplinghook.items.grappleBow;
 import com.yyon.grapplinghook.items.hookBow;
 import com.yyon.grapplinghook.items.launcherItem;
-import com.yyon.grapplinghook.network.EnderGrappleLaunchMessage;
 import com.yyon.grapplinghook.network.GrappleAttachMessage;
 import com.yyon.grapplinghook.network.GrappleAttachPosMessage;
 import com.yyon.grapplinghook.network.GrappleClickMessage;
@@ -78,7 +77,7 @@ public class grapplemod {
 	public grapplemod(){}
 
     public static final String MODID = "grapplemod";
-    public static final String VERSION = "1.8-maxlen";
+    public static final String VERSION = "1.8-v2";
     
     public static Item grapplebowitem;
     public static Item hookshotitem;
@@ -102,7 +101,7 @@ public class grapplemod {
 	public static boolean anyblocks = true;
 	public static ArrayList<Block> grapplingblocks;
 	
-	@SidedProxy(clientSide="com.yyon.grapplinghook.client.ClientProxyClass", serverSide="com.yyon.grapplinghook.ServerProxyClass")
+	@SidedProxy(clientSide="com.yyon.grapplinghook.ClientProxyClass", serverSide="com.yyon.grapplinghook.ServerProxyClass")
 	public static CommonProxyClass proxy;
 	
 	@EventHandler
@@ -200,7 +199,6 @@ public class grapplemod {
 		network.registerMessage(GrappleAttachMessage.Handler.class, GrappleAttachMessage.class, id++, Side.CLIENT);
 		network.registerMessage(GrappleEndMessage.Handler.class, GrappleEndMessage.class, id++, Side.SERVER);
 		network.registerMessage(GrappleClickMessage.Handler.class, GrappleClickMessage.class, id++, Side.CLIENT);
-		network.registerMessage(EnderGrappleLaunchMessage.Handler.class, EnderGrappleLaunchMessage.class, id++, Side.CLIENT);
 		network.registerMessage(GrappleAttachPosMessage.Handler.class, GrappleAttachPosMessage.class, id++, Side.CLIENT);
 	}
 	

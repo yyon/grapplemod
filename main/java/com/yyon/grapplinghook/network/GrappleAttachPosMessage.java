@@ -1,7 +1,5 @@
 package com.yyon.grapplinghook.network;
 
-import com.yyon.grapplinghook.entities.grappleArrow;
-
 import io.netty.buffer.ByteBuf;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
@@ -10,6 +8,8 @@ import net.minecraft.world.World;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
+
+import com.yyon.grapplinghook.entities.grappleArrow;
 
 /*
  * This file is part of GrappleMod.

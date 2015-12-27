@@ -4,10 +4,6 @@ import io.netty.buffer.ByteBuf;
 
 import java.util.List;
 
-import com.yyon.grapplinghook.grapplemod;
-import com.yyon.grapplinghook.network.GrappleAttachMessage;
-import com.yyon.grapplinghook.network.GrappleAttachPosMessage;
-
 import net.minecraft.block.Block;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
@@ -19,6 +15,10 @@ import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.util.Vec3;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.registry.IEntityAdditionalSpawnData;
+
+import com.yyon.grapplinghook.grapplemod;
+import com.yyon.grapplinghook.network.GrappleAttachMessage;
+import com.yyon.grapplinghook.network.GrappleAttachPosMessage;
 
 /*
  * This file is part of GrappleMod.
@@ -276,7 +276,7 @@ public class grappleArrow extends EntityThrowable implements IEntityAdditionalSp
 		this.setAttachPos(x, y, z);
 		
 		if (this.shootingEntity instanceof EntityPlayer) {
-			grapplemod.proxy.resetlaunchertime((EntityPlayer) this.shootingEntity);
+			grapplemod.proxy.resetlaunchertime(this.shootingEntityID);
 		}
 //		this.attached = true;
 		

@@ -1,18 +1,13 @@
 package com.yyon.grapplinghook.items;
 
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.ItemStack;
+import net.minecraft.util.Vec3;
+import net.minecraft.world.World;
+
 import com.yyon.grapplinghook.grapplemod;
 import com.yyon.grapplinghook.entities.enderArrow;
 import com.yyon.grapplinghook.entities.grappleArrow;
-import com.yyon.grapplinghook.network.EnderGrappleLaunchMessage;
-import com.yyon.grapplinghook.network.PlayerMovementMessage;
-
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.network.play.server.S12PacketEntityVelocity;
-import net.minecraft.util.Vec3;
-import net.minecraft.world.World;
 
 /*
  * This file is part of GrappleMod.
@@ -31,9 +26,9 @@ import net.minecraft.world.World;
     along with GrappleMod.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-public class enderBow extends grappleBow {
+public class enderBow extends grappleBow implements clickitem {
 	
-	int reusetime = 50;
+//	int reusetime = 50;
 	
 	public enderBow() {
 		super();
@@ -42,8 +37,8 @@ public class enderBow extends grappleBow {
 	
 	@Override
 	public grappleArrow createarrow(ItemStack stack, World worldIn, EntityPlayer playerIn) {
-		NBTTagCompound compound = stack.getSubCompound("launcher", true);
-		compound.setLong("lastused", 0);
+//		NBTTagCompound compound = stack.getSubCompound("launcher", true);
+//		compound.setLong("lastused", 0);
 		
 		return new enderArrow(worldIn, playerIn, 0);
 	}
@@ -52,8 +47,10 @@ public class enderBow extends grappleBow {
 		return new Vec3(a.xCoord * changefactor, a.yCoord * changefactor, a.zCoord * changefactor);
 	}
 	
-	public void leftclick(ItemStack stack, World world, EntityPlayer player) {
+	public void onLeftClick(ItemStack stack, EntityPlayer player) {
 		if (player.worldObj.isRemote) {
+			grapplemod.proxy.launchplayer(player);
+			/*
 			NBTTagCompound compound = stack.getSubCompound("launcher", true);
 			long timer = world.getTotalWorldTime() - compound.getLong("lastused");
 			if (timer > reusetime) {
@@ -92,6 +89,7 @@ public class enderBow extends grappleBow {
 					}
 				}
 			}
+			*/
 		}
 	}
 	

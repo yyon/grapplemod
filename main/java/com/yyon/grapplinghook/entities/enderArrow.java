@@ -1,9 +1,9 @@
 package com.yyon.grapplinghook.entities;
 
-import com.yyon.grapplinghook.grapplemod;
-
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.world.World;
+
+import com.yyon.grapplinghook.grapplemod;
 
 /*
  * This file is part of GrappleMod.

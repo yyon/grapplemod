@@ -1,19 +1,14 @@
 package com.yyon.grapplinghook.items;
 
-import com.yyon.grapplinghook.grapplemod;
-import com.yyon.grapplinghook.network.PlayerMovementMessage;
-
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.EnumAction;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.network.play.server.S12PacketEntityVelocity;
-import net.minecraft.util.Vec3;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.FMLCommonHandler;
+
+import com.yyon.grapplinghook.grapplemod;
 
 /*
  * This file is part of GrappleMod.
@@ -36,7 +31,7 @@ public class launcherItem extends Item {
 	
 //	EntityPlayer playerused = null;
 //	int reusetimer = 0;
-	int reusetime = 50;
+//	int reusetime = 50;
 
 	public launcherItem() {
 		super();
@@ -58,12 +53,10 @@ public class launcherItem extends Item {
 	}
 	
 	
-	public Vec3 multvec(Vec3 a, double changefactor) {
-		return new Vec3(a.xCoord * changefactor, a.yCoord * changefactor, a.zCoord * changefactor);
-	}
 	
 	public void dorightclick(ItemStack stack, World worldIn, EntityPlayer player) {
 		if (worldIn.isRemote) {
+			/*
 			NBTTagCompound compound = stack.getSubCompound("launcher", true);
 			long timer = worldIn.getTotalWorldTime() - compound.getLong("lastused");
 			System.out.println(worldIn.getTotalWorldTime());
@@ -87,6 +80,8 @@ public class launcherItem extends Item {
 					grapplemod.network.sendToServer(new PlayerMovementMessage(player.getEntityId(), player.posX, player.posY, player.posZ, player.motionX, player.motionY, player.motionZ));
 				}
 			}
+			*/
+			grapplemod.proxy.launchplayer(player);
 		}
 	}
 	

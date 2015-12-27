@@ -1,14 +1,14 @@
 package com.yyon.grapplinghook.controllers;
 
-import com.yyon.grapplinghook.grapplemod;
-import com.yyon.grapplinghook.entities.grappleArrow;
-import com.yyon.grapplinghook.network.GrappleEndMessage;
-import com.yyon.grapplinghook.network.PlayerMovementMessage;
-
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.Vec3;
 import net.minecraft.world.World;
+
+import com.yyon.grapplinghook.grapplemod;
+import com.yyon.grapplinghook.entities.grappleArrow;
+import com.yyon.grapplinghook.network.GrappleEndMessage;
+import com.yyon.grapplinghook.network.PlayerMovementMessage;
 
 /*
  * This file is part of GrappleMod.
@@ -121,9 +121,26 @@ public class grappleController {
 						if (this.motion.yCoord < 0) {
 							this.motion = new Vec3(this.motion.xCoord, 0, this.motion.zCoord);
 						}
+						
+						this.motion = new Vec3(entity.motionX, entity.motionY, entity.motionZ);
 					} else {
 						if (this.ongroundtimer > 0) {
 							ongroundtimer--;
+						}
+					}
+					
+					// stop if collided with object
+					if (entity.isCollidedHorizontally) {
+						if (entity.motionX == 0) {
+							this.motion = new Vec3(0, this.motion.yCoord, this.motion.zCoord);
+						}
+						if (entity.motionZ == 0) {
+							this.motion = new Vec3(this.motion.xCoord, this.motion.yCoord, 0);
+						}
+					}
+					if (entity.isCollidedVertically) {
+						if (entity.motionY == 0) {
+							this.motion = new Vec3(this.motion.xCoord, 0, this.motion.zCoord);
 						}
 					}
 					
@@ -150,7 +167,7 @@ public class grappleController {
 						if (playerjump) {
 							this.dojump(player, spherevec);
 							return;
-						} else if (entity.isSneaking()) {
+						} else if (grapplemod.proxy.isSneaking(entity)) {
 							if (arrowpos.yCoord > playerpos.yCoord) {
 	//							motion = multvec(motion, 0.9);
 								Vec3 motiontorwards = changelen(spherevec, -0.1);
@@ -305,6 +322,6 @@ public class grappleController {
 	}
 
 	public void receiveEnderLaunch(double x, double y, double z) {
-		System.out.println("wrong!");
+		this.motion = this.motion.addVector(x, y, z);
 	}
 }

@@ -1,9 +1,5 @@
 package com.yyon.grapplinghook.items;
 
-import com.yyon.grapplinghook.grapplemod;
-import com.yyon.grapplinghook.entities.grappleArrow;
-import com.yyon.grapplinghook.network.GrappleClickMessage;
-
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLiving;
@@ -18,7 +14,10 @@ import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.world.BlockEvent.BreakEvent;
 import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-import net.minecraftforge.fml.common.gameevent.TickEvent;
+
+import com.yyon.grapplinghook.grapplemod;
+import com.yyon.grapplinghook.entities.grappleArrow;
+import com.yyon.grapplinghook.network.GrappleClickMessage;
 
 /*
  * This file is part of GrappleMod.
@@ -129,10 +128,6 @@ public class grappleBow extends Item {
 	}
 	
 	
-	public void leftclick(ItemStack stack, World world, EntityPlayer player) {
-
-	}
-	
     public void onPlayerStoppedUsing(ItemStack stack, World worldIn, EntityPlayer playerIn, int timeLeft)
     {
     }
@@ -191,6 +186,7 @@ public class grappleBow extends Item {
     	}
     }
     
+    /*
 	@SubscribeEvent
 	public void onPlayerTick(TickEvent.PlayerTickEvent event) {
 		EntityPlayer player = event.player;
@@ -206,4 +202,5 @@ public class grappleBow extends Item {
 			}
 		}
     }
+    */
 }
