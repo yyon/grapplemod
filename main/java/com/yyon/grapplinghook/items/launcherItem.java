@@ -1,4 +1,7 @@
-package com.yyon.grapplinghook;
+package com.yyon.grapplinghook.items;
+
+import com.yyon.grapplinghook.grapplemod;
+import com.yyon.grapplinghook.network.PlayerMovementMessage;
 
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.player.EntityPlayer;

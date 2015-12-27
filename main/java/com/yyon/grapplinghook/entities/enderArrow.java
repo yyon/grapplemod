@@ -1,4 +1,6 @@
-package com.yyon.grapplinghook;
+package com.yyon.grapplinghook.entities;
+
+import com.yyon.grapplinghook.grapplemod;
 
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.world.World;
@@ -20,13 +22,13 @@ import net.minecraft.world.World;
     along with GrappleMod.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-public class hookArrow extends grappleArrow
+public class enderArrow extends grappleArrow
 {
-	public hookArrow(World worldIn) {
+	public enderArrow(World worldIn) {
 		super(worldIn);
 	}
 	
-	public hookArrow(World worldIn, EntityLivingBase shooter,
+	public enderArrow(World worldIn, EntityLivingBase shooter,
 			float p_i1756_3_) {
 		super(worldIn, shooter, p_i1756_3_);
 	}
@@ -36,14 +38,16 @@ public class hookArrow extends grappleArrow
         return 20F;
     }
     
+	
     @Override
 	public int getControlId() {
-		return grapplemod.HOOKID;
+		return grapplemod.ENDERID;
 	}
     /*
     @Override
 	public void createControl() {
-		this.control = new hookControl(this.getEntityId(), this.shootingEntity.getEntityId(), this.worldObj, new Vec3(this.posX, this.posY, this.posZ));
+		System.out.println("Creating ender controller");
+		this.control = new enderController(this.getEntityId(), this.shootingEntity.getEntityId(), this.worldObj, new Vec3(this.posX, this.posY, this.posZ));
 	}
 	*/
 }

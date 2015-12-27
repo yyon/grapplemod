@@ -1,4 +1,9 @@
-package com.yyon.grapplinghook.common;
+package com.yyon.grapplinghook;
+
+import com.yyon.grapplinghook.controllers.grappleController;
+import com.yyon.grapplinghook.entities.grappleArrow;
+import com.yyon.grapplinghook.items.enderBow;
+import com.yyon.grapplinghook.items.launcherItem;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
@@ -12,11 +17,6 @@ import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
-import com.yyon.grapplinghook.enderBow;
-import com.yyon.grapplinghook.grappleArrow;
-import com.yyon.grapplinghook.grappleController;
-import com.yyon.grapplinghook.grapplemod;
-import com.yyon.grapplinghook.launcherItem;
 
 public class CommonProxyClass {
 	public void preInit(FMLPreInitializationEvent event) {

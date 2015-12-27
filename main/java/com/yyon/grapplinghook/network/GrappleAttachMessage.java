@@ -1,8 +1,14 @@
-package com.yyon.grapplinghook;
+package com.yyon.grapplinghook.network;
+
+import com.yyon.grapplinghook.grapplemod;
+import com.yyon.grapplinghook.entities.grappleArrow;
 
 import io.netty.buffer.ByteBuf;
 import net.minecraft.client.Minecraft;
+import net.minecraft.entity.Entity;
 import net.minecraft.util.IThreadListener;
+import net.minecraft.util.Vec3;
+import net.minecraft.world.World;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
@@ -24,26 +30,31 @@ import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
     along with GrappleMod.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-public class EnderGrappleLaunchMessage implements IMessage {
+public class GrappleAttachMessage implements IMessage {
    
 	public int id;
-	public boolean leftclick;
 //	public double r;
 	public double x;
 	public double y;
 	public double z;
+	public int controlid;
+	public int entityid;
+	public int maxlen;
 //	public double mx;
 //	public double my;
 //	public double mz;
 
-    public EnderGrappleLaunchMessage() { }
+    public GrappleAttachMessage() { }
 
-    public EnderGrappleLaunchMessage(int id, double x, double y, double z) {
+    public GrappleAttachMessage(int id, double x, double y, double z, int controlid, int entityid, int maxlen) {
     	this.id = id;
 //    	this.r = r;
         this.x = x;
         this.y = y;
         this.z = z;
+        this.controlid = controlid;
+        this.entityid = entityid;
+        this.maxlen = maxlen;
 //        this.mx = mx;
 //        this.my = my;
 //        this.mz = mz;
@@ -52,11 +63,13 @@ public class EnderGrappleLaunchMessage implements IMessage {
     @Override
     public void fromBytes(ByteBuf buf) {
     	this.id = buf.readInt();
-    	this.leftclick = buf.readBoolean();
 //    	this.r = buf.readDouble();
-       this.x = buf.readDouble();
+        this.x = buf.readDouble();
         this.y = buf.readDouble();
         this.z = buf.readDouble();
+        this.controlid = buf.readInt();
+        this.entityid = buf.readInt();
+        this.maxlen = buf.readInt();
 //        this.mx = buf.readDouble();
 //        this.my = buf.readDouble();
 //        this.mz = buf.readDouble();
@@ -65,21 +78,23 @@ public class EnderGrappleLaunchMessage implements IMessage {
     @Override
     public void toBytes(ByteBuf buf) {
     	buf.writeInt(this.id);
-    	buf.writeBoolean(this.leftclick);
 //    	buf.writeDouble(this.r);
         buf.writeDouble(this.x);
         buf.writeDouble(this.y);
         buf.writeDouble(this.z);
+        buf.writeInt(this.controlid);
+        buf.writeInt(this.entityid);
+        buf.writeInt(this.maxlen);
 //        buf.writeDouble(this.mx);
 //        buf.writeDouble(this.my);
 //        buf.writeDouble(this.mz);
     }
 
-    public static class Handler implements IMessageHandler<EnderGrappleLaunchMessage, IMessage> {
+    public static class Handler implements IMessageHandler<GrappleAttachMessage, IMessage> {
     	public class runner implements Runnable {
-    		EnderGrappleLaunchMessage message;
+    		GrappleAttachMessage message;
     		MessageContext ctx;
-    		public runner(EnderGrappleLaunchMessage message, MessageContext ctx) {
+    		public runner(GrappleAttachMessage message, MessageContext ctx) {
     			super();
     			this.message = message;
     			this.ctx = ctx;
@@ -87,17 +102,22 @@ public class EnderGrappleLaunchMessage implements IMessage {
     		
             @Override
             public void run() {
-            	grapplemod.receiveEnderLaunch(message.id, message.x, message.y, message.z);
-//            	Entity grapple = world.getEntityByID(message.id);
-//            	if (grapple instanceof grappleArrow) {
-//	            	((grappleArrow) grapple).clientAttach(message.x, message.y, message.z);
- //           	}
+            	World world = Minecraft.getMinecraft().theWorld;
+            	Entity grapple = world.getEntityByID(message.id);
+            	if (grapple instanceof grappleArrow) {
+	            	((grappleArrow) grapple).clientAttach(message.x, message.y, message.z);
+            	} else {
+            		System.out.println("Couldn't find grappleArrow");
+            		System.out.println(message.id);
+            	}
+            	
+            	grapplemod.createControl(message.controlid, message.id, message.entityid, world, new Vec3(message.x, message.y, message.z), message.maxlen);
             }
     	}
     	
        
         @Override
-        public IMessage onMessage(EnderGrappleLaunchMessage message, MessageContext ctx) {
+        public IMessage onMessage(GrappleAttachMessage message, MessageContext ctx) {
 //            System.out.println(String.format("Received %s from %s", message.text, ctx.getServerHandler().playerEntity.getDisplayName()));
         	IThreadListener mainThread = Minecraft.getMinecraft(); // or Minecraft.getMinecraft() on the client
             mainThread.addScheduledTask(new runner(message, ctx));

@@ -1,4 +1,5 @@
-package com.yyon.grapplinghook;
+package com.yyon.grapplinghook.entities;
+
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;

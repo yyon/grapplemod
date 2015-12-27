@@ -1,4 +1,7 @@
-package com.yyon.grapplinghook;
+package com.yyon.grapplinghook.items;
+
+import com.yyon.grapplinghook.entities.grappleArrow;
+import com.yyon.grapplinghook.entities.hookArrow;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;

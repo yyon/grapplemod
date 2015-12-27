@@ -1,4 +1,8 @@
-package com.yyon.grapplinghook.client;
+package com.yyon.grapplinghook;
+
+import com.yyon.grapplinghook.controllers.grappleController;
+import com.yyon.grapplinghook.entities.RenderGrappleArrow;
+import com.yyon.grapplinghook.entities.grappleArrow;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
@@ -16,13 +20,6 @@ import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
 
-import com.yyon.grapplinghook.RenderGrappleArrow;
-import com.yyon.grapplinghook.enderBow;
-import com.yyon.grapplinghook.grappleArrow;
-import com.yyon.grapplinghook.grappleController;
-import com.yyon.grapplinghook.grapplemod;
-import com.yyon.grapplinghook.launcherItem;
-import com.yyon.grapplinghook.common.CommonProxyClass;
 
 public class ClientProxyClass extends CommonProxyClass {
 	@Override

@@ -30,7 +30,23 @@ import net.minecraftforge.fml.common.registry.EntityRegistry;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.fml.relauncher.Side;
 
-import com.yyon.grapplinghook.common.CommonProxyClass;
+import com.yyon.grapplinghook.controllers.enderController;
+import com.yyon.grapplinghook.controllers.grappleController;
+import com.yyon.grapplinghook.controllers.hookControl;
+import com.yyon.grapplinghook.entities.enderArrow;
+import com.yyon.grapplinghook.entities.grappleArrow;
+import com.yyon.grapplinghook.entities.hookArrow;
+import com.yyon.grapplinghook.items.LongFallBoots;
+import com.yyon.grapplinghook.items.enderBow;
+import com.yyon.grapplinghook.items.grappleBow;
+import com.yyon.grapplinghook.items.hookBow;
+import com.yyon.grapplinghook.items.launcherItem;
+import com.yyon.grapplinghook.network.EnderGrappleLaunchMessage;
+import com.yyon.grapplinghook.network.GrappleAttachMessage;
+import com.yyon.grapplinghook.network.GrappleAttachPosMessage;
+import com.yyon.grapplinghook.network.GrappleClickMessage;
+import com.yyon.grapplinghook.network.GrappleEndMessage;
+import com.yyon.grapplinghook.network.PlayerMovementMessage;
 
 /*
  * This file is part of GrappleMod.

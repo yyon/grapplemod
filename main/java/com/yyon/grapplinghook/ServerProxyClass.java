@@ -4,7 +4,6 @@ import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 
-import com.yyon.grapplinghook.common.CommonProxyClass;
 
 public class ServerProxyClass extends CommonProxyClass {
 	@Override

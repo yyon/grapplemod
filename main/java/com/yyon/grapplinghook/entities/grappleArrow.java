@@ -1,8 +1,12 @@
-package com.yyon.grapplinghook;
+package com.yyon.grapplinghook.entities;
 
 import io.netty.buffer.ByteBuf;
 
 import java.util.List;
+
+import com.yyon.grapplinghook.grapplemod;
+import com.yyon.grapplinghook.network.GrappleAttachMessage;
+import com.yyon.grapplinghook.network.GrappleAttachPosMessage;
 
 import net.minecraft.block.Block;
 import net.minecraft.entity.Entity;

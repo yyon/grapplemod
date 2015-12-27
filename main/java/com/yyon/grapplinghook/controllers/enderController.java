@@ -1,4 +1,4 @@
-package com.yyon.grapplinghook;
+package com.yyon.grapplinghook.controllers;
 
 import net.minecraft.util.Vec3;
 import net.minecraft.world.World;
