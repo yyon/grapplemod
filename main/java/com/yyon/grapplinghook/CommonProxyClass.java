@@ -4,8 +4,10 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.DamageSource;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.entity.living.LivingFallEvent;
+import net.minecraftforge.event.entity.living.LivingHurtEvent;
 import net.minecraftforge.event.world.BlockEvent.BreakEvent;
 import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
@@ -77,6 +79,19 @@ public class CommonProxyClass {
     	this.blockbreak(event);
     }
     
+    
     public void blockbreak(BreakEvent event) {
+    }
+
+    @SubscribeEvent
+    public void onLivingHurt(LivingHurtEvent event) {
+    	System.out.println("hurt");
+    	if (event.source == DamageSource.inWall) {
+    		System.out.println("in wall");
+    		if (grapplemod.attached.contains(event.entity.getEntityId())) {
+    			System.out.println("canceled");
+    			event.setCanceled(true);
+    		}
+    	}
     }
 }
