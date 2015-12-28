@@ -13,6 +13,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemArmor;
 import net.minecraft.item.ItemStack;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.util.BlockPos;
 import net.minecraft.util.Vec3;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.World;
@@ -90,6 +91,7 @@ public class grapplemod {
 	public static SimpleNetworkWrapper network;
 	
 	public static HashMap<Integer, grappleController> controllers = new HashMap<Integer, grappleController>(); // client side
+	public static HashMap<BlockPos, grappleController> controllerpos = new HashMap<BlockPos, grappleController>();
 	public static ArrayList<Integer> attached = new ArrayList<Integer>(); // server side
 	
 	private static int controllerid;
@@ -269,7 +271,7 @@ public class grapplemod {
 		}
 	}
 	
-	public static grappleController createControl(int id, int arrowid, int entityid, World world, Vec3 pos, int maxlen) {
+	public static grappleController createControl(int id, int arrowid, int entityid, World world, Vec3 pos, int maxlen, BlockPos blockpos) {
 		/*
 		Class<? extends grappleController> theclass = grapplecontrolsclasses.get(id);
 		Constructor<? extends grappleController> ctor;
@@ -286,6 +288,10 @@ public class grapplemod {
 		} else if (id == HOOKID) {
 			control = new hookControl(arrowid, entityid, world, pos, maxlen);
 		}
+		grapplemod.controllerpos.put(blockpos, control);
+		System.out.println("create control");
+		System.out.println(blockpos);
+		
 		return control;
 	}
 }

@@ -174,18 +174,6 @@ public class grappleBow extends Item {
       return true;
     }
     
-    @SubscribeEvent
-    public void onBlockBreak(BreakEvent event){
-    	EntityPlayer player = event.getPlayer();
-    	ItemStack stack = player.getHeldItem();
-    	if (stack != null) {
-    		Item item = stack.getItem();
-    		if (item instanceof grappleBow) {
-    			event.setCanceled(true);
-    		}
-    	}
-    }
-    
     /*
 	@SubscribeEvent
 	public void onPlayerTick(TickEvent.PlayerTickEvent event) {

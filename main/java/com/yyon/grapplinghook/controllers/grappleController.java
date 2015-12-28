@@ -182,8 +182,14 @@ public class grappleController {
 								
 								if (this.playerforward != 0) {
 										if (dist < maxlen || this.playerforward > 0 || maxlen == 0) {
+//											double motionup = this.playerforward;
 											additionalmotion = new Vec3(0, this.playerforward, 0);
+//											this.r = dist;
 											this.r = dist;
+											this.r -= this.playerforward*0.3;
+											if (this.r < 0) {
+												this.r = dist;
+											}
 										}
 								}
 							}
@@ -323,5 +329,9 @@ public class grappleController {
 
 	public void receiveEnderLaunch(double x, double y, double z) {
 		this.motion = this.motion.addVector(x, y, z);
+		this.entity.motionX = this.motion.xCoord;
+		this.entity.motionY = this.motion.yCoord;
+		this.entity.motionZ = this.motion.zCoord;
+		
 	}
 }

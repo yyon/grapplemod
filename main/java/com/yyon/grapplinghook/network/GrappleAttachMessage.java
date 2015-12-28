@@ -3,6 +3,7 @@ package com.yyon.grapplinghook.network;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
+import net.minecraft.util.BlockPos;
 import net.minecraft.util.IThreadListener;
 import net.minecraft.util.Vec3;
 import net.minecraft.world.World;
@@ -40,13 +41,14 @@ public class GrappleAttachMessage implements IMessage {
 	public int controlid;
 	public int entityid;
 	public int maxlen;
+	public BlockPos blockpos;
 //	public double mx;
 //	public double my;
 //	public double mz;
 
     public GrappleAttachMessage() { }
 
-    public GrappleAttachMessage(int id, double x, double y, double z, int controlid, int entityid, int maxlen) {
+    public GrappleAttachMessage(int id, double x, double y, double z, int controlid, int entityid, int maxlen, BlockPos blockpos) {
     	this.id = id;
 //    	this.r = r;
         this.x = x;
@@ -55,6 +57,7 @@ public class GrappleAttachMessage implements IMessage {
         this.controlid = controlid;
         this.entityid = entityid;
         this.maxlen = maxlen;
+        this.blockpos = blockpos;
 //        this.mx = mx;
 //        this.my = my;
 //        this.mz = mz;
@@ -70,6 +73,10 @@ public class GrappleAttachMessage implements IMessage {
         this.controlid = buf.readInt();
         this.entityid = buf.readInt();
         this.maxlen = buf.readInt();
+        int blockx = buf.readInt();
+        int blocky = buf.readInt();
+        int blockz = buf.readInt();
+        this.blockpos = new BlockPos(blockx, blocky, blockz);
 //        this.mx = buf.readDouble();
 //        this.my = buf.readDouble();
 //        this.mz = buf.readDouble();
@@ -85,6 +92,9 @@ public class GrappleAttachMessage implements IMessage {
         buf.writeInt(this.controlid);
         buf.writeInt(this.entityid);
         buf.writeInt(this.maxlen);
+        buf.writeInt(this.blockpos.getX());
+        buf.writeInt(this.blockpos.getY());
+        buf.writeInt(this.blockpos.getZ());
 //        buf.writeDouble(this.mx);
 //        buf.writeDouble(this.my);
 //        buf.writeDouble(this.mz);
@@ -111,7 +121,7 @@ public class GrappleAttachMessage implements IMessage {
             		System.out.println(message.id);
             	}
             	
-            	grapplemod.createControl(message.controlid, message.id, message.entityid, world, new Vec3(message.x, message.y, message.z), message.maxlen);
+            	grapplemod.createControl(message.controlid, message.id, message.entityid, world, new Vec3(message.x, message.y, message.z), message.maxlen, message.blockpos);
             }
     	}
     	

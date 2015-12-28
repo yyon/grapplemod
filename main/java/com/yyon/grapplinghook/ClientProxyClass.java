@@ -15,6 +15,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.play.server.S12PacketEntityVelocity;
 import net.minecraft.util.Vec3;
+import net.minecraftforge.event.world.BlockEvent.BreakEvent;
 import net.minecraftforge.fml.client.registry.RenderingRegistry;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
@@ -89,32 +90,34 @@ public class ClientProxyClass extends CommonProxyClass {
 	public void onClientTick(TickEvent.ClientTickEvent event) {
 		EntityPlayer player = Minecraft.getMinecraft().thePlayer;
 		if (player != null) {
-			Collection<grappleController> controllers = grapplemod.controllers.values();
-			for (grappleController controller : controllers) {
-				controller.doClientTick();
-			}
-			
-			if (GameSettings.isKeyDown(Minecraft.getMinecraft().gameSettings.keyBindAttack)) {
-				leftclick = true;
-			} else if (leftclick) {
-				leftclick = false;
-				if (player != null) {
-					ItemStack stack = player.getHeldItem();
-					if (stack != null) {
-						Item item = stack.getItem();
-						if (item instanceof clickitem) {
-							((clickitem)item).onLeftClick(stack, player);
-		//								this.leftclick(stack, player.worldObj, player);
+			if (!Minecraft.getMinecraft().isGamePaused() || !Minecraft.getMinecraft().isSingleplayer()) {
+				Collection<grappleController> controllers = grapplemod.controllers.values();
+				for (grappleController controller : controllers) {
+					controller.doClientTick();
+				}
+				
+				if (GameSettings.isKeyDown(Minecraft.getMinecraft().gameSettings.keyBindAttack)) {
+					leftclick = true;
+				} else if (leftclick) {
+					leftclick = false;
+					if (player != null) {
+						ItemStack stack = player.getHeldItem();
+						if (stack != null) {
+							Item item = stack.getItem();
+							if (item instanceof clickitem) {
+								((clickitem)item).onLeftClick(stack, player);
+			//								this.leftclick(stack, player.worldObj, player);
+							}
 						}
 					}
 				}
-			}
-			
-			if (player.onGround) {
-				if (enderlaunchtimer.containsKey(player.getEntityId())) {
-					long timer = player.worldObj.getTotalWorldTime() - enderlaunchtimer.get(player.getEntityId());
-					if (timer > 10) {
-						this.resetlaunchertime(player.getEntityId());
+				
+				if (player.onGround) {
+					if (enderlaunchtimer.containsKey(player.getEntityId())) {
+						long timer = player.worldObj.getTotalWorldTime() - enderlaunchtimer.get(player.getEntityId());
+						if (timer > 10) {
+							this.resetlaunchertime(player.getEntityId());
+						}
 					}
 				}
 			}
@@ -189,4 +192,14 @@ public class ClientProxyClass extends CommonProxyClass {
 			return entity.isSneaking();
 		}
 	}
+	
+	@Override
+    public void blockbreak(BreakEvent event) {
+		if (event.pos != null) {
+			if (grapplemod.controllerpos.containsKey(event.pos)) {
+				grappleController control = grapplemod.controllerpos.get(event.pos);
+				control.unattach();
+			}
+		}
+    }
 }

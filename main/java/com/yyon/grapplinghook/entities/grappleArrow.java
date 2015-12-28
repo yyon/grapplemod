@@ -11,6 +11,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.entity.projectile.EntityThrowable;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.util.BlockPos;
 import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.util.Vec3;
 import net.minecraft.world.World;
@@ -207,9 +208,12 @@ public class grappleArrow extends EntityThrowable implements IEntityAdditionalSp
 					return;
 				}
 				
+				BlockPos blockpos = new BlockPos(0,0,0);
+				
 				if (movingobjectposition.typeOfHit == MovingObjectPosition.MovingObjectType.BLOCK) {
+					blockpos = movingobjectposition.getBlockPos();
 					if (!grapplemod.anyblocks) {
-						Block block = this.worldObj.getBlockState(movingobjectposition.getBlockPos()).getBlock();
+						Block block = this.worldObj.getBlockState(blockpos).getBlock();
 						if (!grapplemod.grapplingblocks.contains(block)) {
 							System.out.println("Hit invalid block");
 							this.removeServer();
@@ -244,15 +248,13 @@ public class grappleArrow extends EntityThrowable implements IEntityAdditionalSp
 		        this.thispos = new Vec3(this.posX, this.posY, this.posZ);
 				this.firstattach = true;
 		        
-				
-				
 	//			r = this.getDistanceToEntity(this.shootingEntity);
 	//			motion = new Vec3(this.shootingEntity.motionX, this.shootingEntity.motionY, this.shootingEntity.motionZ);
 				
 				grapplemod.attached.add(this.shootingEntityID);
 				System.out.println(grapplemod.attached);
 				
-				grapplemod.sendtocorrectclient(new GrappleAttachMessage(this.getEntityId(), this.posX, this.posY, this.posZ, this.getControlId(), this.shootingEntityID, grapplemod.grapplingLength), this.shootingEntityID, this.worldObj);
+				grapplemod.sendtocorrectclient(new GrappleAttachMessage(this.getEntityId(), this.posX, this.posY, this.posZ, this.getControlId(), this.shootingEntityID, grapplemod.grapplingLength, blockpos), this.shootingEntityID, this.worldObj);
 	//			grapplemod.network.sendToAll(new GrappleAttachPosMessage(this.getEntityId(), this.posX, this.posY, this.posZ));
 				if (this.shootingEntity instanceof EntityPlayerMP) { // fixes strange bug in LAN
 					EntityPlayerMP sender = (EntityPlayerMP) this.shootingEntity;

@@ -2,8 +2,11 @@ package com.yyon.grapplinghook;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.entity.living.LivingFallEvent;
+import net.minecraftforge.event.world.BlockEvent.BreakEvent;
 import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
@@ -12,6 +15,7 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
 import com.yyon.grapplinghook.controllers.grappleController;
 import com.yyon.grapplinghook.entities.grappleArrow;
+import com.yyon.grapplinghook.items.grappleBow;
 
 
 public class CommonProxyClass {
@@ -55,4 +59,24 @@ public class CommonProxyClass {
 	public boolean isSneaking(Entity entity) {
 		return entity.isSneaking();
 	}
+	
+    @SubscribeEvent
+    public void onBlockBreak(BreakEvent event){
+    	EntityPlayer player = event.getPlayer();
+    	if (player != null) {
+	    	ItemStack stack = player.getHeldItem();
+	    	if (stack != null) {
+	    		Item item = stack.getItem();
+	    		if (item instanceof grappleBow) {
+	    			event.setCanceled(true);
+	    			return;
+	    		}
+	    	}
+    	}
+    	
+    	this.blockbreak(event);
+    }
+    
+    public void blockbreak(BreakEvent event) {
+    }
 }
