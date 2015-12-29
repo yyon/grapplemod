@@ -1,4 +1,4 @@
-package com.yyon.grapplinghook;
+package com.yyon.grapplinghook.network;
 
 import io.netty.buffer.ByteBuf;
 import cpw.mods.fml.common.network.simpleimpl.IMessage;

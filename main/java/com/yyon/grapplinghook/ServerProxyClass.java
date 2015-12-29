@@ -1,6 +1,5 @@
 package com.yyon.grapplinghook;
 
-import com.yyon.grapplinghook.common.CommonProxyClass;
 
 import cpw.mods.fml.common.event.FMLInitializationEvent;
 import cpw.mods.fml.common.event.FMLPostInitializationEvent;

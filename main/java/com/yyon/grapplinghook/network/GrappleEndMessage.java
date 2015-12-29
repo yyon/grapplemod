@@ -1,6 +1,11 @@
-package com.yyon.grapplinghook;
+package com.yyon.grapplinghook.network;
+
+import com.yyon.grapplinghook.grapplemod;
+import com.yyon.grapplinghook.entities.grappleArrow;
 
 import io.netty.buffer.ByteBuf;
+import net.minecraft.entity.Entity;
+import net.minecraft.world.World;
 import cpw.mods.fml.common.network.simpleimpl.IMessage;
 import cpw.mods.fml.common.network.simpleimpl.IMessageHandler;
 import cpw.mods.fml.common.network.simpleimpl.MessageContext;
@@ -22,62 +27,56 @@ import cpw.mods.fml.common.network.simpleimpl.MessageContext;
     along with GrappleMod.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-public class EnderGrappleLaunchMessage implements IMessage {
+public class GrappleEndMessage implements IMessage {
    
-	public int id;
-	public boolean leftclick;
-//	public double r;
-	public double x;
-	public double y;
-	public double z;
-//	public double mx;
-//	public double my;
-//	public double mz;
+	public int entityid;
+	public int arrowid;
 
-    public EnderGrappleLaunchMessage() { }
+    public GrappleEndMessage() { }
 
-    public EnderGrappleLaunchMessage(int id, double x, double y, double z) {
-    	this.id = id;
-//    	this.r = r;
-        this.x = x;
-        this.y = y;
-        this.z = z;
-//        this.mx = mx;
-//        this.my = my;
-//        this.mz = mz;
+    public GrappleEndMessage(int entityid, int arrowid) {
+    	this.entityid = entityid;
+    	this.arrowid = arrowid;
     }
 
     @Override
     public void fromBytes(ByteBuf buf) {
-    	this.id = buf.readInt();
-    	this.leftclick = buf.readBoolean();
-//    	this.r = buf.readDouble();
-       this.x = buf.readDouble();
-        this.y = buf.readDouble();
-        this.z = buf.readDouble();
-//        this.mx = buf.readDouble();
-//        this.my = buf.readDouble();
-//        this.mz = buf.readDouble();
+    	this.entityid = buf.readInt();
+    	this.arrowid = buf.readInt();
     }
 
     @Override
     public void toBytes(ByteBuf buf) {
-    	buf.writeInt(this.id);
-    	buf.writeBoolean(this.leftclick);
-//    	buf.writeDouble(this.r);
-        buf.writeDouble(this.x);
-        buf.writeDouble(this.y);
-        buf.writeDouble(this.z);
-//        buf.writeDouble(this.mx);
-//        buf.writeDouble(this.my);
-//        buf.writeDouble(this.mz);
+    	buf.writeInt(this.entityid);
+    	buf.writeInt(this.arrowid);
     }
 
-    public static class Handler implements IMessageHandler<EnderGrappleLaunchMessage, IMessage> {
+    public static class Handler implements IMessageHandler<GrappleEndMessage, IMessage> {
+
+       
         @Override
-        public IMessage onMessage(EnderGrappleLaunchMessage message, MessageContext ctx) {
+        public IMessage onMessage(GrappleEndMessage message, MessageContext ctx) {
 //            System.out.println(String.format("Received %s from %s", message.text, ctx.getServerHandler().playerEntity.getDisplayName()));
-        	grapplemod.receiveEnderLaunch(message.id, message.x, message.y, message.z);
+        	System.out.println("received grapple end message");
+        	
+			int id = message.entityid;
+			System.out.print("Going to remove attached: ");
+			System.out.println(id);
+			if (grapplemod.attached.contains(id)) {
+				grapplemod.attached.remove(new Integer(id));
+			} else {
+				System.out.println("Tried to disattach but couldn't");
+				System.out.println(grapplemod.attached);
+			}
+			
+			World world = ctx.getServerHandler().playerEntity.worldObj;
+          	Entity grapple = world.getEntityByID(message.arrowid);
+      		if (grapple instanceof grappleArrow) {
+      			((grappleArrow) grapple).removeServer();
+      		}
+      		
+      		Entity entity = world.getEntityByID(id);
+      		entity.fallDistance = 0;
             
         	//            Entity arrowentity = world.getEntityByID(message.arrowId);
 //            if (arrowentity instanceof grappleArrow) {

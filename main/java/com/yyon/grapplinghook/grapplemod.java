@@ -4,6 +4,25 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Random;
 
+import com.yyon.grapplinghook.controllers.enderController;
+import com.yyon.grapplinghook.controllers.grappleController;
+import com.yyon.grapplinghook.controllers.hookControl;
+import com.yyon.grapplinghook.entities.enderArrow;
+import com.yyon.grapplinghook.entities.grappleArrow;
+import com.yyon.grapplinghook.entities.hookArrow;
+import com.yyon.grapplinghook.items.LongFallBoots;
+import com.yyon.grapplinghook.items.enderBow;
+import com.yyon.grapplinghook.items.grappleBow;
+import com.yyon.grapplinghook.items.hookBow;
+import com.yyon.grapplinghook.items.launcherItem;
+import com.yyon.grapplinghook.network.EnderGrappleLaunchMessage;
+import com.yyon.grapplinghook.network.GrappleAttachMessage;
+import com.yyon.grapplinghook.network.GrappleAttachMessageHandler;
+import com.yyon.grapplinghook.network.GrappleAttachPosMessage;
+import com.yyon.grapplinghook.network.GrappleClickMessage;
+import com.yyon.grapplinghook.network.GrappleEndMessage;
+import com.yyon.grapplinghook.network.PlayerMovementMessage;
+
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.init.Blocks;
@@ -15,7 +34,6 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.Vec3;
 import net.minecraft.world.World;
 
-import com.yyon.grapplinghook.common.CommonProxyClass;
 
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.Mod.EventHandler;
@@ -82,7 +100,7 @@ public class grapplemod {
 	public static int HOOKID = controllerid++;
 	
 	
-	@SidedProxy(clientSide="com.yyon.grapplinghook.client.ClientProxyClass", serverSide="com.yyon.grapplinghook.ServerProxyClass")
+	@SidedProxy(clientSide="com.yyon.grapplinghook.ClientProxyClass", serverSide="com.yyon.grapplinghook.ServerProxyClass")
 	public static CommonProxyClass proxy;
 	
 	@EventHandler

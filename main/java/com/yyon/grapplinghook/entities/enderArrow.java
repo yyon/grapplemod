@@ -1,10 +1,8 @@
-package com.yyon.grapplinghook;
+package com.yyon.grapplinghook.entities;
 
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
-import net.minecraft.client.renderer.texture.IIconRegister;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.ItemStack;
+import com.yyon.grapplinghook.grapplemod;
+
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.world.World;
 
 /*
@@ -24,21 +22,33 @@ import net.minecraft.world.World;
     along with GrappleMod.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-public class hookBow extends grappleBow {
-	public hookBow() {
-		super();
-		setUnlocalizedName("hookshot");
+public class enderArrow extends grappleArrow
+{
+	public enderArrow(World worldIn) {
+		super(worldIn);
+	}
+	
+	public enderArrow(World worldIn, EntityLivingBase shooter,
+			float p_i1756_3_) {
+		super(worldIn, shooter, p_i1756_3_);
 	}
 	
 	@Override
-	public grappleArrow createarrow(ItemStack satack, World worldIn, EntityPlayer playerIn) {
-		return new hookArrow(worldIn, playerIn, 0);
-	}
-	@Override
-    @SideOnly(Side.CLIENT)
-    public void registerIcons(IIconRegister iconRegister)
+    protected float func_70182_d()
     {
-        itemIcon = iconRegister.registerIcon("grapplemod:hookshot");
+        return 20F;
     }
+    
 	
+    @Override
+	public int getControlId() {
+		return grapplemod.ENDERID;
+	}
+    /*
+    @Override
+	public void createControl() {
+		System.out.println("Creating ender controller");
+		this.control = new enderController(this.getEntityId(), this.shootingEntity.getEntityId(), this.worldObj, new Vec3(this.posX, this.posY, this.posZ));
+	}
+	*/
 }

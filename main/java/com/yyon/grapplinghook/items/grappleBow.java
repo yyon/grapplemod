@@ -1,4 +1,8 @@
-package com.yyon.grapplinghook;
+package com.yyon.grapplinghook.items;
+
+import com.yyon.grapplinghook.grapplemod;
+import com.yyon.grapplinghook.entities.grappleArrow;
+import com.yyon.grapplinghook.network.GrappleClickMessage;
 
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.creativetab.CreativeTabs;

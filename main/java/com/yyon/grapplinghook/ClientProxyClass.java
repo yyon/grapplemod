@@ -1,4 +1,9 @@
-package com.yyon.grapplinghook.client;
+package com.yyon.grapplinghook;
+
+import com.yyon.grapplinghook.controllers.grappleController;
+import com.yyon.grapplinghook.entities.RenderGrappleArrow;
+import com.yyon.grapplinghook.entities.grappleArrow;
+import com.yyon.grapplinghook.items.clickitem;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
@@ -9,12 +14,6 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.world.World;
 
-import com.yyon.grapplinghook.RenderGrappleArrow;
-import com.yyon.grapplinghook.clickitem;
-import com.yyon.grapplinghook.grappleArrow;
-import com.yyon.grapplinghook.grappleController;
-import com.yyon.grapplinghook.grapplemod;
-import com.yyon.grapplinghook.common.CommonProxyClass;
 
 import cpw.mods.fml.client.registry.RenderingRegistry;
 import cpw.mods.fml.common.event.FMLInitializationEvent;

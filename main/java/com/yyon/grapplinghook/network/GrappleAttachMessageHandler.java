@@ -1,4 +1,7 @@
-package com.yyon.grapplinghook;
+package com.yyon.grapplinghook.network;
+
+import com.yyon.grapplinghook.grapplemod;
+import com.yyon.grapplinghook.entities.grappleArrow;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.util.Vec3;

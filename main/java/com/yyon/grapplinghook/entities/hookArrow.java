@@ -1,6 +1,8 @@
-package com.yyon.grapplinghook;
+package com.yyon.grapplinghook.entities;
 
-import net.minecraft.util.Vec3;
+import com.yyon.grapplinghook.grapplemod;
+
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.world.World;
 
 /*
@@ -20,19 +22,31 @@ import net.minecraft.world.World;
     along with GrappleMod.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-public class enderController extends grappleController {
-	public enderController(int arrowId, int entityId, World world, Vec3 pos) {
-		super(arrowId, entityId, world, pos);
+public class hookArrow extends grappleArrow
+{
+	public hookArrow(World worldIn) {
+		super(worldIn);
 	}
-
-	public void receiveGrappleClick(boolean leftclick) {
-		super.receiveGrappleClick(leftclick);
-		
+	
+	public hookArrow(World worldIn, EntityLivingBase shooter,
+			float p_i1756_3_) {
+		super(worldIn, shooter, p_i1756_3_);
 	}
 	
 	@Override
-	public void receiveEnderLaunch(double x, double y, double z) {
-//		System.out.println("now launching");
-		this.motion = this.motion.addVector(x, y, z);
+    protected float func_70182_d()
+    {
+        return 20F;
+    }
+    
+    @Override
+	public int getControlId() {
+		return grapplemod.HOOKID;
 	}
+    /*
+    @Override
+	public void createControl() {
+		this.control = new hookControl(this.getEntityId(), this.shootingEntity.getEntityId(), this.worldObj, new Vec3(this.posX, this.posY, this.posZ));
+	}
+	*/
 }

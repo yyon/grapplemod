@@ -1,4 +1,4 @@
-package com.yyon.grapplinghook;
+package com.yyon.grapplinghook.network;
 
 import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.Entity;

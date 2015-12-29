@@ -1,4 +1,9 @@
-package com.yyon.grapplinghook.common;
+package com.yyon.grapplinghook;
+
+import com.yyon.grapplinghook.controllers.grappleController;
+import com.yyon.grapplinghook.entities.grappleArrow;
+import com.yyon.grapplinghook.items.enderBow;
+import com.yyon.grapplinghook.items.launcherItem;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
@@ -8,11 +13,6 @@ import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.entity.living.LivingFallEvent;
 
-import com.yyon.grapplinghook.enderBow;
-import com.yyon.grapplinghook.grappleArrow;
-import com.yyon.grapplinghook.grappleController;
-import com.yyon.grapplinghook.grapplemod;
-import com.yyon.grapplinghook.launcherItem;
 
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.event.FMLInitializationEvent;

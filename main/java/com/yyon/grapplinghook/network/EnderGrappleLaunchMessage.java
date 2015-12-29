@@ -1,4 +1,6 @@
-package com.yyon.grapplinghook;
+package com.yyon.grapplinghook.network;
+
+import com.yyon.grapplinghook.grapplemod;
 
 import io.netty.buffer.ByteBuf;
 import cpw.mods.fml.common.network.simpleimpl.IMessage;
@@ -22,27 +24,26 @@ import cpw.mods.fml.common.network.simpleimpl.MessageContext;
     along with GrappleMod.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-public class GrappleClickMessage implements IMessage {
+public class EnderGrappleLaunchMessage implements IMessage {
    
 	public int id;
 	public boolean leftclick;
 //	public double r;
-//	public double x;
-//	public double y;
-//	public double z;
+	public double x;
+	public double y;
+	public double z;
 //	public double mx;
 //	public double my;
 //	public double mz;
 
-    public GrappleClickMessage() { }
+    public EnderGrappleLaunchMessage() { }
 
-    public GrappleClickMessage(int id, boolean leftclick) {
+    public EnderGrappleLaunchMessage(int id, double x, double y, double z) {
     	this.id = id;
-    	this.leftclick = leftclick;
 //    	this.r = r;
-//        this.x = x;
-//        this.y = y;
-//        this.z = z;
+        this.x = x;
+        this.y = y;
+        this.z = z;
 //        this.mx = mx;
 //        this.my = my;
 //        this.mz = mz;
@@ -53,9 +54,9 @@ public class GrappleClickMessage implements IMessage {
     	this.id = buf.readInt();
     	this.leftclick = buf.readBoolean();
 //    	this.r = buf.readDouble();
-//        this.x = buf.readDouble();
-//        this.y = buf.readDouble();
-//        this.z = buf.readDouble();
+       this.x = buf.readDouble();
+        this.y = buf.readDouble();
+        this.z = buf.readDouble();
 //        this.mx = buf.readDouble();
 //        this.my = buf.readDouble();
 //        this.mz = buf.readDouble();
@@ -66,40 +67,19 @@ public class GrappleClickMessage implements IMessage {
     	buf.writeInt(this.id);
     	buf.writeBoolean(this.leftclick);
 //    	buf.writeDouble(this.r);
-//        buf.writeDouble(this.x);
-//        buf.writeDouble(this.y);
-//        buf.writeDouble(this.z);
+        buf.writeDouble(this.x);
+        buf.writeDouble(this.y);
+        buf.writeDouble(this.z);
 //        buf.writeDouble(this.mx);
 //        buf.writeDouble(this.my);
 //        buf.writeDouble(this.mz);
     }
 
-    public static class Handler implements IMessageHandler<GrappleClickMessage, IMessage> {
-    	public class runner implements Runnable {
-    		GrappleClickMessage message;
-    		MessageContext ctx;
-    		public runner(GrappleClickMessage message, MessageContext ctx) {
-    			super();
-    			this.message = message;
-    			this.ctx = ctx;
-    		}
-    		
-            @Override
-            public void run() {
-//            	Entity grapple = world.getEntityByID(message.id);
-//            	if (grapple instanceof grappleArrow) {
-//	            	((grappleArrow) grapple).clientAttach(message.x, message.y, message.z);
- //           	}
-            }
-    	}
-    	
-       
+    public static class Handler implements IMessageHandler<EnderGrappleLaunchMessage, IMessage> {
         @Override
-        public IMessage onMessage(GrappleClickMessage message, MessageContext ctx) {
+        public IMessage onMessage(EnderGrappleLaunchMessage message, MessageContext ctx) {
 //            System.out.println(String.format("Received %s from %s", message.text, ctx.getServerHandler().playerEntity.getDisplayName()));
-        	grapplemod.receiveGrappleClick(message.id, message.leftclick);
-//        	IThreadListener mainThread = Minecraft.getMinecraft(); // or Minecraft.getMinecraft() on the client
-//            mainThread.addScheduledTask(new runner(message, ctx));
+        	grapplemod.receiveEnderLaunch(message.id, message.x, message.y, message.z);
             
         	//            Entity arrowentity = world.getEntityByID(message.arrowId);
 //            if (arrowentity instanceof grappleArrow) {
