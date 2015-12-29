@@ -122,7 +122,9 @@ public class grappleController {
 							this.motion = new Vec3(this.motion.xCoord, 0, this.motion.zCoord);
 						}
 						
-						this.motion = new Vec3(entity.motionX, entity.motionY, entity.motionZ);
+						if (!grapplemod.proxy.isSneaking(entity)) {
+							this.motion = new Vec3(entity.motionX, entity.motionY, entity.motionZ);
+						}
 					} else {
 						if (this.ongroundtimer > 0) {
 							ongroundtimer--;

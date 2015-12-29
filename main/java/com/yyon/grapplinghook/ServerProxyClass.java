@@ -1,11 +1,9 @@
 package com.yyon.grapplinghook;
 
-import net.minecraft.util.DamageSource;
-import net.minecraftforge.event.entity.living.LivingAttackEvent;
+import net.minecraft.entity.Entity;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
 
 public class ServerProxyClass extends CommonProxyClass {
@@ -31,4 +29,9 @@ public class ServerProxyClass extends CommonProxyClass {
 		}
 	}
 	*/
+	
+	@Override
+	public void handleDeath(Entity entity) {
+		grapplemod.attached.remove(new Integer(entity.getEntityId()));
+	}
 }

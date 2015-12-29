@@ -6,6 +6,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.DamageSource;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.event.entity.living.LivingFallEvent;
 import net.minecraftforge.event.entity.living.LivingHurtEvent;
 import net.minecraftforge.event.world.BlockEvent.BreakEvent;
@@ -93,5 +94,13 @@ public class CommonProxyClass {
     			event.setCanceled(true);
     		}
     	}
+    }
+    
+    @SubscribeEvent
+    public void onLivingDeath(LivingDeathEvent event) {
+    	this.handleDeath(event.entity);
+    }
+    
+    public void handleDeath(Entity entity) {
     }
 }

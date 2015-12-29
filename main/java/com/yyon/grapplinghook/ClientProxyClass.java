@@ -1,6 +1,7 @@
 package com.yyon.grapplinghook;
 
 import java.util.Collection;
+import java.util.ConcurrentModificationException;
 import java.util.HashMap;
 
 import net.minecraft.client.Minecraft;
@@ -91,12 +92,16 @@ public class ClientProxyClass extends CommonProxyClass {
 		EntityPlayer player = Minecraft.getMinecraft().thePlayer;
 		if (player != null) {
 			if (!Minecraft.getMinecraft().isGamePaused() || !Minecraft.getMinecraft().isSingleplayer()) {
-				Collection<grappleController> controllers = grapplemod.controllers.values();
-				for (grappleController controller : controllers) {
-					controller.doClientTick();
+				try {
+					Collection<grappleController> controllers = grapplemod.controllers.values();
+					for (grappleController controller : controllers) {
+						controller.doClientTick();
+					}
+				} catch (ConcurrentModificationException e) {
+					System.out.println("ConcurrentModificationException caught");
 				}
 				
-				if (GameSettings.isKeyDown(Minecraft.getMinecraft().gameSettings.keyBindAttack)) {
+				if (GameSettings.isKeyDown(Minecraft.getMinecraft().gameSettings.keyBindAttack) && Minecraft.getMinecraft().currentScreen == null) {
 					leftclick = true;
 				} else if (leftclick) {
 					leftclick = false;
@@ -202,4 +207,13 @@ public class ClientProxyClass extends CommonProxyClass {
 			}
 		}
     }
+	
+	@Override
+	public void handleDeath(Entity entity) {
+		int id = entity.getEntityId();
+		if (grapplemod.controllers.containsKey(id)) {
+			grappleController controller = grapplemod.controllers.get(id);
+			controller.unattach();
+		}
+	}
 }
