@@ -11,15 +11,22 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.entity.projectile.EntityThrowable;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.util.BlockPos;
 import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.world.World;
-import net.minecraftforge.fml.common.registry.IEntityAdditionalSpawnData;
 
 import com.yyon.grapplinghook.grapplemod;
 import com.yyon.grapplinghook.vec;
 import com.yyon.grapplinghook.network.GrappleAttachMessage;
 import com.yyon.grapplinghook.network.GrappleAttachPosMessage;
+
+//* // 1.8 Compatability
+import net.minecraft.util.BlockPos;
+import net.minecraftforge.fml.common.registry.IEntityAdditionalSpawnData;
+/*/ // 1.7.10 Compatability
+import com.yyon.grapplinghook.BlockPos;
+
+import cpw.mods.fml.common.registry.IEntityAdditionalSpawnData;
+//*/
 
 /*
  * This file is part of GrappleMod.
@@ -80,10 +87,13 @@ public class grappleArrow extends EntityThrowable implements IEntityAdditionalSp
 //		}
 		this.shootingEntityID = this.shootingEntity.getEntityId();
 		System.out.println("init (2) " + this.toString());
+		
+//* // 1.8 Compatability
 		System.out.println(this.shootingEntityID);
 		System.out.println(this.shootingEntity.worldObj);
 		System.out.println(this.shootingEntity.getUniqueID());
-		
+//*/
+
 		grapplemod.updateMaxLen();
 		grapplemod.updateGrapplingBlocks();
 	}
@@ -99,6 +109,10 @@ public class grappleArrow extends EntityThrowable implements IEntityAdditionalSp
     }
     */
 	
+/* // 1.7.10 Compatability
+	@Override
+//*/
+
 	public void onEntityUpdate(){
 		super.onEntityUpdate();
 		
@@ -142,6 +156,10 @@ public class grappleArrow extends EntityThrowable implements IEntityAdditionalSp
 		return false;
 	}
 	
+/* // 1.7.10 Compatability
+	@Override
+//*/
+
 	public void setPosition(double x, double y, double z) {
 		if (this.thispos != null) {
 			x = this.thispos.x;
@@ -214,9 +232,19 @@ public class grappleArrow extends EntityThrowable implements IEntityAdditionalSp
 				BlockPos blockpos = new BlockPos(0,0,0);
 				
 				if (movingobjectposition.typeOfHit == MovingObjectPosition.MovingObjectType.BLOCK) {
+//* // 1.8 Compatability
 					blockpos = movingobjectposition.getBlockPos();
+/*/ // 1.7.10 Compatability
+					blockpos = new BlockPos(movingobjectposition.blockX, movingobjectposition.blockY, movingobjectposition.blockZ);//movingobjectposition.getBlockPos();
+//*/
+
 					if (!grapplemod.anyblocks) {
+//* // 1.8 Compatability
 						Block block = this.worldObj.getBlockState(blockpos).getBlock();
+/*/ // 1.7.10 Compatability
+						Block block = this.worldObj.getBlock(blockpos.x, blockpos.y, blockpos.z);
+//*/
+
 						if (!grapplemod.grapplingblocks.contains(block)) {
 							System.out.println("Hit invalid block");
 							this.removeServer();
@@ -239,7 +267,12 @@ public class grappleArrow extends EntityThrowable implements IEntityAdditionalSp
 		            
 	//	            doposupdate = true;
 		            
+//* // 1.8 Compatability
 		            this.setPositionAndUpdate(vec3.x, vec3.y, vec3.z);
+/*/ // 1.7.10 Compatability
+		            this.setPosition(vec3.x, vec3.y, vec3.z);
+//*/
+
 		        }
 		        
 				if (this.toofaraway()) {
@@ -308,7 +341,13 @@ public class grappleArrow extends EntityThrowable implements IEntityAdditionalSp
         return 0F;
     }
 	
+//* // 1.8 Compatability
     protected float getVelocity()
+/*/ // 1.7.10 Compatability
+	@Override
+    protected float func_70182_d()
+//*/
+
     {
         return 5F;
     }
@@ -316,6 +355,10 @@ public class grappleArrow extends EntityThrowable implements IEntityAdditionalSp
 	public void removeServer() {
 		this.kill();
 		this.shootingEntityID = 0;
+/* // 1.7.10 Compatability
+		System.out.println("REMOVE SERVER!");
+//*/
+
 	}
 	
 	public int getControlId() {
@@ -323,7 +366,12 @@ public class grappleArrow extends EntityThrowable implements IEntityAdditionalSp
 	}
 
 	public void setAttachPos(double x, double y, double z) {
+//* // 1.8 Compatability
 		this.setPositionAndUpdate(x, y, z);
+/*/ // 1.7.10 Compatability
+		this.setPosition(x, y, z);
+//*/
+
 		this.motionX = 0;
 		this.motionY = 0;
 		this.motionZ = 0;

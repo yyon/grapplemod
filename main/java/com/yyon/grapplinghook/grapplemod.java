@@ -13,22 +13,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemArmor;
 import net.minecraft.item.ItemStack;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.util.BlockPos;
-import net.minecraft.world.GameRules;
 import net.minecraft.world.World;
-import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.common.Mod.EventHandler;
-import net.minecraftforge.fml.common.SidedProxy;
-import net.minecraftforge.fml.common.event.FMLInitializationEvent;
-import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
-import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
-import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
-import net.minecraftforge.fml.common.network.NetworkRegistry;
-import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
-import net.minecraftforge.fml.common.network.simpleimpl.SimpleNetworkWrapper;
-import net.minecraftforge.fml.common.registry.EntityRegistry;
-import net.minecraftforge.fml.common.registry.GameRegistry;
-import net.minecraftforge.fml.relauncher.Side;
 
 import com.yyon.grapplinghook.controllers.enderController;
 import com.yyon.grapplinghook.controllers.grappleController;
@@ -46,6 +31,40 @@ import com.yyon.grapplinghook.network.GrappleAttachPosMessage;
 import com.yyon.grapplinghook.network.GrappleClickMessage;
 import com.yyon.grapplinghook.network.GrappleEndMessage;
 import com.yyon.grapplinghook.network.PlayerMovementMessage;
+
+//* // 1.8 Compatability
+import net.minecraft.util.BlockPos;
+import net.minecraft.world.GameRules;
+import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.common.Mod.EventHandler;
+import net.minecraftforge.fml.common.SidedProxy;
+import net.minecraftforge.fml.common.event.FMLInitializationEvent;
+import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
+import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
+import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
+import net.minecraftforge.fml.common.network.NetworkRegistry;
+import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
+import net.minecraftforge.fml.common.network.simpleimpl.SimpleNetworkWrapper;
+import net.minecraftforge.fml.common.registry.EntityRegistry;
+import net.minecraftforge.fml.common.registry.GameRegistry;
+import net.minecraftforge.fml.relauncher.Side;
+/*/ // 1.7.10 Compatability
+import net.minecraft.nbt.NBTTagCompound;
+import cpw.mods.fml.common.Mod;
+import cpw.mods.fml.common.Mod.EventHandler;
+import cpw.mods.fml.common.SidedProxy;
+import cpw.mods.fml.common.event.FMLInitializationEvent;
+import cpw.mods.fml.common.event.FMLPostInitializationEvent;
+import cpw.mods.fml.common.event.FMLPreInitializationEvent;
+import cpw.mods.fml.common.event.FMLServerStartingEvent;
+import cpw.mods.fml.common.network.NetworkRegistry;
+import cpw.mods.fml.common.network.simpleimpl.IMessage;
+import cpw.mods.fml.common.network.simpleimpl.SimpleNetworkWrapper;
+import cpw.mods.fml.common.registry.EntityRegistry;
+import cpw.mods.fml.common.registry.GameRegistry;
+import cpw.mods.fml.relauncher.Side;
+
+//*/
 
 /*
  * This file is part of GrappleMod.
@@ -73,8 +92,13 @@ public class grapplemod {
 	public grapplemod(){}
 
     public static final String MODID = "grapplemod";
-    public static final String VERSION = "1.8-v4";
     
+//* // 1.8 Compatability
+    public static final String VERSION = "1.8-v4";
+/*/ // 1.7.10 Compatability
+    public static final String VERSION = "1.7.10-v4";
+//*/
+
     public static Item grapplebowitem;
     public static Item hookshotitem;
     public static Item enderhookitem;
@@ -133,13 +157,29 @@ public class grapplemod {
 		return 0;
 	}
 	
+/* // 1.7.10 Compatability
+	@EventHandler
+//*/
+
 	public void serverLoad(FMLServerStartingEvent event){
+//* // 1.8 Compatability
 		MinecraftServer.getServer().worldServerForDimension(0).getGameRules().addGameRule("grapplingLength", "0", GameRules.ValueType.NUMERICAL_VALUE);
 		MinecraftServer.getServer().worldServerForDimension(0).getGameRules().addGameRule("grapplingBlocks", "any", GameRules.ValueType.ANY_VALUE);
+/*/ // 1.7.10 Compatability
+		MinecraftServer.getServer().worldServerForDimension(0).getGameRules().addGameRule("grapplingLength", "0");
+		MinecraftServer.getServer().worldServerForDimension(0).getGameRules().addGameRule("grapplingBlocks", "any");
+//*/
+
 	}
 	
 	public static void updateMaxLen() {
+//* // 1.8 Compatability
 		grapplemod.grapplingLength = MinecraftServer.getServer().worldServerForDimension(0).getGameRules().getInt("grapplingLength");
+/*/ // 1.7.10 Compatability
+		String s = MinecraftServer.getServer().worldServerForDimension(0).getGameRules().getGameRuleStringValue("grapplingLength");
+		grapplemod.grapplingLength = Integer.parseInt(s);
+//*/
+
 	}
 	
 	public static void updateGrapplingBlocks() {
@@ -289,4 +329,16 @@ public class grapplemod {
 		
 		return control;
 	}
+/* // 1.7.10 Compatability
+	
+	public static NBTTagCompound getCompound(ItemStack stack) {
+		NBTTagCompound compound = stack.getTagCompound();
+		if (compound == null) {
+			compound = new NBTTagCompound();
+			stack.setTagCompound(compound);
+		}
+		return compound;
+	}
+//*/
+
 }

@@ -8,16 +8,26 @@ import net.minecraft.item.EnumAction;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.event.world.BlockEvent.BreakEvent;
-import net.minecraftforge.fml.common.FMLCommonHandler;
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
 import com.yyon.grapplinghook.grapplemod;
 import com.yyon.grapplinghook.entities.grappleArrow;
 import com.yyon.grapplinghook.network.GrappleClickMessage;
+
+//* // 1.8 Compatability
+import net.minecraft.util.BlockPos;
+import net.minecraftforge.event.world.BlockEvent.BreakEvent;
+import net.minecraftforge.fml.common.FMLCommonHandler;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+/*/ // 1.7.10 Compatability
+import net.minecraft.client.renderer.texture.IIconRegister;
+import com.yyon.grapplinghook.BlockPos;
+
+import cpw.mods.fml.common.FMLCommonHandler;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
+//*/
 
 /*
  * This file is part of GrappleMod.
@@ -53,13 +63,29 @@ public class grappleBow extends Item {
 		FMLCommonHandler.instance().bus().register(this);
 	}
 	
+/* // 1.7.10 Compatability
+	@Override
+	@SideOnly(Side.CLIENT)
+	public void registerIcons(IIconRegister iconRegister)
+	{
+		itemIcon = iconRegister.registerIcon("grapplemod:grapplinghook");
+	}
+	
+	@Override
+//*/
+
 	public int getMaxItemUseDuration(ItemStack par1ItemStack)
 	{
 		return 72000;
 	}
 	
 	public grappleArrow getArrow(ItemStack stack, World world) {
+//* // 1.8 Compatability
 		NBTTagCompound compound = stack.getSubCompound("grapplebow", true);
+/*/ // 1.7.10 Compatability
+		NBTTagCompound compound = grapplemod.getCompound(stack);
+//*/
+
 		int id = compound.getInteger("arrow");
 		if (id == 0) {
 			return null;
@@ -78,7 +104,12 @@ public class grappleBow extends Item {
 			id = arrow.getEntityId();
 		}
 		
+//* // 1.8 Compatability
 		NBTTagCompound compound = stack.getSubCompound("grapplebow", true);
+/*/ // 1.7.10 Compatability
+		NBTTagCompound compound = grapplemod.getCompound(stack);
+//*/
+
 		compound.setInteger("arrow", id);
 	}
 	
@@ -128,10 +159,18 @@ public class grappleBow extends Item {
 	}
 	
 	
+/* // 1.7.10 Compatability
+	@Override
+//*/
+
     public void onPlayerStoppedUsing(ItemStack stack, World worldIn, EntityPlayer playerIn, int timeLeft)
     {
     }
     
+/* // 1.7.10 Compatability
+	@Override
+//*/
+
 	public ItemStack onItemRightClick(ItemStack stack, World worldIn, final EntityPlayer playerIn){
         playerIn.setItemInUse(stack, this.getMaxItemUseDuration(stack));
         
@@ -149,11 +188,23 @@ public class grappleBow extends Item {
 	/**
 	 * returns the action that specifies what animation to play when the items is being used
 	 */
+/* // 1.7.10 Compatability
+    @Override
+//*/
+
 	public EnumAction getItemUseAction(ItemStack par1ItemStack)
 	{
+//* // 1.8 Compatability
 		return EnumAction.NONE;
 	}
 	
+/*/ // 1.7.10 Compatability
+		return EnumAction.none;
+	}
+	
+    @Override
+//*/
+
     public boolean onLeftClickEntity(ItemStack stack, EntityPlayer player, Entity entity)
     {
     	return true;
@@ -164,16 +215,30 @@ public class grappleBow extends Item {
     	return true;
     }
    
+//* // 1.8 Compatability
     public boolean onBlockStartBreak(ItemStack itemstack, BlockPos k, EntityPlayer player)
+/*/ // 1.7.10 Compatability
+    @Override
+    public boolean onBlockStartBreak(ItemStack itemstack, int x, int y, int z, EntityPlayer player)
+//*/
+
     {
       return true;
     }
    
+    
+//* // 1.8 Compatability
     public boolean onItemUseFirst(ItemStack stack, EntityPlayer player, World world, int x, int y, int z, int side, float hitX, float hitY, float hitZ)
     {
       return true;
     }
-    
+/*/ // 1.7.10 Compatability
+//    public boolean onItemUseFirst(ItemStack stack, EntityPlayer player, World world, int x, int y, int z, int side, float hitX, float hitY, float hitZ)
+//    {
+//      return true;
+//    }
+//*/
+
     /*
 	@SubscribeEvent
 	public void onPlayerTick(TickEvent.PlayerTickEvent event) {

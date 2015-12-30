@@ -6,9 +6,18 @@ import net.minecraft.item.EnumAction;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.world.World;
-import net.minecraftforge.fml.common.FMLCommonHandler;
 
 import com.yyon.grapplinghook.grapplemod;
+
+//* // 1.8 Compatability
+import net.minecraftforge.fml.common.FMLCommonHandler;
+/*/ // 1.7.10 Compatability
+import net.minecraft.client.renderer.texture.IIconRegister;
+
+import cpw.mods.fml.common.FMLCommonHandler;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
+//*/
 
 /*
  * This file is part of GrappleMod.
@@ -54,6 +63,15 @@ public class launcherItem extends Item {
 	
 	
 	
+/* // 1.7.10 Compatability
+	@Override
+	@SideOnly(Side.CLIENT)
+	public void registerIcons(IIconRegister iconRegister)
+	{
+		 itemIcon = iconRegister.registerIcon("grapplemod:launcheritem");
+	}
+//*/
+
 	public void dorightclick(ItemStack stack, World worldIn, EntityPlayer player) {
 		if (worldIn.isRemote) {
 			/*
@@ -85,6 +103,10 @@ public class launcherItem extends Item {
 		}
 	}
 	
+/* // 1.7.10 Compatability
+	@Override
+//*/
+
     public void onPlayerStoppedUsing(ItemStack stack, World worldIn, EntityPlayer playerIn, int timeLeft)
     {
     	
@@ -94,6 +116,10 @@ public class launcherItem extends Item {
         
     }
     
+/* // 1.7.10 Compatability
+	@Override
+//*/
+
 	public ItemStack onItemRightClick(ItemStack stack, World worldIn, final EntityPlayer playerIn){
 //        net.minecraftforge.event.entity.player.ArrowNockEvent event = new net.minecraftforge.event.entity.player.ArrowNockEvent(playerIn, stack);
 //        if (net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(event)) return event.result;
@@ -114,9 +140,18 @@ public class launcherItem extends Item {
 	/**
 	 * returns the action that specifies what animation to play when the items is being used
 	 */
+/* // 1.7.10 Compatability
+    @Override
+//*/
+
 	public EnumAction getItemUseAction(ItemStack par1ItemStack)
 	{
+//* // 1.8 Compatability
 		return EnumAction.NONE;
+/*/ // 1.7.10 Compatability
+		return EnumAction.none;
+//*/
+
 	}
 	
 	/*

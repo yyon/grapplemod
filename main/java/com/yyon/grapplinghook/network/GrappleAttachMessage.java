@@ -3,16 +3,26 @@ package com.yyon.grapplinghook.network;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
-import net.minecraft.util.BlockPos;
-import net.minecraft.util.IThreadListener;
 import net.minecraft.world.World;
-import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
-import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
-import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 
 import com.yyon.grapplinghook.grapplemod;
 import com.yyon.grapplinghook.vec;
 import com.yyon.grapplinghook.entities.grappleArrow;
+
+//* // 1.8 Compatability
+import net.minecraft.util.BlockPos;
+import net.minecraft.util.IThreadListener;
+import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
+import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
+import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
+/*/ // 1.7.10 Compatability
+import com.yyon.grapplinghook.BlockPos;
+import com.yyon.grapplinghook.network.PlayerMovementMessage.Handler.runner;
+
+import cpw.mods.fml.common.network.simpleimpl.IMessage;
+import cpw.mods.fml.common.network.simpleimpl.IMessageHandler;
+import cpw.mods.fml.common.network.simpleimpl.MessageContext;
+//*/
 
 /*
  * This file is part of GrappleMod.
@@ -129,9 +139,17 @@ public class GrappleAttachMessage implements IMessage {
         @Override
         public IMessage onMessage(GrappleAttachMessage message, MessageContext ctx) {
 //            System.out.println(String.format("Received %s from %s", message.text, ctx.getServerHandler().playerEntity.getDisplayName()));
+            
+//* // 1.8 Compatability
         	IThreadListener mainThread = Minecraft.getMinecraft(); // or Minecraft.getMinecraft() on the client
             mainThread.addScheduledTask(new runner(message, ctx));
-            
+/*/ // 1.7.10 Compatability
+//        	IThreadListener mainThread = Minecraft.getMinecraft(); // or Minecraft.getMinecraft() on the client
+//            mainThread.addScheduledTask(new runner(message, ctx));
+        	new runner(message, ctx).run();
+
+//*/
+
         	//            Entity arrowentity = world.getEntityByID(message.arrowId);
 //            if (arrowentity instanceof grappleArrow) {
 //            	((grappleArrow) arrowentity).receivePlayerMovementMessage(message.strafe, message.forward);
