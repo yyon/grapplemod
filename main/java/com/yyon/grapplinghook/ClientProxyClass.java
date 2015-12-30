@@ -6,7 +6,6 @@ import java.util.HashMap;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
-import net.minecraft.client.resources.model.ModelResourceLocation;
 import net.minecraft.client.settings.GameSettings;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
@@ -16,12 +15,6 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.play.server.S12PacketEntityVelocity;
 import net.minecraftforge.event.world.BlockEvent.BreakEvent;
-import net.minecraftforge.fml.client.registry.RenderingRegistry;
-import net.minecraftforge.fml.common.event.FMLInitializationEvent;
-import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
-import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-import net.minecraftforge.fml.common.gameevent.TickEvent;
 
 import com.yyon.grapplinghook.controllers.grappleController;
 import com.yyon.grapplinghook.entities.RenderGrappleArrow;
@@ -30,6 +23,13 @@ import com.yyon.grapplinghook.items.clickitem;
 import com.yyon.grapplinghook.items.enderBow;
 import com.yyon.grapplinghook.items.launcherItem;
 import com.yyon.grapplinghook.network.PlayerMovementMessage;
+
+import cpw.mods.fml.client.registry.RenderingRegistry;
+import cpw.mods.fml.common.event.FMLInitializationEvent;
+import cpw.mods.fml.common.event.FMLPostInitializationEvent;
+import cpw.mods.fml.common.event.FMLPreInitializationEvent;
+import cpw.mods.fml.common.eventhandler.SubscribeEvent;
+import cpw.mods.fml.common.gameevent.TickEvent;
 
 
 public class ClientProxyClass extends CommonProxyClass {
@@ -45,6 +45,7 @@ public class ClientProxyClass extends CommonProxyClass {
 	@Override
 	public void init(FMLInitializationEvent event, grapplemod grappleModInst) {
 		super.init(event, grappleModInst);
+		/*
 		Minecraft.getMinecraft().getRenderItem().getItemModelMesher().register(grapplemod.grapplebowitem, 0, new ModelResourceLocation("grapplemod:grapplinghook", "inventory"));
 		Minecraft.getMinecraft().getRenderItem().getItemModelMesher().register(grapplemod.hookshotitem, 0, new ModelResourceLocation("grapplemod:hookshot", "inventory"));
 		Minecraft.getMinecraft().getRenderItem().getItemModelMesher().register(grapplemod.launcheritem, 0, new ModelResourceLocation("grapplemod:launcheritem", "inventory"));
@@ -52,7 +53,10 @@ public class ClientProxyClass extends CommonProxyClass {
 		Minecraft.getMinecraft().getRenderItem().getItemModelMesher().register(grapplemod.enderhookitem, 0, new ModelResourceLocation("grapplemod:enderhook", "inventory"));
 		RenderingRegistry.registerEntityRenderingHandler(grappleArrow.class, 
 				new RenderGrappleArrow(Minecraft.getMinecraft().getRenderManager(), Items.iron_pickaxe, Minecraft.getMinecraft().getRenderItem()));
+		*/
 		
+		RenderGrappleArrow rga = new RenderGrappleArrow(Items.iron_pickaxe);
+		RenderingRegistry.registerEntityRenderingHandler(grappleArrow.class, rga);
 	}
 	
 	@Override
@@ -195,10 +199,12 @@ public class ClientProxyClass extends CommonProxyClass {
 	
 	@Override
     public void blockbreak(BreakEvent event) {
-		if (event.pos != null) {
-			if (grapplemod.controllerpos.containsKey(event.pos)) {
-				grappleController control = grapplemod.controllerpos.get(event.pos);
+		BlockPos eventpos = new BlockPos(event.x, event.y, event.z);
+		if (eventpos != null) {
+			if (grapplemod.controllerpos.containsKey(eventpos)) {
+				grappleController control = grapplemod.controllerpos.get(eventpos);
 				control.unattach();
+				grapplemod.controllerpos.remove(eventpos);
 			}
 		}
     }

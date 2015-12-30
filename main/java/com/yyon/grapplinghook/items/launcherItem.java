@@ -1,14 +1,18 @@
 package com.yyon.grapplinghook.items;
 
+import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.EnumAction;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.world.World;
-import net.minecraftforge.fml.common.FMLCommonHandler;
 
 import com.yyon.grapplinghook.grapplemod;
+
+import cpw.mods.fml.common.FMLCommonHandler;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 
 /*
  * This file is part of GrappleMod.
@@ -53,6 +57,12 @@ public class launcherItem extends Item {
 	}
 	
 	
+	@Override
+	@SideOnly(Side.CLIENT)
+	public void registerIcons(IIconRegister iconRegister)
+	{
+		 itemIcon = iconRegister.registerIcon("grapplemod:launcheritem");
+	}
 	
 	public void dorightclick(ItemStack stack, World worldIn, EntityPlayer player) {
 		if (worldIn.isRemote) {
@@ -85,6 +95,7 @@ public class launcherItem extends Item {
 		}
 	}
 	
+	@Override
     public void onPlayerStoppedUsing(ItemStack stack, World worldIn, EntityPlayer playerIn, int timeLeft)
     {
     	
@@ -94,6 +105,7 @@ public class launcherItem extends Item {
         
     }
     
+	@Override
 	public ItemStack onItemRightClick(ItemStack stack, World worldIn, final EntityPlayer playerIn){
 //        net.minecraftforge.event.entity.player.ArrowNockEvent event = new net.minecraftforge.event.entity.player.ArrowNockEvent(playerIn, stack);
 //        if (net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(event)) return event.result;
@@ -114,9 +126,10 @@ public class launcherItem extends Item {
 	/**
 	 * returns the action that specifies what animation to play when the items is being used
 	 */
+    @Override
 	public EnumAction getItemUseAction(ItemStack par1ItemStack)
 	{
-		return EnumAction.NONE;
+		return EnumAction.none;
 	}
 	
 	/*

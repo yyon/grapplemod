@@ -1,5 +1,6 @@
 package com.yyon.grapplinghook.items;
 
+import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.world.World;
@@ -7,6 +8,9 @@ import net.minecraft.world.World;
 import com.yyon.grapplinghook.grapplemod;
 import com.yyon.grapplinghook.entities.enderArrow;
 import com.yyon.grapplinghook.entities.grappleArrow;
+
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 
 /*
  * This file is part of GrappleMod.
@@ -40,6 +44,13 @@ public class enderBow extends grappleBow implements clickitem {
 //		compound.setLong("lastused", 0);
 		
 		return new enderArrow(worldIn, playerIn, 0);
+	}
+	
+	@Override
+	@SideOnly(Side.CLIENT)
+	public void registerIcons(IIconRegister iconRegister)
+	{
+		 itemIcon = iconRegister.registerIcon("grapplemod:enderhook");
 	}
 	
 	public void onLeftClick(ItemStack stack, EntityPlayer player) {

@@ -11,15 +11,16 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.entity.projectile.EntityThrowable;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.util.BlockPos;
 import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.world.World;
-import net.minecraftforge.fml.common.registry.IEntityAdditionalSpawnData;
 
+import com.yyon.grapplinghook.BlockPos;
 import com.yyon.grapplinghook.grapplemod;
 import com.yyon.grapplinghook.vec;
 import com.yyon.grapplinghook.network.GrappleAttachMessage;
 import com.yyon.grapplinghook.network.GrappleAttachPosMessage;
+
+import cpw.mods.fml.common.registry.IEntityAdditionalSpawnData;
 
 /*
  * This file is part of GrappleMod.
@@ -96,6 +97,7 @@ public class grappleArrow extends EntityThrowable implements IEntityAdditionalSp
     }
     */
 	
+	@Override
 	public void onEntityUpdate(){
 		super.onEntityUpdate();
 		
@@ -139,6 +141,7 @@ public class grappleArrow extends EntityThrowable implements IEntityAdditionalSp
 		return false;
 	}
 	
+	@Override
 	public void setPosition(double x, double y, double z) {
 		if (this.thispos != null) {
 			x = this.thispos.x;
@@ -211,9 +214,9 @@ public class grappleArrow extends EntityThrowable implements IEntityAdditionalSp
 				BlockPos blockpos = new BlockPos(0,0,0);
 				
 				if (movingobjectposition.typeOfHit == MovingObjectPosition.MovingObjectType.BLOCK) {
-					blockpos = movingobjectposition.getBlockPos();
+					blockpos = new BlockPos(movingobjectposition.blockX, movingobjectposition.blockY, movingobjectposition.blockZ);//movingobjectposition.getBlockPos();
 					if (!grapplemod.anyblocks) {
-						Block block = this.worldObj.getBlockState(blockpos).getBlock();
+						Block block = this.worldObj.getBlock(blockpos.x, blockpos.y, blockpos.z);
 						if (!grapplemod.grapplingblocks.contains(block)) {
 							System.out.println("Hit invalid block");
 							this.removeServer();
@@ -236,7 +239,7 @@ public class grappleArrow extends EntityThrowable implements IEntityAdditionalSp
 		            
 	//	            doposupdate = true;
 		            
-		            this.setPositionAndUpdate(vec3.x, vec3.y, vec3.z);
+		            this.setPosition(vec3.x, vec3.y, vec3.z);
 		        }
 		        
 				if (this.toofaraway()) {
@@ -305,7 +308,8 @@ public class grappleArrow extends EntityThrowable implements IEntityAdditionalSp
         return 0F;
     }
 	
-    protected float getVelocity()
+	@Override
+    protected float func_70182_d()
     {
         return 5F;
     }
@@ -313,6 +317,7 @@ public class grappleArrow extends EntityThrowable implements IEntityAdditionalSp
 	public void removeServer() {
 		this.kill();
 		this.shootingEntityID = 0;
+		System.out.println("REMOVE SERVER!");
 	}
 	
 	public int getControlId() {
@@ -320,7 +325,7 @@ public class grappleArrow extends EntityThrowable implements IEntityAdditionalSp
 	}
 
 	public void setAttachPos(double x, double y, double z) {
-		this.setPositionAndUpdate(x, y, z);
+		this.setPosition(x, y, z);
 		this.motionX = 0;
 		this.motionY = 0;
 		this.motionZ = 0;

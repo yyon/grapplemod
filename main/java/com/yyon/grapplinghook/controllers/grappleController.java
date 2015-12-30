@@ -71,17 +71,19 @@ public class grappleController {
 	}
 	
 	public void unattach() {
-		System.out.println("GrappleEnd " + this.toString());
-		
-		this.attached = false;
-		
-		grappleArrow arrow = getArrow();
-		if (arrow != null) {
-			arrow.remove();
+		if (grapplemod.controllers.containsValue(this)) {
+			System.out.println("GrappleEnd " + this.toString());
+			
+			this.attached = false;
+			
+			grappleArrow arrow = getArrow();
+			if (arrow != null) {
+				arrow.remove();
+			}
+			
+			grapplemod.unregisterController(this.entityId);
+			grapplemod.network.sendToServer(new GrappleEndMessage(this.entityId, this.arrowId));
 		}
-		
-		grapplemod.unregisterController(this.entityId);
-		grapplemod.network.sendToServer(new GrappleEndMessage(this.entityId, this.arrowId));
 	}
 	
 	public grappleArrow getArrow() {
@@ -101,7 +103,7 @@ public class grappleController {
 		playerstrafe = strafe;
 		playerjump = jump;
 		playermovement = new vec(strafe, 0, forward);
-		playermovement = playermovement.rotate_yaw((float) (this.entity.rotationYaw * (-Math.PI / 180.0)));
+		playermovement = playermovement.rotate_yaw((float) (this.entity.rotationYaw * (Math.PI / 180.0)));
 	}
 		
 	public void updatePlayerPos() {
