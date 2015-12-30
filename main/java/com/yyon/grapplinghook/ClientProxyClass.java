@@ -199,6 +199,7 @@ public class ClientProxyClass extends CommonProxyClass {
 			if (grapplemod.controllerpos.containsKey(event.pos)) {
 				grappleController control = grapplemod.controllerpos.get(event.pos);
 				control.unattach();
+				grapplemod.controllerpos.remove(event.pos);
 			}
 		}
     }

@@ -70,8 +70,10 @@ public class GrappleEndMessage implements IMessage {
 				int id = message.entityid;
 				System.out.print("Going to remove attached: ");
 				System.out.println(id);
+				System.out.println(message.arrowid);
 				if (grapplemod.attached.contains(id)) {
-					grapplemod.attached.remove(new Integer(id));
+					grapplemod.attached.remove(new Integer
+							(id));
 				} else {
 					System.out.println("Tried to disattach but couldn't");
 					System.out.println(grapplemod.attached);
@@ -81,10 +83,17 @@ public class GrappleEndMessage implements IMessage {
               	Entity grapple = world.getEntityByID(message.arrowid);
           		if (grapple instanceof grappleArrow) {
           			((grappleArrow) grapple).removeServer();
+          		} else {
+          			System.out.println("Couldn't remove entity");
+          			System.out.println(message.arrowid);
           		}
           		
           		Entity entity = world.getEntityByID(id);
-          		entity.fallDistance = 0;
+          		if (entity != null) {
+	          		entity.fallDistance = 0;
+          		} else {
+          			System.out.println("couldn't find person");
+          		}
             }
     	}
     	

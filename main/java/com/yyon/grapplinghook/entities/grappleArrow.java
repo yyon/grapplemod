@@ -80,6 +80,9 @@ public class grappleArrow extends EntityThrowable implements IEntityAdditionalSp
 //		}
 		this.shootingEntityID = this.shootingEntity.getEntityId();
 		System.out.println("init (2) " + this.toString());
+		System.out.println(this.shootingEntityID);
+		System.out.println(this.shootingEntity.worldObj);
+		System.out.println(this.shootingEntity.getUniqueID());
 		
 		grapplemod.updateMaxLen();
 		grapplemod.updateGrapplingBlocks();
