@@ -2,7 +2,6 @@ package com.yyon.grapplinghook.items;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.Vec3;
 import net.minecraft.world.World;
 
 import com.yyon.grapplinghook.grapplemod;
@@ -41,10 +40,6 @@ public class enderBow extends grappleBow implements clickitem {
 //		compound.setLong("lastused", 0);
 		
 		return new enderArrow(worldIn, playerIn, 0);
-	}
-	
-	public Vec3 multvec(Vec3 a, double changefactor) {
-		return new Vec3(a.xCoord * changefactor, a.yCoord * changefactor, a.zCoord * changefactor);
 	}
 	
 	public void onLeftClick(ItemStack stack, EntityPlayer player) {

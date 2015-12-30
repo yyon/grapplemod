@@ -13,11 +13,11 @@ import net.minecraft.entity.projectile.EntityThrowable;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.BlockPos;
 import net.minecraft.util.MovingObjectPosition;
-import net.minecraft.util.Vec3;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.registry.IEntityAdditionalSpawnData;
 
 import com.yyon.grapplinghook.grapplemod;
+import com.yyon.grapplinghook.vec;
 import com.yyon.grapplinghook.network.GrappleAttachMessage;
 import com.yyon.grapplinghook.network.GrappleAttachPosMessage;
 
@@ -63,7 +63,7 @@ public class grappleArrow extends EntityThrowable implements IEntityAdditionalSp
 	
 //	public grappleController control;
 	private boolean firstattach = false;
-	public Vec3 thispos;
+	public vec thispos;
 	
 	public grappleArrow(World worldIn) {
 		super(worldIn);
@@ -111,7 +111,7 @@ public class grappleArrow extends EntityThrowable implements IEntityAdditionalSp
 			this.motionY = 0;
 			this.motionZ = 0;
 			this.firstattach = false;
-			super.setPosition(this.thispos.xCoord, this.thispos.yCoord, this.thispos.zCoord);
+			super.setPosition(this.thispos.x, this.thispos.y, this.thispos.z);
 			System.out.println("Re-updated pos");
 		}
 		
@@ -129,7 +129,7 @@ public class grappleArrow extends EntityThrowable implements IEntityAdditionalSp
 		if (!this.worldObj.isRemote) {
 			if (!grapplemod.attached.contains(this.shootingEntityID)) {
 				if (grapplemod.grapplingLength != 0) {
-					double d = new Vec3(this.posX, this.posY, this.posZ).subtract(new Vec3(this.shootingEntity.posX, this.shootingEntity.posY, this.shootingEntity.posZ)).lengthVector();
+					double d = vec.positionvec(this).sub(vec.positionvec(this.shootingEntity)).length();
 					if (d > grapplemod.grapplingLength) {
 						return true;
 					}
@@ -141,9 +141,9 @@ public class grappleArrow extends EntityThrowable implements IEntityAdditionalSp
 	
 	public void setPosition(double x, double y, double z) {
 		if (this.thispos != null) {
-			x = this.thispos.xCoord;
-			y = this.thispos.yCoord;
-			z = this.thispos.zCoord;
+			x = this.thispos.x;
+			y = this.thispos.y;
+			z = this.thispos.z;
 		}
 		super.setPosition(x, y, z);
 	}
@@ -199,10 +199,10 @@ public class grappleArrow extends EntityThrowable implements IEntityAdditionalSp
 				if (movingobjectposition.typeOfHit == MovingObjectPosition.MovingObjectType.ENTITY) {
 					// hit entity
 					Entity entityhit = movingobjectposition.entityHit;
-					Vec3 playerpos = this.shootingEntity.getPositionVector();
-					Vec3 entitypos = entityhit.getPositionVector();
-					Vec3 yank = multvec(playerpos.subtract(entitypos), 0.4);
-					entityhit.addVelocity(yank.xCoord, Math.min(yank.yCoord, 2), yank.zCoord);
+					vec playerpos = vec.positionvec(this.shootingEntity);
+					vec entitypos = vec.positionvec(entityhit);
+					vec yank = playerpos.sub(entitypos).mult(0.4);
+					entityhit.addVelocity(yank.x, Math.min(yank.y, 2), yank.z);
 					
 					this.removeServer();
 					return;
@@ -226,15 +226,17 @@ public class grappleArrow extends EntityThrowable implements IEntityAdditionalSp
 				System.out.println("attaching! (server) " + this.toString());
 				
 	//	        Vec3 vec31 = new Vec3(this.posX, this.posY, this.posZ);
-		        Vec3 vec3 = new Vec3(this.posX + this.motionX, this.posY + this.motionY, this.posZ + this.motionZ);
+//		        vec vec3 = new vec(this.posX + this.motionX, this.posY + this.motionY, this.posZ + this.motionZ);
+				vec vec3 = vec.positionvec(this);
+				vec3.add_ip(vec.motionvec(this));
 		        
 		        if (movingobjectposition != null)
 		        {
-		            vec3 = new Vec3(movingobjectposition.hitVec.xCoord, movingobjectposition.hitVec.yCoord, movingobjectposition.hitVec.zCoord);
+		            vec3 = new vec(movingobjectposition.hitVec.xCoord, movingobjectposition.hitVec.yCoord, movingobjectposition.hitVec.zCoord);
 		            
 	//	            doposupdate = true;
 		            
-		            this.setPositionAndUpdate(vec3.xCoord, vec3.yCoord, vec3.zCoord);
+		            this.setPositionAndUpdate(vec3.x, vec3.y, vec3.z);
 		        }
 		        
 				if (this.toofaraway()) {
@@ -245,7 +247,7 @@ public class grappleArrow extends EntityThrowable implements IEntityAdditionalSp
 		        this.motionY = 0;
 		        this.motionZ = 0;
 		        
-		        this.thispos = new Vec3(this.posX, this.posY, this.posZ);
+		        this.thispos = vec.positionvec(this);
 				this.firstattach = true;
 		        
 	//			r = this.getDistanceToEntity(this.shootingEntity);
@@ -313,10 +315,6 @@ public class grappleArrow extends EntityThrowable implements IEntityAdditionalSp
 		this.shootingEntityID = 0;
 	}
 	
-	public Vec3 multvec(Vec3 a, double changefactor) {
-		return new Vec3(a.xCoord * changefactor, a.yCoord * changefactor, a.zCoord * changefactor);
-	}
-	
 	public int getControlId() {
 		return grapplemod.GRAPPLEID;
 	}
@@ -327,6 +325,6 @@ public class grappleArrow extends EntityThrowable implements IEntityAdditionalSp
 		this.motionY = 0;
 		this.motionZ = 0;
 		this.firstattach = true;
-        this.thispos = new Vec3(x, y, z);
+        this.thispos = new vec(x, y, z);
 	}
 }

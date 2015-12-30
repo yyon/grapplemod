@@ -15,7 +15,6 @@ import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.play.server.S12PacketEntityVelocity;
-import net.minecraft.util.Vec3;
 import net.minecraftforge.event.world.BlockEvent.BreakEvent;
 import net.minecraftforge.fml.client.registry.RenderingRegistry;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
@@ -146,17 +145,17 @@ public class ClientProxyClass extends CommonProxyClass {
 //				compound.setLong("lastused", world.getTotalWorldTime());
 				enderlaunchtimer.put(player.getEntityId(), player.worldObj.getTotalWorldTime());
 				
-	        	Vec3 facing = player.getLookVec();
-				Vec3 playermotion = new Vec3(player.motionX, player.motionY, player.motionZ);
-				Vec3 newvec = playermotion.add(multvec(facing, 3));
+	        	vec facing = new vec(player.getLookVec());
+				vec playermotion = vec.motionvec(player);
+				vec newvec = playermotion.add(facing.mult(3));
 				
 //				grappleArrow arrow = this.getArrow(stack, world);
 				
 				if (!grapplemod.controllers.containsKey(player.getEntityId())) {
 //					player.setVelocity(newvec.xCoord, newvec.yCoord, newvec.zCoord);
-					player.motionX = newvec.xCoord;
-					player.motionY = newvec.yCoord;
-					player.motionZ = newvec.zCoord;
+					player.motionX = newvec.x;
+					player.motionY = newvec.y;
+					player.motionZ = newvec.z;
 					
 					if (player instanceof EntityPlayerMP) {
 						((EntityPlayerMP) player).playerNetServerHandler.sendPacket(new S12PacketEntityVelocity(player));
@@ -164,22 +163,18 @@ public class ClientProxyClass extends CommonProxyClass {
 						grapplemod.network.sendToServer(new PlayerMovementMessage(player.getEntityId(), player.posX, player.posY, player.posZ, player.motionX, player.motionY, player.motionZ));
 					}
 				} else {
-					facing = multvec(facing, 3);
+					facing.mult_ip(3);
 //					if (player instanceof EntityPlayerMP) {
 //						System.out.println("Sending EnderGrappleLaunchMessage");
 //						grapplemod.sendtocorrectclient(new EnderGrappleLaunchMessage(player.getEntityId(), facing.xCoord, facing.yCoord, facing.zCoord), player.getEntityId(), player.worldObj);
 //					} else {
-					grapplemod.receiveEnderLaunch(player.getEntityId(), facing.xCoord, facing.yCoord, facing.zCoord);
+					grapplemod.receiveEnderLaunch(player.getEntityId(), facing.x, facing.y, facing.z);
 //					}
 
 //					arrow.control.motion = arrow.control.motion.add(newvec);
 				}
 			}
 		}
-	}
-	
-	public Vec3 multvec(Vec3 a, double changefactor) {
-		return new Vec3(a.xCoord * changefactor, a.yCoord * changefactor, a.zCoord * changefactor);
 	}
 	
 	@Override

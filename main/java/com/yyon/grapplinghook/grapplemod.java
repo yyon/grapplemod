@@ -14,7 +14,6 @@ import net.minecraft.item.ItemArmor;
 import net.minecraft.item.ItemStack;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.BlockPos;
-import net.minecraft.util.Vec3;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.Mod;
@@ -267,7 +266,7 @@ public class grapplemod {
 		}
 	}
 	
-	public static grappleController createControl(int id, int arrowid, int entityid, World world, Vec3 pos, int maxlen, BlockPos blockpos) {
+	public static grappleController createControl(int id, int arrowid, int entityid, World world, vec pos, int maxlen, BlockPos blockpos) {
 		/*
 		Class<? extends grappleController> theclass = grapplecontrolsclasses.get(id);
 		Constructor<? extends grappleController> ctor;

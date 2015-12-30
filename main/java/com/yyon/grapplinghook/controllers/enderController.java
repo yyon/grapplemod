@@ -1,7 +1,8 @@
 package com.yyon.grapplinghook.controllers;
 
-import net.minecraft.util.Vec3;
 import net.minecraft.world.World;
+
+import com.yyon.grapplinghook.vec;
 
 /*
  * This file is part of GrappleMod.
@@ -21,7 +22,7 @@ import net.minecraft.world.World;
  */
 
 public class enderController extends grappleController {
-	public enderController(int arrowId, int entityId, World world, Vec3 pos, int maxlen) {
+	public enderController(int arrowId, int entityId, World world, vec pos, int maxlen) {
 		super(arrowId, entityId, world, pos, maxlen);
 	}
 

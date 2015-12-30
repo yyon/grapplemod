@@ -5,13 +5,13 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.BlockPos;
 import net.minecraft.util.IThreadListener;
-import net.minecraft.util.Vec3;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 
 import com.yyon.grapplinghook.grapplemod;
+import com.yyon.grapplinghook.vec;
 import com.yyon.grapplinghook.entities.grappleArrow;
 
 /*
@@ -121,7 +121,7 @@ public class GrappleAttachMessage implements IMessage {
             		System.out.println(message.id);
             	}
             	
-            	grapplemod.createControl(message.controlid, message.id, message.entityid, world, new Vec3(message.x, message.y, message.z), message.maxlen, message.blockpos);
+            	grapplemod.createControl(message.controlid, message.id, message.entityid, world, new vec(message.x, message.y, message.z), message.maxlen, message.blockpos);
             }
     	}
     	

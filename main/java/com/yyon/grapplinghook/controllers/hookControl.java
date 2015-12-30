@@ -2,8 +2,9 @@ package com.yyon.grapplinghook.controllers;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.util.Vec3;
 import net.minecraft.world.World;
+
+import com.yyon.grapplinghook.vec;
 
 /*
  * This file is part of GrappleMod.
@@ -23,7 +24,7 @@ import net.minecraft.world.World;
  */
 
 public class hookControl extends grappleController {
-	public hookControl(int arrowId, int entityId, World world, Vec3 pos, int maxlen) {
+	public hookControl(int arrowId, int entityId, World world, vec pos, int maxlen) {
 		super(arrowId, entityId, world, pos, maxlen);
 	}
 
@@ -53,15 +54,15 @@ public class hookControl extends grappleController {
 //				double l = this.getDistanceToEntity(entity);
 				if (true) {
 					
-					Vec3 arrowpos = this.pos;
-					Vec3 playerpos = player.getPositionVector();
+					vec arrowpos = this.pos;
+					vec playerpos = vec.positionvec(player);
 					
-					Vec3 oldspherevec = playerpos.subtract(arrowpos);
-					Vec3 spherevec = changelen(oldspherevec, r);
+					vec oldspherevec = playerpos.sub(arrowpos);
+					vec spherevec = oldspherevec.changelen(r);
 //					Vec3 spherechange = spherevec.subtract(oldspherevec);
 //					Vec3 spherepos = spherevec.add(arrowpos);
 					
-					double dist = oldspherevec.lengthVector();
+					double dist = oldspherevec.length();
 					
 					if (playerjump) {
 						this.dojump(player, spherevec);
@@ -75,14 +76,14 @@ public class hookControl extends grappleController {
 							System.out.println(this.r);
 						}*/
 					} else {
-						motion = motion.add(changelen(this.playermovement, 0.01));
+						motion.add_ip(this.playermovement.changelen(0.01));
 					}
 					
-					Vec3 newmotion;
+					vec newmotion;
 					
 					if (dist < 4) {
-						if (motion.lengthVector() > 0.3) {
-							motion = multvec(motion, 0.6);
+						if (motion.length() > 0.3) {
+							motion.mult_ip(0.6);
 						}
 						
 //						if (this.playermovement.lengthVector() > 0.05) {
@@ -98,12 +99,12 @@ public class hookControl extends grappleController {
 						}
 					}
 					
-					motion = motion.add(changelen(arrowpos.subtract(playerpos), acceleration));
+					motion.add_ip(arrowpos.sub(playerpos).changelen(acceleration));
 					
-					double speed = proj(motion, oldspherevec).lengthVector();
+					double speed = motion.proj(oldspherevec).length();
 					
 					if (speed > maxspeed) {
-						motion = changelen(motion, maxspeed);
+						motion.changelen_ip(maxspeed);
 					}
 					
 					/*
@@ -118,13 +119,13 @@ public class hookControl extends grappleController {
 					
 					newmotion = motion;
 					
-					Vec3 motiontorwards = changelen(spherevec, -1);
+					vec motiontorwards = spherevec.changelen(-1);
 					motion = dampenmotion(motion, motiontorwards);
 					
 //					entity.setVelocity(newmotion.xCoord, newmotion.yCoord, newmotion.zCoord);
-					entity.motionX = newmotion.xCoord;
-					entity.motionY = newmotion.yCoord;
-					entity.motionZ = newmotion.zCoord;
+					entity.motionX = newmotion.x;
+					entity.motionY = newmotion.y;
+					entity.motionZ = newmotion.z;
 					
 //					if (player instanceof EntityPlayerMP) {
 						
