@@ -245,7 +245,8 @@ public class grappleArrow extends EntityThrowable implements IEntityAdditionalSp
 						Block block = this.worldObj.getBlock(blockpos.x, blockpos.y, blockpos.z);
 //*/
 
-						if (!grapplemod.grapplingblocks.contains(block)) {
+						if ((!grapplemod.removeblocks && !grapplemod.grapplingblocks.contains(block))
+								|| (grapplemod.removeblocks && grapplemod.grapplingblocks.contains(block))) {
 							System.out.println("Hit invalid block");
 							this.removeServer();
 							return;

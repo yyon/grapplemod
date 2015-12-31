@@ -94,9 +94,9 @@ public class grapplemod {
     public static final String MODID = "grapplemod";
     
 //* // 1.8 Compatability
-    public static final String VERSION = "1.8-v4";
+    public static final String VERSION = "1.8-v5";
 /*/ // 1.7.10 Compatability
-    public static final String VERSION = "1.7.10-v4";
+    public static final String VERSION = "1.7.10-v5";
 //*/
 
     public static Item grapplebowitem;
@@ -121,6 +121,7 @@ public class grapplemod {
 	public static int grapplingLength = 0;
 	public static boolean anyblocks = true;
 	public static ArrayList<Block> grapplingblocks;
+	public static boolean removeblocks = false;
 	
 	@SidedProxy(clientSide="com.yyon.grapplinghook.ClientProxyClass", serverSide="com.yyon.grapplinghook.ServerProxyClass")
 	public static CommonProxyClass proxy;
@@ -165,9 +166,11 @@ public class grapplemod {
 //* // 1.8 Compatability
 		MinecraftServer.getServer().worldServerForDimension(0).getGameRules().addGameRule("grapplingLength", "0", GameRules.ValueType.NUMERICAL_VALUE);
 		MinecraftServer.getServer().worldServerForDimension(0).getGameRules().addGameRule("grapplingBlocks", "any", GameRules.ValueType.ANY_VALUE);
+		MinecraftServer.getServer().worldServerForDimension(0).getGameRules().addGameRule("grapplingNonBlocks", "none", GameRules.ValueType.ANY_VALUE);
 /*/ // 1.7.10 Compatability
 		MinecraftServer.getServer().worldServerForDimension(0).getGameRules().addGameRule("grapplingLength", "0");
 		MinecraftServer.getServer().worldServerForDimension(0).getGameRules().addGameRule("grapplingBlocks", "any");
+		MinecraftServer.getServer().worldServerForDimension(0).getGameRules().addGameRule("grapplingNonBlocks", "none");
 //*/
 
 	}
@@ -177,7 +180,9 @@ public class grapplemod {
 		grapplemod.grapplingLength = MinecraftServer.getServer().worldServerForDimension(0).getGameRules().getInt("grapplingLength");
 /*/ // 1.7.10 Compatability
 		String s = MinecraftServer.getServer().worldServerForDimension(0).getGameRules().getGameRuleStringValue("grapplingLength");
-		grapplemod.grapplingLength = Integer.parseInt(s);
+		if (!s.equals("")) {
+			grapplemod.grapplingLength = Integer.parseInt(s);
+		}
 //*/
 
 	}
@@ -185,9 +190,19 @@ public class grapplemod {
 	public static void updateGrapplingBlocks() {
 		String s = MinecraftServer.getServer().worldServerForDimension(0).getGameRules().getGameRuleStringValue("grapplingBlocks");
 		if (s.equals("any") || s.equals("")) {
-			anyblocks = true;
+			s = MinecraftServer.getServer().worldServerForDimension(0).getGameRules().getGameRuleStringValue("grapplingNonBlocks");
+			if (s.equals("none") || s.equals("")) {
+				anyblocks = true;
+			} else {
+				anyblocks = false;
+				removeblocks = true;
+			}
 		} else {
 			anyblocks = false;
+			removeblocks = false;
+		}
+	
+		if (!anyblocks) {
 			String[] blockstr = s.split(",");
 			
 			grapplingblocks = new ArrayList<Block>();
