@@ -5,10 +5,10 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.world.World;
 
 import com.yyon.grapplinghook.grapplemod;
+import com.yyon.grapplinghook.vec;
 import com.yyon.grapplinghook.entities.grappleArrow;
 import com.yyon.grapplinghook.network.GrappleEndMessage;
 import com.yyon.grapplinghook.network.PlayerMovementMessage;
-import com.yyon.grapplinghook.vec;
 
 /*
  * This file is part of GrappleMod.
@@ -46,13 +46,13 @@ public class grappleController {
 	public boolean playerjump = false;
 	public vec playermovement = new vec(0,0,0);
 	
-	public int counter = 0;
+//	public int counter = 0;
 	public int ongroundtimer = 0;
 	
 	public int maxlen;
 	
 	public grappleController(int arrowId, int entityId, World world, vec pos, int maxlen) {
-		System.out.println("GrappleStart " + this.toString());
+//		System.out.println("GrappleStart " + this.toString());
 		
 		this.arrowId = arrowId;
 		this.entityId = entityId;
@@ -72,7 +72,7 @@ public class grappleController {
 	
 	public void unattach() {
 		if (grapplemod.controllers.containsValue(this)) {
-			System.out.println("GrappleEnd " + this.toString());
+//			System.out.println("GrappleEnd " + this.toString());
 			
 			this.attached = false;
 			
@@ -112,11 +112,11 @@ public class grappleController {
 		if (this.attached) {
 			if(entity != null) {
 				if (true) {
-					counter++;
-					if (counter > 1000) {
-						counter = 0;
-						System.out.println("pulling " + this.toString());
-					}
+//					counter++;
+//					if (counter > 1000) {
+//						counter = 0;
+//						System.out.println("pulling " + this.toString());
+//					}
 					
 					if (entity.onGround) {
 						ongroundtimer = 20;
@@ -247,8 +247,8 @@ public class grappleController {
 		vec jump = new vec(0, maxjump, 0);
 		jump = jump.proj(spherevec);
 		double jumppower = jump.y;
-		System.out.println("JUMP");
-		System.out.println(jumppower);
+//		System.out.println("JUMP");
+//		System.out.println(jumppower);
 		if (jumppower < 0) {
 			jumppower = 0;
 		}
@@ -264,7 +264,7 @@ public class grappleController {
 		if (player.onGround) {
 			jumppower = 0;
 		}
-		System.out.println(jumppower);
+//		System.out.println(jumppower);
 		
 		this.unattach();
 		

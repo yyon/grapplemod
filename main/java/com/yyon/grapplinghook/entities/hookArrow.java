@@ -33,13 +33,7 @@ public class hookArrow extends grappleArrow
 		super(worldIn, shooter, p_i1756_3_);
 	}
 	
-//* // 1.8 Compatability
-    protected float getVelocity()
-/*/ // 1.7.10 Compatability
-	@Override
-    protected float func_70182_d()
-//*/
-
+    public float getVelocity()
     {
         return 20F;
     }
@@ -48,10 +42,4 @@ public class hookArrow extends grappleArrow
 	public int getControlId() {
 		return grapplemod.HOOKID;
 	}
-    /*
-    @Override
-	public void createControl() {
-		this.control = new hookControl(this.getEntityId(), this.shootingEntity.getEntityId(), this.worldObj, new Vec3(this.posX, this.posY, this.posZ));
-	}
-	*/
 }

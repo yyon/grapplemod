@@ -23,7 +23,7 @@ plugins {
     id "net.minecraftforge.gradle.forge" version "2.0.2"
 }
 
-version = "v5-1.8"
+version = "v6-1.8"
 group= "com.yyon.grapplemod" // http://maven.apache.org/guides/mini/guide-naming-conventions.html
 archivesBaseName = "grapplemod"
 

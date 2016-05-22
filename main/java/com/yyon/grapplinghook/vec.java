@@ -1,7 +1,7 @@
 package com.yyon.grapplinghook;
 
 import net.minecraft.entity.Entity;
-import net.minecraft.util.Vec3;
+import net.minecraft.util.math.Vec3d;
 
 public class vec {
 	public double x;
@@ -14,10 +14,10 @@ public class vec {
 		this.z = z;
 	}
 	
-	public vec(Vec3 v2) {
-		this.x = v2.xCoord;
-		this.y = v2.yCoord;
-		this.z = v2.zCoord;
+	public vec(Vec3d vec3d) {
+		this.x = vec3d.xCoord;
+		this.y = vec3d.yCoord;
+		this.z = vec3d.zCoord;
 	}
 	
 	public static vec positionvec(Entity e) {
