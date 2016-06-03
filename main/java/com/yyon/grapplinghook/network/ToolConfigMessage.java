@@ -11,6 +11,7 @@ import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 import com.yyon.grapplinghook.grapplemod;
 //* // 1.8 Compatability
 
+
 /*
  * This file is part of GrappleMod.
 
@@ -28,35 +29,31 @@ import com.yyon.grapplinghook.grapplemod;
     along with GrappleMod.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-public class GrappleEndMessage implements IMessage {
+public class ToolConfigMessage implements IMessage {
    
-	public int entityid;
-	public int arrowid;
+	public int id;
 
-    public GrappleEndMessage() { }
+    public ToolConfigMessage() { }
 
-    public GrappleEndMessage(int entityid, int arrowid) {
-    	this.entityid = entityid;
-    	this.arrowid = arrowid;
+    public ToolConfigMessage(int id) {
+    	this.id = id;
     }
 
     @Override
     public void fromBytes(ByteBuf buf) {
-    	this.entityid = buf.readInt();
-    	this.arrowid = buf.readInt();
+    	this.id = buf.readInt();
     }
 
     @Override
     public void toBytes(ByteBuf buf) {
-    	buf.writeInt(this.entityid);
-    	buf.writeInt(this.arrowid);
+    	buf.writeInt(this.id);
     }
 
-    public static class Handler implements IMessageHandler<GrappleEndMessage, IMessage> {
+    public static class Handler implements IMessageHandler<ToolConfigMessage, IMessage> {
     	public class runner implements Runnable {
-    		GrappleEndMessage message;
+    		ToolConfigMessage message;
     		MessageContext ctx;
-    		public runner(GrappleEndMessage message, MessageContext ctx) {
+    		public runner(ToolConfigMessage message, MessageContext ctx) {
     			super();
     			this.message = message;
     			this.ctx = ctx;
@@ -64,17 +61,17 @@ public class GrappleEndMessage implements IMessage {
     		
             @Override
             public void run() {
-
-				int id = message.entityid;
+				int id = message.id;
 				
 				World w = ctx.getServerHandler().playerEntity.worldObj;
 				
-				grapplemod.receiveGrappleEnd(id, w, message.arrowid);
+				grapplemod.receiveToolConfigMessage(id, w);
             }
     	}
     	
+       
         @Override
-        public IMessage onMessage(GrappleEndMessage message, MessageContext ctx) {
+        public IMessage onMessage(ToolConfigMessage message, MessageContext ctx) {
 
         	IThreadListener mainThread = (WorldServer) ctx.getServerHandler().playerEntity.worldObj; // or Minecraft.getMinecraft() on the client
             mainThread.addScheduledTask(new runner(message, ctx));

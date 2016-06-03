@@ -33,7 +33,7 @@ public class grappleController {
 	public World world;
 	public vec pos;
 	
-//	public grappleArrow arrow;
+	public grappleArrow arrow;
 	public Entity entity;
 	
 	public boolean attached = true;
@@ -44,6 +44,7 @@ public class grappleController {
 	public double playerforward = 0;
 	public double playerstrafe = 0;
 	public boolean playerjump = false;
+	public vec playermovement_unrotated = new vec(0,0,0);
 	public vec playermovement = new vec(0,0,0);
 	
 //	public int counter = 0;
@@ -51,7 +52,9 @@ public class grappleController {
 	
 	public int maxlen;
 	
-	public grappleController(int arrowId, int entityId, World world, vec pos, int maxlen) {
+	public int controllerid;
+	
+	public grappleController(int arrowId, int entityId, World world, vec pos, int maxlen, int controllerid) {
 //		System.out.println("GrappleStart " + this.toString());
 		
 		this.arrowId = arrowId;
@@ -60,6 +63,8 @@ public class grappleController {
 		this.pos = pos;
 		this.maxlen = maxlen;
 		
+		this.controllerid = controllerid;
+		
 		this.entity = world.getEntityByID(entityId);
 		
 		this.r = this.pos.sub(vec.positionvec(entity)).length();
@@ -67,12 +72,19 @@ public class grappleController {
 		
 		this.ongroundtimer = 0;
 		
-		grapplemod.registerController(entityId, this);
+		grapplemod.registerController(this.entityId, this);
+		
+		if (arrowId != -1) {
+			Entity arrowentity = world.getEntityByID(arrowId);
+			if (arrowentity != null && !arrowentity.isDead && arrowentity instanceof grappleArrow) {
+				this.arrow = (grappleArrow)arrowentity;
+			}
+		}
 	}
 	
 	public void unattach() {
 		if (grapplemod.controllers.containsValue(this)) {
-//			System.out.println("GrappleEnd " + this.toString());
+//			System.out.println("unattach " + this.toString());
 			
 			this.attached = false;
 			
@@ -83,6 +95,10 @@ public class grappleController {
 			
 			grapplemod.unregisterController(this.entityId);
 			grapplemod.network.sendToServer(new GrappleEndMessage(this.entityId, this.arrowId));
+			
+			if (this.controllerid != grapplemod.AIRID) {
+				grapplemod.createControl(grapplemod.AIRID, -1, this.entityId, this.entity.worldObj, new vec(0,0,0), 0, null);
+			}
 		}
 	}
 	
@@ -102,8 +118,8 @@ public class grappleController {
 		playerforward = forward;
 		playerstrafe = strafe;
 		playerjump = jump;
-		playermovement = new vec(strafe, 0, forward);
-		playermovement = playermovement.rotate_yaw((float) (this.entity.rotationYaw * (Math.PI / 180.0)));
+		playermovement_unrotated = new vec(strafe, 0, forward);
+		playermovement = playermovement_unrotated.rotate_yaw((float) (this.entity.rotationYaw * (Math.PI / 180.0)));
 	}
 		
 	public void updatePlayerPos() {
@@ -165,6 +181,18 @@ public class grappleController {
 					}
 					
 					double dist = oldspherevec.length();
+					
+					if (this.arrow != null) {
+		        		if (dist < this.r) {
+			    			double taut = 1 - ((this.r - dist) / 5);
+			    			if (taut < 0) {
+			    				taut = 0;
+			    			}
+			    			this.arrow.taut = taut;
+		        		} else {
+		        			this.arrow.taut = 1;
+		        		}
+		        	}
 					
 					if (entity instanceof EntityPlayer) {
 						EntityPlayer player = (EntityPlayer) entity;
@@ -245,14 +273,16 @@ public class grappleController {
 		
 		double maxjump = 1;
 		vec jump = new vec(0, maxjump, 0);
-		jump = jump.proj(spherevec);
+		if (spherevec != null) {
+			jump = jump.proj(spherevec);
+		}
 		double jumppower = jump.y;
 //		System.out.println("JUMP");
 //		System.out.println(jumppower);
 		if (jumppower < 0) {
 			jumppower = 0;
 		}
-		if (spherevec.y > 0) {
+		if (spherevec != null && spherevec.y > 0) {
 			jumppower = 0;
 		}
 		if (player.isCollided) {
@@ -308,6 +338,14 @@ public class grappleController {
 		this.entity.motionX = this.motion.x;
 		this.entity.motionY = this.motion.y;
 		this.entity.motionZ = this.motion.z;
+	}
+	
+	public void applyAirFriction() {
+		double vel = this.motion.length();
+		double dragforce = vel*vel / 50;
 		
+		vec airfric = new vec(this.motion.x, this.motion.y, this.motion.z);
+		airfric.changelen_ip(-dragforce);
+		this.motion.add_ip(airfric);
 	}
 }

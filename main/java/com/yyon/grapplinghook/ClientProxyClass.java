@@ -6,6 +6,7 @@ import java.util.HashMap;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
+import net.minecraft.client.renderer.ItemMeshDefinition;
 import net.minecraft.client.renderer.block.model.ModelBakery;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.client.renderer.entity.Render;
@@ -33,11 +34,13 @@ import com.yyon.grapplinghook.entities.RenderGrappleArrow;
 import com.yyon.grapplinghook.entities.grappleArrow;
 import com.yyon.grapplinghook.items.clickitem;
 import com.yyon.grapplinghook.items.enderBow;
+import com.yyon.grapplinghook.items.grappleBow;
 import com.yyon.grapplinghook.items.launcherItem;
 import com.yyon.grapplinghook.network.PlayerMovementMessage;
 
 public class ClientProxyClass extends CommonProxyClass {
-	public boolean leftclick;
+	public boolean leftclick = false;
+	public boolean prevleftclick = false;
 	public HashMap<Integer, Long> enderlaunchtimer = new HashMap<Integer, Long>();
 	public final int reusetime = 50;
 	
@@ -53,12 +56,86 @@ public class ClientProxyClass extends CommonProxyClass {
 		registerItemModels();
 	}
 	
+	public ModelResourceLocation grapplinghookloc = new ModelResourceLocation("grapplemod:grapplinghook", "inventory");
+	public ModelResourceLocation hookshotloc = new ModelResourceLocation("grapplemod:hookshot", "inventory");
+	public ModelResourceLocation enderhookloc = new ModelResourceLocation("grapplemod:enderhook", "inventory");
+	public ModelResourceLocation magnetbowloc = new ModelResourceLocation("grapplemod:magnetbow", "inventory");
+	public ModelResourceLocation ropeloc = new ModelResourceLocation("grapplemod:rope", "inventory");
+	public ModelResourceLocation hookshotropeloc = new ModelResourceLocation("grapplemod:hookshotrope", "inventory");
+	public ModelResourceLocation repellerloc = new ModelResourceLocation("grapplemod:repeller", "inventory");
+	public ModelResourceLocation repelleronloc = new ModelResourceLocation("grapplemod:repelleron", "inventory");
+	public ModelResourceLocation multihookloc = new ModelResourceLocation("grapplemod:multihook", "inventory");
+	public ModelResourceLocation multihookropeloc = new ModelResourceLocation("grapplemod:multihookrope", "inventory");
+	
 	private void registerItemModels() {
-		registerItemModel(grapplemod.grapplebowitem);
-		registerItemModel(grapplemod.hookshotitem);
+		ModelLoader.setCustomMeshDefinition(grapplemod.grapplebowitem, new ItemMeshDefinition() {
+		    @Override
+		    public ModelResourceLocation getModelLocation(ItemStack stack) {
+		    	if (grappleBow.isactive(stack)) {
+		    		return ropeloc;
+		    	}
+		    	return grapplinghookloc;
+		    }
+		});
+		ModelBakery.registerItemVariants(grapplemod.grapplebowitem, grapplinghookloc);
+		ModelBakery.registerItemVariants(grapplemod.grapplebowitem, ropeloc);
+		ModelLoader.setCustomMeshDefinition(grapplemod.hookshotitem, new ItemMeshDefinition() {
+		    @Override
+		    public ModelResourceLocation getModelLocation(ItemStack stack) {
+		    	if (grappleBow.isactive(stack)) {
+		    		return hookshotropeloc;
+		    	}
+		    	return hookshotloc;
+		    }
+		});
+		ModelBakery.registerItemVariants(grapplemod.hookshotitem, hookshotloc);
+		ModelBakery.registerItemVariants(grapplemod.hookshotitem, hookshotropeloc);
 		registerItemModel(grapplemod.launcheritem);
 		registerItemModel(grapplemod.longfallboots);
-		registerItemModel(grapplemod.enderhookitem);
+		ModelLoader.setCustomMeshDefinition(grapplemod.enderhookitem, new ItemMeshDefinition() {
+		    @Override
+		    public ModelResourceLocation getModelLocation(ItemStack stack) {
+		    	if (grappleBow.isactive(stack)) {
+		    		return ropeloc;
+		    	}
+		    	return enderhookloc;
+		    }
+		});
+		ModelBakery.registerItemVariants(grapplemod.enderhookitem, enderhookloc);
+		ModelBakery.registerItemVariants(grapplemod.enderhookitem, ropeloc);
+		ModelLoader.setCustomMeshDefinition(grapplemod.magnetbowitem, new ItemMeshDefinition() {
+		    @Override
+		    public ModelResourceLocation getModelLocation(ItemStack stack) {
+		    	if (grappleBow.isactive(stack)) {
+		    		return ropeloc;
+		    	}
+		    	return magnetbowloc;
+		    }
+		});
+		ModelBakery.registerItemVariants(grapplemod.magnetbowitem, magnetbowloc);
+		ModelBakery.registerItemVariants(grapplemod.magnetbowitem, ropeloc);
+		ModelLoader.setCustomMeshDefinition(grapplemod.repelleritem, new ItemMeshDefinition() {
+		    @Override
+		    public ModelResourceLocation getModelLocation(ItemStack stack) {
+		    	if (grappleBow.isactive(stack)) {
+		    		return repelleronloc;
+		    	}
+		    	return repellerloc;
+		    }
+		});
+		ModelBakery.registerItemVariants(grapplemod.repelleritem, repellerloc);
+		ModelBakery.registerItemVariants(grapplemod.repelleritem, repelleronloc);
+		ModelLoader.setCustomMeshDefinition(grapplemod.multihookitem, new ItemMeshDefinition() {
+		    @Override
+		    public ModelResourceLocation getModelLocation(ItemStack stack) {
+		    	if (grappleBow.isactive(stack)) {
+		    		return multihookropeloc;
+		    	}
+		    	return multihookloc;
+		    }
+		});
+		ModelBakery.registerItemVariants(grapplemod.multihookitem, multihookloc);
+		ModelBakery.registerItemVariants(grapplemod.multihookitem, multihookropeloc);
 	}
 
 	private void registerItemModel(Item item) {
@@ -81,9 +158,13 @@ public class ClientProxyClass extends CommonProxyClass {
 //		Minecraft.getMinecraft().getRenderItem().getItemModelMesher().register(grapplemod.enderhookitem, 0, new ModelResourceLocation("grapplemod:enderhook", "inventory"));
 	}
 	
+	public crosshairRenderer crosshairrenderer;
+	
 	@Override
 	public void postInit(FMLPostInitializationEvent event) {
 		super.postInit(event);
+		
+		crosshairrenderer = new crosshairRenderer();
 	}
 	
 	@Override
@@ -109,20 +190,24 @@ public class ClientProxyClass extends CommonProxyClass {
 					System.out.println("ConcurrentModificationException caught");
 				}
 				
-				if (GameSettings.isKeyDown(Minecraft.getMinecraft().gameSettings.keyBindAttack) && Minecraft.getMinecraft().currentScreen == null) {
-					leftclick = true;
-				} else if (leftclick) {
-					leftclick = false;
+				leftclick = (GameSettings.isKeyDown(Minecraft.getMinecraft().gameSettings.keyBindAttack) && Minecraft.getMinecraft().currentScreen == null);
+				if (prevleftclick != leftclick) {
 					if (player != null) {
 						ItemStack stack = player.getHeldItemMainhand();
 						if (stack != null) {
 							Item item = stack.getItem();
 							if (item instanceof clickitem) {
-								((clickitem)item).onLeftClick(stack, player);
+								if (leftclick) {
+									((clickitem)item).onLeftClick(stack, player);
+								} else {
+									((clickitem)item).onLeftClickRelease(stack, player);
+								}
 							}
 						}
 					}
 				}
+				
+				prevleftclick = leftclick;
 				
 				if (player.onGround) {
 					if (enderlaunchtimer.containsKey(player.getEntityId())) {

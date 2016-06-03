@@ -11,6 +11,7 @@ import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 import com.yyon.grapplinghook.grapplemod;
 //* // 1.8 Compatability
 
+
 /*
  * This file is part of GrappleMod.
 
@@ -28,35 +29,35 @@ import com.yyon.grapplinghook.grapplemod;
     along with GrappleMod.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-public class GrappleEndMessage implements IMessage {
+public class MultiHookMessage implements IMessage {
    
-	public int entityid;
-	public int arrowid;
+	public int id;
+	public boolean sneaking;
 
-    public GrappleEndMessage() { }
+    public MultiHookMessage() { }
 
-    public GrappleEndMessage(int entityid, int arrowid) {
-    	this.entityid = entityid;
-    	this.arrowid = arrowid;
+    public MultiHookMessage(int id, boolean sneaking) {
+    	this.id = id;
+    	this.sneaking = sneaking;
     }
 
     @Override
     public void fromBytes(ByteBuf buf) {
-    	this.entityid = buf.readInt();
-    	this.arrowid = buf.readInt();
+    	this.id = buf.readInt();
+    	this.sneaking = buf.readBoolean();
     }
 
     @Override
     public void toBytes(ByteBuf buf) {
-    	buf.writeInt(this.entityid);
-    	buf.writeInt(this.arrowid);
+    	buf.writeInt(this.id);
+    	buf.writeBoolean(this.sneaking);
     }
 
-    public static class Handler implements IMessageHandler<GrappleEndMessage, IMessage> {
+    public static class Handler implements IMessageHandler<MultiHookMessage, IMessage> {
     	public class runner implements Runnable {
-    		GrappleEndMessage message;
+    		MultiHookMessage message;
     		MessageContext ctx;
-    		public runner(GrappleEndMessage message, MessageContext ctx) {
+    		public runner(MultiHookMessage message, MessageContext ctx) {
     			super();
     			this.message = message;
     			this.ctx = ctx;
@@ -64,17 +65,17 @@ public class GrappleEndMessage implements IMessage {
     		
             @Override
             public void run() {
-
-				int id = message.entityid;
+				int id = message.id;
 				
 				World w = ctx.getServerHandler().playerEntity.worldObj;
 				
-				grapplemod.receiveGrappleEnd(id, w, message.arrowid);
+				grapplemod.receiveMultihookMessage(id, w, message.sneaking);
             }
     	}
     	
+       
         @Override
-        public IMessage onMessage(GrappleEndMessage message, MessageContext ctx) {
+        public IMessage onMessage(MultiHookMessage message, MessageContext ctx) {
 
         	IThreadListener mainThread = (WorldServer) ctx.getServerHandler().playerEntity.worldObj; // or Minecraft.getMinecraft() on the client
             mainThread.addScheduledTask(new runner(message, ctx));

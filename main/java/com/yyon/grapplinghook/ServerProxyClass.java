@@ -4,7 +4,7 @@ import net.minecraft.entity.Entity;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
-//* // 1.8 Compatability
+
 
 
 public class ServerProxyClass extends CommonProxyClass {

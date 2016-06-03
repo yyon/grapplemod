@@ -8,10 +8,14 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.entity.projectile.EntityThrowable;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.util.EnumFacing;
+import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.registry.IEntityAdditionalSpawnData;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 import com.yyon.grapplinghook.grapplemod;
 import com.yyon.grapplinghook.vec;
@@ -43,19 +47,37 @@ public class grappleArrow extends EntityThrowable implements IEntityAdditionalSp
 	private boolean firstattach = false;
 	public vec thispos;
 	
+	public boolean righthand = true;
+	
+	public boolean attached = false;
+	
+	public double taut = 1;
+	
+	public boolean ignoreFrustumCheck = true;
+	
 	public grappleArrow(World worldIn) {
 		super(worldIn);
 	}
 	
 	public grappleArrow(World worldIn, EntityLivingBase shooter,
-			float p_i1756_3_) {
+			boolean righthand) {
 		super(worldIn, shooter);
 		
 		this.shootingEntity = shooter;
 		this.shootingEntityID = this.shootingEntity.getEntityId();
+		
+		/*
+		double x = 0.36;
+		if (righthand) {x = -0.36;}
+        vec pos = vec.positionvec(this);
+        pos.add_ip(new vec(x, -0.175, 0.45).rotate_yaw(Math.toRadians(shooter.rotationYaw)));
+        this.setPosition(pos.x, pos.y, pos.z);
+        */
 
 		grapplemod.updateMaxLen(worldIn);
 		grapplemod.updateGrapplingBlocks(worldIn);
+		
+		this.righthand = righthand;
 	}
 	
 	@Override
@@ -80,6 +102,26 @@ public class grappleArrow extends EntityThrowable implements IEntityAdditionalSp
 		}
 	}
 	
+	@Override
+	@SideOnly(Side.CLIENT)
+	public boolean isInRangeToRender3d(double x, double y, double z) {
+		return true;
+	}
+
+	@Override
+	@SideOnly(Side.CLIENT)
+	public boolean isInRangeToRenderDist(double distance) {
+		return true;
+	}
+
+	public final int RenderBoundingBoxSize = 999;
+	@Override
+	@SideOnly(Side.CLIENT)
+	public AxisAlignedBB getRenderBoundingBox() {
+		return new AxisAlignedBB(-RenderBoundingBoxSize, -RenderBoundingBoxSize, -RenderBoundingBoxSize, 
+				RenderBoundingBoxSize, RenderBoundingBoxSize, RenderBoundingBoxSize);
+	}
+
 	public boolean toofaraway() {
 		if (!this.worldObj.isRemote) {
 			if (!grapplemod.attached.contains(this.shootingEntityID)) {
@@ -108,6 +150,7 @@ public class grappleArrow extends EntityThrowable implements IEntityAdditionalSp
     public void writeSpawnData(ByteBuf data)
     {
 	    data.writeInt(this.shootingEntity != null ? this.shootingEntity.getEntityId() : 0);
+	    data.writeBoolean(this.righthand);
     }
 	
 	@Override
@@ -115,6 +158,7 @@ public class grappleArrow extends EntityThrowable implements IEntityAdditionalSp
     {
     	this.shootingEntityID = data.readInt();
 	    this.shootingEntity = this.worldObj.getEntityByID(this.shootingEntityID);
+	    this.righthand = data.readBoolean();
     }
 	
 	public void remove() {
@@ -130,9 +174,7 @@ public class grappleArrow extends EntityThrowable implements IEntityAdditionalSp
 	protected void onImpact(RayTraceResult movingobjectposition) {
 		if (!this.worldObj.isRemote) {
 			if (this.shootingEntityID != 0) {
-				System.out.println("IMPACT");
 				if (movingobjectposition.typeOfHit == RayTraceResult.Type.ENTITY) {
-					System.out.println("ENTITY");
 					// hit entity
 					Entity entityhit = movingobjectposition.entityHit;
 					if (entityhit == this.shootingEntity) {
@@ -148,58 +190,82 @@ public class grappleArrow extends EntityThrowable implements IEntityAdditionalSp
 					return;
 				}
 				
-				BlockPos blockpos = new BlockPos(0,0,0);
+				BlockPos blockpos = null;
 				
 				if (movingobjectposition.typeOfHit == RayTraceResult.Type.BLOCK) {
-					System.out.println("BLOCK");
 					blockpos = movingobjectposition.getBlockPos();
-
-					if (!grapplemod.anyblocks) {
-						Block block = this.worldObj.getBlockState(blockpos).getBlock();
-
-						if ((!grapplemod.removeblocks && !grapplemod.grapplingblocks.contains(block))
-								|| (grapplemod.removeblocks && grapplemod.grapplingblocks.contains(block))) {
-							this.removeServer();
-							return;
-						}
-					}
 				}
-				vec vec3 = vec.positionvec(this);
-				vec3.add_ip(vec.motionvec(this));
+				vec vec3 = null;
 		        
 		        if (movingobjectposition != null)
 		        {
 		            vec3 = new vec(movingobjectposition.hitVec.xCoord, movingobjectposition.hitVec.yCoord, movingobjectposition.hitVec.zCoord);
-		            
-		            this.setPositionAndUpdate(vec3.x, vec3.y, vec3.z);
-
 		        }
 		        
-				if (this.toofaraway()) {
-					System.out.println("TOOFAR");
+		        this.serverAttach(blockpos, vec3, movingobjectposition.sideHit);
+			}
+		}
+	}
+	
+	public void serverAttach(BlockPos blockpos, vec pos, EnumFacing sideHit) {
+		if (this.attached) {
+			return;
+		}
+		this.attached = true;
+		
+		if (blockpos != null) {
+			if (!grapplemod.anyblocks) {
+				Block block = this.worldObj.getBlockState(blockpos).getBlock();
+
+				if ((!grapplemod.removeblocks && !grapplemod.grapplingblocks.contains(block))
+						|| (grapplemod.removeblocks && grapplemod.grapplingblocks.contains(block))) {
+					this.removeServer();
 					return;
 				}
-		        
-		        this.motionX = 0;
-		        this.motionY = 0;
-		        this.motionZ = 0;
-		        
-		        this.thispos = vec.positionvec(this);
-				this.firstattach = true;
-				grapplemod.attached.add(this.shootingEntityID);
-				System.out.println("ATTACH");
-				
-				grapplemod.sendtocorrectclient(new GrappleAttachMessage(this.getEntityId(), this.posX, this.posY, this.posZ, this.getControlId(), this.shootingEntityID, grapplemod.grapplingLength, blockpos), this.shootingEntityID, this.worldObj);
-				if (this.shootingEntity instanceof EntityPlayerMP) { // fixes strange bug in LAN
-					EntityPlayerMP sender = (EntityPlayerMP) this.shootingEntity;
-					int dimension = sender.dimension;
-					MinecraftServer minecraftServer = sender.mcServer;
-					for (EntityPlayerMP player : minecraftServer.getPlayerList().getPlayerList()) {
-						GrappleAttachPosMessage msg = new GrappleAttachPosMessage(this.getEntityId(), this.posX, this.posY, this.posZ);   // must generate a fresh message for every player!
-						if (dimension == player.dimension) {
-							grapplemod.sendtocorrectclient(msg, player.getEntityId(), player.worldObj);
-						}
-					}
+			}
+		}
+		
+		vec vec3 = vec.positionvec(this);
+		vec3.add_ip(vec.motionvec(this));
+		if (pos != null) {
+            vec3 = pos;
+            
+            this.setPositionAndUpdate(vec3.x, vec3.y, vec3.z);
+		}
+		
+		//west -x
+		//north -z
+		if (sideHit == EnumFacing.DOWN) {
+			this.posY -= 0.3;
+		} else if (sideHit == EnumFacing.WEST) {
+			this.posX -= 0.05;
+		} else if (sideHit == EnumFacing.NORTH) {
+			this.posZ -= 0.05;
+		}
+
+
+		if (this.toofaraway()) {
+			System.out.println("TOOFAR");
+			return;
+		}
+		
+        this.motionX = 0;
+        this.motionY = 0;
+        this.motionZ = 0;
+        
+        this.thispos = vec.positionvec(this);
+		this.firstattach = true;
+		grapplemod.attached.add(this.shootingEntityID);
+		
+		grapplemod.sendtocorrectclient(new GrappleAttachMessage(this.getEntityId(), this.posX, this.posY, this.posZ, this.getControlId(), this.shootingEntityID, grapplemod.grapplingLength, blockpos), this.shootingEntityID, this.worldObj);
+		if (this.shootingEntity instanceof EntityPlayerMP) { // fixes strange bug in LAN
+			EntityPlayerMP sender = (EntityPlayerMP) this.shootingEntity;
+			int dimension = sender.dimension;
+			MinecraftServer minecraftServer = sender.mcServer;
+			for (EntityPlayerMP player : minecraftServer.getPlayerList().getPlayerList()) {
+				GrappleAttachPosMessage msg = new GrappleAttachPosMessage(this.getEntityId(), this.posX, this.posY, this.posZ);   // must generate a fresh message for every player!
+				if (dimension == player.dimension) {
+					grapplemod.sendtocorrectclient(msg, player.getEntityId(), player.worldObj);
 				}
 			}
 		}
@@ -242,6 +308,7 @@ public class grappleArrow extends EntityThrowable implements IEntityAdditionalSp
 		this.motionY = 0;
 		this.motionZ = 0;
 		this.firstattach = true;
+		this.attached = true;
         this.thispos = new vec(x, y, z);
 	}
 }

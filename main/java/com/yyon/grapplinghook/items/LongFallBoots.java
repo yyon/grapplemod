@@ -1,5 +1,7 @@
 package com.yyon.grapplinghook.items;
 
+import java.util.List;
+
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.ItemArmor;
@@ -68,5 +70,11 @@ public class LongFallBoots extends ItemArmor {
 			    }
 			}
 		}
+	}
+	
+	@Override
+	public void addInformation(ItemStack stack, EntityPlayer player, List<String> list, boolean par4)
+	{
+		list.add("Cancels fall damage when worn");
 	}
 }

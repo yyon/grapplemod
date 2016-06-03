@@ -24,8 +24,8 @@ import com.yyon.grapplinghook.vec;
  */
 
 public class hookControl extends grappleController {
-	public hookControl(int arrowId, int entityId, World world, vec pos, int maxlen) {
-		super(arrowId, entityId, world, pos, maxlen);
+	public hookControl(int arrowId, int entityId, World world, vec pos, int maxlen, int id) {
+		super(arrowId, entityId, world, pos, maxlen, id);
 	}
 
 	public double maxspeed = 4;

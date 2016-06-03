@@ -18,6 +18,7 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import com.yyon.grapplinghook.controllers.grappleController;
 import com.yyon.grapplinghook.entities.grappleArrow;
 import com.yyon.grapplinghook.items.grappleBow;
+import com.yyon.grapplinghook.items.multiBow;
 
 public class CommonProxyClass {
 	public void preInit(FMLPreInitializationEvent event) {
@@ -65,7 +66,7 @@ public class CommonProxyClass {
 	    	ItemStack stack = player.getHeldItemMainhand();
 	    	if (stack != null) {
 	    		Item item = stack.getItem();
-	    		if (item instanceof grappleBow) {
+	    		if (item instanceof grappleBow || item instanceof multiBow) {
 	    			event.setCanceled(true);
 	    			return;
 	    		}

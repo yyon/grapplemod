@@ -1,17 +1,21 @@
 package com.yyon.grapplinghook.items;
 
+import java.util.HashMap;
+import java.util.List;
+
+import net.minecraft.client.Minecraft;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.Items;
 import net.minecraft.init.SoundEvents;
+import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.EnumAction;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.EnumActionResult;
-import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.BlockPos;
@@ -19,6 +23,7 @@ import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
 
 import com.yyon.grapplinghook.grapplemod;
+import com.yyon.grapplinghook.controllers.grappleController;
 import com.yyon.grapplinghook.entities.grappleArrow;
 import com.yyon.grapplinghook.network.GrappleClickMessage;
 
@@ -41,7 +46,7 @@ import com.yyon.grapplinghook.network.GrappleClickMessage;
  */
 
 public class grappleBow extends Item {
-	
+	public static HashMap<Entity, grappleArrow> grapplearrows = new HashMap<Entity, grappleArrow>();
 	
 	public grappleBow() {
 		super();
@@ -51,7 +56,7 @@ public class grappleBow extends Item {
 		
 		this.setMaxDamage(500);
 		
-		setCreativeTab(CreativeTabs.COMBAT);
+		setCreativeTab(CreativeTabs.TRANSPORTATION);
 		
 		MinecraftForge.EVENT_BUS.register(this);
 	}
@@ -62,83 +67,111 @@ public class grappleBow extends Item {
 		return 72000;
 	}
 	
-	public grappleArrow getArrow(ItemStack stack, World world) {
-		NBTTagCompound compound = stack.getSubCompound("grapplebow", true);
-
-		int id = compound.getInteger("arrow");
-		if (id == 0) {
-			return null;
+	public grappleArrow getArrow(Entity entity, World world) {
+		if (grappleBow.grapplearrows.containsKey(entity)) {
+			grappleArrow arrow = grappleBow.grapplearrows.get(entity);
+			if (arrow != null && !arrow.isDead) {
+				return arrow;
+			}
 		}
-		Entity e = world.getEntityByID(id);
-		if (e instanceof grappleArrow) {
-			return (grappleArrow) e;
-		} else {
-			return null;
-		}
+		return null;
 	}
 	
-	public void setArrow(ItemStack stack, grappleArrow arrow) {
-		int id = 0;
-		if (arrow != null) {
-			id = arrow.getEntityId();
-		}
-		
-		NBTTagCompound compound = stack.getSubCompound("grapplebow", true);
+	@Override
+	public boolean getIsRepairable(ItemStack toRepair, ItemStack repair) {
+        ItemStack mat = new ItemStack(Items.LEATHER, 1);
+        if (mat != null && net.minecraftforge.oredict.OreDictionary.itemMatches(mat, repair, false)) return true;
+        return super.getIsRepairable(toRepair, repair);
+	}
 
-		compound.setInteger("arrow", id);
+	public void setArrow(Entity entity, ItemStack stack, grappleArrow arrow) {
+		grappleBow.grapplearrows.put(entity, arrow);
 	}
 	
 	
-	public void dorightclick(ItemStack stack, World worldIn, EntityPlayer playerIn) {
+	public void dorightclick(ItemStack stack, World worldIn, EntityLivingBase entityLiving, boolean righthand) {
         if (!worldIn.isRemote) {
-        	System.out.println("ITEM USE");
-        	grappleArrow entityarrow = getArrow(stack, worldIn);
+        	grappleArrow entityarrow = getArrow(entityLiving, worldIn);
         	
         	if (entityarrow != null) {
         		int id = entityarrow.shootingEntityID;
         		if (!grapplemod.attached.contains(id)) {
-        			setArrow(stack, null);
+        			setArrow(entityLiving, stack, null);
+        			
+        			if (!entityarrow.isDead) {
+        				entityarrow.removeServer();
+        				return;
+        			}
+        			
         			entityarrow = null;
         		}
         	}
         	
 			float f = 2.0F;
 			if (entityarrow == null) {
-				entityarrow = this.createarrow(stack, worldIn, playerIn);
-	            entityarrow.setHeadingFromThrower(playerIn, playerIn.rotationPitch, playerIn.rotationYaw, 0.0F, entityarrow.getVelocity(), 1.0F);
-				setArrow(stack, entityarrow);
+				entityarrow = this.createarrow(stack, worldIn, entityLiving, righthand);
+	            entityarrow.setHeadingFromThrower(entityLiving, entityLiving.rotationPitch, entityLiving.rotationYaw, 0.0F, entityarrow.getVelocity(), 0.0F);
+				setArrow(entityLiving, stack, entityarrow);
 	
-				stack.damageItem(1, playerIn);
-                worldIn.playSound((EntityPlayer)null, playerIn.posX, playerIn.posY, playerIn.posZ, SoundEvents.ENTITY_ARROW_SHOOT, SoundCategory.NEUTRAL, 1.0F, 1.0F / (itemRand.nextFloat() * 0.4F + 1.2F) + f * 0.5F);
+				stack.damageItem(1, entityLiving);
+                worldIn.playSound((EntityPlayer)null, entityLiving.posX, entityLiving.posY, entityLiving.posZ, SoundEvents.ENTITY_ARROW_SHOOT, SoundCategory.NEUTRAL, 1.0F, 1.0F / (itemRand.nextFloat() * 0.4F + 1.2F) + f * 0.5F);
 				
 				worldIn.spawnEntityInWorld(entityarrow);
 			} else {
 				grapplemod.sendtocorrectclient(new GrappleClickMessage(entityarrow.shootingEntityID, false), entityarrow.shootingEntityID, entityarrow.worldObj);
 				grapplemod.attached.remove(new Integer(entityarrow.shootingEntityID));
+				this.setArrow(entityLiving, stack, null);
 			}
     	}
 	}
 	
-	public grappleArrow createarrow(ItemStack stack, World worldIn, EntityPlayer playerIn) {
-		return new grappleArrow(worldIn, playerIn, 0);
-	}
-	
-    @Override
-    public EnumActionResult onItemUse(ItemStack stack, EntityPlayer playerIn, World worldIn, BlockPos pos, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ)
-    {
-        this.dorightclick(stack, worldIn, playerIn);
-        
-    	return EnumActionResult.SUCCESS;
+	public grappleArrow createarrow(ItemStack stack, World worldIn, EntityLivingBase entityLiving, boolean righthand) {
+		return new grappleArrow(worldIn, entityLiving, righthand);
 	}
     
-    public ActionResult<ItemStack> onItemRightClick(ItemStack itemStackIn, World worldIn, EntityPlayer playerIn, EnumHand hand)
+    @Override
+	public ActionResult<ItemStack> onItemRightClick(ItemStack stack, World worldIn, EntityPlayer entityLiving, EnumHand hand)
     {
-        this.dorightclick(itemStackIn, worldIn, playerIn);
-        
-        return new ActionResult<ItemStack>(EnumActionResult.SUCCESS, itemStackIn);
+        if (!worldIn.isRemote) {
+	        this.dorightclick(stack, worldIn, entityLiving, hand == EnumHand.MAIN_HAND);
+        }
+        entityLiving.setActiveHand(hand);
+        return new ActionResult<ItemStack>(EnumActionResult.SUCCESS, stack);
     }
+	
+	public static boolean isactive(ItemStack stack) {
+		EntityPlayer p = Minecraft.getMinecraft().thePlayer;
+		if (p.getItemStackFromSlot(EntityEquipmentSlot.MAINHAND) == stack || p.getItemStackFromSlot(EntityEquipmentSlot.OFFHAND) == stack) {
+			int entityid = p.getEntityId();
+			if (grapplemod.controllers.containsKey(entityid)) {
+				Item item = stack.getItem();
+				grappleController controller = grapplemod.controllers.get(entityid);
+				if (item.getClass() == grappleBow.class && controller.controllerid == grapplemod.GRAPPLEID) {
+					return true;
+				} else if (item.getClass() == enderBow.class && controller.controllerid == grapplemod.ENDERID) {
+					return true;
+				} else if (item.getClass() == hookBow.class && controller.controllerid == grapplemod.HOOKID) {
+					return true;
+				} else if (item.getClass() == magnetBow.class && controller.controllerid == grapplemod.MAGNETID) {
+					return true;
+				} else if (item.getClass() == repeller.class && controller.controllerid == grapplemod.REPELID) {
+					return true;
+				} else if (item.getClass() == multiBow.class && controller.controllerid == grapplemod.MULTIID) {
+					return true;
+				}
+			}
+		}
+		return false;
+	}
 
-
+	@Override
+	public void onPlayerStoppedUsing(ItemStack stack, World worldIn,
+			EntityLivingBase entityLiving, int timeLeft) {
+		if (!worldIn.isRemote) {
+//			stack.getSubCompound("grapplemod", true).setBoolean("extended", (this.getArrow(entityLiving, worldIn) != null));
+		}
+		super.onPlayerStoppedUsing(stack, worldIn, entityLiving, timeLeft);
+	}
 
 	/**
 	 * returns the action that specifies what animation to play when the items is being used
@@ -166,4 +199,28 @@ public class grappleBow extends Item {
     {
       return true;
     }
+    
+	@Override
+	public void addInformation(ItemStack stack, EntityPlayer player, List<String> list, boolean par4)
+	{
+		Minecraft minecraft = Minecraft.getMinecraft();
+		list.add("A basic grappling hook for swinging");
+		list.add("");
+		list.add(grapplemod.getkeyname(minecraft.gameSettings.keyBindUseItem) + " - Throw grappling hook");
+		list.add(grapplemod.getkeyname(minecraft.gameSettings.keyBindUseItem) + " again - Release");
+		list.add("Double-" + grapplemod.getkeyname(minecraft.gameSettings.keyBindUseItem) + " - Release and throw again");
+		list.add(grapplemod.getkeyname(minecraft.gameSettings.keyBindForward) + ", " +
+				grapplemod.getkeyname(minecraft.gameSettings.keyBindLeft) + ", " +
+				grapplemod.getkeyname(minecraft.gameSettings.keyBindBack) + ", " +
+				grapplemod.getkeyname(minecraft.gameSettings.keyBindRight) +
+				" - Swing");
+		list.add(grapplemod.getkeyname(minecraft.gameSettings.keyBindJump) + " - Release and jump (while in midair)");
+		list.add(grapplemod.getkeyname(minecraft.gameSettings.keyBindSneak) + " - Stop swinging");
+		list.add(grapplemod.getkeyname(minecraft.gameSettings.keyBindSneak) + " + " +
+				grapplemod.getkeyname(minecraft.gameSettings.keyBindForward) + 
+				" - Climb up");
+		list.add(grapplemod.getkeyname(minecraft.gameSettings.keyBindSneak) + " + " +
+				grapplemod.getkeyname(minecraft.gameSettings.keyBindBack) + 
+				" - Climb down");
+	}
 }
