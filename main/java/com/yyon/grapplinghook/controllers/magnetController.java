@@ -50,35 +50,9 @@ public class magnetController extends grappleController {
 		if (this.attached) {
 			if(entity != null) {
 				if (true) {
-					if (entity.onGround) {
-						ongroundtimer = 20;
-						if (this.motion.y < 0) {
-							this.motion.y = 0;
-						}
-						
-						if (!grapplemod.proxy.isSneaking(entity)) {
-							this.motion = vec.motionvec(entity);
-						}
-					} else {
-						if (this.ongroundtimer > 0) {
-							ongroundtimer--;
-						}
-					}
-					
-					// stop if collided with object
-					if (entity.isCollidedHorizontally) {
-						if (entity.motionX == 0) {
-							this.motion.x = 0;
-						}
-						if (entity.motionZ == 0) {
-							this.motion.z = 0;
-						}
-					}
-					if (entity.isCollidedVertically) {
-						if (entity.motionY == 0) {
-							this.motion.y = 0;
-						}
-					}
+					this.normalGround();
+					this.normalCollisions();
+//					this.applyAirFriction();
 					
 					vec arrowpos = this.pos;
 					vec playerpos = vec.positionvec(entity);
@@ -96,24 +70,13 @@ public class magnetController extends grappleController {
 					}
 					
 					double dist = oldspherevec.length();
-					
-					if (this.arrow != null) {
-		        		if (dist < this.r) {
-			    			double taut = 1 - ((this.r - dist) / 5);
-			    			if (taut < 0) {
-			    				taut = 0;
-			    			}
-			    			this.arrow.taut = taut;
-		        		} else {
-		        			this.arrow.taut = 1;
-		        		}
-		        	}
+					this.calctaut(dist);
 					
 					boolean domagnet = true;
 					
 					if (entity instanceof EntityPlayer) {
 						EntityPlayer player = (EntityPlayer) entity;
-						if (playerjump) {
+						if (this.isjumping()) {
 							this.dojump(player, spherevec);
 							return;
 						} else if (grapplemod.proxy.isSneaking(entity)) {

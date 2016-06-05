@@ -3,14 +3,12 @@ package com.yyon.grapplinghook.items;
 import java.util.HashMap;
 import java.util.List;
 
-import net.minecraft.client.Minecraft;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Items;
 import net.minecraft.init.SoundEvents;
-import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.EnumAction;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -22,8 +20,8 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
 
+import com.yyon.grapplinghook.CommonProxyClass;
 import com.yyon.grapplinghook.grapplemod;
-import com.yyon.grapplinghook.controllers.grappleController;
 import com.yyon.grapplinghook.entities.grappleArrow;
 import com.yyon.grapplinghook.network.GrappleClickMessage;
 
@@ -139,30 +137,6 @@ public class grappleBow extends Item {
         return new ActionResult<ItemStack>(EnumActionResult.SUCCESS, stack);
     }
 	
-	public static boolean isactive(ItemStack stack) {
-		EntityPlayer p = Minecraft.getMinecraft().thePlayer;
-		if (p.getItemStackFromSlot(EntityEquipmentSlot.MAINHAND) == stack || p.getItemStackFromSlot(EntityEquipmentSlot.OFFHAND) == stack) {
-			int entityid = p.getEntityId();
-			if (grapplemod.controllers.containsKey(entityid)) {
-				Item item = stack.getItem();
-				grappleController controller = grapplemod.controllers.get(entityid);
-				if (item.getClass() == grappleBow.class && controller.controllerid == grapplemod.GRAPPLEID) {
-					return true;
-				} else if (item.getClass() == enderBow.class && controller.controllerid == grapplemod.ENDERID) {
-					return true;
-				} else if (item.getClass() == hookBow.class && controller.controllerid == grapplemod.HOOKID) {
-					return true;
-				} else if (item.getClass() == magnetBow.class && controller.controllerid == grapplemod.MAGNETID) {
-					return true;
-				} else if (item.getClass() == repeller.class && controller.controllerid == grapplemod.REPELID) {
-					return true;
-				} else if (item.getClass() == multiBow.class && controller.controllerid == grapplemod.MULTIID) {
-					return true;
-				}
-			}
-		}
-		return false;
-	}
 
 	@Override
 	public void onPlayerStoppedUsing(ItemStack stack, World worldIn,
@@ -203,24 +177,23 @@ public class grappleBow extends Item {
 	@Override
 	public void addInformation(ItemStack stack, EntityPlayer player, List<String> list, boolean par4)
 	{
-		Minecraft minecraft = Minecraft.getMinecraft();
 		list.add("A basic grappling hook for swinging");
 		list.add("");
-		list.add(grapplemod.getkeyname(minecraft.gameSettings.keyBindUseItem) + " - Throw grappling hook");
-		list.add(grapplemod.getkeyname(minecraft.gameSettings.keyBindUseItem) + " again - Release");
-		list.add("Double-" + grapplemod.getkeyname(minecraft.gameSettings.keyBindUseItem) + " - Release and throw again");
-		list.add(grapplemod.getkeyname(minecraft.gameSettings.keyBindForward) + ", " +
-				grapplemod.getkeyname(minecraft.gameSettings.keyBindLeft) + ", " +
-				grapplemod.getkeyname(minecraft.gameSettings.keyBindBack) + ", " +
-				grapplemod.getkeyname(minecraft.gameSettings.keyBindRight) +
+		list.add(grapplemod.proxy.getkeyname(CommonProxyClass.keys.keyBindUseItem) + " - Throw grappling hook");
+		list.add(grapplemod.proxy.getkeyname(CommonProxyClass.keys.keyBindUseItem) + " again - Release");
+		list.add("Double-" + grapplemod.proxy.getkeyname(CommonProxyClass.keys.keyBindUseItem) + " - Release and throw again");
+		list.add(grapplemod.proxy.getkeyname(CommonProxyClass.keys.keyBindForward) + ", " +
+				grapplemod.proxy.getkeyname(CommonProxyClass.keys.keyBindLeft) + ", " +
+				grapplemod.proxy.getkeyname(CommonProxyClass.keys.keyBindBack) + ", " +
+				grapplemod.proxy.getkeyname(CommonProxyClass.keys.keyBindRight) +
 				" - Swing");
-		list.add(grapplemod.getkeyname(minecraft.gameSettings.keyBindJump) + " - Release and jump (while in midair)");
-		list.add(grapplemod.getkeyname(minecraft.gameSettings.keyBindSneak) + " - Stop swinging");
-		list.add(grapplemod.getkeyname(minecraft.gameSettings.keyBindSneak) + " + " +
-				grapplemod.getkeyname(minecraft.gameSettings.keyBindForward) + 
+		list.add(grapplemod.proxy.getkeyname(CommonProxyClass.keys.keyBindJump) + " - Release and jump (while in midair)");
+		list.add(grapplemod.proxy.getkeyname(CommonProxyClass.keys.keyBindSneak) + " - Stop swinging");
+		list.add(grapplemod.proxy.getkeyname(CommonProxyClass.keys.keyBindSneak) + " + " +
+				grapplemod.proxy.getkeyname(CommonProxyClass.keys.keyBindForward) + 
 				" - Climb up");
-		list.add(grapplemod.getkeyname(minecraft.gameSettings.keyBindSneak) + " + " +
-				grapplemod.getkeyname(minecraft.gameSettings.keyBindBack) + 
+		list.add(grapplemod.proxy.getkeyname(CommonProxyClass.keys.keyBindSneak) + " + " +
+				grapplemod.proxy.getkeyname(CommonProxyClass.keys.keyBindBack) + 
 				" - Climb down");
 	}
 }

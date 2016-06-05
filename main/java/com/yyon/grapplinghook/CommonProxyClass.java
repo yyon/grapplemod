@@ -21,6 +21,17 @@ import com.yyon.grapplinghook.items.grappleBow;
 import com.yyon.grapplinghook.items.multiBow;
 
 public class CommonProxyClass {
+	public enum keys {
+		keyBindUseItem,
+		keyBindForward,
+		keyBindLeft,
+		keyBindBack,
+		keyBindRight,
+		keyBindJump,
+		keyBindSneak,
+		keyBindAttack
+	}
+	
 	public void preInit(FMLPreInitializationEvent event) {
 		
 	}
@@ -96,4 +107,8 @@ public class CommonProxyClass {
     
     public void handleDeath(Entity entity) {
     }
+    
+	public String getkeyname(CommonProxyClass.keys keyenum) {
+		return null;
+	}
 }

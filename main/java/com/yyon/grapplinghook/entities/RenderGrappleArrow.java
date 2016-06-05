@@ -64,7 +64,15 @@ public class RenderGrappleArrow<T extends Entity> extends Render<T>
     public void doRender(T entity, double x, double y, double z, float entityYaw, float partialTicks)
     {
         grappleArrow arrow = (grappleArrow) entity;
+        if (arrow == null || arrow.isDead) {
+        	return;
+        }
+        
         EntityLivingBase e = (EntityLivingBase) arrow.shootingEntity;
+        
+        if (e == null || e.isDead) {
+        	return;
+        }
 
         int primaryhand = e.getPrimaryHand() == EnumHandSide.RIGHT ? 1 : -1;
         
@@ -153,129 +161,193 @@ public class RenderGrappleArrow<T extends Entity> extends Render<T>
         GlStateManager.disableRescaleNormal();
         GlStateManager.popMatrix();
 
-        if (e != null && !this.renderOutlines)
+        int k = e.getPrimaryHand() == EnumHandSide.RIGHT ? 1 : -1;
+        float f7 = e.getSwingProgress(partialTicks);
+        float f8 = MathHelper.sin(MathHelper.sqrt_float(f7) * (float)Math.PI);
+        float f9 = (e.prevRenderYawOffset + (e.renderYawOffset - e.prevRenderYawOffset) * partialTicks) * 0.017453292F;
+        double d0 = (double)MathHelper.sin(f9);
+        double d1 = (double)MathHelper.cos(f9);
+        double d2 = (double)k * 0.35D;
+        double d4;
+        double d5;
+        double d6;
+        double d7;
+
+        if ((this.renderManager.options == null || this.renderManager.options.thirdPersonView <= 0) && e == Minecraft.getMinecraft().thePlayer)
         {
-            int k = e.getPrimaryHand() == EnumHandSide.RIGHT ? 1 : -1;
-            float f7 = e.getSwingProgress(partialTicks);
-            float f8 = MathHelper.sin(MathHelper.sqrt_float(f7) * (float)Math.PI);
-            float f9 = (e.prevRenderYawOffset + (e.renderYawOffset - e.prevRenderYawOffset) * partialTicks) * 0.017453292F;
-            double d0 = (double)MathHelper.sin(f9);
-            double d1 = (double)MathHelper.cos(f9);
-            double d2 = (double)k * 0.35D;
-            double d4;
-            double d5;
-            double d6;
-            double d7;
-
-            if ((this.renderManager.options == null || this.renderManager.options.thirdPersonView <= 0) && e == Minecraft.getMinecraft().thePlayer)
-            {
-            	Vec3d vec3d;
-            	if (arrow.righthand) {
-	                vec3d = new Vec3d((double)k * -0.36D, -0.175D, 0.45D); // hand relative to person
-            	} else {
-	                vec3d = new Vec3d((double)k * 0.36D, -0.175D, 0.45D); // hand relative to person
-            	}
-                vec3d = vec3d.rotatePitch(-(e.prevRotationPitch + (e.rotationPitch - e.prevRotationPitch) * partialTicks) * 0.017453292F);
-                vec3d = vec3d.rotateYaw(-(e.prevRotationYaw + (e.rotationYaw - e.prevRotationYaw) * partialTicks) * 0.017453292F);
-                vec3d = vec3d.rotateYaw(f8 * 0.5F);
-                vec3d = vec3d.rotatePitch(-f8 * 0.7F);
-                d4 = e.prevPosX + (e.posX - e.prevPosX) * (double)partialTicks + vec3d.xCoord;
-                d5 = e.prevPosY + (e.posY - e.prevPosY) * (double)partialTicks + vec3d.yCoord;
-                d6 = e.prevPosZ + (e.posZ - e.prevPosZ) * (double)partialTicks + vec3d.zCoord;
-                d7 = (double)e.getEyeHeight();
-            }
-            else
-            {
-                d4 = e.prevPosX + (e.posX - e.prevPosX) * (double)partialTicks - d1 * d2 - d0 * 0.8D;
-                d5 = e.prevPosY + (double)e.getEyeHeight() + (e.posY - e.prevPosY) * (double)partialTicks - 0.45D;
-                d6 = e.prevPosZ + (e.posZ - e.prevPosZ) * (double)partialTicks - d0 * d2 + d1 * 0.8D;
-                d7 = e.isSneaking() ? -0.1875D : 0.0D;
-            }
-
-            double d13 = entity.prevPosX + (entity.posX - entity.prevPosX) * (double)partialTicks;
-            double d8 = entity.prevPosY + (entity.posY - entity.prevPosY) * (double)partialTicks;
-            double d9 = entity.prevPosZ + (entity.posZ - entity.prevPosZ) * (double)partialTicks;
-            
-            // hand position
-            double d10 = (double)((float)(d4 - d13)) - offset.xCoord;
-            double d11 = (double)((float)(d5 - d8)) + d7 - offset.yCoord;
-            double d12 = (double)((float)(d6 - d9)) - offset.zCoord;
-            GlStateManager.disableTexture2D();
-            GlStateManager.disableLighting();
-            GlStateManager.disableCull();
-            vertexbuffer.begin(5, DefaultVertexFormats.POSITION_COLOR);
-            
-            double taut = arrow.taut;
-            
-        	boolean reverse = false;
-        	if (arrow.posY < e.posY+1.62) {
-        		reverse = true;
+        	Vec3d vec3d;
+        	if (arrow.righthand) {
+                vec3d = new Vec3d((double)k * -0.36D, -0.175D, 0.45D); // hand relative to person
+        	} else {
+                vec3d = new Vec3d((double)k * 0.36D, -0.175D, 0.45D); // hand relative to person
         	}
-        	
-            double X;
-            double Y;
-            double Z;
-            for (int i1 = 0; i1 <= 16; ++i1)
-            {
-                float R = 0.5F;
-                float G = 0.4F;
-                float B = 0.3F;
-
-                if (i1 % 2 == 0)
-                {
-                    R *= 0.7F;
-                    G *= 0.7F;
-                    B *= 0.7F;
-                }
-                
-                float f10 = (float)i1 / 16.0F;
-            	X = x + d10 * (double)f10;
-            	Z = z + d12 * (double)f10;
-                if (reverse) {
-                	Y = y + (d11 * (double) f10) * taut + (1-taut) * (d11 * (double)(f10*f10 + f10) * 0.5D);
-                } else {
-                	Y = y + (d11 * (double) f10) * taut + (1-taut) * (d11 * (double)(Math.sqrt(f10)));
-                }
-                
-                vertexbuffer.pos(X, Y, Z).color(R, G, B, 1.0F).endVertex();
-                vertexbuffer.pos(X + 0.025D, Y + 0.025D, Z + 0.025D).color(R, G, B, 1.0F).endVertex();
-            }
-            
-            tessellator.draw();
-            vertexbuffer.begin(5, DefaultVertexFormats.POSITION_COLOR);
-
-            for (int i1 = 0; i1 <= 16; ++i1)
-            {
-                float R = 0.5F;
-                float G = 0.4F;
-                float B = 0.3F;
-
-                if (i1 % 2 == 0)
-                {
-                    R *= 0.7F;
-                    G *= 0.7F;
-                    B *= 0.7F;
-                }
-                
-                float f10 = (float)i1 / 16.0F;
-            	X = x + d10 * (double)f10;
-            	Z = z + d12 * (double)f10;
-                if (reverse) {
-                	Y = y + (d11 * (double) f10) * taut + (1-taut) * (d11 * (double)(f10*f10 + f10) * 0.5D);
-                } else {
-                	Y = y + (d11 * (double) f10) * taut + (1-taut) * (d11 * (double)(Math.sqrt(f10)));
-                }
-                vertexbuffer.pos(X, Y + 0.025D, Z).color(R, G, B, 1.0F).endVertex();
-                vertexbuffer.pos(X + 0.025D, Y, Z + 0.025D).color(R, G, B, 1.0F).endVertex();
-            }
-            
-            tessellator.draw();
-
-            GlStateManager.enableLighting();
-            GlStateManager.enableTexture2D();
-            GlStateManager.enableCull();
-//            GL11.glEnable(GL11.GL_LIGHTING);
+            vec3d = vec3d.rotatePitch(-(e.prevRotationPitch + (e.rotationPitch - e.prevRotationPitch) * partialTicks) * 0.017453292F);
+            vec3d = vec3d.rotateYaw(-(e.prevRotationYaw + (e.rotationYaw - e.prevRotationYaw) * partialTicks) * 0.017453292F);
+            vec3d = vec3d.rotateYaw(f8 * 0.5F);
+            vec3d = vec3d.rotatePitch(-f8 * 0.7F);
+            d4 = e.prevPosX + (e.posX - e.prevPosX) * (double)partialTicks + vec3d.xCoord;
+            d5 = e.prevPosY + (e.posY - e.prevPosY) * (double)partialTicks + vec3d.yCoord;
+            d6 = e.prevPosZ + (e.posZ - e.prevPosZ) * (double)partialTicks + vec3d.zCoord;
+            d7 = (double)e.getEyeHeight();
         }
+        else
+        {
+            d4 = e.prevPosX + (e.posX - e.prevPosX) * (double)partialTicks - d1 * d2 - d0 * 0.8D;
+            d5 = e.prevPosY + (double)e.getEyeHeight() + (e.posY - e.prevPosY) * (double)partialTicks - 0.45D;
+            d6 = e.prevPosZ + (e.posZ - e.prevPosZ) * (double)partialTicks - d0 * d2 + d1 * 0.8D;
+            d7 = e.isSneaking() ? -0.1875D : 0.0D;
+        }
+
+        double d13 = entity.prevPosX + (entity.posX - entity.prevPosX) * (double)partialTicks;
+        double d8 = entity.prevPosY + (entity.posY - entity.prevPosY) * (double)partialTicks;
+        double d9 = entity.prevPosZ + (entity.posZ - entity.prevPosZ) * (double)partialTicks;
+        
+        // hand position
+        double d10 = (double)((float)(d4 - d13)) - offset.xCoord;
+        double d11 = (double)((float)(d5 - d8)) + d7 - offset.yCoord;
+        double d12 = (double)((float)(d6 - d9)) - offset.zCoord;
+        GlStateManager.disableTexture2D();
+        GlStateManager.disableLighting();
+        GlStateManager.disableCull();
+        vertexbuffer.begin(5, DefaultVertexFormats.POSITION_COLOR);
+        
+        double taut = arrow.taut;
+        
+    	boolean reverse = false;
+    	if (arrow.posY < e.posY+1.62) {
+    		reverse = true;
+    	}
+    	
+        double X;
+        double Y;
+        double Z;
+        for (int i1 = 0; i1 <= 16; ++i1)
+        {
+            float R = 0.5F;
+            float G = 0.4F;
+            float B = 0.3F;
+
+            if (i1 % 2 == 0)
+            {
+                R *= 0.7F;
+                G *= 0.7F;
+                B *= 0.7F;
+            }
+            
+            float f10 = (float)i1 / 16.0F;
+        	X = x + d10 * (double)f10;
+        	Z = z + d12 * (double)f10;
+            if (reverse) {
+            	Y = y + (d11 * (double) f10) * taut + (1-taut) * (d11 * (double)(f10*f10 + f10) * 0.5D);
+            } else {
+            	Y = y + (d11 * (double) f10) * taut + (1-taut) * (d11 * (double)(Math.sqrt(f10)));
+            }
+            
+            vertexbuffer.pos(X, Y + 0.025D, Z).color(R, G, B, 1.0F).endVertex();
+            vertexbuffer.pos(X - 0.025D, Y, Z - 0.025D).color(R, G, B, 1.0F).endVertex();
+        }
+        
+        tessellator.draw();
+        vertexbuffer.begin(5, DefaultVertexFormats.POSITION_COLOR);
+
+        for (int i1 = 0; i1 <= 16; ++i1)
+        {
+            float R = 0.5F;
+            float G = 0.4F;
+            float B = 0.3F;
+
+            if (i1 % 2 == 0)
+            {
+                R *= 0.7F;
+                G *= 0.7F;
+                B *= 0.7F;
+            }
+            
+            float f10 = (float)i1 / 16.0F;
+        	X = x + d10 * (double)f10;
+        	Z = z + d12 * (double)f10;
+            if (reverse) {
+            	Y = y + (d11 * (double) f10) * taut + (1-taut) * (d11 * (double)(f10*f10 + f10) * 0.5D);
+            } else {
+            	Y = y + (d11 * (double) f10) * taut + (1-taut) * (d11 * (double)(Math.sqrt(f10)));
+            }
+            vertexbuffer.pos(X + 0.025D, Y, Z - 0.025D).color(R, G, B, 1.0F).endVertex();
+            vertexbuffer.pos(X, Y + 0.025D, Z).color(R, G, B, 1.0F).endVertex();
+        }
+        
+        tessellator.draw();
+        vertexbuffer.begin(5, DefaultVertexFormats.POSITION_COLOR);
+
+        for (int i1 = 0; i1 <= 16; ++i1)
+        {
+            float R = 0.5F;
+            float G = 0.4F;
+            float B = 0.3F;
+
+            if (i1 % 2 == 0)
+            {
+                R *= 0.7F;
+                G *= 0.7F;
+                B *= 0.7F;
+            }
+            
+            float f10 = (float)i1 / 16.0F;
+        	X = x + d10 * (double)f10;
+        	Z = z + d12 * (double)f10;
+            if (reverse) {
+            	Y = y + (d11 * (double) f10) * taut + (1-taut) * (d11 * (double)(f10*f10 + f10) * 0.5D);
+            } else {
+            	Y = y + (d11 * (double) f10) * taut + (1-taut) * (d11 * (double)(Math.sqrt(f10)));
+            }
+            vertexbuffer.pos(X, Y - 0.025D, Z).color(R, G, B, 1.0F).endVertex();
+            vertexbuffer.pos(X + 0.025D, Y, Z - 0.025D).color(R, G, B, 1.0F).endVertex();
+        }
+        
+        tessellator.draw();
+        vertexbuffer.begin(5, DefaultVertexFormats.POSITION_COLOR);
+
+        for (int i1 = 0; i1 <= 16; ++i1)
+        {
+            float R = 0.5F;
+            float G = 0.4F;
+            float B = 0.3F;
+
+            if (i1 % 2 == 0)
+            {
+                R *= 0.7F;
+                G *= 0.7F;
+                B *= 0.7F;
+            }
+            
+            float f10 = (float)i1 / 16.0F;
+        	X = x + d10 * (double)f10;
+        	Z = z + d12 * (double)f10;
+            if (reverse) {
+            	Y = y + (d11 * (double) f10) * taut + (1-taut) * (d11 * (double)(f10*f10 + f10) * 0.5D);
+            } else {
+            	Y = y + (d11 * (double) f10) * taut + (1-taut) * (d11 * (double)(Math.sqrt(f10)));
+            }
+            vertexbuffer.pos(X - 0.025D, Y, Z - 0.025D).color(R, G, B, 1.0F).endVertex();
+            vertexbuffer.pos(X, Y - 0.025D, Z).color(R, G, B, 1.0F).endVertex();
+         }
+        
+        tessellator.draw();
+        vertexbuffer.begin(5, DefaultVertexFormats.POSITION_COLOR);
+    	X = x + d10;
+    	Y = y + d11;
+    	Z = z + d12;
+        vertexbuffer.pos(X, Y - 0.025D, Z).color(0.5F * 0.7F, 0.4F * 0.7F, 0.3F * 0.7F, 1.0F).endVertex();
+        vertexbuffer.pos(X - 0.025D, Y, Z - 0.025D).color(0.5F * 0.7F, 0.4F * 0.7F, 0.3F * 0.7F, 1.0F).endVertex();
+        vertexbuffer.pos(X, Y + 0.025D, Z).color(0.5F * 0.7F, 0.4F * 0.7F, 0.3F * 0.7F, 1.0F).endVertex();
+        vertexbuffer.pos(X + 0.025D, Y, Z - 0.025D).color(0.5F * 0.7F, 0.4F * 0.7F, 0.3F * 0.7F, 1.0F).endVertex();
+        vertexbuffer.pos(X, Y - 0.025D, Z).color(0.5F * 0.7F, 0.4F * 0.7F, 0.3F * 0.7F, 1.0F).endVertex();
+        tessellator.draw();
+
+        GlStateManager.enableLighting();
+        GlStateManager.enableTexture2D();
+        GlStateManager.enableCull();
+//            GL11.glEnable(GL11.GL_LIGHTING);
+            
         super.doRender(entity, x, y, z, entityYaw, partialTicks);
         
         

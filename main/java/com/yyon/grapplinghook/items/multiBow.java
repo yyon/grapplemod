@@ -2,7 +2,6 @@ package com.yyon.grapplinghook.items;
 
 import java.util.List;
 
-import net.minecraft.client.Minecraft;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
@@ -18,6 +17,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
 
+import com.yyon.grapplinghook.CommonProxyClass;
 import com.yyon.grapplinghook.grapplemod;
 import com.yyon.grapplinghook.vec;
 import com.yyon.grapplinghook.controllers.grappleController;
@@ -114,7 +114,7 @@ public class multiBow extends Item implements clickitem {
     
     public static float getAngle(EntityLivingBase entity) {
     	if (entity.isSneaking()) {
-    		return 40F;
+    		return 10F;//40F;
     	} else {
     		return 20F;
     	}
@@ -123,18 +123,17 @@ public class multiBow extends Item implements clickitem {
 	@Override
 	public void addInformation(ItemStack stack, EntityPlayer player, List<String> list, boolean par4)
 	{
-		Minecraft minecraft = Minecraft.getMinecraft();
 		list.add("Shoots two hooks and pulls player towards hooks");
 		list.add("");
 		list.add("Side crosshairs - Aim hooks");
-		list.add("Center crosshair - Direction of movement");
-		list.add(grapplemod.getkeyname(minecraft.gameSettings.keyBindUseItem) + " - Throw grappling hooks");
-		list.add(grapplemod.getkeyname(minecraft.gameSettings.keyBindUseItem) + " again - Release");
-		list.add("Double-" + grapplemod.getkeyname(minecraft.gameSettings.keyBindUseItem) + " - Release and throw again");
-		list.add(grapplemod.getkeyname(minecraft.gameSettings.keyBindJump) + " - Release and jump");
-		list.add(grapplemod.getkeyname(minecraft.gameSettings.keyBindSneak) + " + " + 
-				grapplemod.getkeyname(minecraft.gameSettings.keyBindUseItem) + " - Throw grappling hooks at wider angle");
-		list.add(grapplemod.getkeyname(minecraft.gameSettings.keyBindSneak) + " + " + 
-				grapplemod.getkeyname(minecraft.gameSettings.keyBindAttack) + " - Toggle speed");
+		list.add("Center crosshairs - Direction of movement");
+		list.add(grapplemod.proxy.getkeyname(CommonProxyClass.keys.keyBindUseItem) + " - Throw grappling hooks");
+		list.add(grapplemod.proxy.getkeyname(CommonProxyClass.keys.keyBindUseItem) + " again - Release");
+		list.add("Double-" + grapplemod.proxy.getkeyname(CommonProxyClass.keys.keyBindUseItem) + " - Release and throw again");
+		list.add(grapplemod.proxy.getkeyname(CommonProxyClass.keys.keyBindJump) + " - Release and jump");
+		list.add(grapplemod.proxy.getkeyname(CommonProxyClass.keys.keyBindSneak) + " + " + 
+				grapplemod.proxy.getkeyname(CommonProxyClass.keys.keyBindUseItem) + " - Throw grappling hooks at a narrower angle");
+		list.add(grapplemod.proxy.getkeyname(CommonProxyClass.keys.keyBindSneak) + " + " + 
+				grapplemod.proxy.getkeyname(CommonProxyClass.keys.keyBindAttack) + " - Toggle speed");
 	}
 }

@@ -6,7 +6,6 @@ import java.util.HashSet;
 import java.util.Random;
 
 import net.minecraft.block.Block;
-import net.minecraft.client.settings.KeyBinding;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -338,6 +337,15 @@ public class grapplemod {
 			arrow = (grappleArrow) arrowentity;
 		}
 		
+		if (id != MULTISUBID) {
+			grappleController currentcontroller = controllers.get(entityid);
+			if (currentcontroller != null) {
+				currentcontroller.unattach();
+			}
+		}
+		
+		System.out.println(blockpos);
+		
 		grappleController control = null;
 		if (id == GRAPPLEID) {
 			control = new grappleController(arrowid, entityid, world, pos, maxlen, id);
@@ -374,7 +382,7 @@ public class grapplemod {
 			System.out.println("AIR FRICTION CONTROLLER");
 			control = new airfrictionController(arrowid, entityid, world, pos, maxlen, id);
 		}
-		if (blockpos != null) {
+		if (blockpos != null && control != null) {
 			grapplemod.controllerpos.put(blockpos, control);
 		}
 		
@@ -460,18 +468,7 @@ public class grapplemod {
 			multihookarrows.add(entityarrow);
       	}
 	}
-	
-	public static String getkeyname(KeyBinding binding) {
-		String displayname = binding.getDisplayName();
-		if (displayname.equals("Button 1")) {
-			return "Left Click";
-		} else if (displayname.equals("Button 2")) {
-			return "Right Click";
-		} else {
-			return displayname;
-		}
-	}
-	
+		
 	public static void removeallmultihookarrows() {
 		for (multihookArrow arrow : multihookarrows) {
 			if (arrow != null && !arrow.isDead) {

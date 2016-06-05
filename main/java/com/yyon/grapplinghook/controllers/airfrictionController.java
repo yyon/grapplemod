@@ -33,6 +33,10 @@ public class airfrictionController extends grappleController {
 		Entity entity = this.entity;
 		
 		if (this.attached) {
+			this.normalGround();
+			this.normalCollisions();
+			this.applyAirFriction();
+			
 			if (entity.isCollided || entity.onGround) {
 				this.unattach();
 			}
@@ -43,8 +47,6 @@ public class airfrictionController extends grappleController {
 					this.unattach();
 				}
 			}
-			
-			this.applyAirFriction();
 			
 			motion.add_ip(this.playermovement.changelen(0.01));
 			

@@ -44,19 +44,19 @@ public class grappleController {
 	public double playerforward = 0;
 	public double playerstrafe = 0;
 	public boolean playerjump = false;
+	public boolean waitingonplayerjump = false;
 	public vec playermovement_unrotated = new vec(0,0,0);
 	public vec playermovement = new vec(0,0,0);
 	
 //	public int counter = 0;
 	public int ongroundtimer = 0;
+	public int maxongroundtimer = 3;
 	
 	public int maxlen;
 	
 	public int controllerid;
 	
 	public grappleController(int arrowId, int entityId, World world, vec pos, int maxlen, int controllerid) {
-//		System.out.println("GrappleStart " + this.toString());
-		
 		this.arrowId = arrowId;
 		this.entityId = entityId;
 		this.world = world;
@@ -84,19 +84,12 @@ public class grappleController {
 	
 	public void unattach() {
 		if (grapplemod.controllers.containsValue(this)) {
-//			System.out.println("unattach " + this.toString());
-			
 			this.attached = false;
 			
-			grappleArrow arrow = getArrow();
-			if (arrow != null) {
-				arrow.remove();
-			}
-			
 			grapplemod.unregisterController(this.entityId);
-			grapplemod.network.sendToServer(new GrappleEndMessage(this.entityId, this.arrowId));
 			
 			if (this.controllerid != grapplemod.AIRID) {
+				grapplemod.network.sendToServer(new GrappleEndMessage(this.entityId, this.arrowId));
 				grapplemod.createControl(grapplemod.AIRID, -1, this.entityId, this.entity.worldObj, new vec(0,0,0), 0, null);
 			}
 		}
@@ -108,8 +101,12 @@ public class grappleController {
 	
 	public void doClientTick() {
 		if (this.attached) {
-			grapplemod.proxy.getplayermovement(this, this.entityId);
-			this.updatePlayerPos();
+			if (this.entity == null || this.entity.isDead) {
+				this.unattach();
+			} else {
+				grapplemod.proxy.getplayermovement(this, this.entityId);
+				this.updatePlayerPos();
+			}
 		}
 	}
 	
@@ -117,9 +114,22 @@ public class grappleController {
 			float forward, boolean jump) {
 		playerforward = forward;
 		playerstrafe = strafe;
-		playerjump = jump;
+		if (!jump) {
+			playerjump = false;
+		} else if (jump && !playerjump) {
+			playerjump = true;
+			waitingonplayerjump = true;
+		}
 		playermovement_unrotated = new vec(strafe, 0, forward);
 		playermovement = playermovement_unrotated.rotate_yaw((float) (this.entity.rotationYaw * (Math.PI / 180.0)));
+	}
+	
+	public boolean isjumping() {
+		if (playerjump && waitingonplayerjump) {
+			waitingonplayerjump = false;
+			return true;
+		}
+		return false;
 	}
 		
 	public void updatePlayerPos() {
@@ -128,41 +138,9 @@ public class grappleController {
 		if (this.attached) {
 			if(entity != null) {
 				if (true) {
-//					counter++;
-//					if (counter > 1000) {
-//						counter = 0;
-//						System.out.println("pulling " + this.toString());
-//					}
-					
-					if (entity.onGround) {
-						ongroundtimer = 20;
-						if (this.motion.y < 0) {
-							this.motion.y = 0;
-						}
-						
-						if (!grapplemod.proxy.isSneaking(entity)) {
-							this.motion = vec.motionvec(entity);
-						}
-					} else {
-						if (this.ongroundtimer > 0) {
-							ongroundtimer--;
-						}
-					}
-					
-					// stop if collided with object
-					if (entity.isCollidedHorizontally) {
-						if (entity.motionX == 0) {
-							this.motion.x = 0;
-						}
-						if (entity.motionZ == 0) {
-							this.motion.z = 0;
-						}
-					}
-					if (entity.isCollidedVertically) {
-						if (entity.motionY == 0) {
-							this.motion.y = 0;
-						}
-					}
+					this.normalGround();
+					this.normalCollisions();
+//					this.applyAirFriction();
 					
 					vec arrowpos = this.pos;//this.getPositionVector();
 					vec playerpos = vec.positionvec(entity);
@@ -181,22 +159,11 @@ public class grappleController {
 					}
 					
 					double dist = oldspherevec.length();
-					
-					if (this.arrow != null) {
-		        		if (dist < this.r) {
-			    			double taut = 1 - ((this.r - dist) / 5);
-			    			if (taut < 0) {
-			    				taut = 0;
-			    			}
-			    			this.arrow.taut = taut;
-		        		} else {
-		        			this.arrow.taut = 1;
-		        		}
-		        	}
+					this.calctaut(dist);
 					
 					if (entity instanceof EntityPlayer) {
 						EntityPlayer player = (EntityPlayer) entity;
-						if (playerjump) {
+						if (this.isjumping()) {
 							this.dojump(player, spherevec);
 							return;
 						} else if (grapplemod.proxy.isSneaking(entity)) {
@@ -230,7 +197,7 @@ public class grappleController {
 						}
 					}
 						
-					if (!entity.onGround) {
+					if (!(this.ongroundtimer > 0)) {
 						motion.add_ip(0, -0.05, 0);
 					}
 					
@@ -266,53 +233,100 @@ public class grappleController {
 		}
 	}
 	
-	public void dojump(Entity player, vec spherevec) {
+	public void calctaut(double dist) {
+		if (this.arrow != null) {
+    		if (dist < this.r) {
+    			double taut = 1 - ((this.r - dist) / 5);
+    			if (taut < 0) {
+    				taut = 0;
+    			}
+    			this.arrow.taut = taut;
+    		} else {
+    			this.arrow.taut = 1;
+    		}
+    	}
+	}
+
+	public void normalCollisions() {
+		// stop if collided with object
+		if (entity.isCollidedHorizontally) {
+			if (entity.motionX == 0) {
+				this.motion.x = 0;
+			}
+			if (entity.motionZ == 0) {
+				this.motion.z = 0;
+			}
+		}
+		if (entity.isCollidedVertically) {
+			if (entity.motionY == 0) {
+				this.motion.y = 0;
+			}
+		}
+	}
+
+	public void normalGround() {
+		if (entity.onGround) {
+			ongroundtimer = maxongroundtimer;
+			if (this.motion.y < 0) {
+				this.motion.y = 0;
+			}
+		} else {
+			if (this.ongroundtimer > 0) {
+				ongroundtimer--;
+			}
+		}
+		if (this.ongroundtimer > 0) {
+			if (!grapplemod.proxy.isSneaking(entity)) {
+				this.motion = vec.motionvec(entity);
+			}
+		}
+	}
+
+	public void dojump(Entity player, double jumppower) {
+		double maxjump = 1;
 		if (ongroundtimer > 0) { // on ground: jump normally
+			ongroundtimer = 20;
 			return;
 		}
+		if (player.onGround) {
+			jumppower = 0;
+		}
+		if (player.isCollided) {
+			jumppower = maxjump;
+		}
+		if (jumppower < 0) {
+			jumppower = 0;
+		}
 		
+		this.unattach();
+		
+		if (jumppower > 0) {
+			if (jumppower > player.motionY + jumppower) {
+				player.motionY = jumppower;
+			} else {
+				player.motionY += jumppower;
+			}
+		}
+		
+		this.updateServerPos();
+	}
+	
+	public void dojump(Entity player, vec spherevec) {
 		double maxjump = 1;
 		vec jump = new vec(0, maxjump, 0);
 		if (spherevec != null) {
 			jump = jump.proj(spherevec);
 		}
 		double jumppower = jump.y;
-//		System.out.println("JUMP");
-//		System.out.println(jumppower);
-		if (jumppower < 0) {
-			jumppower = 0;
-		}
+		
 		if (spherevec != null && spherevec.y > 0) {
 			jumppower = 0;
 		}
-		if (player.isCollided) {
+		if ((this.arrow != null) && r < 1 && (player.posY < this.arrow.posY)) {
 			jumppower = maxjump;
 		}
-		if (r < 5) {
-			jumppower = maxjump;
-		}
-		if (player.onGround) {
-			jumppower = 0;
-		}
-//		System.out.println(jumppower);
 		
-		this.unattach();
-		
-//		player.ocity(player.motionX, player.motionY + jumppower, player.motionZ);
-		if (jumppower > 0) {
-			if (jumppower > player.motionY) {
-				player.motionY = jumppower;
-			} else {
-				player.motionY += jumppower;
-			}
-		}
-//		if (entity instanceof EntityPlayerMP) {
-//			((EntityPlayerMP) entity).playerNetServerHandler.sendPacket(new S12PacketEntityVelocity(entity));
-//		}
-		
-		this.updateServerPos();
-		
-		return;
+		this.dojump(player, jumppower);
 	}
 
 	public vec dampenmotion(vec motion, vec forward) {
@@ -342,7 +356,7 @@ public class grappleController {
 	
 	public void applyAirFriction() {
 		double vel = this.motion.length();
-		double dragforce = vel*vel / 50;
+		double dragforce = vel*vel / 40;
 		
 		vec airfric = new vec(this.motion.x, this.motion.y, this.motion.z);
 		airfric.changelen_ip(-dragforce);

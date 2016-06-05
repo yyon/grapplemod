@@ -43,25 +43,30 @@ public class multihookController extends grappleController {
 			if(entity != null && entity instanceof EntityPlayer) {
 				EntityPlayer player = (EntityPlayer) entity;
 				if (true) {
+//					this.normalGround();
+					this.normalCollisions();
+//					this.applyAirFriction();
 					
 					vec playerpos = vec.positionvec(player);
 					
 		        	vec facing = new vec(player.getLookVec());
 					
-					if (playerjump) {
+					if (this.isjumping()) {
 						vec jumpvec = new vec(0,0,0);
+						vec jumpdir = new vec (0,1,0);
 						for (multihookArrow arrow : this.arrows) {
 							vec arrowpos = vec.positionvec(arrow);
 							vec spherevec = arrowpos.sub(playerpos);
 							if (spherevec.y > 0) {
-								jumpvec.add_ip(spherevec);
+								jumpvec.add_ip(spherevec.changelen(1).proj(jumpdir));
 							}
 						}
-						if (jumpvec.y > 0) {
-							jumpvec = null;
+						
+						if (jumpvec.y > 1) {
+							jumpvec.y = 1;
 						}
 						
-						this.dojump(player, jumpvec);
+						this.dojump(player, jumpvec.y);
 						return;
 					} else {
 						motion.add_ip(this.playermovement.changelen(0.01));
@@ -114,8 +119,6 @@ public class multihookController extends grappleController {
 					}
 					
 					motion = dampenmotion(motion, facing);
-					
-					this.applyAirFriction();
 					
 					if (entity.onGround) {
 						motion.x *= 0.9;

@@ -80,6 +80,7 @@ public class magnetArrow extends grappleArrow
     	super.onEntityUpdate();
     	if (!this.foundblock) {
     		if (!this.worldObj.isRemote) {
+    			vec playerpos = vec.positionvec(this.shootingEntity);
     			vec pos = vec.positionvec(this);
     			if (magnetblock == null) {
 	    			if (prevpos != null) {
@@ -87,17 +88,21 @@ public class magnetArrow extends grappleArrow
 		    			vec vector = pos.sub(prevpos);
 		    			vec normvector = vector.normalize();
 		    			for (int i = 0; i < vector.length(); i++) {
+		    				double dist = prevpos.sub(playerpos).length();
+		    				int radius = (int) dist / 4;
 		    				BlockPos found = this.check(prevpos, checkedset);
 		    				if (found != null) {
 		    					if (wasinair) {
-			    					this.setPositionAndUpdate(prevpos.x, prevpos.y, prevpos.z);
-			    					pos = prevpos;
-			    					
-			    					magnetblock = found;
-			    					
-			    					break;
-			    					
-	//		    					this.serverAttach(found, new vec(found.getX(), found.getY(), found.getZ()));
+						    		vec distvec = new vec(found.getX(), found.getY(), found.getZ());
+						    		distvec.sub_ip(prevpos);
+						    		if (distvec.length() < radius) {
+				    					this.setPositionAndUpdate(prevpos.x, prevpos.y, prevpos.z);
+				    					pos = prevpos;
+				    					
+				    					magnetblock = found;
+				    					
+				    					break;
+						    		}
 		    					}
 		    				} else {
 		    					wasinair = true;
@@ -119,7 +124,9 @@ public class magnetArrow extends grappleArrow
 					
 					newvel.changelen(this.getVelocity());
 					
-					this.setVelocity(newvel.x, newvel.y, newvel.z);
+					this.motionX = newvel.x;
+					this.motionY = newvel.y;
+					this.motionZ = newvel.z;
 					
 					if (l < 0.2) {
 						this.serverAttach(magnetblock, blockvec, EnumFacing.UP);

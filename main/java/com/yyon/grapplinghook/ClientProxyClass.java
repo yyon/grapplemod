@@ -12,13 +12,13 @@ import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.client.renderer.entity.Render;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.client.settings.GameSettings;
+import net.minecraft.client.settings.KeyBinding;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.init.Items;
+import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.network.play.server.SPacketEntityVelocity;
 import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.event.world.BlockEvent.BreakEvent;
 import net.minecraftforge.fml.client.registry.IRenderFactory;
@@ -35,8 +35,11 @@ import com.yyon.grapplinghook.entities.grappleArrow;
 import com.yyon.grapplinghook.items.clickitem;
 import com.yyon.grapplinghook.items.enderBow;
 import com.yyon.grapplinghook.items.grappleBow;
+import com.yyon.grapplinghook.items.hookBow;
 import com.yyon.grapplinghook.items.launcherItem;
-import com.yyon.grapplinghook.network.PlayerMovementMessage;
+import com.yyon.grapplinghook.items.magnetBow;
+import com.yyon.grapplinghook.items.multiBow;
+import com.yyon.grapplinghook.items.repeller;
 
 public class ClientProxyClass extends CommonProxyClass {
 	public boolean leftclick = false;
@@ -71,7 +74,7 @@ public class ClientProxyClass extends CommonProxyClass {
 		ModelLoader.setCustomMeshDefinition(grapplemod.grapplebowitem, new ItemMeshDefinition() {
 		    @Override
 		    public ModelResourceLocation getModelLocation(ItemStack stack) {
-		    	if (grappleBow.isactive(stack)) {
+		    	if (ClientProxyClass.isactive(stack)) {
 		    		return ropeloc;
 		    	}
 		    	return grapplinghookloc;
@@ -82,7 +85,7 @@ public class ClientProxyClass extends CommonProxyClass {
 		ModelLoader.setCustomMeshDefinition(grapplemod.hookshotitem, new ItemMeshDefinition() {
 		    @Override
 		    public ModelResourceLocation getModelLocation(ItemStack stack) {
-		    	if (grappleBow.isactive(stack)) {
+		    	if (ClientProxyClass.isactive(stack)) {
 		    		return hookshotropeloc;
 		    	}
 		    	return hookshotloc;
@@ -95,7 +98,7 @@ public class ClientProxyClass extends CommonProxyClass {
 		ModelLoader.setCustomMeshDefinition(grapplemod.enderhookitem, new ItemMeshDefinition() {
 		    @Override
 		    public ModelResourceLocation getModelLocation(ItemStack stack) {
-		    	if (grappleBow.isactive(stack)) {
+		    	if (ClientProxyClass.isactive(stack)) {
 		    		return ropeloc;
 		    	}
 		    	return enderhookloc;
@@ -106,7 +109,7 @@ public class ClientProxyClass extends CommonProxyClass {
 		ModelLoader.setCustomMeshDefinition(grapplemod.magnetbowitem, new ItemMeshDefinition() {
 		    @Override
 		    public ModelResourceLocation getModelLocation(ItemStack stack) {
-		    	if (grappleBow.isactive(stack)) {
+		    	if (ClientProxyClass.isactive(stack)) {
 		    		return ropeloc;
 		    	}
 		    	return magnetbowloc;
@@ -117,7 +120,7 @@ public class ClientProxyClass extends CommonProxyClass {
 		ModelLoader.setCustomMeshDefinition(grapplemod.repelleritem, new ItemMeshDefinition() {
 		    @Override
 		    public ModelResourceLocation getModelLocation(ItemStack stack) {
-		    	if (grappleBow.isactive(stack)) {
+		    	if (ClientProxyClass.isactive(stack)) {
 		    		return repelleronloc;
 		    	}
 		    	return repellerloc;
@@ -128,7 +131,7 @@ public class ClientProxyClass extends CommonProxyClass {
 		ModelLoader.setCustomMeshDefinition(grapplemod.multihookitem, new ItemMeshDefinition() {
 		    @Override
 		    public ModelResourceLocation getModelLocation(ItemStack stack) {
-		    	if (grappleBow.isactive(stack)) {
+		    	if (ClientProxyClass.isactive(stack)) {
 		    		return multihookropeloc;
 		    	}
 		    	return multihookloc;
@@ -235,9 +238,10 @@ public class ClientProxyClass extends CommonProxyClass {
 				enderlaunchtimer.put(player.getEntityId(), player.worldObj.getTotalWorldTime());
 				
 	        	vec facing = new vec(player.getLookVec());
-				vec playermotion = vec.motionvec(player);
-				vec newvec = playermotion.add(facing.mult(3));
+//				vec playermotion = vec.motionvec(player);
+//				vec newvec = playermotion.add(facing.mult(3));
 				
+				/*
 				if (!grapplemod.controllers.containsKey(player.getEntityId())) {
 					player.motionX = newvec.x;
 					player.motionY = newvec.y;
@@ -252,6 +256,13 @@ public class ClientProxyClass extends CommonProxyClass {
 					facing.mult_ip(3);
 					grapplemod.receiveEnderLaunch(player.getEntityId(), facing.x, facing.y, facing.z);
 				}
+				*/
+				if (!grapplemod.controllers.containsKey(player.getEntityId())) {
+					player.onGround = false;
+					grapplemod.createControl(grapplemod.AIRID, -1, player.getEntityId(), player.worldObj, new vec(0,0,0), 0, null);
+				}
+				facing.mult_ip(3);
+				grapplemod.receiveEnderLaunch(player.getEntityId(), facing.x, facing.y, facing.z);
 			}
 		}
 	}
@@ -292,5 +303,68 @@ public class ClientProxyClass extends CommonProxyClass {
 			grappleController controller = grapplemod.controllers.get(id);
 			controller.unattach();
 		}
+	}
+	
+	@Override
+	public String getkeyname(CommonProxyClass.keys keyenum) {
+		KeyBinding binding = null;
+		
+		GameSettings gs = Minecraft.getMinecraft().gameSettings;
+		
+		if (keyenum == keys.keyBindAttack) {
+			binding = gs.keyBindAttack;
+		} else if (keyenum == keys.keyBindBack) {
+			binding = gs.keyBindBack;
+		} else if (keyenum == keys.keyBindForward) {
+			binding = gs.keyBindForward;
+		} else if (keyenum == keys.keyBindJump) {
+			binding = gs.keyBindJump;
+		} else if (keyenum == keys.keyBindLeft) {
+			binding = gs.keyBindLeft;
+		} else if (keyenum == keys.keyBindRight) {
+			binding = gs.keyBindRight;
+		} else if (keyenum == keys.keyBindSneak) {
+			binding = gs.keyBindSneak;
+		} else if (keyenum == keys.keyBindUseItem) {
+			binding = gs.keyBindUseItem;
+		}
+		
+		if (binding == null) {
+			return "";
+		}
+		
+		String displayname = binding.getDisplayName();
+		if (displayname.equals("Button 1")) {
+			return "Left Click";
+		} else if (displayname.equals("Button 2")) {
+			return "Right Click";
+		} else {
+			return displayname;
+		}
+	}
+
+	public static boolean isactive(ItemStack stack) {
+		EntityPlayer p = Minecraft.getMinecraft().thePlayer;
+		if (p.getItemStackFromSlot(EntityEquipmentSlot.MAINHAND) == stack || p.getItemStackFromSlot(EntityEquipmentSlot.OFFHAND) == stack) {
+			int entityid = p.getEntityId();
+			if (grapplemod.controllers.containsKey(entityid)) {
+				Item item = stack.getItem();
+				grappleController controller = grapplemod.controllers.get(entityid);
+				if (item.getClass() == grappleBow.class && controller.controllerid == grapplemod.GRAPPLEID) {
+					return true;
+				} else if (item.getClass() == enderBow.class && controller.controllerid == grapplemod.ENDERID) {
+					return true;
+				} else if (item.getClass() == hookBow.class && controller.controllerid == grapplemod.HOOKID) {
+					return true;
+				} else if (item.getClass() == magnetBow.class && controller.controllerid == grapplemod.MAGNETID) {
+					return true;
+				} else if (item.getClass() == repeller.class && controller.controllerid == grapplemod.REPELID) {
+					return true;
+				} else if (item.getClass() == multiBow.class && controller.controllerid == grapplemod.MULTIID) {
+					return true;
+				}
+			}
+		}
+		return false;
 	}
 }

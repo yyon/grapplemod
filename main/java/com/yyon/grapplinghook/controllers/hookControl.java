@@ -53,6 +53,9 @@ public class hookControl extends grappleController {
 //				EntityPlayer player = ((EntityPlayer)this.riddenByEntity);
 //				double l = this.getDistanceToEntity(entity);
 				if (true) {
+//					this.normalGround();
+					this.normalCollisions();
+//					this.applyAirFriction();
 					
 					vec arrowpos = this.pos;
 					vec playerpos = vec.positionvec(player);
@@ -64,7 +67,7 @@ public class hookControl extends grappleController {
 					
 					double dist = oldspherevec.length();
 					
-					if (playerjump) {
+					if (this.isjumping()) {
 						this.dojump(player, spherevec);
 						return;
 /*					} else if (this.shootingEntity.isSneaking()) {

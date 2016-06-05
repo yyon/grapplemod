@@ -20,46 +20,17 @@ public class repelController extends magnetController {
 		if (this.attached) {
 			if(entity != null) {
 				if (true) {
-					if (entity.onGround) {
-						ongroundtimer = 20;
-						if (this.motion.y < 0) {
-							this.motion.y = 0;
-						}
-						
-						if (!grapplemod.proxy.isSneaking(entity)) {
-							this.motion = vec.motionvec(entity);
-						}
-					} else {
-						if (this.ongroundtimer > 0) {
-							ongroundtimer--;
-						}
-					}
-					
-					// stop if collided with object
-					if (entity.isCollidedHorizontally) {
-						if (entity.motionX == 0) {
-							this.motion.x = 0;
-						}
-						if (entity.motionZ == 0) {
-							this.motion.z = 0;
-						}
-					}
-					if (entity.isCollidedVertically) {
-						if (entity.motionY == 0) {
-							this.motion.y = 0;
-						}
-					}
+					this.normalGround();
+					this.normalCollisions();
+//					this.applyAirFriction();
 					
 					vec playerpos = vec.positionvec(entity);
 					
 //					double dist = oldspherevec.length();
 					
-					boolean domagnet = true;
-					
 					if (entity instanceof EntityPlayer) {
 //						EntityPlayer player = (EntityPlayer) entity;
 						if (grapplemod.proxy.isSneaking(entity)) {
-							domagnet = false;
 							motion.mult_ip(0.95);
 						}
 						motion.add_ip(this.playermovement.changelen(0.03));//0.02));
@@ -67,9 +38,7 @@ public class repelController extends magnetController {
 					
 					vec blockpush = check(playerpos, entity.worldObj);
 					blockpush.mult_ip(0.5);
-					if (domagnet) {
-						blockpush = new vec(blockpush.x*0.5, blockpush.y*2, blockpush.z*0.5);
-					}
+					blockpush = new vec(blockpush.x*0.5, blockpush.y*2, blockpush.z*0.5);
 					this.motion.add_ip(blockpush);
 					
 					if (!entity.onGround) {

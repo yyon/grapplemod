@@ -2,7 +2,6 @@ package com.yyon.grapplinghook.items;
 
 import java.util.List;
 
-import net.minecraft.client.Minecraft;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.EnumAction;
@@ -16,6 +15,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
 
+import com.yyon.grapplinghook.CommonProxyClass;
 import com.yyon.grapplinghook.grapplemod;
 
 /*
@@ -86,10 +86,9 @@ public class launcherItem extends Item {
 	@Override
 	public void addInformation(ItemStack stack, EntityPlayer player, List<String> list, boolean par4)
 	{
-		Minecraft minecraft = Minecraft.getMinecraft();
 		list.add("Launches player");
 		list.add("");
 		list.add("Use crosshairs to aim");
-		list.add(grapplemod.getkeyname(minecraft.gameSettings.keyBindUseItem) + " - Launch player");
+		list.add(grapplemod.proxy.getkeyname(CommonProxyClass.keys.keyBindUseItem) + " - Launch player");
 	}
 }
