@@ -164,7 +164,7 @@ public class grapplemod {
 			"2", 
 			"4", Character.valueOf('2'), new ItemStack(Items.DIAMOND_BOOTS, 1), Character.valueOf('4'), new ItemStack(Blocks.WOOL, 1), 
 		});
-		GameRegistry.addRecipe(new ItemStack(magnetbowitem, 1), new Object[]{
+		GameRegistry.addRecipe(new ItemStack(multihookitem, 1), new Object[]{
 			"X2", 
 			"2X", Character.valueOf('2'), new ItemStack(hookshotitem, 1), 
 		});

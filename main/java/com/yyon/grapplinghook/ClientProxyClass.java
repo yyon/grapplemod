@@ -16,7 +16,6 @@ import net.minecraft.client.settings.KeyBinding;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Items;
-import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.client.model.ModelLoader;
@@ -345,7 +344,7 @@ public class ClientProxyClass extends CommonProxyClass {
 
 	public static boolean isactive(ItemStack stack) {
 		EntityPlayer p = Minecraft.getMinecraft().thePlayer;
-		if (p.getItemStackFromSlot(EntityEquipmentSlot.MAINHAND) == stack || p.getItemStackFromSlot(EntityEquipmentSlot.OFFHAND) == stack) {
+//		if (p.getItemStackFromSlot(EntityEquipmentSlot.MAINHAND) == stack || p.getItemStackFromSlot(EntityEquipmentSlot.OFFHAND) == stack) {
 			int entityid = p.getEntityId();
 			if (grapplemod.controllers.containsKey(entityid)) {
 				Item item = stack.getItem();
@@ -364,7 +363,7 @@ public class ClientProxyClass extends CommonProxyClass {
 					return true;
 				}
 			}
-		}
+//		}
 		return false;
 	}
 }
