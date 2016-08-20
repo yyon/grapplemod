@@ -32,23 +32,6 @@ import com.yyon.grapplinghook.network.GrappleClickMessage;
 import com.yyon.grapplinghook.network.GrappleEndMessage;
 import com.yyon.grapplinghook.network.PlayerMovementMessage;
 
-/* // 1.8 Compatability
-import net.minecraft.util.BlockPos;
-import net.minecraft.world.GameRules;
-import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.common.Mod.EventHandler;
-import net.minecraftforge.fml.common.SidedProxy;
-import net.minecraftforge.fml.common.event.FMLInitializationEvent;
-import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
-import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
-import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
-import net.minecraftforge.fml.common.network.NetworkRegistry;
-import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
-import net.minecraftforge.fml.common.network.simpleimpl.SimpleNetworkWrapper;
-import net.minecraftforge.fml.common.registry.EntityRegistry;
-import net.minecraftforge.fml.common.registry.GameRegistry;
-import net.minecraftforge.fml.relauncher.Side;
-/*/ // 1.7.10 Compatability
 import net.minecraft.nbt.NBTTagCompound;
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.Mod.EventHandler;
@@ -63,8 +46,6 @@ import cpw.mods.fml.common.network.simpleimpl.SimpleNetworkWrapper;
 import cpw.mods.fml.common.registry.EntityRegistry;
 import cpw.mods.fml.common.registry.GameRegistry;
 import cpw.mods.fml.relauncher.Side;
-
-//*/
 
 /*
  * This file is part of GrappleMod.
@@ -95,11 +76,7 @@ public class grapplemod {
 
     public static final String MODID = "grapplemod";
     
-/* // 1.8 Compatability
-    public static final String VERSION = "1.8-v6";
-/*/ // 1.7.10 Compatability
     public static final String VERSION = "1.7.10-v6";
-//*/
 
     public static Item grapplebowitem;
     public static Item hookshotitem;
@@ -160,33 +137,19 @@ public class grapplemod {
 		return 0;
 	}
 	
-//* // 1.7.10 Compatability
 	@EventHandler
-//*/
-
 	public void serverLoad(FMLServerStartingEvent event){
-/* // 1.8 Compatability
-		MinecraftServer.getServer().worldServerForDimension(0).getGameRules().addGameRule("grapplingLength", "0", GameRules.ValueType.NUMERICAL_VALUE);
-		MinecraftServer.getServer().worldServerForDimension(0).getGameRules().addGameRule("grapplingBlocks", "any", GameRules.ValueType.ANY_VALUE);
-		MinecraftServer.getServer().worldServerForDimension(0).getGameRules().addGameRule("grapplingNonBlocks", "none", GameRules.ValueType.ANY_VALUE);
-/*/ // 1.7.10 Compatability
 		MinecraftServer.getServer().worldServerForDimension(0).getGameRules().addGameRule("grapplingLength", "0");
 		MinecraftServer.getServer().worldServerForDimension(0).getGameRules().addGameRule("grapplingBlocks", "any");
 		MinecraftServer.getServer().worldServerForDimension(0).getGameRules().addGameRule("grapplingNonBlocks", "none");
-//*/
 
 	}
 	
 	public static void updateMaxLen() {
-/* // 1.8 Compatability
-		grapplemod.grapplingLength = MinecraftServer.getServer().worldServerForDimension(0).getGameRules().getInt("grapplingLength");
-/*/ // 1.7.10 Compatability
 		String s = MinecraftServer.getServer().worldServerForDimension(0).getGameRules().getGameRuleStringValue("grapplingLength");
 		if (!s.equals("")) {
 			grapplemod.grapplingLength = Integer.parseInt(s);
 		}
-//*/
-
 	}
 	
 	public static void updateGrapplingBlocks() {
@@ -247,8 +210,6 @@ public class grapplemod {
 		proxy.preInit(event);
 		network = NetworkRegistry.INSTANCE.newSimpleChannel("grapplemodchannel");
 		byte id = 0;
-//		network.registerMessage(PlayerPosMessage.Handler.class, PlayerPosMessage.class, id++, Side.CLIENT);
-//		network.registerMessage(DummyMessage.Handler.class, DummyMessage.class, id++, Side.SERVER);
 		network.registerMessage(PlayerMovementMessage.Handler.class, PlayerMovementMessage.class, id++, Side.SERVER);
 		network.registerMessage(GrappleAttachMessage.Handler.class, GrappleAttachMessage.class, id++, Side.CLIENT);
 		network.registerMessage(GrappleEndMessage.Handler.class, GrappleEndMessage.class, id++, Side.SERVER);
@@ -263,18 +224,12 @@ public class grapplemod {
 	
 	@EventHandler
 	public void postInit(FMLPostInitializationEvent event) {
-//		System.out.println("post init");
-//		System.out.println(proxy);
 		proxy.postInit(event);
 	}
 
 	public void registerEntity(Class<? extends Entity> entityClass, String name)
 	{
 		int entityID = EntityRegistry.findGlobalUniqueEntityId();
-//		long seed = name.hashCode();
-//		Random rand = new Random(seed);
-//		int primaryColor = rand.nextInt() * 16777215;
-//		int secondaryColor = rand.nextInt() * 16777215;
 		
 		EntityRegistry.registerGlobalEntityID(entityClass, name, entityID);
 		EntityRegistry.registerModEntity(entityClass, name, entityID, this, 64, 1, true);
@@ -303,7 +258,6 @@ public class grapplemod {
 	}
 
 	public static void receiveEnderLaunch(int id, double x, double y, double z) {
-//		System.out.println("Received EnderGrappleLaunchMessage");
 		grappleController controller = controllers.get(id);
 		if (controller != null) {
 			controller.receiveEnderLaunch(x, y, z);
@@ -318,20 +272,10 @@ public class grapplemod {
 			grapplemod.network.sendTo(message, (EntityPlayerMP) entity);
 		} else {
 			System.out.println("ERROR! couldn't find player");
-//			System.out.println(playerid);
-//			System.out.println(entity);
 		}
 	}
 	
 	public static grappleController createControl(int id, int arrowid, int entityid, World world, vec pos, int maxlen, BlockPos blockpos) {
-		/*
-		Class<? extends grappleController> theclass = grapplecontrolsclasses.get(id);
-		Constructor<? extends grappleController> ctor;
-		grappleController control = null;
-		try {
-			ctor = theclass.getConstructor(Integer.class, Integer.class, World.class, Vec3.class);
-			control = ctor.newInstance(arrowid, entityid, world, pos);
-		*/
 		grappleController control = null;
 		if (id == GRAPPLEID) {
 			control = new grappleController(arrowid, entityid, world, pos, maxlen);
@@ -341,12 +285,9 @@ public class grapplemod {
 			control = new hookControl(arrowid, entityid, world, pos, maxlen);
 		}
 		grapplemod.controllerpos.put(blockpos, control);
-//		System.out.println("create control");
-//		System.out.println(blockpos);
 		
 		return control;
 	}
-//* // 1.7.10 Compatability
 	
 	public static NBTTagCompound getCompound(ItemStack stack) {
 		NBTTagCompound compound = stack.getTagCompound();
@@ -356,6 +297,4 @@ public class grapplemod {
 		}
 		return compound;
 	}
-//*/
-
 }

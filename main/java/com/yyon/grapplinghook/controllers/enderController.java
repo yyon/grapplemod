@@ -30,11 +30,4 @@ public class enderController extends grappleController {
 		super.receiveGrappleClick(leftclick);
 		
 	}
-	
-	/*
-	@Override
-	public void receiveEnderLaunch(double x, double y, double z) {
-//		System.out.println("now launching");
-	}
-	*/
 }

@@ -7,12 +7,10 @@ import net.minecraft.world.World;
 import com.yyon.grapplinghook.entities.grappleArrow;
 import com.yyon.grapplinghook.entities.hookArrow;
 
-//* // 1.7.10 Compatability
 import net.minecraft.client.renderer.texture.IIconRegister;
 
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
-//*/
 
 /*
  * This file is part of GrappleMod.
@@ -41,7 +39,6 @@ public class hookBow extends grappleBow {
 	public grappleArrow createarrow(ItemStack satack, World worldIn, EntityPlayer playerIn) {
 		return new hookArrow(worldIn, playerIn, 0);
 	}
-//* // 1.7.10 Compatability
 	
 	@Override
 	@SideOnly(Side.CLIENT)
@@ -49,6 +46,5 @@ public class hookBow extends grappleBow {
 	{
 		 itemIcon = iconRegister.registerIcon("grapplemod:hookshot");
 	}
-//*/
 
 }
