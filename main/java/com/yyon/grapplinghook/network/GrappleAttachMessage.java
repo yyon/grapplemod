@@ -9,20 +9,11 @@ import com.yyon.grapplinghook.grapplemod;
 import com.yyon.grapplinghook.vec;
 import com.yyon.grapplinghook.entities.grappleArrow;
 
-//* // 1.8 Compatability
 import net.minecraft.util.BlockPos;
 import net.minecraft.util.IThreadListener;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
-/*/ // 1.7.10 Compatability
-import com.yyon.grapplinghook.BlockPos;
-import com.yyon.grapplinghook.network.PlayerMovementMessage.Handler.runner;
-
-import cpw.mods.fml.common.network.simpleimpl.IMessage;
-import cpw.mods.fml.common.network.simpleimpl.IMessageHandler;
-import cpw.mods.fml.common.network.simpleimpl.MessageContext;
-//*/
 
 /*
  * This file is part of GrappleMod.
@@ -44,7 +35,6 @@ import cpw.mods.fml.common.network.simpleimpl.MessageContext;
 public class GrappleAttachMessage implements IMessage {
    
 	public int id;
-//	public double r;
 	public double x;
 	public double y;
 	public double z;
@@ -52,15 +42,11 @@ public class GrappleAttachMessage implements IMessage {
 	public int entityid;
 	public int maxlen;
 	public BlockPos blockpos;
-//	public double mx;
-//	public double my;
-//	public double mz;
 
     public GrappleAttachMessage() { }
 
     public GrappleAttachMessage(int id, double x, double y, double z, int controlid, int entityid, int maxlen, BlockPos blockpos) {
     	this.id = id;
-//    	this.r = r;
         this.x = x;
         this.y = y;
         this.z = z;
@@ -68,15 +54,11 @@ public class GrappleAttachMessage implements IMessage {
         this.entityid = entityid;
         this.maxlen = maxlen;
         this.blockpos = blockpos;
-//        this.mx = mx;
-//        this.my = my;
-//        this.mz = mz;
     }
 
     @Override
     public void fromBytes(ByteBuf buf) {
     	this.id = buf.readInt();
-//    	this.r = buf.readDouble();
         this.x = buf.readDouble();
         this.y = buf.readDouble();
         this.z = buf.readDouble();
@@ -87,15 +69,11 @@ public class GrappleAttachMessage implements IMessage {
         int blocky = buf.readInt();
         int blockz = buf.readInt();
         this.blockpos = new BlockPos(blockx, blocky, blockz);
-//        this.mx = buf.readDouble();
-//        this.my = buf.readDouble();
-//        this.mz = buf.readDouble();
     }
 
     @Override
     public void toBytes(ByteBuf buf) {
     	buf.writeInt(this.id);
-//    	buf.writeDouble(this.r);
         buf.writeDouble(this.x);
         buf.writeDouble(this.y);
         buf.writeDouble(this.z);
@@ -105,9 +83,6 @@ public class GrappleAttachMessage implements IMessage {
         buf.writeInt(this.blockpos.getX());
         buf.writeInt(this.blockpos.getY());
         buf.writeInt(this.blockpos.getZ());
-//        buf.writeDouble(this.mx);
-//        buf.writeDouble(this.my);
-//        buf.writeDouble(this.mz);
     }
 
     public static class Handler implements IMessageHandler<GrappleAttachMessage, IMessage> {
@@ -138,23 +113,11 @@ public class GrappleAttachMessage implements IMessage {
        
         @Override
         public IMessage onMessage(GrappleAttachMessage message, MessageContext ctx) {
-//            System.out.println(String.format("Received %s from %s", message.text, ctx.getServerHandler().playerEntity.getDisplayName()));
-            
-//* // 1.8 Compatability
+
         	IThreadListener mainThread = Minecraft.getMinecraft(); // or Minecraft.getMinecraft() on the client
             mainThread.addScheduledTask(new runner(message, ctx));
-/*/ // 1.7.10 Compatability
-//        	IThreadListener mainThread = Minecraft.getMinecraft(); // or Minecraft.getMinecraft() on the client
-//            mainThread.addScheduledTask(new runner(message, ctx));
-        	new runner(message, ctx).run();
 
-//*/
-
-        	//            Entity arrowentity = world.getEntityByID(message.arrowId);
-//            if (arrowentity instanceof grappleArrow) {
-//            	((grappleArrow) arrowentity).receivePlayerMovementMessage(message.strafe, message.forward);
-//            }
-            return null; // no response in this case
+            return null;
         }
     }
 }

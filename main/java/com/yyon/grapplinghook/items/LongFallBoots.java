@@ -6,14 +6,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.entity.living.LivingFallEvent;
 
-//* // 1.8 Compatability
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-/*/ // 1.7.10 Compatability
-import net.minecraft.client.renderer.texture.IIconRegister;
-import cpw.mods.fml.common.eventhandler.SubscribeEvent;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
-//*/
 
 /*
  * This file is part of GrappleMod.
@@ -38,16 +31,6 @@ public class LongFallBoots extends ItemArmor {
 	    this.setUnlocalizedName("longfallboots");
 	    MinecraftForge.EVENT_BUS.register(this);
 	}
-	
-/* // 1.7.10 Compatability
-	@Override
-	@SideOnly(Side.CLIENT)
-	public void registerIcons(IIconRegister iconRegister)
-	{
-		 itemIcon = iconRegister.registerIcon("grapplemod:longfallboots");
-	}
-	
-//*/
 
 	@SubscribeEvent
 	public void onLivingFallEvent(LivingFallEvent event)
@@ -59,7 +42,6 @@ public class LongFallBoots extends ItemArmor {
 			
 		    if (armorFeet != null && armorFeet.getItem() instanceof LongFallBoots)
 		    {
-				// this cancels the fall event so you take no damage
 				event.setCanceled(true);
 		    }
 		}

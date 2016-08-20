@@ -40,8 +40,7 @@ public class BlockPos {
 	
     @Override
     public int hashCode() {
-        return new HashCodeBuilder(17, 31). // two randomly chosen prime numbers
-            // if deriving: appendSuper(super.hashCode()).
+        return new HashCodeBuilder(17, 31). 
             append(this.x).
             append(this.y).
             append(this.z).

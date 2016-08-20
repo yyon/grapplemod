@@ -20,14 +20,7 @@ import net.minecraft.util.BlockPos;
 import net.minecraftforge.event.world.BlockEvent.BreakEvent;
 import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-/*/ // 1.7.10 Compatability
-import net.minecraft.client.renderer.texture.IIconRegister;
-import com.yyon.grapplinghook.BlockPos;
 
-import cpw.mods.fml.common.FMLCommonHandler;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
-//*/
 
 /*
  * This file is part of GrappleMod.
@@ -63,16 +56,6 @@ public class grappleBow extends Item {
 		FMLCommonHandler.instance().bus().register(this);
 	}
 	
-/* // 1.7.10 Compatability
-	@Override
-	@SideOnly(Side.CLIENT)
-	public void registerIcons(IIconRegister iconRegister)
-	{
-		itemIcon = iconRegister.registerIcon("grapplemod:grapplinghook");
-	}
-	
-	@Override
-//*/
 
 	public int getMaxItemUseDuration(ItemStack par1ItemStack)
 	{
@@ -80,11 +63,7 @@ public class grappleBow extends Item {
 	}
 	
 	public grappleArrow getArrow(ItemStack stack, World world) {
-//* // 1.8 Compatability
 		NBTTagCompound compound = stack.getSubCompound("grapplebow", true);
-/*/ // 1.7.10 Compatability
-		NBTTagCompound compound = grapplemod.getCompound(stack);
-//*/
 
 		int id = compound.getInteger("arrow");
 		if (id == 0) {
@@ -104,11 +83,7 @@ public class grappleBow extends Item {
 			id = arrow.getEntityId();
 		}
 		
-//* // 1.8 Compatability
 		NBTTagCompound compound = stack.getSubCompound("grapplebow", true);
-/*/ // 1.7.10 Compatability
-		NBTTagCompound compound = grapplemod.getCompound(stack);
-//*/
 
 		compound.setInteger("arrow", id);
 	}
@@ -123,7 +98,6 @@ public class grappleBow extends Item {
         	if (entityarrow != null) {
         		int id = entityarrow.shootingEntityID;
         		if (!grapplemod.attached.contains(id)) {
-//        		if (entityarrow.isDead) {
         			setArrow(stack, null);
         			entityarrow = null;
         		}
@@ -141,14 +115,8 @@ public class grappleBow extends Item {
 			} else {
 				System.out.println("right click unattach");
 				System.out.println(entityarrow);
-//				if (entityarrow.control != null) {
-//					entityarrow.control.unattach();
-//				} else {
-//					entityarrow.removeServer();
-//				}
 				grapplemod.sendtocorrectclient(new GrappleClickMessage(entityarrow.shootingEntityID, false), entityarrow.shootingEntityID, entityarrow.worldObj);
 				grapplemod.attached.remove(new Integer(entityarrow.shootingEntityID));
-//				setArrow(stack, null);
 			}
     	}
 	}
@@ -157,20 +125,10 @@ public class grappleBow extends Item {
 		System.out.println("Creating arrow!");
 		return new grappleArrow(worldIn, playerIn, 0);
 	}
-	
-	
-/* // 1.7.10 Compatability
-	@Override
-//*/
 
     public void onPlayerStoppedUsing(ItemStack stack, World worldIn, EntityPlayer playerIn, int timeLeft)
     {
     }
-    
-/* // 1.7.10 Compatability
-	@Override
-//*/
-
 	public ItemStack onItemRightClick(ItemStack stack, World worldIn, final EntityPlayer playerIn){
         playerIn.setItemInUse(stack, this.getMaxItemUseDuration(stack));
         
@@ -188,23 +146,10 @@ public class grappleBow extends Item {
 	/**
 	 * returns the action that specifies what animation to play when the items is being used
 	 */
-/* // 1.7.10 Compatability
-    @Override
-//*/
-
 	public EnumAction getItemUseAction(ItemStack par1ItemStack)
 	{
-//* // 1.8 Compatability
 		return EnumAction.NONE;
 	}
-	
-/*/ // 1.7.10 Compatability
-		return EnumAction.none;
-	}
-	
-    @Override
-//*/
-
     public boolean onLeftClickEntity(ItemStack stack, EntityPlayer player, Entity entity)
     {
     	return true;
@@ -215,45 +160,14 @@ public class grappleBow extends Item {
     	return true;
     }
    
-//* // 1.8 Compatability
     public boolean onBlockStartBreak(ItemStack itemstack, BlockPos k, EntityPlayer player)
-/*/ // 1.7.10 Compatability
-    @Override
-    public boolean onBlockStartBreak(ItemStack itemstack, int x, int y, int z, EntityPlayer player)
-//*/
-
     {
       return true;
     }
    
     
-//* // 1.8 Compatability
     public boolean onItemUseFirst(ItemStack stack, EntityPlayer player, World world, int x, int y, int z, int side, float hitX, float hitY, float hitZ)
     {
       return true;
     }
-/*/ // 1.7.10 Compatability
-//    public boolean onItemUseFirst(ItemStack stack, EntityPlayer player, World world, int x, int y, int z, int side, float hitX, float hitY, float hitZ)
-//    {
-//      return true;
-//    }
-//*/
-
-    /*
-	@SubscribeEvent
-	public void onPlayerTick(TickEvent.PlayerTickEvent event) {
-		EntityPlayer player = event.player;
-		if (player != null) {
-			ItemStack stack = player.getHeldItem();
-			if (stack != null) {
-				Item item = stack.getItem();
-				if (item instanceof grappleBow) {
-					if (player.isSwingInProgress) {
-						this.leftclick(stack, player.worldObj, player);
-					}
-				}
-			}
-		}
-    }
-    */
 }

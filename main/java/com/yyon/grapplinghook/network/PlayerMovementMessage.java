@@ -5,16 +5,10 @@ import net.minecraft.entity.Entity;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
 
-//* // 1.8 Compatability
 import net.minecraft.util.IThreadListener;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
-/*/ // 1.7.10 Compatability
-import cpw.mods.fml.common.network.simpleimpl.IMessage;
-import cpw.mods.fml.common.network.simpleimpl.IMessageHandler;
-import cpw.mods.fml.common.network.simpleimpl.MessageContext;
-//*/
 
 /*
  * This file is part of GrappleMod.
@@ -54,8 +48,6 @@ public class PlayerMovementMessage implements IMessage {
     	this.mx = mx;
     	this.my = my;
     	this.mz = mz;
-    	
-//    	System.out.println("Creating PlayerMovementMessage");
     }
 
     @Override
@@ -71,8 +63,6 @@ public class PlayerMovementMessage implements IMessage {
     	} catch (Exception e) {
     		System.out.println(buf);
     	}
-    	
-//    	System.out.println("Receiving PlayerMovementMessage");
     }
 
     @Override
@@ -84,8 +74,6 @@ public class PlayerMovementMessage implements IMessage {
         buf.writeDouble(mx);
         buf.writeDouble(my);
         buf.writeDouble(mz);
-        
-//    	System.out.println("Sending PlayerMovementMessage");
     }
 
     public static class Handler implements IMessageHandler<PlayerMovementMessage, IMessage> {
@@ -103,7 +91,6 @@ public class PlayerMovementMessage implements IMessage {
             public void run() {
                 World world = ctx.getServerHandler().playerEntity.worldObj;
                 Entity entity = world.getEntityByID(message.entityId);
-//                entity.setPositionAndUpdate(message.x, message.y, message.z);
                 entity.posX = message.x;
                 entity.posY = message.y;
                 entity.posZ = message.z;
@@ -115,17 +102,10 @@ public class PlayerMovementMessage implements IMessage {
     	
         @Override
         public IMessage onMessage(PlayerMovementMessage message, MessageContext ctx) {
-//            System.out.println(String.format("Received %s from %s", message.text, ctx.getServerHandler().playerEntity.getDisplayName()));
-//* // 1.8 Compatability
-        	IThreadListener mainThread = (WorldServer) ctx.getServerHandler().playerEntity.worldObj; // or Minecraft.getMinecraft() on the client
+        	IThreadListener mainThread = (WorldServer) ctx.getServerHandler().playerEntity.worldObj;
             mainThread.addScheduledTask(new runner(message, ctx));
-/*/ // 1.7.10 Compatability
-//        	IThreadListener mainThread = (WorldServer) ctx.getServerHandler().playerEntity.worldObj; // or Minecraft.getMinecraft() on the client
-//            mainThread.addScheduledTask(new runner(message, ctx));
-        	new runner(message, ctx).run();
-//*/
 
-            return null; // no response in this case
+            return null;
         }
     }
 }

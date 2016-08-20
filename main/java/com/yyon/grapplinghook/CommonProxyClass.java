@@ -15,21 +15,11 @@ import com.yyon.grapplinghook.controllers.grappleController;
 import com.yyon.grapplinghook.entities.grappleArrow;
 import com.yyon.grapplinghook.items.grappleBow;
 
-
-//* // 1.8 Compatability
 import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-/*/ // 1.7.10 Compatability
-
-import cpw.mods.fml.common.FMLCommonHandler;
-import cpw.mods.fml.common.event.FMLInitializationEvent;
-import cpw.mods.fml.common.event.FMLPostInitializationEvent;
-import cpw.mods.fml.common.event.FMLPreInitializationEvent;
-import cpw.mods.fml.common.eventhandler.SubscribeEvent;
-//*/
 
 public class CommonProxyClass {
 	public void preInit(FMLPreInitializationEvent event) {
@@ -56,8 +46,6 @@ public class CommonProxyClass {
 	{
 		if (event.entity != null && grapplemod.attached.contains(event.entity.getEntityId()))
 		{
-//			System.out.println("Fall canceled");
-			//don't let fall damage occur when attached
 			event.setCanceled(true);
 		}
 	}
