@@ -9,7 +9,7 @@ import com.yyon.grapplinghook.grapplemod;
 import com.yyon.grapplinghook.vec;
 import com.yyon.grapplinghook.entities.grappleArrow;
 
-//* // 1.8 Compatability
+/* // 1.8 Compatability
 import net.minecraft.util.BlockPos;
 import net.minecraft.util.IThreadListener;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
@@ -127,8 +127,8 @@ public class GrappleAttachMessage implements IMessage {
             	if (grapple instanceof grappleArrow) {
 	            	((grappleArrow) grapple).clientAttach(message.x, message.y, message.z);
             	} else {
-            		System.out.println("Couldn't find grappleArrow");
-            		System.out.println(message.id);
+//            		System.out.println("Couldn't find grappleArrow");
+//            		System.out.println(message.id);
             	}
             	
             	grapplemod.createControl(message.controlid, message.id, message.entityid, world, new vec(message.x, message.y, message.z), message.maxlen, message.blockpos);
@@ -140,7 +140,7 @@ public class GrappleAttachMessage implements IMessage {
         public IMessage onMessage(GrappleAttachMessage message, MessageContext ctx) {
 //            System.out.println(String.format("Received %s from %s", message.text, ctx.getServerHandler().playerEntity.getDisplayName()));
             
-//* // 1.8 Compatability
+/* // 1.8 Compatability
         	IThreadListener mainThread = Minecraft.getMinecraft(); // or Minecraft.getMinecraft() on the client
             mainThread.addScheduledTask(new runner(message, ctx));
 /*/ // 1.7.10 Compatability

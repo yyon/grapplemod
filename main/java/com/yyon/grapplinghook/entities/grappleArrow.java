@@ -19,7 +19,7 @@ import com.yyon.grapplinghook.vec;
 import com.yyon.grapplinghook.network.GrappleAttachMessage;
 import com.yyon.grapplinghook.network.GrappleAttachPosMessage;
 
-//* // 1.8 Compatability
+/* // 1.8 Compatability
 import net.minecraft.util.BlockPos;
 import net.minecraftforge.fml.common.registry.IEntityAdditionalSpawnData;
 /*/ // 1.7.10 Compatability
@@ -74,7 +74,7 @@ public class grappleArrow extends EntityThrowable implements IEntityAdditionalSp
 	
 	public grappleArrow(World worldIn) {
 		super(worldIn);
-		System.out.println("init (1) " + this.toString());
+//		System.out.println("init (1) " + this.toString());
 	}
 	
 	public grappleArrow(World worldIn, EntityLivingBase shooter,
@@ -86,13 +86,11 @@ public class grappleArrow extends EntityThrowable implements IEntityAdditionalSp
 //			this.shootingplayer = (EntityPlayer) this.shootingEntity;
 //		}
 		this.shootingEntityID = this.shootingEntity.getEntityId();
-		System.out.println("init (2) " + this.toString());
+//		System.out.println("init (2) " + this.toString());
 		
-//* // 1.8 Compatability
-		System.out.println(this.shootingEntityID);
-		System.out.println(this.shootingEntity.worldObj);
-		System.out.println(this.shootingEntity.getUniqueID());
-//*/
+//		System.out.println(this.shootingEntityID);
+//		System.out.println(this.shootingEntity.worldObj);
+//		System.out.println(this.shootingEntity.getUniqueID());
 
 		grapplemod.updateMaxLen();
 		grapplemod.updateGrapplingBlocks();
@@ -109,7 +107,7 @@ public class grappleArrow extends EntityThrowable implements IEntityAdditionalSp
     }
     */
 	
-/* // 1.7.10 Compatability
+//* // 1.7.10 Compatability
 	@Override
 //*/
 
@@ -129,7 +127,7 @@ public class grappleArrow extends EntityThrowable implements IEntityAdditionalSp
 			this.motionZ = 0;
 			this.firstattach = false;
 			super.setPosition(this.thispos.x, this.thispos.y, this.thispos.z);
-			System.out.println("Re-updated pos");
+//			System.out.println("Re-updated pos");
 		}
 		
 		
@@ -156,7 +154,7 @@ public class grappleArrow extends EntityThrowable implements IEntityAdditionalSp
 		return false;
 	}
 	
-/* // 1.7.10 Compatability
+//* // 1.7.10 Compatability
 	@Override
 //*/
 
@@ -232,21 +230,22 @@ public class grappleArrow extends EntityThrowable implements IEntityAdditionalSp
 				BlockPos blockpos = new BlockPos(0,0,0);
 				
 				if (movingobjectposition.typeOfHit == MovingObjectPosition.MovingObjectType.BLOCK) {
-//* // 1.8 Compatability
+/* // 1.8 Compatability
 					blockpos = movingobjectposition.getBlockPos();
 /*/ // 1.7.10 Compatability
 					blockpos = new BlockPos(movingobjectposition.blockX, movingobjectposition.blockY, movingobjectposition.blockZ);//movingobjectposition.getBlockPos();
 //*/
 
 					if (!grapplemod.anyblocks) {
-//* // 1.8 Compatability
+/* // 1.8 Compatability
 						Block block = this.worldObj.getBlockState(blockpos).getBlock();
 /*/ // 1.7.10 Compatability
 						Block block = this.worldObj.getBlock(blockpos.x, blockpos.y, blockpos.z);
 //*/
 
-						if (!grapplemod.grapplingblocks.contains(block)) {
-							System.out.println("Hit invalid block");
+						if ((!grapplemod.removeblocks && !grapplemod.grapplingblocks.contains(block))
+								|| (grapplemod.removeblocks && grapplemod.grapplingblocks.contains(block))) {
+//							System.out.println("Hit invalid block");
 							this.removeServer();
 							return;
 						}
@@ -254,7 +253,7 @@ public class grappleArrow extends EntityThrowable implements IEntityAdditionalSp
 				}
 				
 	//			this.attached = true;
-				System.out.println("attaching! (server) " + this.toString());
+//				System.out.println("attaching! (server) " + this.toString());
 				
 	//	        Vec3 vec31 = new Vec3(this.posX, this.posY, this.posZ);
 //		        vec vec3 = new vec(this.posX + this.motionX, this.posY + this.motionY, this.posZ + this.motionZ);
@@ -267,7 +266,7 @@ public class grappleArrow extends EntityThrowable implements IEntityAdditionalSp
 		            
 	//	            doposupdate = true;
 		            
-//* // 1.8 Compatability
+/* // 1.8 Compatability
 		            this.setPositionAndUpdate(vec3.x, vec3.y, vec3.z);
 /*/ // 1.7.10 Compatability
 		            this.setPosition(vec3.x, vec3.y, vec3.z);
@@ -290,7 +289,7 @@ public class grappleArrow extends EntityThrowable implements IEntityAdditionalSp
 	//			motion = new Vec3(this.shootingEntity.motionX, this.shootingEntity.motionY, this.shootingEntity.motionZ);
 				
 				grapplemod.attached.add(this.shootingEntityID);
-				System.out.println(grapplemod.attached);
+//				System.out.println(grapplemod.attached);
 				
 				grapplemod.sendtocorrectclient(new GrappleAttachMessage(this.getEntityId(), this.posX, this.posY, this.posZ, this.getControlId(), this.shootingEntityID, grapplemod.grapplingLength, blockpos), this.shootingEntityID, this.worldObj);
 	//			grapplemod.network.sendToAll(new GrappleAttachPosMessage(this.getEntityId(), this.posX, this.posY, this.posZ));
@@ -311,7 +310,7 @@ public class grappleArrow extends EntityThrowable implements IEntityAdditionalSp
 	}
 	
 	public void clientAttach(double x, double y, double z) {
-		System.out.println("attaching! (client) " + this.toString());
+//		System.out.println("attaching! (client) " + this.toString());
 		
 		this.setAttachPos(x, y, z);
 		
@@ -341,7 +340,7 @@ public class grappleArrow extends EntityThrowable implements IEntityAdditionalSp
         return 0F;
     }
 	
-//* // 1.8 Compatability
+/* // 1.8 Compatability
     protected float getVelocity()
 /*/ // 1.7.10 Compatability
 	@Override
@@ -355,7 +354,7 @@ public class grappleArrow extends EntityThrowable implements IEntityAdditionalSp
 	public void removeServer() {
 		this.kill();
 		this.shootingEntityID = 0;
-/* // 1.7.10 Compatability
+//* // 1.7.10 Compatability
 		System.out.println("REMOVE SERVER!");
 //*/
 
@@ -366,7 +365,7 @@ public class grappleArrow extends EntityThrowable implements IEntityAdditionalSp
 	}
 
 	public void setAttachPos(double x, double y, double z) {
-//* // 1.8 Compatability
+/* // 1.8 Compatability
 		this.setPositionAndUpdate(x, y, z);
 /*/ // 1.7.10 Compatability
 		this.setPosition(x, y, z);

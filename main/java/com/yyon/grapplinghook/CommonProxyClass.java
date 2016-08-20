@@ -16,7 +16,7 @@ import com.yyon.grapplinghook.entities.grappleArrow;
 import com.yyon.grapplinghook.items.grappleBow;
 
 
-//* // 1.8 Compatability
+/* // 1.8 Compatability
 import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
@@ -96,11 +96,11 @@ public class CommonProxyClass {
 
     @SubscribeEvent
     public void onLivingHurt(LivingHurtEvent event) {
-    	System.out.println("hurt");
+//    	System.out.println("hurt");
     	if (event.source == DamageSource.inWall) {
-    		System.out.println("in wall");
+//    		System.out.println("in wall");
     		if (grapplemod.attached.contains(event.entity.getEntityId())) {
-    			System.out.println("canceled");
+//    			System.out.println("canceled");
     			event.setCanceled(true);
     		}
     	}

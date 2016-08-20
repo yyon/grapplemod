@@ -3,7 +3,7 @@ package com.yyon.grapplinghook;
 import net.minecraft.entity.Entity;
 
 
-//* // 1.8 Compatability
+/* // 1.8 Compatability
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;

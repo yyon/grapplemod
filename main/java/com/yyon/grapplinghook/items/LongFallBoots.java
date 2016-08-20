@@ -6,7 +6,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.entity.living.LivingFallEvent;
 
-//* // 1.8 Compatability
+/* // 1.8 Compatability
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 /*/ // 1.7.10 Compatability
 import net.minecraft.client.renderer.texture.IIconRegister;
@@ -39,7 +39,7 @@ public class LongFallBoots extends ItemArmor {
 	    MinecraftForge.EVENT_BUS.register(this);
 	}
 	
-/* // 1.7.10 Compatability
+//* // 1.7.10 Compatability
 	@Override
 	@SideOnly(Side.CLIENT)
 	public void registerIcons(IIconRegister iconRegister)

@@ -33,7 +33,7 @@ public class hookArrow extends grappleArrow
 		super(worldIn, shooter, p_i1756_3_);
 	}
 	
-//* // 1.8 Compatability
+/* // 1.8 Compatability
     protected float getVelocity()
 /*/ // 1.7.10 Compatability
 	@Override

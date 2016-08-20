@@ -5,7 +5,7 @@ import net.minecraft.client.Minecraft;
 
 import com.yyon.grapplinghook.grapplemod;
 
-//* // 1.8 Compatability
+/* // 1.8 Compatability
 import net.minecraft.util.IThreadListener;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
@@ -111,7 +111,7 @@ public class GrappleClickMessage implements IMessage {
         @Override
         public IMessage onMessage(GrappleClickMessage message, MessageContext ctx) {
 //            System.out.println(String.format("Received %s from %s", message.text, ctx.getServerHandler().playerEntity.getDisplayName()));
-//* // 1.8 Compatability
+/* // 1.8 Compatability
         	IThreadListener mainThread = Minecraft.getMinecraft(); // or Minecraft.getMinecraft() on the client
             mainThread.addScheduledTask(new runner(message, ctx));
             

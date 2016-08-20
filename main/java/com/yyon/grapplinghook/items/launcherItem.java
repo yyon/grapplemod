@@ -9,7 +9,7 @@ import net.minecraft.world.World;
 
 import com.yyon.grapplinghook.grapplemod;
 
-//* // 1.8 Compatability
+/* // 1.8 Compatability
 import net.minecraftforge.fml.common.FMLCommonHandler;
 /*/ // 1.7.10 Compatability
 import net.minecraft.client.renderer.texture.IIconRegister;
@@ -63,7 +63,7 @@ public class launcherItem extends Item {
 	
 	
 	
-/* // 1.7.10 Compatability
+//* // 1.7.10 Compatability
 	@Override
 	@SideOnly(Side.CLIENT)
 	public void registerIcons(IIconRegister iconRegister)
@@ -103,7 +103,7 @@ public class launcherItem extends Item {
 		}
 	}
 	
-/* // 1.7.10 Compatability
+//* // 1.7.10 Compatability
 	@Override
 //*/
 
@@ -116,7 +116,7 @@ public class launcherItem extends Item {
         
     }
     
-/* // 1.7.10 Compatability
+//* // 1.7.10 Compatability
 	@Override
 //*/
 
@@ -140,13 +140,13 @@ public class launcherItem extends Item {
 	/**
 	 * returns the action that specifies what animation to play when the items is being used
 	 */
-/* // 1.7.10 Compatability
+//* // 1.7.10 Compatability
     @Override
 //*/
 
 	public EnumAction getItemUseAction(ItemStack par1ItemStack)
 	{
-//* // 1.8 Compatability
+/* // 1.8 Compatability
 		return EnumAction.NONE;
 /*/ // 1.7.10 Compatability
 		return EnumAction.none;

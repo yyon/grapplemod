@@ -25,7 +25,7 @@ import com.yyon.grapplinghook.items.launcherItem;
 import com.yyon.grapplinghook.network.PlayerMovementMessage;
 
 
-//* // 1.8 Compatability
+/* // 1.8 Compatability
 import net.minecraft.client.resources.model.ModelResourceLocation;
 import net.minecraftforge.fml.client.registry.RenderingRegistry;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
@@ -56,7 +56,7 @@ public class ClientProxyClass extends CommonProxyClass {
 	@Override
 	public void init(FMLInitializationEvent event, grapplemod grappleModInst) {
 		super.init(event, grappleModInst);
-//* // 1.8 Compatability
+/* // 1.8 Compatability
 		Minecraft.getMinecraft().getRenderItem().getItemModelMesher().register(grapplemod.grapplebowitem, 0, new ModelResourceLocation("grapplemod:grapplinghook", "inventory"));
 		Minecraft.getMinecraft().getRenderItem().getItemModelMesher().register(grapplemod.hookshotitem, 0, new ModelResourceLocation("grapplemod:hookshot", "inventory"));
 		Minecraft.getMinecraft().getRenderItem().getItemModelMesher().register(grapplemod.launcheritem, 0, new ModelResourceLocation("grapplemod:launcheritem", "inventory"));
@@ -212,7 +212,7 @@ public class ClientProxyClass extends CommonProxyClass {
 	
 	@Override
     public void blockbreak(BreakEvent event) {
-//* // 1.8 Compatability
+/* // 1.8 Compatability
 		if (event.pos != null) {
 			if (grapplemod.controllerpos.containsKey(event.pos)) {
 				grappleController control = grapplemod.controllerpos.get(event.pos);
@@ -224,7 +224,7 @@ public class ClientProxyClass extends CommonProxyClass {
 //*/
 
 				control.unattach();
-//* // 1.8 Compatability
+/* // 1.8 Compatability
 				grapplemod.controllerpos.remove(event.pos);
 /*/ // 1.7.10 Compatability
 				grapplemod.controllerpos.remove(eventpos);

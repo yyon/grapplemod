@@ -8,7 +8,7 @@ import com.yyon.grapplinghook.grapplemod;
 import com.yyon.grapplinghook.entities.enderArrow;
 import com.yyon.grapplinghook.entities.grappleArrow;
 
-/* // 1.7.10 Compatability
+//* // 1.7.10 Compatability
 import net.minecraft.client.renderer.texture.IIconRegister;
 
 import cpw.mods.fml.relauncher.Side;
@@ -47,7 +47,7 @@ public class enderBow extends grappleBow implements clickitem {
 //		compound.setLong("lastused", 0);
 		
 		return new enderArrow(worldIn, playerIn, 0);
-/* // 1.7.10 Compatability
+//* // 1.7.10 Compatability
 	}
 	
 	@Override

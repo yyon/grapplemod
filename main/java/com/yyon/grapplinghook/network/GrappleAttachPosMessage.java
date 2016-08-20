@@ -7,7 +7,7 @@ import net.minecraft.world.World;
 
 import com.yyon.grapplinghook.entities.grappleArrow;
 
-//* // 1.8 Compatability
+/* // 1.8 Compatability
 import net.minecraft.util.IThreadListener;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
@@ -110,7 +110,7 @@ public class GrappleAttachPosMessage implements IMessage {
         public IMessage onMessage(GrappleAttachPosMessage message, MessageContext ctx) {
 //            System.out.println(String.format("Received %s from %s", message.text, ctx.getServerHandler().playerEntity.getDisplayName()));
             
-//* // 1.8 Compatability
+/* // 1.8 Compatability
         	IThreadListener mainThread = Minecraft.getMinecraft(); // or Minecraft.getMinecraft() on the client
             mainThread.addScheduledTask(new runner(message, ctx));
 /*/ // 1.7.10 Compatability

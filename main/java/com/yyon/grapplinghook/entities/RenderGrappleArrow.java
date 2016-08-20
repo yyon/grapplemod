@@ -11,7 +11,7 @@ import net.minecraft.util.MathHelper;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.Vec3;
 
-//* // 1.8 Compatability
+/* // 1.8 Compatability
 
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.WorldRenderer;
@@ -52,7 +52,7 @@ import cpw.mods.fml.relauncher.SideOnly;
 @SideOnly(Side.CLIENT)
 public class RenderGrappleArrow extends Render
 {
-//* // 1.8 Compatability
+/* // 1.8 Compatability
     protected final Item field_177084_a;
     private final RenderItem field_177083_e;
     public RenderGrappleArrow(RenderManager p_i46137_1_, Item p_i46137_2_, RenderItem p_i46137_3_)
@@ -64,7 +64,7 @@ public class RenderGrappleArrow extends Render
 //*/
 
     {
-//* // 1.8 Compatability
+/* // 1.8 Compatability
         super(p_i46137_1_);
 /*/ // 1.7.10 Compatability
         super();
@@ -72,7 +72,7 @@ public class RenderGrappleArrow extends Render
 //*/
 
         this.field_177084_a = p_i46137_2_;
-//* // 1.8 Compatability
+/* // 1.8 Compatability
         this.field_177083_e = p_i46137_3_;
 //*/
 
@@ -85,14 +85,14 @@ public class RenderGrappleArrow extends Render
      * double d2, float f, float f1). But JAD is pre 1.5 so doe
      */
     @Override
-//* // 1.8 Compatability
+/* // 1.8 Compatability
     public void doRender(Entity entity, double x, double y, double z, float p_76986_8_, float partialTicks)
 /*/ // 1.7.10 Compatability
     public void doRender(Entity entity, double p_76986_2_, double p_76986_4_, double p_76986_6_, float p_76986_8_, float p_76986_9_)
 //*/
 
     {
-//* // 1.8 Compatability
+/* // 1.8 Compatability
         GlStateManager.pushMatrix();
         GlStateManager.translate((float)x, (float)y, (float)z);
         GlStateManager.enableRescaleNormal();
@@ -249,7 +249,7 @@ public class RenderGrappleArrow extends Render
 //*/
 
         }
-//* // 1.8 Compatability
+/* // 1.8 Compatability
     }
 
 /*/ // 1.7.10 Compatability
@@ -289,7 +289,7 @@ public class RenderGrappleArrow extends Render
      */
     protected ResourceLocation getEntityTexture(Entity entity)
     {
-//* // 1.8 Compatability
+/* // 1.8 Compatability
         return TextureMap.locationBlocksTexture;
 /*/ // 1.7.10 Compatability
 //        return TextureMap.locationBlocksTexture;

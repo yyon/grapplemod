@@ -15,7 +15,7 @@ import com.yyon.grapplinghook.grapplemod;
 import com.yyon.grapplinghook.entities.grappleArrow;
 import com.yyon.grapplinghook.network.GrappleClickMessage;
 
-//* // 1.8 Compatability
+/* // 1.8 Compatability
 import net.minecraft.util.BlockPos;
 import net.minecraftforge.event.world.BlockEvent.BreakEvent;
 import net.minecraftforge.fml.common.FMLCommonHandler;
@@ -63,7 +63,7 @@ public class grappleBow extends Item {
 		FMLCommonHandler.instance().bus().register(this);
 	}
 	
-/* // 1.7.10 Compatability
+//* // 1.7.10 Compatability
 	@Override
 	@SideOnly(Side.CLIENT)
 	public void registerIcons(IIconRegister iconRegister)
@@ -80,7 +80,7 @@ public class grappleBow extends Item {
 	}
 	
 	public grappleArrow getArrow(ItemStack stack, World world) {
-//* // 1.8 Compatability
+/* // 1.8 Compatability
 		NBTTagCompound compound = stack.getSubCompound("grapplebow", true);
 /*/ // 1.7.10 Compatability
 		NBTTagCompound compound = grapplemod.getCompound(stack);
@@ -104,7 +104,7 @@ public class grappleBow extends Item {
 			id = arrow.getEntityId();
 		}
 		
-//* // 1.8 Compatability
+/* // 1.8 Compatability
 		NBTTagCompound compound = stack.getSubCompound("grapplebow", true);
 /*/ // 1.7.10 Compatability
 		NBTTagCompound compound = grapplemod.getCompound(stack);
@@ -118,7 +118,7 @@ public class grappleBow extends Item {
         if (!worldIn.isRemote) {
         	grappleArrow entityarrow = getArrow(stack, worldIn);
         	
-        	System.out.println("right click");
+//        	System.out.println("right click");
         	
         	if (entityarrow != null) {
         		int id = entityarrow.shootingEntityID;
@@ -139,8 +139,8 @@ public class grappleBow extends Item {
 				
 				worldIn.spawnEntityInWorld(entityarrow);
 			} else {
-				System.out.println("right click unattach");
-				System.out.println(entityarrow);
+//				System.out.println("right click unattach");
+//				System.out.println(entityarrow);
 //				if (entityarrow.control != null) {
 //					entityarrow.control.unattach();
 //				} else {
@@ -154,12 +154,12 @@ public class grappleBow extends Item {
 	}
 	
 	public grappleArrow createarrow(ItemStack stack, World worldIn, EntityPlayer playerIn) {
-		System.out.println("Creating arrow!");
+//		System.out.println("Creating arrow!");
 		return new grappleArrow(worldIn, playerIn, 0);
 	}
 	
 	
-/* // 1.7.10 Compatability
+//* // 1.7.10 Compatability
 	@Override
 //*/
 
@@ -167,7 +167,7 @@ public class grappleBow extends Item {
     {
     }
     
-/* // 1.7.10 Compatability
+//* // 1.7.10 Compatability
 	@Override
 //*/
 
@@ -188,13 +188,13 @@ public class grappleBow extends Item {
 	/**
 	 * returns the action that specifies what animation to play when the items is being used
 	 */
-/* // 1.7.10 Compatability
+//* // 1.7.10 Compatability
     @Override
 //*/
 
 	public EnumAction getItemUseAction(ItemStack par1ItemStack)
 	{
-//* // 1.8 Compatability
+/* // 1.8 Compatability
 		return EnumAction.NONE;
 	}
 	
@@ -215,7 +215,7 @@ public class grappleBow extends Item {
     	return true;
     }
    
-//* // 1.8 Compatability
+/* // 1.8 Compatability
     public boolean onBlockStartBreak(ItemStack itemstack, BlockPos k, EntityPlayer player)
 /*/ // 1.7.10 Compatability
     @Override
@@ -227,7 +227,7 @@ public class grappleBow extends Item {
     }
    
     
-//* // 1.8 Compatability
+/* // 1.8 Compatability
     public boolean onItemUseFirst(ItemStack stack, EntityPlayer player, World world, int x, int y, int z, int side, float hitX, float hitY, float hitZ)
     {
       return true;
