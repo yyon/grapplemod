@@ -1,7 +1,7 @@
 package com.yyon.grapplinghook;
 
 import net.minecraft.entity.Entity;
-import net.minecraft.util.Vec3;
+import net.minecraft.util.math.Vec3d;
 
 public class vec {
 	public double x;
@@ -14,10 +14,10 @@ public class vec {
 		this.z = z;
 	}
 	
-	public vec(Vec3 v2) {
-		this.x = v2.xCoord;
-		this.y = v2.yCoord;
-		this.z = v2.zCoord;
+	public vec(Vec3d vec3d) {
+		this.x = vec3d.xCoord;
+		this.y = vec3d.yCoord;
+		this.z = vec3d.zCoord;
 	}
 	
 	public static vec positionvec(Entity e) {
@@ -57,6 +57,10 @@ public class vec {
 	public vec rotate_yaw(double a) {
 		return new vec(this.x * Math.cos(a) - this.z * Math.sin(a), this.y, this.x * Math.sin(a) + this.z * Math.cos(a));
 	}
+	
+    public vec rotate_pitch(double pitch) {
+        return new vec(this.x, this.y * Math.cos(pitch) + this.z * Math.sin(pitch), this.z * Math.cos(pitch) - this.y * Math.sin(pitch));
+    }
 	
 	public vec mult(double changefactor) {
 		return new vec(this.x * changefactor, this.y * changefactor, this.z * changefactor);
@@ -103,13 +107,36 @@ public class vec {
 	}
 	
 	public vec proj (vec v2) {
-		v2.normalize_ip();
-		double dot = this.dot(v2);
-		return v2.changelen(dot);
+		vec v3 = v2.normalize();
+		double dot = this.dot(v3);
+		return v3.changelen(dot);
 	}
 	
 	public vec removealong(vec v2) {
 		return this.sub(this.proj(v2));
 	}
 	
+	public void print(){
+		System.out.print("<");
+		System.out.print(this.x);
+		System.out.print(",");
+		System.out.print(this.y);
+		System.out.print(",");
+		System.out.print(this.z);
+		System.out.print(">\n");
+	}
+
+	public vec add(double x, double y, double z) {
+		return new vec(this.x + x, this.y + y, this.z + z);
+	}
+	
+	public double getYaw() {
+		vec norm = this.normalize();
+		return Math.toDegrees(-Math.atan2(norm.x, norm.z));
+	}
+	
+	public double getPitch() {
+		vec norm = this.normalize();
+		return Math.toDegrees(-Math.asin(norm.y));
+	}
 }

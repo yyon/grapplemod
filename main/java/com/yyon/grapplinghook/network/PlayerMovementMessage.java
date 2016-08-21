@@ -2,13 +2,14 @@ package com.yyon.grapplinghook.network;
 
 import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.Entity;
+import net.minecraft.util.IThreadListener;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
-
-import net.minecraft.util.IThreadListener;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
+//* // 1.8 Compatability
+
 
 /*
  * This file is part of GrappleMod.
@@ -74,6 +75,7 @@ public class PlayerMovementMessage implements IMessage {
         buf.writeDouble(mx);
         buf.writeDouble(my);
         buf.writeDouble(mz);
+        
     }
 
     public static class Handler implements IMessageHandler<PlayerMovementMessage, IMessage> {
@@ -102,10 +104,10 @@ public class PlayerMovementMessage implements IMessage {
     	
         @Override
         public IMessage onMessage(PlayerMovementMessage message, MessageContext ctx) {
-        	IThreadListener mainThread = (WorldServer) ctx.getServerHandler().playerEntity.worldObj;
+        	IThreadListener mainThread = (WorldServer) ctx.getServerHandler().playerEntity.worldObj; // or Minecraft.getMinecraft() on the client
             mainThread.addScheduledTask(new runner(message, ctx));
-
-            return null;
+            
+            return null; // no response in this case
         }
     }
 }

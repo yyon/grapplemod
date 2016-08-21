@@ -3,17 +3,16 @@ package com.yyon.grapplinghook.network;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
+import net.minecraft.util.IThreadListener;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
+import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
+import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 
 import com.yyon.grapplinghook.grapplemod;
 import com.yyon.grapplinghook.vec;
 import com.yyon.grapplinghook.entities.grappleArrow;
-
-import net.minecraft.util.BlockPos;
-import net.minecraft.util.IThreadListener;
-import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
-import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
-import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 
 /*
  * This file is part of GrappleMod.
@@ -102,8 +101,6 @@ public class GrappleAttachMessage implements IMessage {
             	if (grapple instanceof grappleArrow) {
 	            	((grappleArrow) grapple).clientAttach(message.x, message.y, message.z);
             	} else {
-            		System.out.println("Couldn't find grappleArrow");
-            		System.out.println(message.id);
             	}
             	
             	grapplemod.createControl(message.controlid, message.id, message.entityid, world, new vec(message.x, message.y, message.z), message.maxlen, message.blockpos);
@@ -114,10 +111,10 @@ public class GrappleAttachMessage implements IMessage {
         @Override
         public IMessage onMessage(GrappleAttachMessage message, MessageContext ctx) {
 
-        	IThreadListener mainThread = Minecraft.getMinecraft(); // or Minecraft.getMinecraft() on the client
+        	IThreadListener mainThread = Minecraft.getMinecraft();
             mainThread.addScheduledTask(new runner(message, ctx));
 
-            return null;
+            return null; 
         }
     }
 }

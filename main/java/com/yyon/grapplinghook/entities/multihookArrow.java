@@ -22,24 +22,25 @@ import com.yyon.grapplinghook.grapplemod;
     along with GrappleMod.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-public class hookArrow extends grappleArrow
+public class multihookArrow extends magnetArrow
 {
-	public hookArrow(World worldIn) {
+	public multihookArrow(World worldIn) {
 		super(worldIn);
 	}
 	
-	public hookArrow(World worldIn, EntityLivingBase shooter,
+	public multihookArrow(World worldIn, EntityLivingBase shooter,
 			boolean righthand) {
 		super(worldIn, shooter, righthand);
 	}
 	
+    @Override
+	public int getControlId() {
+		return grapplemod.MULTISUBID;
+	}
+    
+    @Override
     public float getVelocity()
     {
         return 20F;
     }
-    
-    @Override
-	public int getControlId() {
-		return grapplemod.HOOKID;
-	}
 }

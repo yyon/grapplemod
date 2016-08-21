@@ -2,13 +2,12 @@ package com.yyon.grapplinghook.network;
 
 import io.netty.buffer.ByteBuf;
 import net.minecraft.client.Minecraft;
-
-import com.yyon.grapplinghook.grapplemod;
-
 import net.minecraft.util.IThreadListener;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
+
+import com.yyon.grapplinghook.grapplemod;
 
 /*
  * This file is part of GrappleMod.
@@ -71,10 +70,10 @@ public class GrappleClickMessage implements IMessage {
         @Override
         public IMessage onMessage(GrappleClickMessage message, MessageContext ctx) {
 
-        	IThreadListener mainThread = Minecraft.getMinecraft();
+        	IThreadListener mainThread = Minecraft.getMinecraft(); // or Minecraft.getMinecraft() on the client
             mainThread.addScheduledTask(new runner(message, ctx));
-            
-            return null;
+
+            return null; // no response in this case
         }
     }
 }

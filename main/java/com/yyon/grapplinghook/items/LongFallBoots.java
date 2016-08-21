@@ -1,11 +1,15 @@
 package com.yyon.grapplinghook.items;
 
+import java.util.List;
+
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.ItemArmor;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.DamageSource;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.entity.living.LivingFallEvent;
-
+import net.minecraftforge.event.entity.living.LivingHurtEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
 /*
@@ -27,23 +31,50 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
 public class LongFallBoots extends ItemArmor {
 	public LongFallBoots(ArmorMaterial material, int type) {
-	    super(material, 0, type);
+	    super(material, 0, EntityEquipmentSlot.FEET);
 	    this.setUnlocalizedName("longfallboots");
 	    MinecraftForge.EVENT_BUS.register(this);
 	}
-
+	
+	@SubscribeEvent
+	public void onLivingHurtEvent(LivingHurtEvent event) {
+		if (event.getEntity() != null && event.getEntity() instanceof EntityPlayer)
+		{
+			EntityPlayer player = (EntityPlayer)event.getEntity();
+			
+			for (ItemStack armor : player.getArmorInventoryList()) {
+			    if (armor != null && armor.getItem() instanceof LongFallBoots)
+			    {
+			    	if (event.getSource() == DamageSource.flyIntoWall) {
+			    		System.out.println("Flew into wall");
+						// this cancels the fall event so you take no damage
+						event.setCanceled(true);
+			    	}
+			    }
+			}
+		}
+	}
+	
 	@SubscribeEvent
 	public void onLivingFallEvent(LivingFallEvent event)
 	{
-		if (event.entity != null && event.entity instanceof EntityPlayer)
+		if (event.getEntity() != null && event.getEntity() instanceof EntityPlayer)
 		{
-			EntityPlayer player = (EntityPlayer)event.entity;
-			ItemStack armorFeet = player.getCurrentArmor(0);
+			EntityPlayer player = (EntityPlayer)event.getEntity();
 			
-		    if (armorFeet != null && armorFeet.getItem() instanceof LongFallBoots)
-		    {
-				event.setCanceled(true);
-		    }
+			for (ItemStack armor : player.getArmorInventoryList()) {
+			    if (armor != null && armor.getItem() instanceof LongFallBoots)
+			    {
+					// this cancels the fall event so you take no damage
+					event.setCanceled(true);
+			    }
+			}
 		}
+	}
+	
+	@Override
+	public void addInformation(ItemStack stack, EntityPlayer player, List<String> list, boolean par4)
+	{
+		list.add("Cancels fall damage when worn");
 	}
 }

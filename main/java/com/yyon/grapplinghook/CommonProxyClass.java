@@ -10,18 +10,28 @@ import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.event.entity.living.LivingFallEvent;
 import net.minecraftforge.event.entity.living.LivingHurtEvent;
 import net.minecraftforge.event.world.BlockEvent.BreakEvent;
-
-import com.yyon.grapplinghook.controllers.grappleController;
-import com.yyon.grapplinghook.entities.grappleArrow;
-import com.yyon.grapplinghook.items.grappleBow;
-
-import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
+import com.yyon.grapplinghook.controllers.grappleController;
+import com.yyon.grapplinghook.entities.grappleArrow;
+import com.yyon.grapplinghook.items.grappleBow;
+import com.yyon.grapplinghook.items.multiBow;
+
 public class CommonProxyClass {
+	public enum keys {
+		keyBindUseItem,
+		keyBindForward,
+		keyBindLeft,
+		keyBindBack,
+		keyBindRight,
+		keyBindJump,
+		keyBindSneak,
+		keyBindAttack
+	}
+	
 	public void preInit(FMLPreInitializationEvent event) {
 		
 	}
@@ -31,7 +41,6 @@ public class CommonProxyClass {
 	}
 	
 	public void postInit(FMLPostInitializationEvent event) {
-		FMLCommonHandler.instance().bus().register(this);
 	    MinecraftForge.EVENT_BUS.register(this);
 	}
 	
@@ -44,7 +53,7 @@ public class CommonProxyClass {
 	@SubscribeEvent
 	public void onLivingFallEvent(LivingFallEvent event)
 	{
-		if (event.entity != null && grapplemod.attached.contains(event.entity.getEntityId()))
+		if (event.getEntity() != null && grapplemod.attached.contains(event.getEntity().getEntityId()))
 		{
 			event.setCanceled(true);
 		}
@@ -65,10 +74,10 @@ public class CommonProxyClass {
     public void onBlockBreak(BreakEvent event){
     	EntityPlayer player = event.getPlayer();
     	if (player != null) {
-	    	ItemStack stack = player.getHeldItem();
+	    	ItemStack stack = player.getHeldItemMainhand();
 	    	if (stack != null) {
 	    		Item item = stack.getItem();
-	    		if (item instanceof grappleBow) {
+	    		if (item instanceof grappleBow || item instanceof multiBow) {
 	    			event.setCanceled(true);
 	    			return;
 	    		}
@@ -84,11 +93,8 @@ public class CommonProxyClass {
 
     @SubscribeEvent
     public void onLivingHurt(LivingHurtEvent event) {
-    	System.out.println("hurt");
-    	if (event.source == DamageSource.inWall) {
-    		System.out.println("in wall");
-    		if (grapplemod.attached.contains(event.entity.getEntityId())) {
-    			System.out.println("canceled");
+    	if (event.getSource() == DamageSource.inWall) {
+    		if (grapplemod.attached.contains(event.getEntity().getEntityId())) {
     			event.setCanceled(true);
     		}
     	}
@@ -96,9 +102,13 @@ public class CommonProxyClass {
     
     @SubscribeEvent
     public void onLivingDeath(LivingDeathEvent event) {
-    	this.handleDeath(event.entity);
+    	this.handleDeath(event.getEntity());
     }
     
     public void handleDeath(Entity entity) {
     }
+    
+	public String getkeyname(CommonProxyClass.keys keyenum) {
+		return null;
+	}
 }

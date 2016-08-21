@@ -9,39 +9,21 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.EnumActionResult;
-import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
 
 import com.yyon.grapplinghook.CommonProxyClass;
 import com.yyon.grapplinghook.grapplemod;
+import com.yyon.grapplinghook.vec;
+import com.yyon.grapplinghook.controllers.grappleController;
 
-/*
- * This file is part of GrappleMod.
-
-    GrappleMod is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
-
-    GrappleMod is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with GrappleMod.  If not, see <http://www.gnu.org/licenses/>.
- */
-
-public class launcherItem extends Item {
-	
-	public launcherItem() {
+public class repeller extends Item {
+	public repeller() {
 		super();
 		maxStackSize = 1;
 		setFull3D();
-		setUnlocalizedName("launcheritem");
+		setUnlocalizedName("repeller");
 		
 		this.setMaxDamage(500);
 		
@@ -58,18 +40,16 @@ public class launcherItem extends Item {
 
 	public void dorightclick(ItemStack stack, World worldIn, EntityPlayer player) {
 		if (worldIn.isRemote) {
-			grapplemod.proxy.launchplayer(player);
+			int playerid = player.getEntityId();
+			if (grapplemod.controllers.containsKey(playerid) && grapplemod.controllers.get(playerid).controllerid != grapplemod.AIRID) {
+				grappleController controller = grapplemod.controllers.get(playerid);
+				controller.unattach();
+			} else {
+				grapplemod.createControl(grapplemod.REPELID, -1, playerid, worldIn, new vec(0,0,0), -1, null);
+			}
 		}
 	}
-	
-    @Override
-    public EnumActionResult onItemUse(ItemStack stack, EntityPlayer playerIn, World worldIn, BlockPos pos, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ)
-    {
-        this.dorightclick(stack, worldIn, playerIn);
-        
-    	return EnumActionResult.SUCCESS;
-	}
-    
+
     public ActionResult<ItemStack> onItemRightClick(ItemStack itemStackIn, World worldIn, EntityPlayer playerIn, EnumHand hand)
     {
         this.dorightclick(itemStackIn, worldIn, playerIn);
@@ -86,9 +66,16 @@ public class launcherItem extends Item {
 	@Override
 	public void addInformation(ItemStack stack, EntityPlayer player, List<String> list, boolean par4)
 	{
-		list.add("Launches player");
+		list.add("Player is repelled by nearby blocks");
+		list.add("Can be used with ender staff");
 		list.add("");
-		list.add("Use crosshairs to aim");
-		list.add(grapplemod.proxy.getkeyname(CommonProxyClass.keys.keyBindUseItem) + " - Launch player");
+		list.add(grapplemod.proxy.getkeyname(CommonProxyClass.keys.keyBindUseItem) + " - Turn on");
+		list.add(grapplemod.proxy.getkeyname(CommonProxyClass.keys.keyBindUseItem) + " again - Turn off");
+		list.add(grapplemod.proxy.getkeyname(CommonProxyClass.keys.keyBindSneak) + " - Slow down");
+		list.add(grapplemod.proxy.getkeyname(CommonProxyClass.keys.keyBindForward) + ", " +
+				grapplemod.proxy.getkeyname(CommonProxyClass.keys.keyBindLeft) + ", " +
+				grapplemod.proxy.getkeyname(CommonProxyClass.keys.keyBindBack) + ", " +
+				grapplemod.proxy.getkeyname(CommonProxyClass.keys.keyBindRight) +
+				" - Move");
 	}
 }

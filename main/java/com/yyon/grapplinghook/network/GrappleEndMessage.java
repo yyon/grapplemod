@@ -1,17 +1,15 @@
 package com.yyon.grapplinghook.network;
 
 import io.netty.buffer.ByteBuf;
-import net.minecraft.entity.Entity;
+import net.minecraft.util.IThreadListener;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
-
-import com.yyon.grapplinghook.grapplemod;
-import com.yyon.grapplinghook.entities.grappleArrow;
-
-import net.minecraft.util.IThreadListener;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
+
+import com.yyon.grapplinghook.grapplemod;
+//* // 1.8 Compatability
 
 /*
  * This file is part of GrappleMod.
@@ -66,50 +64,22 @@ public class GrappleEndMessage implements IMessage {
     		
             @Override
             public void run() {
-            	System.out.println("received grapple end message");
-            	
+
 				int id = message.entityid;
-				System.out.print("Going to remove attached: ");
-				System.out.println(id);
-				System.out.println(message.arrowid);
-
-				if (grapplemod.attached.contains(id)) {
-					grapplemod.attached.remove(new Integer
-							(id));
-
-				} else {
-					System.out.println("Tried to disattach but couldn't");
-					System.out.println(grapplemod.attached);
-				}
 				
-				World world = ctx.getServerHandler().playerEntity.worldObj;
-              	Entity grapple = world.getEntityByID(message.arrowid);
-          		if (grapple instanceof grappleArrow) {
-          			((grappleArrow) grapple).removeServer();
-          		} else {
-          			System.out.println("Couldn't remove entity");
-          			System.out.println(message.arrowid);
-
-          		}
-          		
-          		Entity entity = world.getEntityByID(id);
-          		if (entity != null) {
-	          		entity.fallDistance = 0;
-          		} else {
-          			System.out.println("couldn't find person");
-          		}
-
+				World w = ctx.getServerHandler().playerEntity.worldObj;
+				
+				grapplemod.receiveGrappleEnd(id, w, message.arrowid);
             }
     	}
     	
-       
         @Override
         public IMessage onMessage(GrappleEndMessage message, MessageContext ctx) {
 
-        	IThreadListener mainThread = (WorldServer) ctx.getServerHandler().playerEntity.worldObj;
+        	IThreadListener mainThread = (WorldServer) ctx.getServerHandler().playerEntity.worldObj; // or Minecraft.getMinecraft() on the client
             mainThread.addScheduledTask(new runner(message, ctx));
 
-            return null;
+            return null; // no response in this case
         }
     }
 }

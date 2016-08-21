@@ -22,12 +22,19 @@ import com.yyon.grapplinghook.vec;
  */
 
 public class enderController extends grappleController {
-	public enderController(int arrowId, int entityId, World world, vec pos, int maxlen) {
-		super(arrowId, entityId, world, pos, maxlen);
+	public enderController(int arrowId, int entityId, World world, vec pos, int maxlen, int id) {
+		super(arrowId, entityId, world, pos, maxlen, id);
 	}
 
 	public void receiveGrappleClick(boolean leftclick) {
 		super.receiveGrappleClick(leftclick);
 		
 	}
+	
+	/*
+	@Override
+	public void receiveEnderLaunch(double x, double y, double z) {
+//		System.out.println("now launching");
+	}
+	*/
 }
