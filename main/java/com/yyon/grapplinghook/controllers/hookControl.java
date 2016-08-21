@@ -35,23 +35,12 @@ public class hookControl extends grappleController {
 	@Override
 	public void updatePlayerPos() {
 		
-		/*
-		super.updatePlayerPos(theplayer);
-		if (r > 1) {
-			r -= 1;
-		}
-		*/
 		
 		Entity entity = this.entity;
-		
-//		System.out.println(entity == theplayer);
-//		System.out.println(entity.worldObj.isRemote);
 		
 		if (this.attached) {
 			if(entity != null && entity instanceof EntityPlayer) {
 				EntityPlayer player = (EntityPlayer) entity;
-//				EntityPlayer player = ((EntityPlayer)this.riddenByEntity);
-//				double l = this.getDistanceToEntity(entity);
 				if (true) {
 					
 					vec arrowpos = this.pos;
@@ -59,22 +48,12 @@ public class hookControl extends grappleController {
 					
 					vec oldspherevec = playerpos.sub(arrowpos);
 					vec spherevec = oldspherevec.changelen(r);
-//					Vec3 spherechange = spherevec.subtract(oldspherevec);
-//					Vec3 spherepos = spherevec.add(arrowpos);
 					
 					double dist = oldspherevec.length();
 					
 					if (playerjump) {
 						this.dojump(player, spherevec);
 						return;
-/*					} else if (this.shootingEntity.isSneaking()) {
-						motion = multvec(motion, 0.9);
-						if (this.playerforward != 0) {
-							if (this.r > this.playerforward * 0.5) {
-								this.r -= this.playerforward * 0.5;
-							}
-							System.out.println(this.r);
-						}*/
 					} else {
 						motion.add_ip(this.playermovement.changelen(0.01));
 					}
@@ -86,16 +65,11 @@ public class hookControl extends grappleController {
 							motion.mult_ip(0.6);
 						}
 						
-//						if (this.playermovement.lengthVector() > 0.05) {
-//							this.unattach();
-//						}
 						if (player.onGround) {
 							entity.motionX = 0;
 							entity.motionY = 0;
 							entity.motionZ = 0;
 							this.updateServerPos();
-							
-//							this.unattach();
 						}
 					}
 					
@@ -107,30 +81,14 @@ public class hookControl extends grappleController {
 						motion.changelen_ip(maxspeed);
 					}
 					
-					/*
-					if (!player.onGround) {
-						motion = motion.addVector(0, -0.05, 0);
-					} else {
-						if (dist > 4) {
-							motion = motion.addVector(0, 0.3, 0);
-						}
-					}
-					*/
-					
 					newmotion = motion;
 					
 					vec motiontorwards = spherevec.changelen(-1);
 					motion = dampenmotion(motion, motiontorwards);
 					
-//					entity.setVelocity(newmotion.xCoord, newmotion.yCoord, newmotion.zCoord);
 					entity.motionX = newmotion.x;
 					entity.motionY = newmotion.y;
 					entity.motionZ = newmotion.z;
-					
-//					if (player instanceof EntityPlayerMP) {
-						
-//						((EntityPlayerMP) entity).playerNetServerHandler.sendPacket(new S12PacketEntityVelocity(entity));
-//					}
 					
 					player.fallDistance = 0;
 					
