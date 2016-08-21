@@ -32,8 +32,8 @@ public class enderArrow extends grappleArrow
 			float p_i1756_3_) {
 		super(worldIn, shooter, p_i1756_3_);
 	}
-	
-    protected float getVelocity()
+	@Override
+    protected float func_70182_d()
 
     {
         return 20F;

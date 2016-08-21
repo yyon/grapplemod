@@ -5,10 +5,11 @@ import net.minecraft.client.Minecraft;
 
 import com.yyon.grapplinghook.grapplemod;
 
-import net.minecraft.util.IThreadListener;
-import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
-import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
-import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
+import com.yyon.grapplinghook.network.PlayerMovementMessage.Handler.runner;
+
+import cpw.mods.fml.common.network.simpleimpl.IMessage;
+import cpw.mods.fml.common.network.simpleimpl.IMessageHandler;
+import cpw.mods.fml.common.network.simpleimpl.MessageContext;
 
 /*
  * This file is part of GrappleMod.
@@ -70,10 +71,7 @@ public class GrappleClickMessage implements IMessage {
        
         @Override
         public IMessage onMessage(GrappleClickMessage message, MessageContext ctx) {
-
-        	IThreadListener mainThread = Minecraft.getMinecraft();
-            mainThread.addScheduledTask(new runner(message, ctx));
-            
+        	new runner(message, ctx).run();
             return null;
         }
     }

@@ -9,9 +9,11 @@ import net.minecraft.world.World;
 
 import com.yyon.grapplinghook.grapplemod;
 
-//* // 1.8 Compatability
-import net.minecraftforge.fml.common.FMLCommonHandler;
+import net.minecraft.client.renderer.texture.IIconRegister;
 
+import cpw.mods.fml.common.FMLCommonHandler;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 
 /*
  * This file is part of GrappleMod.
@@ -31,7 +33,6 @@ import net.minecraftforge.fml.common.FMLCommonHandler;
  */
 
 public class launcherItem extends Item {
-	
 	public launcherItem() {
 		super();
 		maxStackSize = 1;
@@ -51,6 +52,13 @@ public class launcherItem extends Item {
 	}
 	
 	
+	
+	@Override
+	@SideOnly(Side.CLIENT)
+	public void registerIcons(IIconRegister iconRegister)
+	{
+		 itemIcon = iconRegister.registerIcon("grapplemod:launcheritem");
+	}
 
 	public void dorightclick(ItemStack stack, World worldIn, EntityPlayer player) {
 		if (worldIn.isRemote) {
@@ -58,12 +66,14 @@ public class launcherItem extends Item {
 		}
 	}
 	
+	@Override
     public void onPlayerStoppedUsing(ItemStack stack, World worldIn, EntityPlayer playerIn, int timeLeft)
     {
+    	
     }
     
+	@Override
 	public ItemStack onItemRightClick(ItemStack stack, World worldIn, final EntityPlayer playerIn){
-
 		playerIn.setItemInUse(stack, this.getMaxItemUseDuration(stack));
         
         this.dorightclick(stack, worldIn, playerIn);
@@ -80,11 +90,9 @@ public class launcherItem extends Item {
 	/**
 	 * returns the action that specifies what animation to play when the items is being used
 	 */
-
+    @Override
 	public EnumAction getItemUseAction(ItemStack par1ItemStack)
 	{
-		return EnumAction.NONE;
-
+		return EnumAction.none;
 	}
-	
 }

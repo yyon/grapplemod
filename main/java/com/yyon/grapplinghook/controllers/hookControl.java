@@ -35,6 +35,7 @@ public class hookControl extends grappleController {
 	@Override
 	public void updatePlayerPos() {
 		
+		
 		Entity entity = this.entity;
 		
 		if (this.attached) {
@@ -63,6 +64,7 @@ public class hookControl extends grappleController {
 						if (motion.length() > 0.3) {
 							motion.mult_ip(0.6);
 						}
+						
 						if (player.onGround) {
 							entity.motionX = 0;
 							entity.motionY = 0;
@@ -78,7 +80,6 @@ public class hookControl extends grappleController {
 					if (speed > maxspeed) {
 						motion.changelen_ip(maxspeed);
 					}
-					
 					
 					newmotion = motion;
 					

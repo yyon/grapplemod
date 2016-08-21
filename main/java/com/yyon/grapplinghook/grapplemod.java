@@ -32,21 +32,20 @@ import com.yyon.grapplinghook.network.GrappleClickMessage;
 import com.yyon.grapplinghook.network.GrappleEndMessage;
 import com.yyon.grapplinghook.network.PlayerMovementMessage;
 
-import net.minecraft.util.BlockPos;
-import net.minecraft.world.GameRules;
-import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.common.Mod.EventHandler;
-import net.minecraftforge.fml.common.SidedProxy;
-import net.minecraftforge.fml.common.event.FMLInitializationEvent;
-import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
-import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
-import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
-import net.minecraftforge.fml.common.network.NetworkRegistry;
-import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
-import net.minecraftforge.fml.common.network.simpleimpl.SimpleNetworkWrapper;
-import net.minecraftforge.fml.common.registry.EntityRegistry;
-import net.minecraftforge.fml.common.registry.GameRegistry;
-import net.minecraftforge.fml.relauncher.Side;
+import net.minecraft.nbt.NBTTagCompound;
+import cpw.mods.fml.common.Mod;
+import cpw.mods.fml.common.Mod.EventHandler;
+import cpw.mods.fml.common.SidedProxy;
+import cpw.mods.fml.common.event.FMLInitializationEvent;
+import cpw.mods.fml.common.event.FMLPostInitializationEvent;
+import cpw.mods.fml.common.event.FMLPreInitializationEvent;
+import cpw.mods.fml.common.event.FMLServerStartingEvent;
+import cpw.mods.fml.common.network.NetworkRegistry;
+import cpw.mods.fml.common.network.simpleimpl.IMessage;
+import cpw.mods.fml.common.network.simpleimpl.SimpleNetworkWrapper;
+import cpw.mods.fml.common.registry.EntityRegistry;
+import cpw.mods.fml.common.registry.GameRegistry;
+import cpw.mods.fml.relauncher.Side;
 
 /*
  * This file is part of GrappleMod.
@@ -66,7 +65,9 @@ import net.minecraftforge.fml.relauncher.Side;
  */
 
 //TODO
-// upgrade to 1.8.8
+// Pull mobs
+// Attach 2 things together
+
 
 @Mod(modid = grapplemod.MODID, version = grapplemod.VERSION)
 public class grapplemod {
@@ -75,7 +76,7 @@ public class grapplemod {
 
     public static final String MODID = "grapplemod";
     
-    public static final String VERSION = "1.8-v4";
+    public static final String VERSION = "1.7.10-v6";
 
     public static Item grapplebowitem;
     public static Item hookshotitem;
@@ -99,6 +100,7 @@ public class grapplemod {
 	public static int grapplingLength = 0;
 	public static boolean anyblocks = true;
 	public static ArrayList<Block> grapplingblocks;
+	public static boolean removeblocks = false;
 	
 	@SidedProxy(clientSide="com.yyon.grapplinghook.ClientProxyClass", serverSide="com.yyon.grapplinghook.ServerProxyClass")
 	public static CommonProxyClass proxy;
@@ -134,22 +136,38 @@ public class grapplemod {
 	public int addFuel(ItemStack fuel){
 		return 0;
 	}
-
+	
+	@EventHandler
 	public void serverLoad(FMLServerStartingEvent event){
-		MinecraftServer.getServer().worldServerForDimension(0).getGameRules().addGameRule("grapplingLength", "0", GameRules.ValueType.NUMERICAL_VALUE);
-		MinecraftServer.getServer().worldServerForDimension(0).getGameRules().addGameRule("grapplingBlocks", "any", GameRules.ValueType.ANY_VALUE);
+		MinecraftServer.getServer().worldServerForDimension(0).getGameRules().addGameRule("grapplingLength", "0");
+		MinecraftServer.getServer().worldServerForDimension(0).getGameRules().addGameRule("grapplingBlocks", "any");
+		MinecraftServer.getServer().worldServerForDimension(0).getGameRules().addGameRule("grapplingNonBlocks", "none");
+
 	}
 	
 	public static void updateMaxLen() {
-		grapplemod.grapplingLength = MinecraftServer.getServer().worldServerForDimension(0).getGameRules().getInt("grapplingLength");
+		String s = MinecraftServer.getServer().worldServerForDimension(0).getGameRules().getGameRuleStringValue("grapplingLength");
+		if (!s.equals("")) {
+			grapplemod.grapplingLength = Integer.parseInt(s);
+		}
 	}
 	
 	public static void updateGrapplingBlocks() {
 		String s = MinecraftServer.getServer().worldServerForDimension(0).getGameRules().getGameRuleStringValue("grapplingBlocks");
 		if (s.equals("any") || s.equals("")) {
-			anyblocks = true;
+			s = MinecraftServer.getServer().worldServerForDimension(0).getGameRules().getGameRuleStringValue("grapplingNonBlocks");
+			if (s.equals("none") || s.equals("")) {
+				anyblocks = true;
+			} else {
+				anyblocks = false;
+				removeblocks = true;
+			}
 		} else {
 			anyblocks = false;
+			removeblocks = false;
+		}
+	
+		if (!anyblocks) {
 			String[] blockstr = s.split(",");
 			
 			grapplingblocks = new ArrayList<Block>();
@@ -206,14 +224,13 @@ public class grapplemod {
 	
 	@EventHandler
 	public void postInit(FMLPostInitializationEvent event) {
-		System.out.println("post init");
-		System.out.println(proxy);
 		proxy.postInit(event);
 	}
 
 	public void registerEntity(Class<? extends Entity> entityClass, String name)
 	{
 		int entityID = EntityRegistry.findGlobalUniqueEntityId();
+		
 		EntityRegistry.registerGlobalEntityID(entityClass, name, entityID);
 		EntityRegistry.registerModEntity(entityClass, name, entityID, this, 64, 1, true);
 	}
@@ -241,7 +258,6 @@ public class grapplemod {
 	}
 
 	public static void receiveEnderLaunch(int id, double x, double y, double z) {
-		System.out.println("Received EnderGrappleLaunchMessage");
 		grappleController controller = controllers.get(id);
 		if (controller != null) {
 			controller.receiveEnderLaunch(x, y, z);
@@ -256,8 +272,6 @@ public class grapplemod {
 			grapplemod.network.sendTo(message, (EntityPlayerMP) entity);
 		} else {
 			System.out.println("ERROR! couldn't find player");
-			System.out.println(playerid);
-			System.out.println(entity);
 		}
 	}
 	
@@ -271,9 +285,16 @@ public class grapplemod {
 			control = new hookControl(arrowid, entityid, world, pos, maxlen);
 		}
 		grapplemod.controllerpos.put(blockpos, control);
-		System.out.println("create control");
-		System.out.println(blockpos);
 		
 		return control;
+	}
+	
+	public static NBTTagCompound getCompound(ItemStack stack) {
+		NBTTagCompound compound = stack.getTagCompound();
+		if (compound == null) {
+			compound = new NBTTagCompound();
+			stack.setTagCompound(compound);
+		}
+		return compound;
 	}
 }
