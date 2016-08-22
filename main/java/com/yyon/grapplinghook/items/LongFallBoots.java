@@ -1,15 +1,15 @@
 package com.yyon.grapplinghook.items;
 
+import java.util.List;
+
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemArmor;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.DamageSource;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.entity.living.LivingFallEvent;
-
-import net.minecraft.client.renderer.texture.IIconRegister;
+import net.minecraftforge.event.entity.living.LivingHurtEvent;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
 
 /*
  * This file is part of GrappleMod.
@@ -35,25 +35,25 @@ public class LongFallBoots extends ItemArmor {
 	    MinecraftForge.EVENT_BUS.register(this);
 	}
 	
-	@Override
-	@SideOnly(Side.CLIENT)
-	public void registerIcons(IIconRegister iconRegister)
-	{
-		 itemIcon = iconRegister.registerIcon("grapplemod:longfallboots");
-	}
-
 	@SubscribeEvent
 	public void onLivingFallEvent(LivingFallEvent event)
 	{
 		if (event.entity != null && event.entity instanceof EntityPlayer)
 		{
 			EntityPlayer player = (EntityPlayer)event.entity;
-			ItemStack armorFeet = player.getCurrentArmor(0);
 			
-		    if (armorFeet != null && armorFeet.getItem() instanceof LongFallBoots)
-		    {
-				event.setCanceled(true);
-		    }
+			ItemStack armor = player.getCurrentArmor(0);
+			    if (armor != null && armor.getItem() instanceof LongFallBoots)
+			    {
+					// this cancels the fall event so you take no damage
+					event.setCanceled(true);
+			    }
+			}
 		}
+	
+	@Override
+	public void addInformation(ItemStack stack, EntityPlayer player, List list, boolean par4)
+	{
+		list.add("Cancels fall damage when worn");
 	}
 }

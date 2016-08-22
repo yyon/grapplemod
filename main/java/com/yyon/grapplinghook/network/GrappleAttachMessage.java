@@ -5,12 +5,10 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
 import net.minecraft.world.World;
 
+import com.yyon.grapplinghook.BlockPos;
 import com.yyon.grapplinghook.grapplemod;
 import com.yyon.grapplinghook.vec;
 import com.yyon.grapplinghook.entities.grappleArrow;
-
-import com.yyon.grapplinghook.BlockPos;
-import com.yyon.grapplinghook.network.PlayerMovementMessage.Handler.runner;
 
 import cpw.mods.fml.common.network.simpleimpl.IMessage;
 import cpw.mods.fml.common.network.simpleimpl.IMessageHandler;
@@ -33,7 +31,7 @@ import cpw.mods.fml.common.network.simpleimpl.MessageContext;
     along with GrappleMod.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-public class GrappleAttachMessage implements IMessage {
+public class GrappleAttachMessage implements cpw.mods.fml.common.network.simpleimpl.IMessage {
    
 	public int id;
 	public double x;
@@ -75,7 +73,7 @@ public class GrappleAttachMessage implements IMessage {
     @Override
     public void toBytes(ByteBuf buf) {
     	buf.writeInt(this.id);
-    	buf.writeDouble(this.x);
+        buf.writeDouble(this.x);
         buf.writeDouble(this.y);
         buf.writeDouble(this.z);
         buf.writeInt(this.controlid);
@@ -102,6 +100,7 @@ public class GrappleAttachMessage implements IMessage {
             	Entity grapple = world.getEntityByID(message.id);
             	if (grapple instanceof grappleArrow) {
 	            	((grappleArrow) grapple).clientAttach(message.x, message.y, message.z);
+            	} else {
             	}
             	
             	grapplemod.createControl(message.controlid, message.id, message.entityid, world, new vec(message.x, message.y, message.z), message.maxlen, message.blockpos);
@@ -111,9 +110,10 @@ public class GrappleAttachMessage implements IMessage {
        
         @Override
         public IMessage onMessage(GrappleAttachMessage message, MessageContext ctx) {
-        	new runner(message, ctx).run();
 
-            return null;
+            new runner(message, ctx).run();
+
+            return null; 
         }
     }
 }

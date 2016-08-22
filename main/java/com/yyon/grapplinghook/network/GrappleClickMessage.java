@@ -1,11 +1,8 @@
 package com.yyon.grapplinghook.network;
 
 import io.netty.buffer.ByteBuf;
-import net.minecraft.client.Minecraft;
 
 import com.yyon.grapplinghook.grapplemod;
-
-import com.yyon.grapplinghook.network.PlayerMovementMessage.Handler.runner;
 
 import cpw.mods.fml.common.network.simpleimpl.IMessage;
 import cpw.mods.fml.common.network.simpleimpl.IMessageHandler;
@@ -71,8 +68,10 @@ public class GrappleClickMessage implements IMessage {
        
         @Override
         public IMessage onMessage(GrappleClickMessage message, MessageContext ctx) {
-        	new runner(message, ctx).run();
-            return null;
+
+            new runner(message, ctx).run();
+
+            return null; // no response in this case
         }
     }
 }

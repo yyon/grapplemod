@@ -1,19 +1,18 @@
 package com.yyon.grapplinghook.items;
 
+import java.util.List;
+
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.EnumAction;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.EnumFacing;
 import net.minecraft.world.World;
+import net.minecraftforge.common.MinecraftForge;
 
+import com.yyon.grapplinghook.CommonProxyClass;
 import com.yyon.grapplinghook.grapplemod;
-
-import net.minecraft.client.renderer.texture.IIconRegister;
-
-import cpw.mods.fml.common.FMLCommonHandler;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
 
 /*
  * This file is part of GrappleMod.
@@ -33,6 +32,7 @@ import cpw.mods.fml.relauncher.SideOnly;
  */
 
 public class launcherItem extends Item {
+	
 	public launcherItem() {
 		super();
 		maxStackSize = 1;
@@ -41,23 +41,15 @@ public class launcherItem extends Item {
 		
 		this.setMaxDamage(500);
 		
-		setCreativeTab(CreativeTabs.tabCombat);
+		setCreativeTab(CreativeTabs.tabTransport);
 		
-		FMLCommonHandler.instance().bus().register(this);
+		MinecraftForge.EVENT_BUS.register(this);
 	}
 	
+	@Override
 	public int getMaxItemUseDuration(ItemStack par1ItemStack)
 	{
 		return 72000;
-	}
-	
-	
-	
-	@Override
-	@SideOnly(Side.CLIENT)
-	public void registerIcons(IIconRegister iconRegister)
-	{
-		 itemIcon = iconRegister.registerIcon("grapplemod:launcheritem");
 	}
 
 	public void dorightclick(ItemStack stack, World worldIn, EntityPlayer player) {
@@ -66,33 +58,33 @@ public class launcherItem extends Item {
 		}
 	}
 	
-	@Override
-    public void onPlayerStoppedUsing(ItemStack stack, World worldIn, EntityPlayer playerIn, int timeLeft)
+    @Override
+    public boolean onItemUse(ItemStack stack, EntityPlayer playerIn, World worldIn, int x, int y, int z, int facing, float hitX, float hitY, float hitZ)
     {
-    	
-    }
-    
-	@Override
-	public ItemStack onItemRightClick(ItemStack stack, World worldIn, final EntityPlayer playerIn){
-		playerIn.setItemInUse(stack, this.getMaxItemUseDuration(stack));
-        
         this.dorightclick(stack, worldIn, playerIn);
         
-		return stack;
+    	return true;
 	}
-	
-    public ItemStack onItemUseFinish(ItemStack stack, World worldIn, EntityPlayer playerIn)
+    
+    public ItemStack onItemRightClick(ItemStack itemStackIn, World worldIn, EntityPlayer playerIn)
     {
-        return stack;
+        this.dorightclick(itemStackIn, worldIn, playerIn);
+        
+        return itemStackIn;
     }
 
-
-	/**
-	 * returns the action that specifies what animation to play when the items is being used
-	 */
     @Override
-	public EnumAction getItemUseAction(ItemStack par1ItemStack)
+    public EnumAction getItemUseAction(ItemStack par1ItemStack)
 	{
 		return EnumAction.none;
+	}
+    
+	@Override
+	public void addInformation(ItemStack stack, EntityPlayer player, List list, boolean par4)
+	{
+		list.add("Launches player");
+		list.add("");
+		list.add("Use crosshairs to aim");
+		list.add(grapplemod.proxy.getkeyname(CommonProxyClass.keys.keyBindUseItem) + " - Launch player");
 	}
 }

@@ -1,26 +1,26 @@
 package com.yyon.grapplinghook.items;
 
+import java.util.HashMap;
+import java.util.List;
+
+import net.minecraft.client.audio.SoundCategory;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityLiving;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.Items;
 import net.minecraft.item.EnumAction;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
 
+import com.yyon.grapplinghook.BlockPos;
+import com.yyon.grapplinghook.CommonProxyClass;
 import com.yyon.grapplinghook.grapplemod;
 import com.yyon.grapplinghook.entities.grappleArrow;
 import com.yyon.grapplinghook.network.GrappleClickMessage;
 
-import net.minecraft.client.renderer.texture.IIconRegister;
-import com.yyon.grapplinghook.BlockPos;
-
-import cpw.mods.fml.common.FMLCommonHandler;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
 
 /*
  * This file is part of GrappleMod.
@@ -40,7 +40,7 @@ import cpw.mods.fml.relauncher.SideOnly;
  */
 
 public class grappleBow extends Item {
-	
+	public static HashMap<Entity, grappleArrow> grapplearrows = new HashMap<Entity, grappleArrow>();
 	
 	public grappleBow() {
 		super();
@@ -50,104 +50,93 @@ public class grappleBow extends Item {
 		
 		this.setMaxDamage(500);
 		
-		setCreativeTab(CreativeTabs.tabCombat);
+		setCreativeTab(CreativeTabs.tabTransport);
 		
 		MinecraftForge.EVENT_BUS.register(this);
-		FMLCommonHandler.instance().bus().register(this);
 	}
-	
-	@Override
-	@SideOnly(Side.CLIENT)
-	public void registerIcons(IIconRegister iconRegister)
-	{
-		itemIcon = iconRegister.registerIcon("grapplemod:grapplinghook");
-	}
-	
-	@Override
+
+    @Override
 	public int getMaxItemUseDuration(ItemStack par1ItemStack)
 	{
 		return 72000;
 	}
 	
-	public grappleArrow getArrow(ItemStack stack, World world) {
-		NBTTagCompound compound = grapplemod.getCompound(stack);
-
-		int id = compound.getInteger("arrow");
-		if (id == 0) {
-			return null;
+	public grappleArrow getArrow(Entity entity, World world) {
+		if (grappleBow.grapplearrows.containsKey(entity)) {
+			grappleArrow arrow = grappleBow.grapplearrows.get(entity);
+			if (arrow != null && !arrow.isDead) {
+				return arrow;
+			}
 		}
-		Entity e = world.getEntityByID(id);
-		if (e instanceof grappleArrow) {
-			return (grappleArrow) e;
-		} else {
-			return null;
-		}
+		return null;
 	}
 	
-	public void setArrow(ItemStack stack, grappleArrow arrow) {
-		int id = 0;
-		if (arrow != null) {
-			id = arrow.getEntityId();
-		}
-		
-		NBTTagCompound compound = grapplemod.getCompound(stack);
+	@Override
+	public boolean getIsRepairable(ItemStack toRepair, ItemStack repair) {
+        ItemStack mat = new ItemStack(Items.leather, 1);
+        if (mat != null && net.minecraftforge.oredict.OreDictionary.itemMatches(mat, repair, false)) return true;
+        return super.getIsRepairable(toRepair, repair);
+	}
 
-		compound.setInteger("arrow", id);
+	public void setArrow(Entity entity, ItemStack stack, grappleArrow arrow) {
+		grappleBow.grapplearrows.put(entity, arrow);
 	}
 	
 	
-	public void dorightclick(ItemStack stack, World worldIn, EntityPlayer playerIn) {
+	public void dorightclick(ItemStack stack, World worldIn, EntityLivingBase entityLiving, boolean righthand) {
         if (!worldIn.isRemote) {
-        	grappleArrow entityarrow = getArrow(stack, worldIn);
+        	grappleArrow entityarrow = getArrow(entityLiving, worldIn);
         	
         	if (entityarrow != null) {
         		int id = entityarrow.shootingEntityID;
         		if (!grapplemod.attached.contains(id)) {
-        			setArrow(stack, null);
+        			setArrow(entityLiving, stack, null);
+        			
+        			if (!entityarrow.isDead) {
+        				entityarrow.removeServer();
+        				return;
+        			}
+        			
         			entityarrow = null;
         		}
         	}
         	
 			float f = 2.0F;
 			if (entityarrow == null) {
-				entityarrow = this.createarrow(stack, worldIn, playerIn);
-				setArrow(stack, entityarrow);
+				entityarrow = this.createarrow(stack, worldIn, entityLiving, righthand);
+//	            entityarrow.setHeadingFromThrower(entityLiving, entityLiving.rotationPitch, entityLiving.rotationYaw, 0.0F, entityarrow.getVelocity(), 0.0F);
+				setArrow(entityLiving, stack, entityarrow);
 	
-				stack.damageItem(1, playerIn);
-				worldIn.playSoundAtEntity(playerIn, "random.bow", 1.0F, 1.0F / (itemRand.nextFloat() * 0.4F + 1.2F) + f * 0.5F);
+				stack.damageItem(1, entityLiving);
+				worldIn.playSoundAtEntity(entityLiving, "random.bow", 1.0F, 1.0F / (itemRand.nextFloat() * 0.4F + 1.2F) + f * 0.5F);
 				
 				worldIn.spawnEntityInWorld(entityarrow);
 			} else {
 				grapplemod.sendtocorrectclient(new GrappleClickMessage(entityarrow.shootingEntityID, false), entityarrow.shootingEntityID, entityarrow.worldObj);
 				grapplemod.attached.remove(new Integer(entityarrow.shootingEntityID));
+				this.setArrow(entityLiving, stack, null);
 			}
     	}
 	}
 	
-	public grappleArrow createarrow(ItemStack stack, World worldIn, EntityPlayer playerIn) {
-		return new grappleArrow(worldIn, playerIn, 0);
+	public grappleArrow createarrow(ItemStack stack, World worldIn, EntityLivingBase entityLiving, boolean righthand) {
+		return new grappleArrow(worldIn, entityLiving, righthand);
 	}
-	
-	
-	@Override
-    public void onPlayerStoppedUsing(ItemStack stack, World worldIn, EntityPlayer playerIn, int timeLeft)
-    {
-    }
     
-	@Override
-	public ItemStack onItemRightClick(ItemStack stack, World worldIn, final EntityPlayer playerIn){
-        playerIn.setItemInUse(stack, this.getMaxItemUseDuration(stack));
-        
-        this.dorightclick(stack, worldIn, playerIn);
-        
-		return stack;
-	}
-
-    public ItemStack onItemUseFinish(ItemStack stack, World worldIn, EntityPlayer playerIn)
+    @Override
+	public ItemStack onItemRightClick(ItemStack stack, World worldIn, EntityPlayer entityLiving)
     {
+        if (!worldIn.isRemote) {
+	        this.dorightclick(stack, worldIn, entityLiving, true);
+        }
         return stack;
     }
+	
 
+//	@Override
+//    public void onPlayerStoppedUsing(ItemStack stack, World worldIn, EntityPlayer playerIn, int timeLeft)
+//    {
+//    }
 
 	/**
 	 * returns the action that specifies what animation to play when the items is being used
@@ -157,21 +146,46 @@ public class grappleBow extends Item {
 	{
 		return EnumAction.none;
 	}
-	
+
     @Override
     public boolean onLeftClickEntity(ItemStack stack, EntityPlayer player, Entity entity)
     {
     	return true;
     }
    
-    public boolean onEntitySwing(EntityLiving entityLiving, ItemStack stack)
+    @Override
+    public boolean hitEntity(ItemStack stack, EntityLivingBase target, EntityLivingBase attacker)
     {
     	return true;
     }
    
+
     @Override
     public boolean onBlockStartBreak(ItemStack itemstack, int x, int y, int z, EntityPlayer player)
     {
       return true;
     }
+    
+	@Override
+	public void addInformation(ItemStack stack, EntityPlayer player, List list, boolean par4)
+	{
+		list.add("A basic grappling hook for swinging");
+		list.add("");
+		list.add(grapplemod.proxy.getkeyname(CommonProxyClass.keys.keyBindUseItem) + " - Throw grappling hook");
+		list.add(grapplemod.proxy.getkeyname(CommonProxyClass.keys.keyBindUseItem) + " again - Release");
+		list.add("Double-" + grapplemod.proxy.getkeyname(CommonProxyClass.keys.keyBindUseItem) + " - Release and throw again");
+		list.add(grapplemod.proxy.getkeyname(CommonProxyClass.keys.keyBindForward) + ", " +
+				grapplemod.proxy.getkeyname(CommonProxyClass.keys.keyBindLeft) + ", " +
+				grapplemod.proxy.getkeyname(CommonProxyClass.keys.keyBindBack) + ", " +
+				grapplemod.proxy.getkeyname(CommonProxyClass.keys.keyBindRight) +
+				" - Swing");
+		list.add(grapplemod.proxy.getkeyname(CommonProxyClass.keys.keyBindJump) + " - Release and jump (while in midair)");
+		list.add(grapplemod.proxy.getkeyname(CommonProxyClass.keys.keyBindSneak) + " - Stop swinging");
+		list.add(grapplemod.proxy.getkeyname(CommonProxyClass.keys.keyBindSneak) + " + " +
+				grapplemod.proxy.getkeyname(CommonProxyClass.keys.keyBindForward) + 
+				" - Climb up");
+		list.add(grapplemod.proxy.getkeyname(CommonProxyClass.keys.keyBindSneak) + " + " +
+				grapplemod.proxy.getkeyname(CommonProxyClass.keys.keyBindBack) + 
+				" - Climb down");
+	}
 }

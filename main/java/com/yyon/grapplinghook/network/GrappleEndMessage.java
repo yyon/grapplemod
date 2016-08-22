@@ -1,18 +1,14 @@
 package com.yyon.grapplinghook.network;
 
 import io.netty.buffer.ByteBuf;
-import net.minecraft.entity.Entity;
 import net.minecraft.world.World;
-import net.minecraft.world.WorldServer;
 
 import com.yyon.grapplinghook.grapplemod;
-import com.yyon.grapplinghook.entities.grappleArrow;
-
-import com.yyon.grapplinghook.network.GrappleAttachMessage.Handler.runner;
 
 import cpw.mods.fml.common.network.simpleimpl.IMessage;
 import cpw.mods.fml.common.network.simpleimpl.IMessageHandler;
 import cpw.mods.fml.common.network.simpleimpl.MessageContext;
+//* // 1.8 Compatability
 
 /*
  * This file is part of GrappleMod.
@@ -67,31 +63,21 @@ public class GrappleEndMessage implements IMessage {
     		
             @Override
             public void run() {
-            	
+
 				int id = message.entityid;
-
-				if (grapplemod.attached.contains(id)) {
-					grapplemod.attached.remove(new Integer(id));
-				}
 				
-				World world = ctx.getServerHandler().playerEntity.worldObj;
-              	Entity grapple = world.getEntityByID(message.arrowid);
-          		if (grapple instanceof grappleArrow) {
-          			((grappleArrow) grapple).removeServer();
-
-          		}
-          		
-          		Entity entity = world.getEntityByID(id);
-          		entity.fallDistance = 0;
-
+				World w = ctx.getServerHandler().playerEntity.worldObj;
+				
+				grapplemod.receiveGrappleEnd(id, w, message.arrowid);
             }
     	}
     	
-       
         @Override
         public IMessage onMessage(GrappleEndMessage message, MessageContext ctx) {
-        	new runner(message, ctx).run();
-            return null;
+
+            new runner(message, ctx).run();
+
+            return null; // no response in this case
         }
     }
 }

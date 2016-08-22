@@ -14,14 +14,25 @@ import net.minecraftforge.event.world.BlockEvent.BreakEvent;
 import com.yyon.grapplinghook.controllers.grappleController;
 import com.yyon.grapplinghook.entities.grappleArrow;
 import com.yyon.grapplinghook.items.grappleBow;
+import com.yyon.grapplinghook.items.multiBow;
 
-import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.event.FMLInitializationEvent;
 import cpw.mods.fml.common.event.FMLPostInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 
 public class CommonProxyClass {
+	public enum keys {
+		keyBindUseItem,
+		keyBindForward,
+		keyBindLeft,
+		keyBindBack,
+		keyBindRight,
+		keyBindJump,
+		keyBindSneak,
+		keyBindAttack
+	}
+	
 	public void preInit(FMLPreInitializationEvent event) {
 		
 	}
@@ -31,7 +42,6 @@ public class CommonProxyClass {
 	}
 	
 	public void postInit(FMLPostInitializationEvent event) {
-		FMLCommonHandler.instance().bus().register(this);
 	    MinecraftForge.EVENT_BUS.register(this);
 	}
 	
@@ -68,7 +78,7 @@ public class CommonProxyClass {
 	    	ItemStack stack = player.getHeldItem();
 	    	if (stack != null) {
 	    		Item item = stack.getItem();
-	    		if (item instanceof grappleBow) {
+	    		if (item instanceof grappleBow || item instanceof multiBow) {
 	    			event.setCanceled(true);
 	    			return;
 	    		}
@@ -98,4 +108,8 @@ public class CommonProxyClass {
     
     public void handleDeath(Entity entity) {
     }
+    
+	public String getkeyname(CommonProxyClass.keys keyenum) {
+		return null;
+	}
 }

@@ -3,11 +3,11 @@ package com.yyon.grapplinghook.network;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.Entity;
 import net.minecraft.world.World;
-import net.minecraft.world.WorldServer;
-
 import cpw.mods.fml.common.network.simpleimpl.IMessage;
 import cpw.mods.fml.common.network.simpleimpl.IMessageHandler;
 import cpw.mods.fml.common.network.simpleimpl.MessageContext;
+//* // 1.8 Compatability
+
 
 /*
  * This file is part of GrappleMod.
@@ -73,6 +73,7 @@ public class PlayerMovementMessage implements IMessage {
         buf.writeDouble(mx);
         buf.writeDouble(my);
         buf.writeDouble(mz);
+        
     }
 
     public static class Handler implements IMessageHandler<PlayerMovementMessage, IMessage> {
@@ -101,7 +102,8 @@ public class PlayerMovementMessage implements IMessage {
     	
         @Override
         public IMessage onMessage(PlayerMovementMessage message, MessageContext ctx) {
-        	new runner(message, ctx).run();
+            new runner(message, ctx).run();
+
             return null; // no response in this case
         }
     }

@@ -1,16 +1,16 @@
 package com.yyon.grapplinghook.items;
 
+import java.util.List;
+
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.world.World;
 
+import com.yyon.grapplinghook.CommonProxyClass;
+import com.yyon.grapplinghook.grapplemod;
 import com.yyon.grapplinghook.entities.grappleArrow;
 import com.yyon.grapplinghook.entities.hookArrow;
-
-import net.minecraft.client.renderer.texture.IIconRegister;
-
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
 
 /*
  * This file is part of GrappleMod.
@@ -36,15 +36,18 @@ public class hookBow extends grappleBow {
 	}
 	
 	@Override
-	public grappleArrow createarrow(ItemStack satack, World worldIn, EntityPlayer playerIn) {
-		return new hookArrow(worldIn, playerIn, 0);
-	}
-	
-	@Override
-	@SideOnly(Side.CLIENT)
-	public void registerIcons(IIconRegister iconRegister)
-	{
-		 itemIcon = iconRegister.registerIcon("grapplemod:hookshot");
+	public grappleArrow createarrow(ItemStack satack, World worldIn, EntityLivingBase playerIn, boolean righthand) {
+		return new hookArrow(worldIn, playerIn, righthand);
 	}
 
+	@Override
+	public void addInformation(ItemStack stack, EntityPlayer player, List list, boolean par4)
+	{
+		list.add("Pulls player towards hook");
+		list.add("");
+		list.add(grapplemod.proxy.getkeyname(CommonProxyClass.keys.keyBindUseItem) + " - Throw grappling hook");
+		list.add(grapplemod.proxy.getkeyname(CommonProxyClass.keys.keyBindUseItem) + " again - Release");
+		list.add("Double-" + grapplemod.proxy.getkeyname(CommonProxyClass.keys.keyBindUseItem) + " - Release and throw again");
+		list.add(grapplemod.proxy.getkeyname(CommonProxyClass.keys.keyBindJump) + " - Release and jump");
+	}
 }

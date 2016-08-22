@@ -5,12 +5,14 @@ import java.util.List;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
 
 import com.yyon.grapplinghook.CommonProxyClass;
 import com.yyon.grapplinghook.grapplemod;
-import com.yyon.grapplinghook.entities.enderArrow;
 import com.yyon.grapplinghook.entities.grappleArrow;
+import com.yyon.grapplinghook.entities.magnetArrow;
+import com.yyon.grapplinghook.network.ToolConfigMessage;
 
 /*
  * This file is part of GrappleMod.
@@ -29,37 +31,42 @@ import com.yyon.grapplinghook.entities.grappleArrow;
     along with GrappleMod.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-public class enderBow extends grappleBow implements clickitem {
-	
-	public enderBow() {
+public class magnetBow extends grappleBow implements clickitem {
+	public magnetBow() {
 		super();
-		setUnlocalizedName("enderhook");
+		setUnlocalizedName("magnetbow");
 	}
 	
 	@Override
 	public grappleArrow createarrow(ItemStack stack, World worldIn, EntityLivingBase playerIn, boolean righthand) {
-		return new enderArrow(worldIn, playerIn, righthand);
+		NBTTagCompound compound = stack.getTagCompound();
+		int repelconf = compound.getInteger("repelconf");
+		
+		return new magnetArrow(worldIn, playerIn, righthand, repelconf);
 	}
 	
 	@Override
 	public void onLeftClick(ItemStack stack, EntityPlayer player) {
-		if (player.worldObj.isRemote) {
-			grapplemod.proxy.launchplayer(player);
+		if (player.isSneaking()) {
+			int playerid = player.getEntityId();
+			grapplemod.network.sendToServer(new ToolConfigMessage(playerid));
 		}
 	}
+
 	@Override
 	public void onLeftClickRelease(ItemStack stack, EntityPlayer player) {
 	}
-	
+
 	@Override
 	public void addInformation(ItemStack stack, EntityPlayer player, List list, boolean par4)
 	{
-		list.add("A grappling hook which uses an ender staff to speed up or change directions");
+		list.add("A magnetic grappling hook");
+		list.add("Hook is attracted to nearby blocks");
+		list.add("Player is repelled by nearby blocks");
 		list.add("");
 		list.add(grapplemod.proxy.getkeyname(CommonProxyClass.keys.keyBindUseItem) + " - Throw grappling hook");
 		list.add(grapplemod.proxy.getkeyname(CommonProxyClass.keys.keyBindUseItem) + " again - Release");
 		list.add("Double-" + grapplemod.proxy.getkeyname(CommonProxyClass.keys.keyBindUseItem) + " - Release and throw again");
-		list.add(grapplemod.proxy.getkeyname(CommonProxyClass.keys.keyBindAttack) + " - Launch player towards crosshairs");
 		list.add(grapplemod.proxy.getkeyname(CommonProxyClass.keys.keyBindForward) + ", " +
 				grapplemod.proxy.getkeyname(CommonProxyClass.keys.keyBindLeft) + ", " +
 				grapplemod.proxy.getkeyname(CommonProxyClass.keys.keyBindBack) + ", " +
@@ -73,5 +80,7 @@ public class enderBow extends grappleBow implements clickitem {
 		list.add(grapplemod.proxy.getkeyname(CommonProxyClass.keys.keyBindSneak) + " + " +
 				grapplemod.proxy.getkeyname(CommonProxyClass.keys.keyBindBack) + 
 				" - Climb down");
+		list.add(grapplemod.proxy.getkeyname(CommonProxyClass.keys.keyBindSneak) + " + " + 
+				grapplemod.proxy.getkeyname(CommonProxyClass.keys.keyBindAttack) + " - Change repel force");
 	}
 }

@@ -1,5 +1,6 @@
 package com.yyon.grapplinghook.controllers;
 
+import net.minecraft.entity.Entity;
 import net.minecraft.world.World;
 
 import com.yyon.grapplinghook.vec;
@@ -21,20 +22,35 @@ import com.yyon.grapplinghook.vec;
     along with GrappleMod.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-public class enderController extends grappleController {
-	public enderController(int arrowId, int entityId, World world, vec pos, int maxlen, int id) {
+public class airfrictionController extends grappleController {
+	public airfrictionController(int arrowId, int entityId, World world, vec pos, int maxlen, int id) {
 		super(arrowId, entityId, world, pos, maxlen, id);
 	}
-
-	public void receiveGrappleClick(boolean leftclick) {
-		super.receiveGrappleClick(leftclick);
-		
-	}
 	
-	/*
 	@Override
-	public void receiveEnderLaunch(double x, double y, double z) {
-//		System.out.println("now launching");
+	public void updatePlayerPos() {
+		Entity entity = this.entity;
+		
+		if (this.attached) {
+			this.normalGround();
+			this.normalCollisions();
+			this.applyAirFriction();
+			
+			if (entity.isCollided || entity.onGround) {
+				this.unattach();
+			}
+			
+			motion.add_ip(this.playermovement.changelen(0.01));
+			
+			vec newmotion;
+			
+			newmotion = motion;
+			
+			entity.motionX = newmotion.x;
+//			entity.motionY = newmotion.y;
+			entity.motionZ = newmotion.z;
+			
+			this.updateServerPos();
+		}
 	}
-	*/
 }
