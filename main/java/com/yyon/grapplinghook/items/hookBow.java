@@ -2,6 +2,7 @@ package com.yyon.grapplinghook.items;
 
 import java.util.List;
 
+import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
@@ -11,6 +12,9 @@ import com.yyon.grapplinghook.CommonProxyClass;
 import com.yyon.grapplinghook.grapplemod;
 import com.yyon.grapplinghook.entities.grappleArrow;
 import com.yyon.grapplinghook.entities.hookArrow;
+
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 
 /*
  * This file is part of GrappleMod.
@@ -35,6 +39,13 @@ public class hookBow extends grappleBow {
 		setUnlocalizedName("hookshot");
 	}
 	
+	@Override
+	@SideOnly(Side.CLIENT)
+	public void registerIcons(IIconRegister iconRegister)
+	{
+		itemIcon = iconRegister.registerIcon("grapplemod:hookshot");
+	}
+
 	@Override
 	public grappleArrow createarrow(ItemStack satack, World worldIn, EntityLivingBase playerIn, boolean righthand) {
 		return new hookArrow(worldIn, playerIn, righthand);

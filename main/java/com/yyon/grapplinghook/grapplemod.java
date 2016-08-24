@@ -178,6 +178,7 @@ public class grapplemod {
 		return 0;
 	}
 
+	@EventHandler
 	public void serverLoad(FMLServerStartingEvent event){
 		event.getServer().worldServerForDimension(0).getGameRules().addGameRule("grapplingLength", "0");
 		event.getServer().worldServerForDimension(0).getGameRules().addGameRule("grapplingBlocks", "any");
@@ -435,7 +436,7 @@ public class grapplemod {
       		anglevec = anglevec.rotate_pitch(Math.toRadians(-player.rotationPitch));
       		anglevec = anglevec.rotate_yaw(Math.toRadians(player.rotationYaw));
 			multihookArrow entityarrow = new multihookArrow(w, player, false);
-            entityarrow.setHeadingFromThrower(player, (float) anglevec.getPitch(), (float)anglevec.getYaw(), 0.0F, entityarrow.getVelocity(), 0.0F);
+            entityarrow.setHeadingFromThrower(player, (float) anglevec.getPitch(), (float)anglevec.getYaw(), 0.0F, entityarrow.func_70182_d(), 0.0F);
             
             /*
             vec pos = vec.positionvec(entityarrow);
@@ -451,7 +452,7 @@ public class grapplemod {
       		anglevec = anglevec.rotate_pitch(Math.toRadians(-player.rotationPitch));
       		anglevec = anglevec.rotate_yaw(Math.toRadians(player.rotationYaw));
 			entityarrow = new multihookArrow(w, player, true);
-            entityarrow.setHeadingFromThrower(player, (float) anglevec.getPitch(), (float)anglevec.getYaw(), 0.0F, entityarrow.getVelocity(), 0.0F);
+            entityarrow.setHeadingFromThrower(player, (float) anglevec.getPitch(), (float)anglevec.getYaw(), 0.0F, entityarrow.func_70182_d(), 0.0F);
             
             /*
             pos = vec.positionvec(entityarrow);
@@ -481,6 +482,10 @@ public class grapplemod {
       		Item item = stack.getItem();
       		if (item instanceof multiBow) {
     			NBTTagCompound compound = stack.getTagCompound();
+    			if (compound == null) {
+    				compound = new NBTTagCompound();
+    				stack.setTagCompound(compound);
+    		    }
     			boolean slow = compound.getBoolean("slow");
     			slow = !slow;
     			compound.setBoolean("slow", slow);
@@ -492,6 +497,10 @@ public class grapplemod {
     			}
       		} else if (item instanceof magnetBow) {
     			NBTTagCompound compound = stack.getTagCompound();
+    			if (compound == null) {
+    				compound = new NBTTagCompound();
+    				stack.setTagCompound(compound);
+    		    }
     			int repelconf = compound.getInteger("repelconf");
     			repelconf++;
     			if (repelconf >= REPELCONFIGS) {

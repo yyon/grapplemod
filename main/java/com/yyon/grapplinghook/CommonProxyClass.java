@@ -16,6 +16,7 @@ import com.yyon.grapplinghook.entities.grappleArrow;
 import com.yyon.grapplinghook.items.grappleBow;
 import com.yyon.grapplinghook.items.multiBow;
 
+import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.event.FMLInitializationEvent;
 import cpw.mods.fml.common.event.FMLPostInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
@@ -42,6 +43,7 @@ public class CommonProxyClass {
 	}
 	
 	public void postInit(FMLPostInitializationEvent event) {
+		FMLCommonHandler.instance().bus().register(this);
 	    MinecraftForge.EVENT_BUS.register(this);
 	}
 	

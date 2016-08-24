@@ -4,6 +4,9 @@ import java.util.Collection;
 import java.util.ConcurrentModificationException;
 import java.util.HashMap;
 
+import org.lwjgl.input.Keyboard;
+import org.lwjgl.input.Mouse;
+
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.renderer.entity.Render;
@@ -144,7 +147,7 @@ public class ClientProxyClass extends CommonProxyClass {
 	@Override
 	public void init(FMLInitializationEvent event, grapplemod grappleModInst) {
 		super.init(event, grappleModInst);
-		RenderGrappleArrow rga = new RenderGrappleArrow(Items.iron_pickaxe);
+		RenderGrappleArrow rga = new RenderGrappleArrow(grapplemod.grapplebowitem);
 		RenderingRegistry.registerEntityRenderingHandler(grappleArrow.class, rga);
 //		Minecraft.getMinecraft().getRenderItem().getItemModelMesher().register(grapplemod.grapplebowitem, 0, new ModelResourceLocation("grapplemod:grapplinghook", "inventory"));
 //		Minecraft.getMinecraft().getRenderItem().getItemModelMesher().register(grapplemod.hookshotitem, 0, new ModelResourceLocation("grapplemod:hookshot", "inventory"));
@@ -326,15 +329,19 @@ public class ClientProxyClass extends CommonProxyClass {
 			return "";
 		}
 		
-		
-		String displayname = binding.getKeyDescription();
-		if (displayname.equals("Button 1")) {
-			return "Left Click";
-		} else if (displayname.equals("Button 2")) {
+		String displayname;
+		int keycode = binding.getKeyCode();
+		if (keycode == -99) {
 			return "Right Click";
-		} else {
-			return displayname;
+		} else if (keycode == -100) {
+			return "Left Click";
 		}
+		try {
+			displayname = Keyboard.getKeyName(keycode);
+		} catch (ArrayIndexOutOfBoundsException e) {
+			displayname = "???";
+		}
+		return displayname;
 	}
 
 	public static boolean isactive(ItemStack stack) {

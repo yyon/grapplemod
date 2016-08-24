@@ -33,7 +33,8 @@ public class hookArrow extends grappleArrow
 		super(worldIn, shooter, righthand);
 	}
 	
-    public float getVelocity()
+	@Override
+    protected float func_70182_d()
     {
         return 20F;
     }

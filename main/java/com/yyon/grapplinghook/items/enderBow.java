@@ -2,6 +2,7 @@ package com.yyon.grapplinghook.items;
 
 import java.util.List;
 
+import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
@@ -11,6 +12,9 @@ import com.yyon.grapplinghook.CommonProxyClass;
 import com.yyon.grapplinghook.grapplemod;
 import com.yyon.grapplinghook.entities.enderArrow;
 import com.yyon.grapplinghook.entities.grappleArrow;
+
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 
 /*
  * This file is part of GrappleMod.
@@ -37,6 +41,13 @@ public class enderBow extends grappleBow implements clickitem {
 	}
 	
 	@Override
+	@SideOnly(Side.CLIENT)
+	public void registerIcons(IIconRegister iconRegister)
+	{
+		itemIcon = iconRegister.registerIcon("grapplemod:enderhook");
+	}
+
+	@Override
 	public grappleArrow createarrow(ItemStack stack, World worldIn, EntityLivingBase playerIn, boolean righthand) {
 		return new enderArrow(worldIn, playerIn, righthand);
 	}
@@ -54,7 +65,9 @@ public class enderBow extends grappleBow implements clickitem {
 	@Override
 	public void addInformation(ItemStack stack, EntityPlayer player, List list, boolean par4)
 	{
-		list.add("A grappling hook which uses an ender staff to speed up or change directions");
+		list.add("A grappling hook which uses");
+		list.add("an ender staff to speed up");
+		list.add("or change directions");
 		list.add("");
 		list.add(grapplemod.proxy.getkeyname(CommonProxyClass.keys.keyBindUseItem) + " - Throw grappling hook");
 		list.add(grapplemod.proxy.getkeyname(CommonProxyClass.keys.keyBindUseItem) + " again - Release");

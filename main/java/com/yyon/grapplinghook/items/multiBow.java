@@ -2,6 +2,7 @@ package com.yyon.grapplinghook.items;
 
 import java.util.List;
 
+import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
@@ -22,6 +23,9 @@ import com.yyon.grapplinghook.controllers.multihookController;
 import com.yyon.grapplinghook.network.MultiHookMessage;
 import com.yyon.grapplinghook.network.ToolConfigMessage;
 
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
+
 public class multiBow extends Item implements clickitem {
 	public multiBow() {
 		super();
@@ -37,6 +41,13 @@ public class multiBow extends Item implements clickitem {
 	}
 	
 	@Override
+	@SideOnly(Side.CLIENT)
+	public void registerIcons(IIconRegister iconRegister)
+	{
+		itemIcon = iconRegister.registerIcon("grapplemod:multihook");
+	}
+
+	@Override
 	public int getMaxItemUseDuration(ItemStack par1ItemStack)
 	{
 		return 72000;
@@ -50,6 +61,10 @@ public class multiBow extends Item implements clickitem {
 				controller.unattach();
 			} else {
 				NBTTagCompound compound = stack.getTagCompound();
+				if (compound == null) {
+					compound = new NBTTagCompound();
+					stack.setTagCompound(compound);
+			    }
 				boolean slow = compound.getBoolean("slow");
 				
 				grappleController control = grapplemod.createControl(grapplemod.MULTIID, -1, playerid, worldIn, new vec(0,0,0), -1, null);
@@ -120,7 +135,8 @@ public class multiBow extends Item implements clickitem {
 	@Override
 	public void addInformation(ItemStack stack, EntityPlayer player, List list, boolean par4)
 	{
-		list.add("Shoots two hooks and pulls player towards hooks");
+		list.add("Shoots two hooks and");
+		list.add("pulls player towards hooks");
 		list.add("");
 		list.add("Side crosshairs - Aim hooks");
 		list.add("Center crosshairs - Direction of movement");
@@ -129,7 +145,8 @@ public class multiBow extends Item implements clickitem {
 		list.add("Double-" + grapplemod.proxy.getkeyname(CommonProxyClass.keys.keyBindUseItem) + " - Release and throw again");
 		list.add(grapplemod.proxy.getkeyname(CommonProxyClass.keys.keyBindJump) + " - Release and jump");
 		list.add(grapplemod.proxy.getkeyname(CommonProxyClass.keys.keyBindSneak) + " + " + 
-				grapplemod.proxy.getkeyname(CommonProxyClass.keys.keyBindUseItem) + " - Throw grappling hooks at a narrower angle");
+				grapplemod.proxy.getkeyname(CommonProxyClass.keys.keyBindUseItem) + " - Throw grappling ");
+		list.add("   hooks at a narrower angle");
 		list.add(grapplemod.proxy.getkeyname(CommonProxyClass.keys.keyBindSneak) + " + " + 
 				grapplemod.proxy.getkeyname(CommonProxyClass.keys.keyBindAttack) + " - Toggle speed");
 	}

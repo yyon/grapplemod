@@ -2,6 +2,7 @@ package com.yyon.grapplinghook.items;
 
 import java.util.List;
 
+import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
@@ -13,6 +14,9 @@ import com.yyon.grapplinghook.grapplemod;
 import com.yyon.grapplinghook.entities.grappleArrow;
 import com.yyon.grapplinghook.entities.magnetArrow;
 import com.yyon.grapplinghook.network.ToolConfigMessage;
+
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 
 /*
  * This file is part of GrappleMod.
@@ -38,8 +42,19 @@ public class magnetBow extends grappleBow implements clickitem {
 	}
 	
 	@Override
+	@SideOnly(Side.CLIENT)
+	public void registerIcons(IIconRegister iconRegister)
+	{
+		itemIcon = iconRegister.registerIcon("grapplemod:magnetbow");
+	}
+
+	@Override
 	public grappleArrow createarrow(ItemStack stack, World worldIn, EntityLivingBase playerIn, boolean righthand) {
 		NBTTagCompound compound = stack.getTagCompound();
+		if (compound == null) {
+			compound = new NBTTagCompound();
+			stack.setTagCompound(compound);
+	    }
 		int repelconf = compound.getInteger("repelconf");
 		
 		return new magnetArrow(worldIn, playerIn, righthand, repelconf);

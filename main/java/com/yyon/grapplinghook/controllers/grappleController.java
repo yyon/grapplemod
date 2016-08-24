@@ -250,15 +250,15 @@ public class grappleController {
 	public void normalCollisions() {
 		// stop if collided with object
 		if (entity.isCollidedHorizontally) {
-			if (entity.motionX == 0) {
+			if (Math.abs(entity.motionX) < 0.1) {
 				this.motion.x = 0;
 			}
-			if (entity.motionZ == 0) {
+			if (Math.abs(entity.motionZ) < 0.1) {
 				this.motion.z = 0;
 			}
 		}
 		if (entity.isCollidedVertically) {
-			if (entity.motionY == 0) {
+			if (Math.abs(entity.motionY) < 0.1) {
 				this.motion.y = 0;
 			}
 		}

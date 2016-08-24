@@ -38,8 +38,8 @@ public class multihookArrow extends magnetArrow
 		return grapplemod.MULTISUBID;
 	}
     
-    @Override
-    public float getVelocity()
+	@Override
+    public float func_70182_d()
     {
         return 20F;
     }

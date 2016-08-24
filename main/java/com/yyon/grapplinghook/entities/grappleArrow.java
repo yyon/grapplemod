@@ -239,12 +239,19 @@ public class grappleArrow extends EntityThrowable implements IEntityAdditionalSp
 		
 		//west -x
 		//north -z
-		if (sideHit == 0) {
+		System.out.println(sideHit);
+		if (sideHit == 0) { // bottom
 			this.posY -= 0.3;
-		} else if (sideHit == 3) {
+//		} else if (sideHit == 1) { // top
+//			this.posY += 0.05;
+//		} else if (sideHit == 2) { // east
+//			this.posX += 0.05;
+		} else if (sideHit == 4) { // west
 			this.posX -= 0.05;
-		} else if (sideHit == 4) {
+		} else if (sideHit == 2) { // north
 			this.posZ -= 0.05;
+//		} else if (sideHit == 5) { // south
+//			this.posZ += 0.05;
 		}
 
 
@@ -290,7 +297,8 @@ public class grappleArrow extends EntityThrowable implements IEntityAdditionalSp
         return 0F;
     }
 	
-    public float getVelocity()
+	@Override
+    protected float func_70182_d()
     {
         return 5F;
     }

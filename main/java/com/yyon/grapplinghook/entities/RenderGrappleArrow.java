@@ -75,6 +75,8 @@ public class RenderGrappleArrow extends Render
         	return;
         }
 
+        IIcon iicon = this.item.getIconFromDamage(0);
+        
         int primaryhand = 1;
         
         
@@ -104,19 +106,22 @@ public class RenderGrappleArrow extends Render
     	GL11.glPushMatrix();
         GL11.glTranslatef((float)x, (float)y, (float)z);
         GL11.glEnable(GL12.GL_RESCALE_NORMAL);
+        GL11.glScalef(0.5F, 0.5F, 0.5F);
+        this.bindEntityTexture(arrow);
+        Tessellator tessellator = Tessellator.instance;
         
+        this.func_77026_a(tessellator, iicon);
 //        GL11.glDisable(GL11.GL_LIGHTING);
 //        OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, 240f, 240f);
         
         GL11.glRotatef(-this.renderManager.playerViewY, 0.0F, 1.0F, 0.0F);
         GL11.glRotatef((float)(this.renderManager.options.thirdPersonView == 2 ? -1 : 1) * this.renderManager.playerViewX, 1.0F, 0.0F, 0.0F);
         GL11.glRotatef(180.0F, 0.0F, 1.0F, 0.0F);
-        this.bindTexture(TextureMap.locationBlocksTexture);
         
-        Tessellator tessellator = Tessellator.instance;
+        tessellator.startDrawingQuads();
+        tessellator.setNormal(0.0F, 1.0F, 0.0F);
+        tessellator.draw();
         
-        IIcon iicon = this.item.getIconFromDamage(0);
-        this.func_77026_a(tessellator, iicon);
 //        this.itemRenderer.renderIcon(p_94149_1_, p_94149_2_, iicon, p_94149_4_, p_94149_5_)//.renderItem(this.getStackToRender(entity));
 
         GL11.glDisable(GL12.GL_RESCALE_NORMAL);
@@ -356,7 +361,7 @@ public class RenderGrappleArrow extends Render
      */
     protected ResourceLocation getEntityTexture(Entity entity)
     {
-        return LEASH_KNOT_TEXTURES;
+        return TextureMap.locationItemsTexture;
     }
     
     private void func_77026_a(Tessellator p_77026_1_, IIcon p_77026_2_)

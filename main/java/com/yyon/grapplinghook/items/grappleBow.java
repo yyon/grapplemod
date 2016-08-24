@@ -3,7 +3,7 @@ package com.yyon.grapplinghook.items;
 import java.util.HashMap;
 import java.util.List;
 
-import net.minecraft.client.audio.SoundCategory;
+import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
@@ -15,11 +15,14 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
 
-import com.yyon.grapplinghook.BlockPos;
 import com.yyon.grapplinghook.CommonProxyClass;
 import com.yyon.grapplinghook.grapplemod;
 import com.yyon.grapplinghook.entities.grappleArrow;
 import com.yyon.grapplinghook.network.GrappleClickMessage;
+
+import cpw.mods.fml.common.FMLCommonHandler;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 
 
 /*
@@ -52,7 +55,15 @@ public class grappleBow extends Item {
 		
 		setCreativeTab(CreativeTabs.tabTransport);
 		
-		MinecraftForge.EVENT_BUS.register(this);
+		FMLCommonHandler.instance().bus().register(this);
+	    MinecraftForge.EVENT_BUS.register(this);
+	}
+
+	@Override
+	@SideOnly(Side.CLIENT)
+	public void registerIcons(IIconRegister iconRegister)
+	{
+		itemIcon = iconRegister.registerIcon("grapplemod:grapplinghook");
 	}
 
     @Override

@@ -68,7 +68,8 @@ public class magnetArrow extends grappleArrow
     }
 
 	
-    public float getVelocity()
+	@Override
+    protected float func_70182_d()
     {
         return 20F;
     }
@@ -92,14 +93,16 @@ public class magnetArrow extends grappleArrow
 		    				if (found != null) {
 		    					if (wasinair) {
 						    		vec distvec = new vec(found.getX(), found.getY(), found.getZ());
-						    		distvec.sub_ip(prevpos);
-						    		if (distvec.length() < radius) {
-				    					this.setPosition(prevpos.x, prevpos.y, prevpos.z);
-				    					pos = prevpos;
-				    					
-				    					magnetblock = found;
-				    					
-				    					break;
+						    		if (distvec.sub(playerpos).dot(vec.motionvec(this)) > 0) {
+							    		distvec.sub_ip(prevpos);
+							    		if (distvec.length() < radius) {
+					    					this.setPosition(prevpos.x, prevpos.y, prevpos.z);
+					    					pos = prevpos;
+					    					
+					    					magnetblock = found;
+					    					
+					    					break;
+							    		}
 						    		}
 		    					}
 		    				} else {
@@ -120,7 +123,7 @@ public class magnetArrow extends grappleArrow
 					
 					double l = newvel.length();
 					
-					newvel.changelen(this.getVelocity());
+					newvel.changelen(this.func_70182_d());
 					
 					this.motionX = newvel.x;
 					this.motionY = newvel.y;
