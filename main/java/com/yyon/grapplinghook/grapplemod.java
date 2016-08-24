@@ -90,7 +90,7 @@ public class grapplemod {
 
     public static final String MODID = "grapplemod";
     
-    public static final String VERSION = "1.9.4-v7";
+    public static final String VERSION = "1.7.10-v7";
 
     public static Item grapplebowitem;
     public static Item hookshotitem;
