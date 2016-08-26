@@ -6,6 +6,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.DamageSource;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.event.entity.living.LivingAttackEvent;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.event.entity.living.LivingFallEvent;
 import net.minecraftforge.event.entity.living.LivingHurtEvent;
@@ -13,6 +14,7 @@ import net.minecraftforge.event.world.BlockEvent.BreakEvent;
 
 import com.yyon.grapplinghook.controllers.grappleController;
 import com.yyon.grapplinghook.entities.grappleArrow;
+import com.yyon.grapplinghook.items.LongFallBoots;
 import com.yyon.grapplinghook.items.grappleBow;
 import com.yyon.grapplinghook.items.multiBow;
 
@@ -95,13 +97,26 @@ public class CommonProxyClass {
     }
 
     @SubscribeEvent
+    public void onLivingAttack(LivingAttackEvent event){
+    	if (event.source == DamageSource.inWall) {
+    		if (grapplemod.attached.contains(event.entity.getEntityId())) {
+    			event.setCanceled(true);
+    			return;
+    		}
+    	}
+   	}
+    
+    /*
+    @SubscribeEvent
     public void onLivingHurt(LivingHurtEvent event) {
     	if (event.source == DamageSource.inWall) {
     		if (grapplemod.attached.contains(event.entity.getEntityId())) {
     			event.setCanceled(true);
+    			return;
     		}
     	}
     }
+    */
     
     @SubscribeEvent
     public void onLivingDeath(LivingDeathEvent event) {

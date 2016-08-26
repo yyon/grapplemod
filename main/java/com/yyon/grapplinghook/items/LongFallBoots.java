@@ -8,6 +8,7 @@ import net.minecraft.item.ItemArmor;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.DamageSource;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.event.entity.living.LivingAttackEvent;
 import net.minecraftforge.event.entity.living.LivingFallEvent;
 import net.minecraftforge.event.entity.living.LivingHurtEvent;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
@@ -53,14 +54,48 @@ public class LongFallBoots extends ItemArmor {
 			EntityPlayer player = (EntityPlayer)event.entity;
 			
 			ItemStack armor = player.getCurrentArmor(0);
-			    if (armor != null && armor.getItem() instanceof LongFallBoots)
-			    {
-					// this cancels the fall event so you take no damage
-					event.setCanceled(true);
-			    }
-			}
+		    if (armor != null && armor.getItem() instanceof LongFallBoots)
+		    {
+				// this cancels the fall event so you take no damage
+				event.setCanceled(true);
+		    }
 		}
+	}
 	
+	/*
+    @SubscribeEvent
+    public void onLivingHurt(LivingHurtEvent event) {
+    	if (event.source == DamageSource.inWall) {
+    		if (event.entity != null && event.entity instanceof EntityPlayer)
+    		{
+    			EntityPlayer player = (EntityPlayer)event.entity;
+    			
+    			ItemStack armor = player.getCurrentArmor(0);
+    		    if (armor != null && armor.getItem() instanceof LongFallBoots)
+    		    {
+    				event.setCanceled(true);
+    		    }
+    		}
+    	}
+    }
+    */
+    
+    @SubscribeEvent
+    public void onLivingAttack(LivingAttackEvent event){
+    	if (event.source == DamageSource.inWall) {
+    		if (event.entity != null && event.entity instanceof EntityPlayer)
+    		{
+    			EntityPlayer player = (EntityPlayer)event.entity;
+    			
+    			ItemStack armor = player.getCurrentArmor(0);
+    		    if (armor != null && armor.getItem() instanceof LongFallBoots)
+    		    {
+    				event.setCanceled(true);
+    		    }
+    		}
+    	}
+   	}
+    
 	@Override
 	public void addInformation(ItemStack stack, EntityPlayer player, List list, boolean par4)
 	{
