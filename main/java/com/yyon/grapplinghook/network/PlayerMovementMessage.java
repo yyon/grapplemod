@@ -2,9 +2,12 @@ package com.yyon.grapplinghook.network;
 
 import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.network.NetHandlerPlayServer;
 import net.minecraft.util.IThreadListener;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
+import net.minecraftforge.fml.common.ObfuscationReflectionHelper;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
@@ -93,12 +96,19 @@ public class PlayerMovementMessage implements IMessage {
             public void run() {
                 World world = ctx.getServerHandler().playerEntity.worldObj;
                 Entity entity = world.getEntityByID(message.entityId);
+                if (entity == null) {return;}
                 entity.posX = message.x;
                 entity.posY = message.y;
                 entity.posZ = message.z;
                 entity.motionX = message.mx;
                 entity.motionY = message.my;
                 entity.motionZ = message.mz;
+                if (entity instanceof EntityPlayerMP) {
+                	EntityPlayerMP player = ((EntityPlayerMP) entity);
+                	ObfuscationReflectionHelper.setPrivateValue(NetHandlerPlayServer.class, player.connection, entity.posX, "firstGoodX");
+                	ObfuscationReflectionHelper.setPrivateValue(NetHandlerPlayServer.class, player.connection, entity.posY, "firstGoodY");
+                	ObfuscationReflectionHelper.setPrivateValue(NetHandlerPlayServer.class, player.connection, entity.posZ, "firstGoodZ");
+                }
             }
     	}
     	
