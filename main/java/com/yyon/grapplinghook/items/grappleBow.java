@@ -128,8 +128,9 @@ public class grappleBow extends Item {
 	}
     
     @Override
-	public ActionResult<ItemStack> onItemRightClick(ItemStack stack, World worldIn, EntityPlayer entityLiving, EnumHand hand)
+	public ActionResult<ItemStack> onItemRightClick(World worldIn, EntityPlayer entityLiving, EnumHand hand)
     {
+    	ItemStack stack = entityLiving.getHeldItem(hand);
         if (!worldIn.isRemote) {
 	        this.dorightclick(stack, worldIn, entityLiving, hand == EnumHand.MAIN_HAND);
         }

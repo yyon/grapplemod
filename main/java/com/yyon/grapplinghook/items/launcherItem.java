@@ -63,18 +63,21 @@ public class launcherItem extends Item {
 	}
 	
     @Override
-    public EnumActionResult onItemUse(ItemStack stack, EntityPlayer playerIn, World worldIn, BlockPos pos, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ)
+    public EnumActionResult onItemUse(EntityPlayer playerIn, World worldIn, BlockPos blockpos, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ)
     {
+    	ItemStack stack = playerIn.getHeldItem(hand);
         this.dorightclick(stack, worldIn, playerIn);
         
     	return EnumActionResult.SUCCESS;
 	}
     
-    public ActionResult<ItemStack> onItemRightClick(ItemStack itemStackIn, World worldIn, EntityPlayer playerIn, EnumHand hand)
+    @Override
+	public ActionResult<ItemStack> onItemRightClick(World worldIn, EntityPlayer entityLiving, EnumHand hand)
     {
-        this.dorightclick(itemStackIn, worldIn, playerIn);
+    	ItemStack stack = entityLiving.getHeldItem(hand);
+        this.dorightclick(stack, worldIn, entityLiving);
         
-        return new ActionResult<ItemStack>(EnumActionResult.SUCCESS, itemStackIn);
+        return new ActionResult<ItemStack>(EnumActionResult.SUCCESS, stack);
     }
 
     @Override

@@ -52,7 +52,7 @@ public class multiBow extends Item implements clickitem {
 				grappleController controller = grapplemod.controllers.get(playerid);
 				controller.unattach();
 			} else {
-				NBTTagCompound compound = stack.getSubCompound("grapplemod", true);
+				NBTTagCompound compound = grapplemod.getstackcompound(stack, "grapplemod");
 				boolean slow = compound.getBoolean("slow");
 				
 				grappleController control = grapplemod.createControl(grapplemod.MULTIID, -1, playerid, worldIn, new vec(0,0,0), -1, null);
@@ -69,8 +69,10 @@ public class multiBow extends Item implements clickitem {
 		}
 	}
 
-    public ActionResult<ItemStack> onItemRightClick(ItemStack itemStackIn, World worldIn, EntityPlayer playerIn, EnumHand hand)
+    @Override
+	public ActionResult<ItemStack> onItemRightClick(World worldIn, EntityPlayer playerIn, EnumHand hand)
     {
+    	ItemStack itemStackIn = playerIn.getHeldItem(hand);
         this.dorightclick(itemStackIn, worldIn, playerIn);
         
         return new ActionResult<ItemStack>(EnumActionResult.SUCCESS, itemStackIn);

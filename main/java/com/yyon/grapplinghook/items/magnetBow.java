@@ -39,8 +39,11 @@ public class magnetBow extends grappleBow implements clickitem {
 	
 	@Override
 	public grappleArrow createarrow(ItemStack stack, World worldIn, EntityLivingBase playerIn, boolean righthand) {
-		NBTTagCompound compound = stack.getSubCompound("grapplemod", true);
-		int repelconf = compound.getInteger("repelconf");
+		NBTTagCompound compound = grapplemod.getstackcompound(stack, "grapplemod");
+		int repelconf = 0;
+		if (compound.hasKey("repelconf")) {
+			repelconf = compound.getInteger("repelconf");
+		}
 		
 		return new magnetArrow(worldIn, playerIn, righthand, repelconf);
 	}
