@@ -24,6 +24,8 @@ import com.yyon.grapplinghook.vec;
  */
 
 public class airfrictionController extends grappleController {
+	public final double playermovementmult = 0.5;
+	
 	public airfrictionController(int arrowId, int entityId, World world, vec pos, int maxlen, int id) {
 		super(arrowId, entityId, world, pos, maxlen, id);
 	}

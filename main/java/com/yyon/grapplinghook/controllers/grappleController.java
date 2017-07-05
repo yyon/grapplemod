@@ -56,6 +56,8 @@ public class grappleController {
 	
 	public int controllerid;
 	
+	public final double playermovementmult = 0.5;
+	
 	public grappleController(int arrowId, int entityId, World world, vec pos, int maxlen, int controllerid) {
 		this.arrowId = arrowId;
 		this.entityId = entityId;
@@ -193,7 +195,7 @@ public class grappleController {
 								}
 							}
 						} else {
-							motion.add_ip(this.playermovement.changelen(0.01));
+							applyPlayerMovement();
 						}
 					}
 						
@@ -356,10 +358,15 @@ public class grappleController {
 	
 	public void applyAirFriction() {
 		double vel = this.motion.length();
-		double dragforce = vel*vel / 40;
+		double dragforce = vel*vel / 200;
 		
 		vec airfric = new vec(this.motion.x, this.motion.y, this.motion.z);
 		airfric.changelen_ip(-dragforce);
 		this.motion.add_ip(airfric);
+	}
+	
+	public void applyPlayerMovement() {
+		System.out.println(motion.length());
+		motion.add_ip(this.playermovement.changelen(0.015 + motion.length() * 0.01));//0.02 * playermovementmult));
 	}
 }

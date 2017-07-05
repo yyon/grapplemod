@@ -22,6 +22,8 @@ import com.yyon.grapplinghook.vec;
  */
 
 public class enderController extends grappleController {
+	public final double playermovementmult = 1;
+	
 	public enderController(int arrowId, int entityId, World world, vec pos, int maxlen, int id) {
 		super(arrowId, entityId, world, pos, maxlen, id);
 	}

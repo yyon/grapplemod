@@ -35,7 +35,8 @@ public class multihookController extends grappleController {
 	public double acceleration = 0.1;//0.2;
 	public float oldstepheight;
 	public HashSet<multihookArrow> arrows = new HashSet<multihookArrow>();
-	
+	public final double playermovementmult = 1;
+		
 	@Override
 	public void updatePlayerPos() {
 		Entity entity = this.entity;
@@ -69,7 +70,7 @@ public class multihookController extends grappleController {
 						this.dojump(player, jumpvec.y);
 						return;
 					} else {
-						motion.add_ip(this.playermovement.changelen(0.01));
+						applyPlayerMovement();
 					}
 					
 					vec newmotion;

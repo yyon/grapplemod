@@ -31,7 +31,8 @@ public class smartHookControl extends grappleController {
 //	public double maxspeed = 4;
 	public double acceleration = 0.2;
 	public float oldstepheight;
-	
+	public final double playermovementmult = 1;
+		
 	@Override
 	public void updatePlayerPos() {
 		Entity entity = this.entity;
@@ -60,7 +61,7 @@ public class smartHookControl extends grappleController {
 						this.dojump(player, spherevec);
 						return;
 					} else {
-						motion.add_ip(this.playermovement.changelen(0.01));
+						applyPlayerMovement();
 					}
 					
 					vec newmotion;
