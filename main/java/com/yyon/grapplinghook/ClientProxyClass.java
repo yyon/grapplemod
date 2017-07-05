@@ -39,6 +39,7 @@ import com.yyon.grapplinghook.items.launcherItem;
 import com.yyon.grapplinghook.items.magnetBow;
 import com.yyon.grapplinghook.items.multiBow;
 import com.yyon.grapplinghook.items.repeller;
+import com.yyon.grapplinghook.items.smartHookBow;
 
 public class ClientProxyClass extends CommonProxyClass {
 	public boolean leftclick = false;
@@ -60,6 +61,8 @@ public class ClientProxyClass extends CommonProxyClass {
 	
 	public ModelResourceLocation grapplinghookloc = new ModelResourceLocation("grapplemod:grapplinghook", "inventory");
 	public ModelResourceLocation hookshotloc = new ModelResourceLocation("grapplemod:hookshot", "inventory");
+	public ModelResourceLocation smarthookloc = new ModelResourceLocation("grapplemod:smarthook", "inventory");
+	public ModelResourceLocation smarthookropeloc = new ModelResourceLocation("grapplemod:smarthookrope", "inventory");
 	public ModelResourceLocation enderhookloc = new ModelResourceLocation("grapplemod:enderhook", "inventory");
 	public ModelResourceLocation magnetbowloc = new ModelResourceLocation("grapplemod:magnetbow", "inventory");
 	public ModelResourceLocation ropeloc = new ModelResourceLocation("grapplemod:rope", "inventory");
@@ -69,75 +72,30 @@ public class ClientProxyClass extends CommonProxyClass {
 	public ModelResourceLocation multihookloc = new ModelResourceLocation("grapplemod:multihook", "inventory");
 	public ModelResourceLocation multihookropeloc = new ModelResourceLocation("grapplemod:multihookrope", "inventory");
 	
+	private void setgrapplebowtextures(Item item, final ModelResourceLocation notinusetexture, final ModelResourceLocation inusetexture) {
+		ModelLoader.setCustomMeshDefinition(item, new ItemMeshDefinition() {
+		    @Override
+		    public ModelResourceLocation getModelLocation(ItemStack stack) {
+		    	if (ClientProxyClass.isactive(stack)) {
+		    		return inusetexture;
+		    	}
+		    	return notinusetexture;
+		    }
+		});
+		ModelBakery.registerItemVariants(item, notinusetexture);
+		ModelBakery.registerItemVariants(item, inusetexture);
+	}
+	
 	private void registerItemModels() {
-		ModelLoader.setCustomMeshDefinition(grapplemod.grapplebowitem, new ItemMeshDefinition() {
-		    @Override
-		    public ModelResourceLocation getModelLocation(ItemStack stack) {
-		    	if (ClientProxyClass.isactive(stack)) {
-		    		return ropeloc;
-		    	}
-		    	return grapplinghookloc;
-		    }
-		});
-		ModelBakery.registerItemVariants(grapplemod.grapplebowitem, grapplinghookloc);
-		ModelBakery.registerItemVariants(grapplemod.grapplebowitem, ropeloc);
-		ModelLoader.setCustomMeshDefinition(grapplemod.hookshotitem, new ItemMeshDefinition() {
-		    @Override
-		    public ModelResourceLocation getModelLocation(ItemStack stack) {
-		    	if (ClientProxyClass.isactive(stack)) {
-		    		return hookshotropeloc;
-		    	}
-		    	return hookshotloc;
-		    }
-		});
-		ModelBakery.registerItemVariants(grapplemod.hookshotitem, hookshotloc);
-		ModelBakery.registerItemVariants(grapplemod.hookshotitem, hookshotropeloc);
+		setgrapplebowtextures(grapplemod.grapplebowitem, grapplinghookloc, ropeloc);
+		setgrapplebowtextures(grapplemod.hookshotitem, hookshotloc, hookshotropeloc);
 		registerItemModel(grapplemod.launcheritem);
 		registerItemModel(grapplemod.longfallboots);
-		ModelLoader.setCustomMeshDefinition(grapplemod.enderhookitem, new ItemMeshDefinition() {
-		    @Override
-		    public ModelResourceLocation getModelLocation(ItemStack stack) {
-		    	if (ClientProxyClass.isactive(stack)) {
-		    		return ropeloc;
-		    	}
-		    	return enderhookloc;
-		    }
-		});
-		ModelBakery.registerItemVariants(grapplemod.enderhookitem, enderhookloc);
-		ModelBakery.registerItemVariants(grapplemod.enderhookitem, ropeloc);
-		ModelLoader.setCustomMeshDefinition(grapplemod.magnetbowitem, new ItemMeshDefinition() {
-		    @Override
-		    public ModelResourceLocation getModelLocation(ItemStack stack) {
-		    	if (ClientProxyClass.isactive(stack)) {
-		    		return ropeloc;
-		    	}
-		    	return magnetbowloc;
-		    }
-		});
-		ModelBakery.registerItemVariants(grapplemod.magnetbowitem, magnetbowloc);
-		ModelBakery.registerItemVariants(grapplemod.magnetbowitem, ropeloc);
-		ModelLoader.setCustomMeshDefinition(grapplemod.repelleritem, new ItemMeshDefinition() {
-		    @Override
-		    public ModelResourceLocation getModelLocation(ItemStack stack) {
-		    	if (ClientProxyClass.isactive(stack)) {
-		    		return repelleronloc;
-		    	}
-		    	return repellerloc;
-		    }
-		});
-		ModelBakery.registerItemVariants(grapplemod.repelleritem, repellerloc);
-		ModelBakery.registerItemVariants(grapplemod.repelleritem, repelleronloc);
-		ModelLoader.setCustomMeshDefinition(grapplemod.multihookitem, new ItemMeshDefinition() {
-		    @Override
-		    public ModelResourceLocation getModelLocation(ItemStack stack) {
-		    	if (ClientProxyClass.isactive(stack)) {
-		    		return multihookropeloc;
-		    	}
-		    	return multihookloc;
-		    }
-		});
-		ModelBakery.registerItemVariants(grapplemod.multihookitem, multihookloc);
-		ModelBakery.registerItemVariants(grapplemod.multihookitem, multihookropeloc);
+		setgrapplebowtextures(grapplemod.enderhookitem, enderhookloc, ropeloc);
+		setgrapplebowtextures(grapplemod.magnetbowitem, magnetbowloc, ropeloc);
+		setgrapplebowtextures(grapplemod.repelleritem, repellerloc, repelleronloc);
+		setgrapplebowtextures(grapplemod.multihookitem, multihookloc, multihookropeloc);
+		setgrapplebowtextures(grapplemod.smarthookitem, smarthookloc, smarthookropeloc);
 	}
 
 	private void registerItemModel(Item item) {
@@ -360,6 +318,8 @@ public class ClientProxyClass extends CommonProxyClass {
 				} else if (item.getClass() == repeller.class && controller.controllerid == grapplemod.REPELID) {
 					return true;
 				} else if (item.getClass() == multiBow.class && controller.controllerid == grapplemod.MULTIID) {
+					return true;
+				} else if (item.getClass() == smartHookBow.class && controller.controllerid == grapplemod.SMARTHOOKID) {
 					return true;
 				}
 			}

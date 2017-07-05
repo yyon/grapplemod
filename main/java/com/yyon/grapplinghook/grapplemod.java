@@ -41,11 +41,13 @@ import com.yyon.grapplinghook.controllers.hookControl;
 import com.yyon.grapplinghook.controllers.magnetController;
 import com.yyon.grapplinghook.controllers.multihookController;
 import com.yyon.grapplinghook.controllers.repelController;
+import com.yyon.grapplinghook.controllers.smartHookControl;
 import com.yyon.grapplinghook.entities.enderArrow;
 import com.yyon.grapplinghook.entities.grappleArrow;
 import com.yyon.grapplinghook.entities.hookArrow;
 import com.yyon.grapplinghook.entities.magnetArrow;
 import com.yyon.grapplinghook.entities.multihookArrow;
+import com.yyon.grapplinghook.entities.smartHookArrow;
 import com.yyon.grapplinghook.items.LongFallBoots;
 import com.yyon.grapplinghook.items.enderBow;
 import com.yyon.grapplinghook.items.grappleBow;
@@ -54,6 +56,7 @@ import com.yyon.grapplinghook.items.launcherItem;
 import com.yyon.grapplinghook.items.magnetBow;
 import com.yyon.grapplinghook.items.multiBow;
 import com.yyon.grapplinghook.items.repeller;
+import com.yyon.grapplinghook.items.smartHookBow;
 import com.yyon.grapplinghook.network.GrappleAttachMessage;
 import com.yyon.grapplinghook.network.GrappleAttachPosMessage;
 import com.yyon.grapplinghook.network.GrappleClickMessage;
@@ -94,6 +97,7 @@ public class grapplemod {
 
     public static Item grapplebowitem;
     public static Item hookshotitem;
+    public static Item smarthookitem;
     public static Item enderhookitem;
     public static Item launcheritem;
     public static Item longfallboots;
@@ -118,6 +122,7 @@ public class grapplemod {
 	public static int MULTIID = controllerid++;
 	public static int MULTISUBID = controllerid++;
 	public static int AIRID = controllerid++;
+	public static int SMARTHOOKID = controllerid++;
 	
 	public static int REPELCONFIGS = 0;
 //	public static int REPELSPEED = REPELCONFIGS++;
@@ -142,6 +147,10 @@ public class grapplemod {
 		GameRegistry.addRecipe(new ItemStack(hookshotitem, 1), new Object[]{
 			"X2", 
 			"4X", Character.valueOf('2'), new ItemStack(grapplebowitem, 1), Character.valueOf('4'), new ItemStack(Blocks.PISTON, 1), 
+		});
+		GameRegistry.addRecipe(new ItemStack(smarthookitem, 1), new Object[]{
+			"X2", 
+			"4X", Character.valueOf('2'), new ItemStack(hookshotitem, 1), Character.valueOf('4'), new ItemStack(Items.REDSTONE, 1), 
 		});
 		GameRegistry.addRecipe(new ItemStack(launcheritem, 1), new Object[]{
 			"X2", 
@@ -236,6 +245,9 @@ public class grapplemod {
 		hookshotitem = new hookBow();
 		hookshotitem.setRegistryName("hookshot");
 		GameRegistry.register(hookshotitem);
+		smarthookitem = new smartHookBow();
+		smarthookitem.setRegistryName("smarthook");
+		GameRegistry.register(smarthookitem);
 		launcheritem = new launcherItem();
 		launcheritem.setRegistryName("launcheritem");
 		GameRegistry.register(launcheritem);
@@ -260,6 +272,7 @@ public class grapplemod {
 		registerEntity(hookArrow.class, "hookArrow");
 		registerEntity(magnetArrow.class, "magnetArrow");
 		registerEntity(multihookArrow.class, "multihookArrow");
+		registerEntity(smartHookArrow.class, "smartHookArrow");
 		
 		proxy.preInit(event);
 		network = NetworkRegistry.INSTANCE.newSimpleChannel("grapplemodchannel");
@@ -353,6 +366,8 @@ public class grapplemod {
 			control = new enderController(arrowid, entityid, world, pos, maxlen, id);
 		} else if (id == HOOKID) {
 			control = new hookControl(arrowid, entityid, world, pos, maxlen, id);
+		} else if (id == SMARTHOOKID) {
+			control = new smartHookControl(arrowid, entityid, world, pos, maxlen, id);
 		} else if (id == MAGNETID) {
 			int repelconf = 0;
 			if (arrow != null && arrow instanceof magnetArrow) {

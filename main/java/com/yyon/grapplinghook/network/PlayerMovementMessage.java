@@ -1,6 +1,9 @@
 package com.yyon.grapplinghook.network;
 
 import io.netty.buffer.ByteBuf;
+
+import java.lang.reflect.Field;
+
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.network.NetHandlerPlayServer;
@@ -83,9 +86,15 @@ public class PlayerMovementMessage implements IMessage {
 
     public static class Handler implements IMessageHandler<PlayerMovementMessage, IMessage> {
        
+		boolean failed = false;
+		Field firstGoodX = null;
+		Field firstGoodY = null;
+		Field firstGoodZ = null;
+		
     	public class runner implements Runnable {
     		PlayerMovementMessage message;
     		MessageContext ctx;
+    		
     		public runner(PlayerMovementMessage message, MessageContext ctx) {
     			super();
     			this.message = message;
@@ -105,9 +114,33 @@ public class PlayerMovementMessage implements IMessage {
                 entity.motionZ = message.mz;
                 if (entity instanceof EntityPlayerMP) {
                 	EntityPlayerMP player = ((EntityPlayerMP) entity);
-                	ObfuscationReflectionHelper.setPrivateValue(NetHandlerPlayServer.class, player.connection, entity.posX, "firstGoodX");
-                	ObfuscationReflectionHelper.setPrivateValue(NetHandlerPlayServer.class, player.connection, entity.posY, "firstGoodY");
-                	ObfuscationReflectionHelper.setPrivateValue(NetHandlerPlayServer.class, player.connection, entity.posZ, "firstGoodZ");
+                	if (firstGoodX == null) {
+                		if (!failed) {
+                			try {
+                				firstGoodX = NetHandlerPlayServer.class.getDeclaredField("field_184349_l");
+                				firstGoodY = NetHandlerPlayServer.class.getDeclaredField("field_184350_m");
+                				firstGoodZ = NetHandlerPlayServer.class.getDeclaredField("field_184351_n");
+                				firstGoodX.setAccessible(true);
+                				firstGoodY.setAccessible(true);
+                				firstGoodZ.setAccessible(true);
+                				System.out.println("Was able to access firstGoodX!");
+                			} catch (Exception e) {
+                				failed = true;
+                				System.out.println("Couldn't access firstGoodX!");
+                			}
+                		}
+                	}
+                	if (firstGoodX != null) {
+                		try {
+							firstGoodX.set(player.connection, entity.posX);
+							firstGoodY.set(player.connection, entity.posY);
+							firstGoodZ.set(player.connection, entity.posZ);
+						} catch (IllegalArgumentException e) {
+							e.printStackTrace();
+						} catch (IllegalAccessException e) {
+							e.printStackTrace();
+						}
+                	}
                 }
             }
     	}
