@@ -5,12 +5,14 @@ import java.util.List;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
 
 import com.yyon.grapplinghook.CommonProxyClass;
 import com.yyon.grapplinghook.grapplemod;
 import com.yyon.grapplinghook.entities.grappleArrow;
 import com.yyon.grapplinghook.entities.smartHookArrow;
+import com.yyon.grapplinghook.network.ToolConfigMessage;
 
 /*
  * This file is part of GrappleMod.
@@ -29,15 +31,30 @@ import com.yyon.grapplinghook.entities.smartHookArrow;
     along with GrappleMod.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-public class smartHookBow extends grappleBow {
+public class smartHookBow extends grappleBow implements clickitem {
 	public smartHookBow() {
 		super();
 		setUnlocalizedName("smarthook");
 	}
 	
 	@Override
-	public grappleArrow createarrow(ItemStack satack, World worldIn, EntityLivingBase playerIn, boolean righthand) {
-		return new smartHookArrow(worldIn, playerIn, righthand);
+	public grappleArrow createarrow(ItemStack stack, World worldIn, EntityLivingBase playerIn, boolean righthand) {
+		NBTTagCompound compound = stack.getSubCompound("grapplemod", true);
+		boolean slow = compound.getBoolean("slow");
+		
+		return new smartHookArrow(worldIn, playerIn, righthand, slow);
+	}
+	
+	@Override
+	public void onLeftClick(ItemStack stack, EntityPlayer player) {
+		if (player.isSneaking()) {
+			int playerid = player.getEntityId();
+			grapplemod.network.sendToServer(new ToolConfigMessage(playerid));
+		}
+	}
+	
+	@Override
+	public void onLeftClickRelease(ItemStack stack, EntityPlayer player) {
 	}
 
 	@Override
@@ -50,5 +67,7 @@ public class smartHookBow extends grappleBow {
 		list.add(grapplemod.proxy.getkeyname(CommonProxyClass.keys.keyBindUseItem) + " again - Release");
 		list.add("Double-" + grapplemod.proxy.getkeyname(CommonProxyClass.keys.keyBindUseItem) + " - Release and throw again");
 		list.add(grapplemod.proxy.getkeyname(CommonProxyClass.keys.keyBindJump) + " - Release and jump");
+		list.add(grapplemod.proxy.getkeyname(CommonProxyClass.keys.keyBindSneak) + " + " + 
+				grapplemod.proxy.getkeyname(CommonProxyClass.keys.keyBindAttack) + " - Toggle speed");
 	}
 }

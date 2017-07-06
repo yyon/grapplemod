@@ -24,8 +24,11 @@ import com.yyon.grapplinghook.vec;
  */
 
 public class smartHookControl extends grappleController {
-	public smartHookControl(int arrowId, int entityId, World world, vec pos, int maxlen, int id) {
+	public smartHookControl(int arrowId, int entityId, World world, vec pos, int maxlen, int id, boolean slow) {
 		super(arrowId, entityId, world, pos, maxlen, id);
+		if (slow) {
+			this.acceleration = this.acceleration / 2;
+		}
 	}
 
 //	public double maxspeed = 4;

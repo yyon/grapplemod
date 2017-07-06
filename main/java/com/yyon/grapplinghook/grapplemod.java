@@ -367,7 +367,11 @@ public class grapplemod {
 		} else if (id == HOOKID) {
 			control = new hookControl(arrowid, entityid, world, pos, maxlen, id);
 		} else if (id == SMARTHOOKID) {
-			control = new smartHookControl(arrowid, entityid, world, pos, maxlen, id);
+			boolean slow = false;
+			if (arrow != null && arrow instanceof smartHookArrow) {
+				slow = ((smartHookArrow) arrow).slow;
+			}
+			control = new smartHookControl(arrowid, entityid, world, pos, maxlen, id, slow);
 		} else if (id == MAGNETID) {
 			int repelconf = 0;
 			if (arrow != null && arrow instanceof magnetArrow) {
@@ -527,6 +531,17 @@ public class grapplemod {
     				player.addChatMessage(new TextComponentString("Repel force set to weak"));
     			} else if (repelconf == REPELNONE) {
     				player.addChatMessage(new TextComponentString("Repel force set to off"));
+    			}
+      		} else if (item instanceof smartHookBow) {
+    			NBTTagCompound compound = stack.getSubCompound("grapplemod", true);
+    			boolean slow = compound.getBoolean("slow");
+    			slow = !slow;
+    			compound.setBoolean("slow", slow);
+    			
+    			if (slow) {
+    				player.addChatMessage(new TextComponentString("Set to slow mode"));
+    			} else {
+    				player.addChatMessage(new TextComponentString("Set to fast mode"));
     			}
       		}
       	}
