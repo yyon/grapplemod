@@ -86,11 +86,6 @@ public class PlayerMovementMessage implements IMessage {
 
     public static class Handler implements IMessageHandler<PlayerMovementMessage, IMessage> {
        
-		boolean failed = false;
-		Field firstGoodX = null;
-		Field firstGoodY = null;
-		Field firstGoodZ = null;
-		
     	public class runner implements Runnable {
     		PlayerMovementMessage message;
     		MessageContext ctx;
@@ -114,33 +109,7 @@ public class PlayerMovementMessage implements IMessage {
                 entity.motionZ = message.mz;
                 if (entity instanceof EntityPlayerMP) {
                 	EntityPlayerMP player = ((EntityPlayerMP) entity);
-                	if (firstGoodX == null) {
-                		if (!failed) {
-                			try {
-                				firstGoodX = NetHandlerPlayServer.class.getDeclaredField("field_184349_l");
-                				firstGoodY = NetHandlerPlayServer.class.getDeclaredField("field_184350_m");
-                				firstGoodZ = NetHandlerPlayServer.class.getDeclaredField("field_184351_n");
-                				firstGoodX.setAccessible(true);
-                				firstGoodY.setAccessible(true);
-                				firstGoodZ.setAccessible(true);
-                				System.out.println("Was able to access firstGoodX!");
-                			} catch (Exception e) {
-                				failed = true;
-                				System.out.println("Couldn't access firstGoodX!");
-                			}
-                		}
-                	}
-                	if (firstGoodX != null) {
-                		try {
-							firstGoodX.set(player.connection, entity.posX);
-							firstGoodY.set(player.connection, entity.posY);
-							firstGoodZ.set(player.connection, entity.posZ);
-						} catch (IllegalArgumentException e) {
-							e.printStackTrace();
-						} catch (IllegalAccessException e) {
-							e.printStackTrace();
-						}
-                	}
+                	player.connection.update();
                 }
             }
     	}
