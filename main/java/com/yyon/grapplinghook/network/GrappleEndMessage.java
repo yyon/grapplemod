@@ -67,7 +67,7 @@ public class GrappleEndMessage implements IMessage {
 
 				int id = message.entityid;
 				
-				World w = ctx.getServerHandler().playerEntity.worldObj;
+				World w = ctx.getServerHandler().playerEntity.world;
 				
 				grapplemod.receiveGrappleEnd(id, w, message.arrowid);
             }
@@ -76,7 +76,7 @@ public class GrappleEndMessage implements IMessage {
         @Override
         public IMessage onMessage(GrappleEndMessage message, MessageContext ctx) {
 
-        	IThreadListener mainThread = (WorldServer) ctx.getServerHandler().playerEntity.worldObj; // or Minecraft.getMinecraft() on the client
+        	IThreadListener mainThread = (WorldServer) ctx.getServerHandler().playerEntity.world; // or Minecraft.getMinecraft() on the client
             mainThread.addScheduledTask(new runner(message, ctx));
 
             return null; // no response in this case

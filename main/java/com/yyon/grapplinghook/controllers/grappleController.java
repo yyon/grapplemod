@@ -92,7 +92,7 @@ public class grappleController {
 			
 			if (this.controllerid != grapplemod.AIRID) {
 				grapplemod.network.sendToServer(new GrappleEndMessage(this.entityId, this.arrowId));
-				grapplemod.createControl(grapplemod.AIRID, -1, this.entityId, this.entity.worldObj, new vec(0,0,0), 0, null);
+				grapplemod.createControl(grapplemod.AIRID, -1, this.entityId, this.entity.world, new vec(0,0,0), 0, null);
 			}
 		}
 	}

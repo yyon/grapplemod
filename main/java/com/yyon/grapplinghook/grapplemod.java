@@ -93,7 +93,7 @@ public class grapplemod {
 
     public static final String MODID = "grapplemod";
     
-    public static final String VERSION = "1.10.2-v10";
+    public static final String VERSION = "1.11.2-v10";
 
     public static Item grapplebowitem;
     public static Item hookshotitem;
@@ -134,6 +134,8 @@ public class grapplemod {
 	public static boolean anyblocks = true;
 	public static ArrayList<Block> grapplingblocks;
 	public static boolean removeblocks = false;
+	
+	public ResourceLocation resourceLocation;
 	
 	@SidedProxy(clientSide="com.yyon.grapplinghook.ClientProxyClass", serverSide="com.yyon.grapplinghook.ServerProxyClass")
 	public static CommonProxyClass proxy;
@@ -267,6 +269,8 @@ public class grapplemod {
 		multihookitem.setRegistryName("multihook");
 		GameRegistry.register(multihookitem);
 		
+		resourceLocation = new ResourceLocation(grapplemod.MODID, "grapplemod");
+		
 		registerEntity(grappleArrow.class, "grappleArrow");
 		registerEntity(enderArrow.class, "enderArrow");
 		registerEntity(hookArrow.class, "hookArrow");
@@ -299,7 +303,7 @@ public class grapplemod {
 	int entityID = 0;
 	public void registerEntity(Class<? extends Entity> entityClass, String name)
 	{
-		EntityRegistry.registerModEntity(entityClass, name, entityID++, this, 900, 1, true);
+		EntityRegistry.registerModEntity(resourceLocation, entityClass, name, entityID++, this, 900, 1, true);
 	}
 	
 	public static void registerController(int entityId, grappleController controller) {
@@ -467,7 +471,7 @@ public class grapplemod {
             entityarrow.setPosition(pos.x, pos.y, pos.z);
             */
             
-			w.spawnEntityInWorld(entityarrow);
+			w.spawnEntity(entityarrow);
 			multihookarrows.add(entityarrow);
 			
 			
@@ -483,7 +487,7 @@ public class grapplemod {
             entityarrow.setPosition(pos.x, pos.y, pos.z);
             */
             
-			w.spawnEntityInWorld(entityarrow);
+			w.spawnEntity(entityarrow);
 			multihookarrows.add(entityarrow);
       	}
 	}
@@ -495,6 +499,24 @@ public class grapplemod {
 			}
 		}
 	}
+	
+
+	public static NBTTagCompound getstackcompound(ItemStack stack, String key) {
+		if (!stack.hasTagCompound()) {
+			stack.setTagCompound(new NBTTagCompound());
+		}
+		NBTTagCompound basecompound = stack.getTagCompound();
+        if (basecompound.hasKey(key, 10))
+        {
+            return basecompound.getCompoundTag(key);
+        }
+        else
+        {
+            NBTTagCompound nbttagcompound = new NBTTagCompound();
+            stack.setTagInfo(key, nbttagcompound);
+            return nbttagcompound;
+        }
+	}
 
 	public static void receiveToolConfigMessage(int id, World w) {
       	Entity e = w.getEntityByID(id);
@@ -504,18 +526,18 @@ public class grapplemod {
       		ItemStack stack = player.getHeldItemMainhand();
       		Item item = stack.getItem();
       		if (item instanceof multiBow) {
-    			NBTTagCompound compound = stack.getSubCompound("grapplemod", true);
+      			NBTTagCompound compound = grapplemod.getstackcompound(stack, "grapplemod");
     			boolean slow = compound.getBoolean("slow");
     			slow = !slow;
     			compound.setBoolean("slow", slow);
     			
     			if (slow) {
-    				player.addChatMessage(new TextComponentString("Set to slow mode"));
+    				player.sendMessage(new TextComponentString("Set to slow mode"));
     			} else {
-    				player.addChatMessage(new TextComponentString("Set to fast mode"));
+    				player.sendMessage(new TextComponentString("Set to fast mode"));
     			}
       		} else if (item instanceof magnetBow) {
-    			NBTTagCompound compound = stack.getSubCompound("grapplemod", true);
+      			NBTTagCompound compound = grapplemod.getstackcompound(stack, "grapplemod");
     			int repelconf = compound.getInteger("repelconf");
     			repelconf++;
     			if (repelconf >= REPELCONFIGS) {
@@ -526,22 +548,22 @@ public class grapplemod {
 //    			if (repelconf == REPELSPEED) {
 //    				player.addChatMessage(new TextComponentString("Repel force set to speed based"));
     			if (repelconf == REPELSTRONG) {
-    				player.addChatMessage(new TextComponentString("Repel force set to strong"));
+    				player.sendMessage(new TextComponentString("Repel force set to strong"));
     			} else if (repelconf == REPELWEAK) {
-    				player.addChatMessage(new TextComponentString("Repel force set to weak"));
+    				player.sendMessage(new TextComponentString("Repel force set to weak"));
     			} else if (repelconf == REPELNONE) {
-    				player.addChatMessage(new TextComponentString("Repel force set to off"));
+    				player.sendMessage(new TextComponentString("Repel force set to off"));
     			}
       		} else if (item instanceof smartHookBow) {
-    			NBTTagCompound compound = stack.getSubCompound("grapplemod", true);
+      			NBTTagCompound compound = grapplemod.getstackcompound(stack, "grapplemod");
     			boolean slow = compound.getBoolean("slow");
     			slow = !slow;
     			compound.setBoolean("slow", slow);
     			
     			if (slow) {
-    				player.addChatMessage(new TextComponentString("Set to slow mode"));
+    				player.sendMessage(new TextComponentString("Set to slow mode"));
     			} else {
-    				player.addChatMessage(new TextComponentString("Set to fast mode"));
+    				player.sendMessage(new TextComponentString("Set to fast mode"));
     			}
       		}
       	}

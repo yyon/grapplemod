@@ -37,7 +37,7 @@ public class repelController extends magnetController {
 						applyPlayerMovement();
 					}
 					
-					vec blockpush = check(playerpos, entity.worldObj);
+					vec blockpush = check(playerpos, entity.world);
 					blockpush.mult_ip(0.5);
 					blockpush = new vec(blockpush.x*0.5, blockpush.y*2, blockpush.z*0.5);
 					this.motion.add_ip(blockpush);

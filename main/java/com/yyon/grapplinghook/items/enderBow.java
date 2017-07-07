@@ -43,7 +43,7 @@ public class enderBow extends grappleBow implements clickitem {
 	
 	@Override
 	public void onLeftClick(ItemStack stack, EntityPlayer player) {
-		if (player.worldObj.isRemote) {
+		if (player.world.isRemote) {
 			grapplemod.proxy.launchplayer(player);
 		}
 	}

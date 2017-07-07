@@ -138,7 +138,7 @@ public class ClientProxyClass extends CommonProxyClass {
 	
 	@SubscribeEvent
 	public void onClientTick(TickEvent.ClientTickEvent event) {
-		EntityPlayer player = Minecraft.getMinecraft().thePlayer;
+		EntityPlayer player = Minecraft.getMinecraft().player;
 		if (player != null) {
 			if (!Minecraft.getMinecraft().isGamePaused() || !Minecraft.getMinecraft().isSingleplayer()) {
 				try {
@@ -171,7 +171,7 @@ public class ClientProxyClass extends CommonProxyClass {
 				
 				if (player.onGround) {
 					if (enderlaunchtimer.containsKey(player.getEntityId())) {
-						long timer = player.worldObj.getTotalWorldTime() - enderlaunchtimer.get(player.getEntityId());
+						long timer = player.world.getTotalWorldTime() - enderlaunchtimer.get(player.getEntityId());
 						if (timer > 10) {
 							this.resetlaunchertime(player.getEntityId());
 						}
@@ -189,10 +189,10 @@ public class ClientProxyClass extends CommonProxyClass {
 		} else {
 			prevtime = 0;
 		}
-		long timer = player.worldObj.getTotalWorldTime() - prevtime;
+		long timer = player.world.getTotalWorldTime() - prevtime;
 		if (timer > reusetime) {
 			if ((player.getHeldItemMainhand()!=null && (player.getHeldItemMainhand().getItem() instanceof enderBow || player.getHeldItemMainhand().getItem() instanceof launcherItem)) || (player.getHeldItemOffhand()!=null && (player.getHeldItemOffhand().getItem() instanceof enderBow || player.getHeldItemOffhand().getItem() instanceof launcherItem))) {
-				enderlaunchtimer.put(player.getEntityId(), player.worldObj.getTotalWorldTime());
+				enderlaunchtimer.put(player.getEntityId(), player.world.getTotalWorldTime());
 				
 	        	vec facing = new vec(player.getLookVec());
 //				vec playermotion = vec.motionvec(player);
@@ -216,7 +216,7 @@ public class ClientProxyClass extends CommonProxyClass {
 				*/
 				if (!grapplemod.controllers.containsKey(player.getEntityId())) {
 					player.onGround = false;
-					grapplemod.createControl(grapplemod.AIRID, -1, player.getEntityId(), player.worldObj, new vec(0,0,0), 0, null);
+					grapplemod.createControl(grapplemod.AIRID, -1, player.getEntityId(), player.world, new vec(0,0,0), 0, null);
 				}
 				facing.mult_ip(3);
 				grapplemod.receiveEnderLaunch(player.getEntityId(), facing.x, facing.y, facing.z);
@@ -233,7 +233,7 @@ public class ClientProxyClass extends CommonProxyClass {
 	
 	@Override
 	public boolean isSneaking(Entity entity) {
-		if (entity == Minecraft.getMinecraft().thePlayer) {
+		if (entity == Minecraft.getMinecraft().player) {
 			return (GameSettings.isKeyDown(Minecraft.getMinecraft().gameSettings.keyBindSneak));
 		} else {
 			return entity.isSneaking();
@@ -301,7 +301,7 @@ public class ClientProxyClass extends CommonProxyClass {
 	}
 
 	public static boolean isactive(ItemStack stack) {
-		EntityPlayer p = Minecraft.getMinecraft().thePlayer;
+		EntityPlayer p = Minecraft.getMinecraft().player;
 //		if (p.getItemStackFromSlot(EntityEquipmentSlot.MAINHAND) == stack || p.getItemStackFromSlot(EntityEquipmentSlot.OFFHAND) == stack) {
 			int entityid = p.getEntityId();
 			if (grapplemod.controllers.containsKey(entityid)) {

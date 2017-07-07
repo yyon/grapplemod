@@ -29,7 +29,7 @@ public class crosshairRenderer {
 	@SubscribeEvent
 	public void onRenderGameOverlayPost(RenderGameOverlayEvent.Post event) {
 		if (event.getType() == ElementType.CROSSHAIRS) {
-			EntityPlayerSP player = this.mc.thePlayer;
+			EntityPlayerSP player = this.mc.player;
 			
 			if ((player.getItemStackFromSlot(EntityEquipmentSlot.MAINHAND) != null && player.getItemStackFromSlot(EntityEquipmentSlot.MAINHAND).getItem() instanceof multiBow) || (player.getItemStackFromSlot(EntityEquipmentSlot.OFFHAND) != null && player.getItemStackFromSlot(EntityEquipmentSlot.OFFHAND).getItem() instanceof multiBow)) {
 //				float partialticks = event.getPartialTicks();
@@ -52,7 +52,7 @@ public class crosshairRenderer {
 		            int w = resolution.getScaledWidth();
 		            int h = resolution.getScaledHeight();
 	
-		            if (gamesettings.showDebugInfo && !gamesettings.hideGUI && !this.mc.thePlayer.hasReducedDebug() && !gamesettings.reducedDebugInfo)
+		            if (gamesettings.showDebugInfo && !gamesettings.hideGUI && !this.mc.player.hasReducedDebug() && !gamesettings.reducedDebugInfo)
 		            {
 		            }
 		            else

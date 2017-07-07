@@ -74,7 +74,7 @@ public class GrappleAttachPosMessage implements IMessage {
     		
             @Override
             public void run() {
-            	World world = Minecraft.getMinecraft().theWorld;
+            	World world = Minecraft.getMinecraft().world;
             	Entity grapple = world.getEntityByID(message.id);
             	if (grapple instanceof grappleArrow) {
 	            	((grappleArrow) grapple).setAttachPos(message.x, message.y, message.z);

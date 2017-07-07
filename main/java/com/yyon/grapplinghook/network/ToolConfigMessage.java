@@ -63,7 +63,7 @@ public class ToolConfigMessage implements IMessage {
             public void run() {
 				int id = message.id;
 				
-				World w = ctx.getServerHandler().playerEntity.worldObj;
+				World w = ctx.getServerHandler().playerEntity.world;
 				
 				grapplemod.receiveToolConfigMessage(id, w);
             }
@@ -73,7 +73,7 @@ public class ToolConfigMessage implements IMessage {
         @Override
         public IMessage onMessage(ToolConfigMessage message, MessageContext ctx) {
 
-        	IThreadListener mainThread = (WorldServer) ctx.getServerHandler().playerEntity.worldObj; // or Minecraft.getMinecraft() on the client
+        	IThreadListener mainThread = (WorldServer) ctx.getServerHandler().playerEntity.world; // or Minecraft.getMinecraft() on the client
             mainThread.addScheduledTask(new runner(message, ctx));
 
             return null; // no response in this case

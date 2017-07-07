@@ -39,8 +39,11 @@ public class smartHookBow extends grappleBow implements clickitem {
 	
 	@Override
 	public grappleArrow createarrow(ItemStack stack, World worldIn, EntityLivingBase playerIn, boolean righthand) {
-		NBTTagCompound compound = stack.getSubCompound("grapplemod", true);
-		boolean slow = compound.getBoolean("slow");
+		NBTTagCompound compound = grapplemod.getstackcompound(stack, "grapplemod");
+		boolean slow = false;
+		if (compound.hasKey("slow")) {
+			slow = compound.getBoolean("slow");
+		}
 		
 		return new smartHookArrow(worldIn, playerIn, righthand, slow);
 	}

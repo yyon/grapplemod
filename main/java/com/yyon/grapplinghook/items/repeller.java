@@ -50,8 +50,10 @@ public class repeller extends Item {
 		}
 	}
 
-    public ActionResult<ItemStack> onItemRightClick(ItemStack itemStackIn, World worldIn, EntityPlayer playerIn, EnumHand hand)
+    @Override
+	public ActionResult<ItemStack> onItemRightClick(World worldIn, EntityPlayer playerIn, EnumHand hand)
     {
+    	ItemStack itemStackIn = playerIn.getHeldItem(hand);
         this.dorightclick(itemStackIn, worldIn, playerIn);
         
         return new ActionResult<ItemStack>(EnumActionResult.SUCCESS, itemStackIn);

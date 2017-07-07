@@ -45,7 +45,7 @@ public class LongFallBoots extends ItemArmor {
 			for (ItemStack armor : player.getArmorInventoryList()) {
 			    if (armor != null && armor.getItem() instanceof LongFallBoots)
 			    {
-			    	if (event.getSource() == DamageSource.flyIntoWall) {
+			    	if (event.getSource() == DamageSource.FLY_INTO_WALL) {
 			    		System.out.println("Flew into wall");
 						// this cancels the fall event so you take no damage
 						event.setCanceled(true);

@@ -80,7 +80,7 @@ public class magnetArrow extends grappleArrow
     	super.onEntityUpdate();
     	if (this.shootingEntity == null) {return;}
     	if (!this.foundblock) {
-    		if (!this.worldObj.isRemote) {
+    		if (!this.world.isRemote) {
     			vec playerpos = vec.positionvec(this.shootingEntity);
     			vec pos = vec.positionvec(this);
     			if (magnetblock == null) {
@@ -115,8 +115,8 @@ public class magnetArrow extends grappleArrow
     			}
     			
     			if (magnetblock != null) {
-			    	IBlockState blockstate = this.worldObj.getBlockState(magnetblock);
-			    	AxisAlignedBB BB = blockstate.getCollisionBoundingBox(this.worldObj, magnetblock);
+			    	IBlockState blockstate = this.world.getBlockState(magnetblock);
+			    	AxisAlignedBB BB = blockstate.getCollisionBoundingBox(this.world, magnetblock);
 
 					vec blockvec = new vec(magnetblock.getX() + (BB.maxX + BB.minX) / 2, magnetblock.getY() + (BB.maxY + BB.minY) / 2, magnetblock.getZ() + (BB.maxZ + BB.minZ) / 2);
 					vec newvel = blockvec.sub(pos);
@@ -168,13 +168,13 @@ public class magnetArrow extends grappleArrow
 	public boolean hasblock(BlockPos pos, HashMap<BlockPos, Boolean> checkedset) {
     	if (!checkedset.containsKey(pos)) {
     		boolean isblock = false;
-	    	IBlockState blockstate = this.worldObj.getBlockState(pos);
+	    	IBlockState blockstate = this.world.getBlockState(pos);
 	    	Block b = blockstate.getBlock();
 			if (!grapplemod.anyblocks && ((!grapplemod.removeblocks && !grapplemod.grapplingblocks.contains(b))
 						|| (grapplemod.removeblocks && grapplemod.grapplingblocks.contains(b)))) {
 			} else {
-		    	if (!(b.isAir(blockstate, this.worldObj, pos))) {
-			    	AxisAlignedBB BB = blockstate.getCollisionBoundingBox(this.worldObj, pos);
+		    	if (!(b.isAir(blockstate, this.world, pos))) {
+			    	AxisAlignedBB BB = blockstate.getCollisionBoundingBox(this.world, pos);
 			    	if (BB != null) {
 			    		isblock = true;
 			    	}

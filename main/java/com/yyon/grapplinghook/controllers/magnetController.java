@@ -109,7 +109,7 @@ public class magnetController extends grappleController {
 					}
 					
 					if (domagnet && this.repelconf != grapplemod.REPELNONE) {
-						vec blockpush = check(playerpos, entity.worldObj);
+						vec blockpush = check(playerpos, entity.world);
 						
 //						if (this.repelconf == grapplemod.REPELSPEED) {
 //							blockpush.mult_ip(0.5 + motion.length()/2);//0.5);//0.005);

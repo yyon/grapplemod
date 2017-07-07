@@ -96,7 +96,7 @@ public class PlayerMovementMessage implements IMessage {
     		
             @Override
             public void run() {
-                World world = ctx.getServerHandler().playerEntity.worldObj;
+                World world = ctx.getServerHandler().playerEntity.world;
                 Entity entity = world.getEntityByID(message.entityId);
                 if (entity == null) {return;}
                 entity.posX = message.x;
@@ -114,7 +114,7 @@ public class PlayerMovementMessage implements IMessage {
     	
         @Override
         public IMessage onMessage(PlayerMovementMessage message, MessageContext ctx) {
-        	IThreadListener mainThread = (WorldServer) ctx.getServerHandler().playerEntity.worldObj; // or Minecraft.getMinecraft() on the client
+        	IThreadListener mainThread = (WorldServer) ctx.getServerHandler().playerEntity.world; // or Minecraft.getMinecraft() on the client
             mainThread.addScheduledTask(new runner(message, ctx));
             
             return null; // no response in this case

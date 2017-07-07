@@ -114,9 +114,9 @@ public class grappleBow extends Item {
 				stack.damageItem(1, entityLiving);
                 worldIn.playSound((EntityPlayer)null, entityLiving.posX, entityLiving.posY, entityLiving.posZ, SoundEvents.ENTITY_ARROW_SHOOT, SoundCategory.NEUTRAL, 1.0F, 1.0F / (itemRand.nextFloat() * 0.4F + 1.2F) + f * 0.5F);
 				
-				worldIn.spawnEntityInWorld(entityarrow);
+				worldIn.spawnEntity(entityarrow);
 			} else {
-				grapplemod.sendtocorrectclient(new GrappleClickMessage(entityarrow.shootingEntityID, false), entityarrow.shootingEntityID, entityarrow.worldObj);
+				grapplemod.sendtocorrectclient(new GrappleClickMessage(entityarrow.shootingEntityID, false), entityarrow.shootingEntityID, entityarrow.world);
 				grapplemod.attached.remove(new Integer(entityarrow.shootingEntityID));
 				this.setArrow(entityLiving, stack, null);
 			}
@@ -128,8 +128,9 @@ public class grappleBow extends Item {
 	}
     
     @Override
-	public ActionResult<ItemStack> onItemRightClick(ItemStack stack, World worldIn, EntityPlayer entityLiving, EnumHand hand)
+    public ActionResult<ItemStack> onItemRightClick(World worldIn, EntityPlayer entityLiving, EnumHand hand)
     {
+    	ItemStack stack = entityLiving.getHeldItem(hand);
         if (!worldIn.isRemote) {
 	        this.dorightclick(stack, worldIn, entityLiving, hand == EnumHand.MAIN_HAND);
         }

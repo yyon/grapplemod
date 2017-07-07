@@ -96,7 +96,7 @@ public class GrappleAttachMessage implements IMessage {
     		
             @Override
             public void run() {
-            	World world = Minecraft.getMinecraft().theWorld;
+            	World world = Minecraft.getMinecraft().world;
             	Entity grapple = world.getEntityByID(message.id);
             	if (grapple instanceof grappleArrow) {
 	            	((grappleArrow) grapple).clientAttach(message.x, message.y, message.z);

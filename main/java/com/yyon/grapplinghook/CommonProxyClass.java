@@ -93,7 +93,7 @@ public class CommonProxyClass {
 
     @SubscribeEvent
     public void onLivingHurt(LivingHurtEvent event) {
-    	if (event.getSource() == DamageSource.inWall) {
+    	if (event.getSource() == DamageSource.IN_WALL) {
     		if (grapplemod.attached.contains(event.getEntity().getEntityId())) {
     			event.setCanceled(true);
     		}
