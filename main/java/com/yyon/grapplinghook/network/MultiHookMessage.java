@@ -67,7 +67,7 @@ public class MultiHookMessage implements IMessage {
             public void run() {
 				int id = message.id;
 				
-				World w = ctx.getServerHandler().playerEntity.world;
+				World w = ctx.getServerHandler().player.world;
 				
 				grapplemod.receiveMultihookMessage(id, w, message.sneaking);
             }
@@ -77,7 +77,7 @@ public class MultiHookMessage implements IMessage {
         @Override
         public IMessage onMessage(MultiHookMessage message, MessageContext ctx) {
 
-        	IThreadListener mainThread = (WorldServer) ctx.getServerHandler().playerEntity.world; // or Minecraft.getMinecraft() on the client
+        	IThreadListener mainThread = (WorldServer) ctx.getServerHandler().player.world; // or Minecraft.getMinecraft() on the client
             mainThread.addScheduledTask(new runner(message, ctx));
 
             return null; // no response in this case

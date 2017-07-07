@@ -1,0 +1,18 @@
+{
+	"type": "minecraft:crafting_shaped",
+	"pattern": [
+		" 2",
+		"4 "
+	],
+	"key": {
+		"2": {
+			"item": "grapplemod:hookshot"
+		}, 
+		"4": {
+			"item": "minecraft:redstone"
+		}
+	},
+	"result": {
+		"item": "grapplemod:smarthook"
+	}
+}

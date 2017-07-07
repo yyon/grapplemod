@@ -1,0 +1,19 @@
+{
+	"type": "minecraft:crafting_shaped",
+	"pattern": [
+		"2",
+		"4"
+	],
+	"key": {
+		"2": {
+			"item": "minecraft:diamond_boots"
+		}, 
+		"4": {
+			"item": "minecraft:wool",
+			"data": 0
+		}
+	},
+	"result": {
+		"item": "grapplemod:longfallboots"
+	}
+}

@@ -1,0 +1,19 @@
+{
+	"type": "minecraft:crafting_shaped",
+	"pattern": [
+		"   ",
+		"242",
+		"   "
+	],
+	"key": {
+		"2": {
+			"item": "grapplemod:hookshot"
+		},
+		"4": {
+			"item": "minecraft:iron_ingot"
+		}
+	},
+	"result": {
+		"item": "grapplemod:multihook"
+	}
+}

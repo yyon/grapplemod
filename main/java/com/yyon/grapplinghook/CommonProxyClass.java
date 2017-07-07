@@ -33,7 +33,7 @@ public class CommonProxyClass {
 	}
 	
 	public void preInit(FMLPreInitializationEvent event) {
-		
+	    MinecraftForge.EVENT_BUS.register(this);
 	}
 
 	public void init(FMLInitializationEvent event, grapplemod grapplemod) {
@@ -41,7 +41,6 @@ public class CommonProxyClass {
 	}
 	
 	public void postInit(FMLPostInitializationEvent event) {
-	    MinecraftForge.EVENT_BUS.register(this);
 	}
 	
 	public void sendplayermovementmessage(grappleArrow grappleArrow, int playerid, int arrowid) {

@@ -66,6 +66,7 @@ public class PlayerMovementMessage implements IMessage {
 	    	this.my = buf.readDouble();
 	    	this.mz = buf.readDouble();
     	} catch (Exception e) {
+    		System.out.print("Playermovement error: ");
     		System.out.println(buf);
     	}
     }
@@ -96,7 +97,7 @@ public class PlayerMovementMessage implements IMessage {
     		
             @Override
             public void run() {
-                World world = ctx.getServerHandler().playerEntity.world;
+                World world = ctx.getServerHandler().player.world;
                 Entity entity = world.getEntityByID(message.entityId);
                 if (entity == null) {return;}
                 entity.posX = message.x;
@@ -114,7 +115,7 @@ public class PlayerMovementMessage implements IMessage {
     	
         @Override
         public IMessage onMessage(PlayerMovementMessage message, MessageContext ctx) {
-        	IThreadListener mainThread = (WorldServer) ctx.getServerHandler().playerEntity.world; // or Minecraft.getMinecraft() on the client
+        	IThreadListener mainThread = (WorldServer) ctx.getServerHandler().player.world; // or Minecraft.getMinecraft() on the client
             mainThread.addScheduledTask(new runner(message, ctx));
             
             return null; // no response in this case

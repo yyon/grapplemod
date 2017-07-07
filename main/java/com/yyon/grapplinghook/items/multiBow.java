@@ -2,6 +2,7 @@ package com.yyon.grapplinghook.items;
 
 import java.util.List;
 
+import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
@@ -16,6 +17,8 @@ import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 import com.yyon.grapplinghook.CommonProxyClass;
 import com.yyon.grapplinghook.grapplemod;
@@ -123,7 +126,8 @@ public class multiBow extends Item implements clickitem {
     }
     
 	@Override
-	public void addInformation(ItemStack stack, EntityPlayer player, List<String> list, boolean par4)
+    @SideOnly(Side.CLIENT)
+	public void addInformation(ItemStack stack, World world, List<String> list, ITooltipFlag par4)
 	{
 		list.add("Shoots two hooks and pulls player towards hooks");
 		list.add("");

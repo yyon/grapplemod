@@ -366,7 +366,6 @@ public class grappleController {
 	}
 	
 	public void applyPlayerMovement() {
-		System.out.println(motion.length());
 		motion.add_ip(this.playermovement.changelen(0.015 + motion.length() * 0.01));//0.02 * playermovementmult));
 	}
 }

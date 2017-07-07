@@ -18,6 +18,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraftforge.client.event.ModelRegistryEvent;
 import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.event.world.BlockEvent.BreakEvent;
 import net.minecraftforge.fml.client.registry.IRenderFactory;
@@ -52,11 +53,11 @@ public class ClientProxyClass extends CommonProxyClass {
 		super.preInit(event);
 		RenderingRegistry.registerEntityRenderingHandler(grappleArrow.class, new IRenderFactory<grappleArrow>() {
 			@Override
-			public Render<grappleArrow> createRenderFor(RenderManager manager) {
+			public Render<? super grappleArrow> createRenderFor(
+					RenderManager manager) {
 				return new RenderGrappleArrow<grappleArrow>(manager, Items.IRON_PICKAXE, Minecraft.getMinecraft().getRenderItem());
 			}
 		});
-		registerItemModels();
 	}
 	
 	public ModelResourceLocation grapplinghookloc = new ModelResourceLocation("grapplemod:grapplinghook", "inventory");
@@ -74,13 +75,13 @@ public class ClientProxyClass extends CommonProxyClass {
 	
 	private void setgrapplebowtextures(Item item, final ModelResourceLocation notinusetexture, final ModelResourceLocation inusetexture) {
 		ModelLoader.setCustomMeshDefinition(item, new ItemMeshDefinition() {
-		    @Override
-		    public ModelResourceLocation getModelLocation(ItemStack stack) {
+			@Override
+			public ModelResourceLocation getModelLocation(ItemStack stack) {
 		    	if (ClientProxyClass.isactive(stack)) {
 		    		return inusetexture;
 		    	}
 		    	return notinusetexture;
-		    }
+			}
 		});
 		ModelBakery.registerItemVariants(item, notinusetexture);
 		ModelBakery.registerItemVariants(item, inusetexture);
@@ -98,8 +99,14 @@ public class ClientProxyClass extends CommonProxyClass {
 		setgrapplebowtextures(grapplemod.smarthookitem, smarthookloc, smarthookropeloc);
 	}
 
+	@SubscribeEvent
+	public void registerAllModels(final ModelRegistryEvent event) {
+		System.out.println("REGISTERING ALL MODELS!!!!!!!!!!!!!");
+		this.registerItemModels();
+	}
+	
 	private void registerItemModel(Item item) {
-		registerItemModel(item, Item.REGISTRY.getNameForObject(item).toString());
+		registerItemModel(item, item.getRegistryName().toString());
 	}
 
 	private void registerItemModel(Item item, String modelLocation) {

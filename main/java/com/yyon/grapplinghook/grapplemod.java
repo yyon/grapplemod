@@ -9,8 +9,6 @@ import net.minecraft.block.Block;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.init.Blocks;
-import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemArmor;
 import net.minecraft.item.ItemStack;
@@ -20,6 +18,8 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.World;
+import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventHandler;
 import net.minecraftforge.fml.common.SidedProxy;
@@ -27,6 +27,7 @@ import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 import net.minecraftforge.fml.common.network.simpleimpl.SimpleNetworkWrapper;
@@ -93,7 +94,7 @@ public class grapplemod {
 
     public static final String MODID = "grapplemod";
     
-    public static final String VERSION = "1.11.2-v10";
+    public static final String VERSION = "1.12-v10";
 
     public static Item grapplebowitem;
     public static Item hookshotitem;
@@ -142,43 +143,6 @@ public class grapplemod {
 	
 	@EventHandler
 	public void load(FMLInitializationEvent event){
-		GameRegistry.addRecipe(new ItemStack(grapplebowitem, 1), new Object[]{
-			"X2", 
-			"4X", Character.valueOf('2'), new ItemStack(Items.IRON_PICKAXE, 1), Character.valueOf('4'), new ItemStack(Items.LEAD, 1), 
-		});
-		GameRegistry.addRecipe(new ItemStack(hookshotitem, 1), new Object[]{
-			"X2", 
-			"4X", Character.valueOf('2'), new ItemStack(grapplebowitem, 1), Character.valueOf('4'), new ItemStack(Blocks.PISTON, 1), 
-		});
-		GameRegistry.addRecipe(new ItemStack(smarthookitem, 1), new Object[]{
-			"X2", 
-			"4X", Character.valueOf('2'), new ItemStack(hookshotitem, 1), Character.valueOf('4'), new ItemStack(Items.REDSTONE, 1), 
-		});
-		GameRegistry.addRecipe(new ItemStack(launcheritem, 1), new Object[]{
-			"X2", 
-			"4X", Character.valueOf('2'), new ItemStack(Items.ENDER_PEARL, 1), Character.valueOf('4'), new ItemStack(Blocks.PISTON, 1), 
-		});
-		GameRegistry.addRecipe(new ItemStack(enderhookitem, 1), new Object[]{
-			"X2", 
-			"4X", Character.valueOf('2'), new ItemStack(grapplebowitem, 1), Character.valueOf('4'), new ItemStack(launcheritem, 1), 
-		});
-		GameRegistry.addRecipe(new ItemStack(repelleritem, 1), new Object[]{
-			"X2X", 
-			"242",
-			"X2X", Character.valueOf('2'), new ItemStack(Items.IRON_INGOT, 1), Character.valueOf('4'), new ItemStack(Items.COMPASS, 1), 
-		});
-		GameRegistry.addRecipe(new ItemStack(magnetbowitem, 1), new Object[]{
-			"X2", 
-			"4X", Character.valueOf('2'), new ItemStack(grapplebowitem, 1), Character.valueOf('4'), new ItemStack(repelleritem, 1), 
-		});
-		GameRegistry.addRecipe(new ItemStack(longfallboots, 1), new Object[]{
-			"2", 
-			"4", Character.valueOf('2'), new ItemStack(Items.DIAMOND_BOOTS, 1), Character.valueOf('4'), new ItemStack(Blocks.WOOL, 1), 
-		});
-		GameRegistry.addRecipe(new ItemStack(multihookitem, 1), new Object[]{
-			"X2", 
-			"2X", Character.valueOf('2'), new ItemStack(hookshotitem, 1), 
-		});
 	}
 
 	public void registerRenderers(){
@@ -190,19 +154,19 @@ public class grapplemod {
 	}
 
 	public void serverLoad(FMLServerStartingEvent event){
-		event.getServer().worldServerForDimension(0).getGameRules().addGameRule("grapplingLength", "0", GameRules.ValueType.NUMERICAL_VALUE);
-		event.getServer().worldServerForDimension(0).getGameRules().addGameRule("grapplingBlocks", "any", GameRules.ValueType.ANY_VALUE);
-		event.getServer().worldServerForDimension(0).getGameRules().addGameRule("grapplingNonBlocks", "none", GameRules.ValueType.ANY_VALUE);
+		event.getServer().worlds[0].getGameRules().addGameRule("grapplingLength", "0", GameRules.ValueType.NUMERICAL_VALUE);
+		event.getServer().worlds[0].getGameRules().addGameRule("grapplingBlocks", "any", GameRules.ValueType.ANY_VALUE);
+		event.getServer().worlds[0].getGameRules().addGameRule("grapplingNonBlocks", "none", GameRules.ValueType.ANY_VALUE);
 	}
 	
 	public static void updateMaxLen(World world) {
-		grapplemod.grapplingLength = world.getMinecraftServer().worldServerForDimension(0).getGameRules().getInt("grapplingLength");
+		grapplemod.grapplingLength = world.getMinecraftServer().worlds[0].getGameRules().getInt("grapplingLength");
 	}
 	
 	public static void updateGrapplingBlocks(World world) {
-		String s = world.getMinecraftServer().worldServerForDimension(0).getGameRules().getString("grapplingBlocks");
+		String s = world.getMinecraftServer().worlds[0].getGameRules().getString("grapplingBlocks");
 		if (s.equals("any") || s.equals("")) {
-			s = world.getMinecraftServer().worldServerForDimension(0).getGameRules().getString("grapplingNonBlocks");
+			s = world.getMinecraftServer().worlds[0].getGameRules().getString("grapplingNonBlocks");
 			if (s.equals("none") || s.equals("")) {
 				anyblocks = true;
 			} else {
@@ -232,42 +196,43 @@ public class grapplemod {
 		    		name = str;
 		    	}
 		    	
-		    	Block b = Block.REGISTRY.getObjectBypass(new ResourceLocation(modid, name));
+		    	Block b = Block.REGISTRY.getObject(new ResourceLocation(modid, name));
 		    	
 		        grapplingblocks.add(b);
 		    }
 		}
 	}
 	
+	@SubscribeEvent
+	public void registerItems(RegistryEvent.Register<Item> event) {
+		System.out.println("REGISTERING ITEMS");
+		System.out.println(grapplebowitem);
+	    event.getRegistry().registerAll(grapplebowitem, hookshotitem, smarthookitem, launcheritem, longfallboots, enderhookitem, magnetbowitem, magnetbowitem, repelleritem, multihookitem);
+	}
+	
 	@EventHandler
 	public void preInit(FMLPreInitializationEvent event){
+		System.out.println("PREINIT!!!");
 		grapplebowitem = new grappleBow();
 		grapplebowitem.setRegistryName("grapplinghook");
-		GameRegistry.register(grapplebowitem);
 		hookshotitem = new hookBow();
 		hookshotitem.setRegistryName("hookshot");
-		GameRegistry.register(hookshotitem);
 		smarthookitem = new smartHookBow();
 		smarthookitem.setRegistryName("smarthook");
-		GameRegistry.register(smarthookitem);
 		launcheritem = new launcherItem();
 		launcheritem.setRegistryName("launcheritem");
-		GameRegistry.register(launcheritem);
 		longfallboots = new LongFallBoots(ItemArmor.ArmorMaterial.DIAMOND, 3);
 		longfallboots.setRegistryName("longfallboots");
-		GameRegistry.register(longfallboots);
 		enderhookitem = new enderBow();
 		enderhookitem.setRegistryName("enderhook");
-		GameRegistry.register(enderhookitem);
 		magnetbowitem = new magnetBow();
 		magnetbowitem.setRegistryName("magnetbow");
-		GameRegistry.register(magnetbowitem);
 		repelleritem = new repeller();
 		repelleritem.setRegistryName("repeller");
-		GameRegistry.register(repelleritem);
 		multihookitem = new multiBow();
 		multihookitem.setRegistryName("multihook");
-		GameRegistry.register(multihookitem);
+		
+		System.out.println(grapplebowitem);
 		
 		resourceLocation = new ResourceLocation(grapplemod.MODID, "grapplemod");
 		
@@ -288,6 +253,8 @@ public class grapplemod {
 		network.registerMessage(GrappleAttachPosMessage.Handler.class, GrappleAttachPosMessage.class, id++, Side.CLIENT);
 		network.registerMessage(MultiHookMessage.Handler.class, MultiHookMessage.class, id++, Side.SERVER);
 		network.registerMessage(ToolConfigMessage.Handler.class, ToolConfigMessage.class, id++, Side.SERVER);
+		
+	    MinecraftForge.EVENT_BUS.register(this);
 	}
 	
 	@EventHandler

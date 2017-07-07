@@ -1,0 +1,18 @@
+{
+	"type": "minecraft:crafting_shaped",
+	"pattern": [
+		" 2",
+		"4 "
+	],
+	"key": {
+		"2": {
+			"item": "grapplemod:grapplinghook"
+		}, 
+		"4": {
+			"item": "grapplemod:repeller"
+		}
+	},
+	"result": {
+		"item": "grapplemod:magnetbow"
+	}
+}

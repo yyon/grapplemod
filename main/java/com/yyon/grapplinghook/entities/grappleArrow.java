@@ -85,7 +85,7 @@ public class grappleArrow extends EntityThrowable implements IEntityAdditionalSp
 		super.onEntityUpdate();
 		
 		if (this.shootingEntityID == 0) { // removes ghost grappling hooks
-			this.kill();
+			this.remove();
 		}
 		
 		if (this.firstattach) {
@@ -163,7 +163,7 @@ public class grappleArrow extends EntityThrowable implements IEntityAdditionalSp
     }
 	
 	public void remove() {
-		this.kill();
+		this.setDead();
 	}
 	
 	@Override
@@ -200,7 +200,7 @@ public class grappleArrow extends EntityThrowable implements IEntityAdditionalSp
 		        
 		        if (movingobjectposition != null)
 		        {
-		            vec3 = new vec(movingobjectposition.hitVec.xCoord, movingobjectposition.hitVec.yCoord, movingobjectposition.hitVec.zCoord);
+		            vec3 = new vec(movingobjectposition.hitVec.x, movingobjectposition.hitVec.y, movingobjectposition.hitVec.z);
 		        }
 		        
 		        this.serverAttach(blockpos, vec3, movingobjectposition.sideHit);
@@ -293,7 +293,7 @@ public class grappleArrow extends EntityThrowable implements IEntityAdditionalSp
     }
 
 	public void removeServer() {
-		this.kill();
+		this.setDead();
 		this.shootingEntityID = 0;
 
 	}

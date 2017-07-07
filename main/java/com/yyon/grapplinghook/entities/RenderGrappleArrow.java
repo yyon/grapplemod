@@ -1,10 +1,10 @@
 package com.yyon.grapplinghook.entities;
 
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.RenderItem;
 import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.client.renderer.VertexBuffer;
 import net.minecraft.client.renderer.block.model.ItemCameraTransforms;
 import net.minecraft.client.renderer.culling.ICamera;
 import net.minecraft.client.renderer.entity.Render;
@@ -92,11 +92,11 @@ public class RenderGrappleArrow<T extends Entity> extends Render<T>
 	        if (mult <= 0) {
 	        	offset = new Vec3d(0,0,0);
 	        } else {
-	        	offset = new Vec3d(offset.xCoord * mult, offset.yCoord * mult, offset.zCoord * mult);
+	        	offset = new Vec3d(offset.x * mult, offset.y * mult, offset.z * mult);
 	        	
-		        x += offset.xCoord;
-		        y += offset.yCoord;
-		        z += offset.zCoord;
+		        x += offset.x;
+		        y += offset.y;
+		        z += offset.z;
 	        }
     	}
     	
@@ -135,7 +135,7 @@ public class RenderGrappleArrow<T extends Entity> extends Render<T>
         GlStateManager.scale(0.5F, 0.5F, 0.5F);
         this.bindEntityTexture(entity);
         Tessellator tessellator = Tessellator.getInstance();
-        VertexBuffer vertexbuffer = tessellator.getBuffer();
+        BufferBuilder vertexbuffer = tessellator.getBuffer();
         GlStateManager.rotate(180.0F - this.renderManager.playerViewY, 0.0F, 1.0F, 0.0F);
         GlStateManager.rotate((float)(this.renderManager.options.thirdPersonView == 2 ? -1 : 1) * -this.renderManager.playerViewX, 1.0F, 0.0F, 0.0F);
 
@@ -185,9 +185,9 @@ public class RenderGrappleArrow<T extends Entity> extends Render<T>
             vec3d = vec3d.rotateYaw(-(e.prevRotationYaw + (e.rotationYaw - e.prevRotationYaw) * partialTicks) * 0.017453292F);
             vec3d = vec3d.rotateYaw(f8 * 0.5F);
             vec3d = vec3d.rotatePitch(-f8 * 0.7F);
-            d4 = e.prevPosX + (e.posX - e.prevPosX) * (double)partialTicks + vec3d.xCoord;
-            d5 = e.prevPosY + (e.posY - e.prevPosY) * (double)partialTicks + vec3d.yCoord;
-            d6 = e.prevPosZ + (e.posZ - e.prevPosZ) * (double)partialTicks + vec3d.zCoord;
+            d4 = e.prevPosX + (e.posX - e.prevPosX) * (double)partialTicks + vec3d.x;
+            d5 = e.prevPosY + (e.posY - e.prevPosY) * (double)partialTicks + vec3d.y;
+            d6 = e.prevPosZ + (e.posZ - e.prevPosZ) * (double)partialTicks + vec3d.z;
             d7 = (double)e.getEyeHeight();
         }
         else
@@ -203,9 +203,9 @@ public class RenderGrappleArrow<T extends Entity> extends Render<T>
         double d9 = entity.prevPosZ + (entity.posZ - entity.prevPosZ) * (double)partialTicks;
         
         // hand position
-        double d10 = (double)((float)(d4 - d13)) - offset.xCoord;
-        double d11 = (double)((float)(d5 - d8)) + d7 - offset.yCoord;
-        double d12 = (double)((float)(d6 - d9)) - offset.zCoord;
+        double d10 = (double)((float)(d4 - d13)) - offset.x;
+        double d11 = (double)((float)(d5 - d8)) + d7 - offset.y;
+        double d12 = (double)((float)(d6 - d9)) - offset.z;
         GlStateManager.disableTexture2D();
         GlStateManager.disableLighting();
         GlStateManager.disableCull();

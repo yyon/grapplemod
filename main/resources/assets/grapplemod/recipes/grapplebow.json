@@ -1,0 +1,18 @@
+{
+	"type": "minecraft:crafting_shaped",
+	"pattern": [
+		" 2",
+		"4 "
+	],
+	"key": {
+		"2": {
+			"item": "minecraft:iron_pickaxe"
+		}, 
+		"4": {
+			"item": "minecraft:lead"
+		}
+	},
+	"result": {
+		"item": "grapplemod:grapplinghook"
+	}
+}

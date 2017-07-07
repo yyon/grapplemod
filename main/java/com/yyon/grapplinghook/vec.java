@@ -15,9 +15,9 @@ public class vec {
 	}
 	
 	public vec(Vec3d vec3d) {
-		this.x = vec3d.xCoord;
-		this.y = vec3d.yCoord;
-		this.z = vec3d.zCoord;
+		this.x = vec3d.x;
+		this.y = vec3d.y;
+		this.z = vec3d.z;
 	}
 	
 	public static vec positionvec(Entity e) {
