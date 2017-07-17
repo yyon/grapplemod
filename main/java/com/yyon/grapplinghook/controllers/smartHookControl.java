@@ -23,40 +23,30 @@ import com.yyon.grapplinghook.vec;
     along with GrappleMod.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-public class hookControl extends grappleController {
-	public hookControl(int arrowId, int entityId, World world, vec pos, int maxlen, int id) {
+public class smartHookControl extends grappleController {
+	public smartHookControl(int arrowId, int entityId, World world, vec pos, int maxlen, int id, boolean slow) {
 		super(arrowId, entityId, world, pos, maxlen, id);
+		if (slow) {
+			this.acceleration = this.acceleration / 2;
+		}
 	}
 
-	public double maxspeed = 4;
+//	public double maxspeed = 4;
 	public double acceleration = 0.2;
 	public float oldstepheight;
 	public final double playermovementmult = 1;
 		
 	@Override
 	public void updatePlayerPos() {
-		
-		/*
-		super.updatePlayerPos(theplayer);
-		if (r > 1) {
-			r -= 1;
-		}
-		*/
-		
 		Entity entity = this.entity;
-		
-//		System.out.println(entity == theplayer);
-//		System.out.println(entity.worldObj.isRemote);
 		
 		if (this.attached) {
 			if(entity != null && entity instanceof EntityPlayer) {
 				EntityPlayer player = (EntityPlayer) entity;
-//				EntityPlayer player = ((EntityPlayer)this.riddenByEntity);
-//				double l = this.getDistanceToEntity(entity);
 				if (true) {
 //					this.normalGround();
 					this.normalCollisions();
-//					this.applyAirFriction();
+					this.applyAirFriction();
 					
 					vec arrowpos = this.pos;
 					vec playerpos = vec.positionvec(player);
@@ -65,20 +55,14 @@ public class hookControl extends grappleController {
 					vec spherevec = oldspherevec.changelen(r);
 //					Vec3 spherechange = spherevec.subtract(oldspherevec);
 //					Vec3 spherepos = spherevec.add(arrowpos);
-					
+
+		        	vec facing = new vec(player.getLookVec()).normalize();
+
 					double dist = oldspherevec.length();
 					
 					if (this.isjumping()) {
 						this.dojump(player, spherevec);
 						return;
-/*					} else if (this.shootingEntity.isSneaking()) {
-						motion = multvec(motion, 0.9);
-						if (this.playerforward != 0) {
-							if (this.r > this.playerforward * 0.5) {
-								this.r -= this.playerforward * 0.5;
-							}
-							System.out.println(this.r);
-						}*/
 					} else {
 						applyPlayerMovement();
 					}
@@ -90,51 +74,47 @@ public class hookControl extends grappleController {
 							motion.mult_ip(0.6);
 						}
 						
-//						if (this.playermovement.lengthVector() > 0.05) {
-//							this.unattach();
-//						}
 						if (player.onGround) {
 							entity.motionX = 0;
 							entity.motionY = 0;
 							entity.motionZ = 0;
 							this.updateServerPos();
-							
-//							this.unattach();
 						}
 					}
 					
-					motion.add_ip(arrowpos.sub(playerpos).changelen(acceleration));
+					vec gravity = new vec(0, -0.05, 0);
+					
+					if (!(this.ongroundtimer > 0)) {
+						motion.add_ip(gravity);
+					}
+					
+					vec ropevec = arrowpos.sub(playerpos).normalize();
+//					if (ropevec.dot(facing) > 0) {
+						vec ropexz = new vec(ropevec.x, 0, ropevec.z);
+						vec facingxz = new vec(facing.x, 0, facing.z);//.proj(ropexz);
+						double facinglmult = (ropevec.length()) / (facing.length());
+						if (facinglmult < 0) {
+							facinglmult = -facinglmult;
+						}
+						double pulll = gravity.y / (facing.y * facinglmult - ropevec.y);
+						if (pulll > acceleration) {
+							pulll = acceleration;
+						}
+						if (pulll < 0) {
+							pulll = acceleration;
+						}
+						vec pullvec = ropevec.changelen(pulll);
+						
+						motion.add_ip(pullvec);
+//					}
 					
 					double speed = motion.proj(oldspherevec).length();
 					
-					if (speed > maxspeed) {
-						motion.changelen_ip(maxspeed);
-					}
-					
-					/*
-					if (!player.onGround) {
-						motion = motion.addVector(0, -0.05, 0);
-					} else {
-						if (dist > 4) {
-							motion = motion.addVector(0, 0.3, 0);
-						}
-					}
-					*/
-					
 					newmotion = motion;
 					
-					vec motiontorwards = spherevec.changelen(-1);
-					motion = dampenmotion(motion, motiontorwards);
-					
-//					entity.setVelocity(newmotion.xCoord, newmotion.yCoord, newmotion.zCoord);
 					entity.motionX = newmotion.x;
 					entity.motionY = newmotion.y;
 					entity.motionZ = newmotion.z;
-					
-//					if (player instanceof EntityPlayerMP) {
-						
-//						((EntityPlayerMP) entity).playerNetServerHandler.sendPacket(new S12PacketEntityVelocity(entity));
-//					}
 					
 					player.fallDistance = 0;
 					

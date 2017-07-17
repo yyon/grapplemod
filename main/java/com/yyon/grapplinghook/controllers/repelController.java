@@ -8,7 +8,8 @@ import com.yyon.grapplinghook.grapplemod;
 import com.yyon.grapplinghook.vec;
 
 public class repelController extends magnetController {
-
+	public final double playermovementmult = 1.5;
+	
 	public repelController(int arrowId, int entityId, World world, vec pos,
 			int maxlen, int id) {
 		super(arrowId, entityId, world, pos, maxlen, id, 0);
@@ -33,7 +34,7 @@ public class repelController extends magnetController {
 						if (grapplemod.proxy.isSneaking(entity)) {
 							motion.mult_ip(0.95);
 						}
-						motion.add_ip(this.playermovement.changelen(0.03));//0.02));
+						applyPlayerMovement();
 					}
 					
 					vec blockpush = check(playerpos, entity.worldObj);

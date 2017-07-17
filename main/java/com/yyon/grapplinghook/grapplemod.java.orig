@@ -93,7 +93,11 @@ public class grapplemod {
 
     public static final String MODID = "grapplemod";
     
-    public static final String VERSION = "1.7.10-v10";
+<<<<<<< HEAD
+    public static final String VERSION = "1.7.10-v7";
+=======
+    public static final String VERSION = "1.10.2-v10";
+>>>>>>> 6c8b29cf1a9f87c1801402122aee8a079fcdc67a
 
     public static Item grapplebowitem;
     public static Item hookshotitem;
@@ -150,7 +154,7 @@ public class grapplemod {
 		});
 		GameRegistry.addRecipe(new ItemStack(smarthookitem, 1), new Object[]{
 			"X2", 
-			"4X", Character.valueOf('2'), new ItemStack(hookshotitem, 1), Character.valueOf('4'), new ItemStack(Items.redstone, 1), 
+			"4X", Character.valueOf('2'), new ItemStack(hookshotitem, 1), Character.valueOf('4'), new ItemStack(Items.REDSTONE, 1), 
 		});
 		GameRegistry.addRecipe(new ItemStack(launcheritem, 1), new Object[]{
 			"X2", 
@@ -246,9 +250,15 @@ public class grapplemod {
 		grapplebowitem = new grappleBow();
 		GameRegistry.registerItem(grapplebowitem, "grapplinghook");
 		hookshotitem = new hookBow();
+<<<<<<< HEAD
 		GameRegistry.registerItem(hookshotitem, "hookshot");
+=======
+		hookshotitem.setRegistryName("hookshot");
+		GameRegistry.register(hookshotitem);
 		smarthookitem = new smartHookBow();
-		GameRegistry.registerItem(smarthookitem, "smarthook");
+		smarthookitem.setRegistryName("smarthook");
+		GameRegistry.register(smarthookitem);
+>>>>>>> 6c8b29cf1a9f87c1801402122aee8a079fcdc67a
 		launcheritem = new launcherItem();
 		GameRegistry.registerItem(launcheritem, "launcheritem");
 		longfallboots = new LongFallBoots(ItemArmor.ArmorMaterial.DIAMOND, 3);
@@ -536,19 +546,15 @@ public class grapplemod {
     				player.addChatMessage(new ChatComponentText("Repel force set to off"));
     			}
       		} else if (item instanceof smartHookBow) {
-    			NBTTagCompound compound = stack.getTagCompound();
-    			if (compound == null) {
-    				compound = new NBTTagCompound();
-    				stack.setTagCompound(compound);
-    		    }
+    			NBTTagCompound compound = stack.getSubCompound("grapplemod", true);
     			boolean slow = compound.getBoolean("slow");
     			slow = !slow;
     			compound.setBoolean("slow", slow);
     			
     			if (slow) {
-    				player.addChatMessage(new ChatComponentText("Set to slow mode"));
+    				player.addChatMessage(new TextComponentString("Set to slow mode"));
     			} else {
-    				player.addChatMessage(new ChatComponentText("Set to fast mode"));
+    				player.addChatMessage(new TextComponentString("Set to fast mode"));
     			}
       		}
       	}

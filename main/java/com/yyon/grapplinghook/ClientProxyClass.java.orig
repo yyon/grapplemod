@@ -187,7 +187,11 @@ public class ClientProxyClass extends CommonProxyClass {
 		}
 		long timer = player.worldObj.getTotalWorldTime() - prevtime;
 		if (timer > reusetime) {
-			if (player.getHeldItem() != null && (player.getHeldItem().getItem() instanceof enderBow || player.getHeldItem().getItem() instanceof launcherItem)) {
+<<<<<<< HEAD
+			if (player.getHeldItem().getItem() instanceof enderBow || player.getHeldItem().getItem() instanceof launcherItem) {
+=======
+			if ((player.getHeldItemMainhand()!=null && (player.getHeldItemMainhand().getItem() instanceof enderBow || player.getHeldItemMainhand().getItem() instanceof launcherItem)) || (player.getHeldItemOffhand()!=null && (player.getHeldItemOffhand().getItem() instanceof enderBow || player.getHeldItemOffhand().getItem() instanceof launcherItem))) {
+>>>>>>> 6c8b29cf1a9f87c1801402122aee8a079fcdc67a
 				enderlaunchtimer.put(player.getEntityId(), player.worldObj.getTotalWorldTime());
 				
 	        	vec facing = new vec(player.getLookVec());

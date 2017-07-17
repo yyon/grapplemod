@@ -77,6 +77,7 @@ public class magnetArrow extends grappleArrow
     @Override
     public void onEntityUpdate() {
     	super.onEntityUpdate();
+    	if (this.shootingEntity == null) {return;}
     	if (!this.foundblock) {
     		if (!this.worldObj.isRemote) {
     			vec playerpos = vec.positionvec(this.shootingEntity);

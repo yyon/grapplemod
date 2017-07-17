@@ -128,6 +128,7 @@ public class grappleArrow extends EntityThrowable implements IEntityAdditionalSp
 	*/
 
 	public boolean toofaraway() {
+    	if (this.shootingEntity == null) {return false;}
 		if (!this.worldObj.isRemote) {
 			if (!grapplemod.attached.contains(this.shootingEntityID)) {
 				if (grapplemod.grapplingLength != 0) {

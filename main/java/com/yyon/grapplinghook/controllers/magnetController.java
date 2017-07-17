@@ -30,7 +30,8 @@ import com.yyon.grapplinghook.vec;
 
 public class magnetController extends grappleController {
 	public int repelconf = 0;
-	
+	public final double playermovementmult = 1.5;
+		
 	public magnetController(int arrowId, int entityId, World world, vec pos, int maxlen, int id, int repelconf) {
 		super(arrowId, entityId, world, pos, maxlen, id);
 		this.repelconf = repelconf;
@@ -102,7 +103,7 @@ public class magnetController extends grappleController {
 								}
 							}
 						} else {
-							motion.add_ip(this.playermovement.changelen(0.03));//0.02));
+							applyPlayerMovement();
 						}
 					}
 					
