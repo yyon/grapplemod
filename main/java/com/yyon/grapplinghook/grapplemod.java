@@ -361,7 +361,7 @@ public class grapplemod {
 			}
 		}
 		
-		System.out.println(blockpos);
+//		System.out.println(blockpos);
 		
 		grappleController control = null;
 		if (id == GRAPPLEID) {
@@ -398,11 +398,11 @@ public class grapplemod {
 				}
 			}
 			if (!created) {
-				System.out.println("Couldn't create");
+//				System.out.println("Couldn't create");
 				grapplemod.removesubarrow(arrowid);
 			}
 		} else if (id == AIRID) {
-			System.out.println("AIR FRICTION CONTROLLER");
+//			System.out.println("AIR FRICTION CONTROLLER");
 			control = new airfrictionController(arrowid, entityid, world, pos, maxlen, id);
 		}
 		if (blockpos != null && control != null) {
