@@ -111,7 +111,7 @@ public class grappleBow extends Item {
 			float f = 2.0F;
 			if (entityarrow == null) {
 				entityarrow = this.createarrow(stack, worldIn, entityLiving, righthand);
-	            entityarrow.setHeadingFromThrower(entityLiving, entityLiving.rotationPitch, entityLiving.rotationYaw, 0.0F, entityarrow.getVelocity(), 0.0F);
+	            entityarrow.shoot(entityLiving, entityLiving.rotationPitch, entityLiving.rotationYaw, 0.0F, entityarrow.getVelocity(), 0.0F);
 				setArrow(entityLiving, stack, entityarrow);
 	
 				stack.damageItem(1, entityLiving);

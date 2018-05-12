@@ -251,7 +251,7 @@ public class grappleController {
 
 	public void normalCollisions() {
 		// stop if collided with object
-		if (entity.isCollidedHorizontally) {
+		if (entity.collidedHorizontally) {
 			if (entity.motionX == 0) {
 				this.motion.x = 0;
 			}
@@ -259,7 +259,7 @@ public class grappleController {
 				this.motion.z = 0;
 			}
 		}
-		if (entity.isCollidedVertically) {
+		if (entity.collidedVertically) {
 			if (entity.motionY == 0) {
 				this.motion.y = 0;
 			}
@@ -293,7 +293,7 @@ public class grappleController {
 		if (player.onGround) {
 			jumppower = 0;
 		}
-		if (player.isCollided) {
+		if (player.collided) {
 			jumppower = maxjump;
 		}
 		if (jumppower < 0) {

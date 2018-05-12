@@ -11,6 +11,7 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.registry.IEntityAdditionalSpawnData;
@@ -101,6 +102,7 @@ public class grappleArrow extends EntityThrowable implements IEntityAdditionalSp
 			this.removeServer();
 		}
 	}
+		
 	
 	@Override
 	@SideOnly(Side.CLIENT)

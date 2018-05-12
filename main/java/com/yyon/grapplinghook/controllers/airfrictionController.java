@@ -39,7 +39,7 @@ public class airfrictionController extends grappleController {
 			this.normalCollisions();
 			this.applyAirFriction();
 			
-			if (entity.isCollided || entity.onGround) {
+			if (entity.collided || entity.onGround) {
 				this.unattach();
 			}
 			

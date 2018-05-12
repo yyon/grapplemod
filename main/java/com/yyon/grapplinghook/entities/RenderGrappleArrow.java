@@ -87,7 +87,7 @@ public class RenderGrappleArrow<T extends Entity> extends Render<T>
 	        offset = offset.rotatePitch(-(e.prevRotationPitch + (e.rotationPitch - e.prevRotationPitch) * partialTicks) * 0.017453292F);
 	        offset = offset.rotateYaw(-(e.prevRotationYaw + (e.rotationYaw - e.prevRotationYaw) * partialTicks) * 0.017453292F);
 	        
-	        double dist = e.getDistanceToEntity(arrow);
+	        double dist = e.getDistance(arrow);
 	        double mult = 1 - (dist / 10.0);
 	        if (mult <= 0) {
 	        	offset = new Vec3d(0,0,0);

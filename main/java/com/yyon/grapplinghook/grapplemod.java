@@ -94,7 +94,7 @@ public class grapplemod {
 
     public static final String MODID = "grapplemod";
     
-    public static final String VERSION = "1.12-v10";
+    public static final String VERSION = "1.12.2-v10";
 
     public static Item grapplebowitem;
     public static Item hookshotitem;
@@ -430,7 +430,7 @@ public class grapplemod {
       		anglevec = anglevec.rotate_pitch(Math.toRadians(-player.rotationPitch));
       		anglevec = anglevec.rotate_yaw(Math.toRadians(player.rotationYaw));
 			multihookArrow entityarrow = new multihookArrow(w, player, false);
-            entityarrow.setHeadingFromThrower(player, (float) anglevec.getPitch(), (float)anglevec.getYaw(), 0.0F, entityarrow.getVelocity(), 0.0F);
+            entityarrow.shoot(player, (float) anglevec.getPitch(), (float)anglevec.getYaw(), 0.0F, entityarrow.getVelocity(), 0.0F);
             
             /*
             vec pos = vec.positionvec(entityarrow);
@@ -446,7 +446,7 @@ public class grapplemod {
       		anglevec = anglevec.rotate_pitch(Math.toRadians(-player.rotationPitch));
       		anglevec = anglevec.rotate_yaw(Math.toRadians(player.rotationYaw));
 			entityarrow = new multihookArrow(w, player, true);
-            entityarrow.setHeadingFromThrower(player, (float) anglevec.getPitch(), (float)anglevec.getYaw(), 0.0F, entityarrow.getVelocity(), 0.0F);
+            entityarrow.shoot(player, (float) anglevec.getPitch(), (float)anglevec.getYaw(), 0.0F, entityarrow.getVelocity(), 0.0F);
             
             /*
             pos = vec.positionvec(entityarrow);
