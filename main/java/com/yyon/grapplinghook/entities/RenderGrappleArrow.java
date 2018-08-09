@@ -1,5 +1,8 @@
 package com.yyon.grapplinghook.entities;
 
+import com.yyon.grapplinghook.vec;
+import com.yyon.grapplinghook.controllers.SegmentHandler;
+
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.GlStateManager;
@@ -67,6 +70,8 @@ public class RenderGrappleArrow<T extends Entity> extends Render<T>
         if (arrow == null || arrow.isDead) {
         	return;
         }
+        
+        SegmentHandler segmenthandler = arrow.segmenthandler;
         
         EntityLivingBase e = (EntityLivingBase) arrow.shootingEntity;
         
@@ -209,13 +214,78 @@ public class RenderGrappleArrow<T extends Entity> extends Render<T>
         GlStateManager.disableTexture2D();
         GlStateManager.disableLighting();
         GlStateManager.disableCull();
-        vertexbuffer.begin(5, DefaultVertexFormats.POSITION_COLOR);
-        
-        double taut = arrow.taut;
         
         double X;
         double Y;
         double Z;
+        
+        vec thispos = new vec(x, y, z);
+        vec handpos = new vec(d10+x, d11+y, d12+z);
+        vec somethingpos = new vec(d13, d8, d9).sub(thispos);
+        
+        if (segmenthandler == null) {
+            this.drawSegment(thispos, handpos, arrow.taut, tessellator, vertexbuffer); 
+        } else {
+        	for (int i = 0; i < segmenthandler.segments.size() - 1; i++) {
+        		vec from = segmenthandler.segments.get(i).sub(somethingpos);
+        		vec to = segmenthandler.segments.get(i+1).sub(somethingpos);
+        		
+        		if (i == 0) {
+        			from = thispos;
+        		}
+        		if (i + 2 == segmenthandler.segments.size()) {
+        			to = handpos;
+        		}
+        		
+        		double taut = 1;
+        		if (i == segmenthandler.segments.size() - 2) {
+        			taut = arrow.taut;
+        		}
+        		
+        		System.out.print(i);
+        		from.print();
+        		to.print();
+        		
+                this.drawSegment(from, to, taut, tessellator, vertexbuffer); 
+        	}
+        }
+        
+
+        vertexbuffer.begin(5, DefaultVertexFormats.POSITION_COLOR);
+    	X = x + d10;
+    	Y = y + d11;
+    	Z = z + d12;
+        vertexbuffer.pos(X, Y - 0.025D, Z).color(0.5F * 0.7F, 0.4F * 0.7F, 0.3F * 0.7F, 1.0F).endVertex();
+        vertexbuffer.pos(X - 0.025D, Y, Z - 0.025D).color(0.5F * 0.7F, 0.4F * 0.7F, 0.3F * 0.7F, 1.0F).endVertex();
+        vertexbuffer.pos(X, Y + 0.025D, Z).color(0.5F * 0.7F, 0.4F * 0.7F, 0.3F * 0.7F, 1.0F).endVertex();
+        vertexbuffer.pos(X + 0.025D, Y, Z - 0.025D).color(0.5F * 0.7F, 0.4F * 0.7F, 0.3F * 0.7F, 1.0F).endVertex();
+        vertexbuffer.pos(X, Y - 0.025D, Z).color(0.5F * 0.7F, 0.4F * 0.7F, 0.3F * 0.7F, 1.0F).endVertex();
+        tessellator.draw();
+
+        GlStateManager.enableLighting();
+        GlStateManager.enableTexture2D();
+        GlStateManager.enableCull();
+//            GL11.glEnable(GL11.GL_LIGHTING);
+            
+        super.doRender(entity, x, y, z, entityYaw, partialTicks);
+        
+        
+    }
+    
+    public void drawSegment(vec start, vec finish, double taut, Tessellator tessellator, BufferBuilder vertexbuffer) {
+        double X;
+        double Y;
+        double Z;
+        
+        double x = start.x;
+        double y = start.y;
+        double z = start.z;
+        double d10 = finish.x - x;
+        double d11 = finish.y - y;
+        double d12 = finish.z - z;
+        
+        vertexbuffer.begin(5, DefaultVertexFormats.POSITION_COLOR);
+
         for (int i1 = 0; i1 <= 16; ++i1)
         {
             float R = 0.5F;
@@ -331,25 +401,6 @@ public class RenderGrappleArrow<T extends Entity> extends Render<T>
          }
         
         tessellator.draw();
-        vertexbuffer.begin(5, DefaultVertexFormats.POSITION_COLOR);
-    	X = x + d10;
-    	Y = y + d11;
-    	Z = z + d12;
-        vertexbuffer.pos(X, Y - 0.025D, Z).color(0.5F * 0.7F, 0.4F * 0.7F, 0.3F * 0.7F, 1.0F).endVertex();
-        vertexbuffer.pos(X - 0.025D, Y, Z - 0.025D).color(0.5F * 0.7F, 0.4F * 0.7F, 0.3F * 0.7F, 1.0F).endVertex();
-        vertexbuffer.pos(X, Y + 0.025D, Z).color(0.5F * 0.7F, 0.4F * 0.7F, 0.3F * 0.7F, 1.0F).endVertex();
-        vertexbuffer.pos(X + 0.025D, Y, Z - 0.025D).color(0.5F * 0.7F, 0.4F * 0.7F, 0.3F * 0.7F, 1.0F).endVertex();
-        vertexbuffer.pos(X, Y - 0.025D, Z).color(0.5F * 0.7F, 0.4F * 0.7F, 0.3F * 0.7F, 1.0F).endVertex();
-        tessellator.draw();
-
-        GlStateManager.enableLighting();
-        GlStateManager.enableTexture2D();
-        GlStateManager.enableCull();
-//            GL11.glEnable(GL11.GL_LIGHTING);
-            
-        super.doRender(entity, x, y, z, entityYaw, partialTicks);
-        
-        
     }
 
     @Override

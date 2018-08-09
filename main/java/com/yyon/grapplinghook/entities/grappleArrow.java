@@ -1,5 +1,11 @@
 package com.yyon.grapplinghook.entities;
 
+import com.yyon.grapplinghook.grapplemod;
+import com.yyon.grapplinghook.vec;
+import com.yyon.grapplinghook.controllers.SegmentHandler;
+import com.yyon.grapplinghook.network.GrappleAttachMessage;
+import com.yyon.grapplinghook.network.GrappleAttachPosMessage;
+
 import io.netty.buffer.ByteBuf;
 import net.minecraft.block.Block;
 import net.minecraft.entity.Entity;
@@ -11,17 +17,11 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.registry.IEntityAdditionalSpawnData;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
-
-import com.yyon.grapplinghook.grapplemod;
-import com.yyon.grapplinghook.vec;
-import com.yyon.grapplinghook.network.GrappleAttachMessage;
-import com.yyon.grapplinghook.network.GrappleAttachPosMessage;
 
 /*
  * This file is part of GrappleMod.
@@ -57,6 +57,8 @@ public class grappleArrow extends EntityThrowable implements IEntityAdditionalSp
 	public boolean ignoreFrustumCheck = true;
 	
 	public int maxlen = 20;
+	
+	public SegmentHandler segmenthandler = null;;
 	
 	public grappleArrow(World worldIn) {
 		super(worldIn);

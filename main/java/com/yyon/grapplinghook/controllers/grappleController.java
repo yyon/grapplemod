@@ -72,6 +72,10 @@ public class grappleController {
 		this.controllerid = controllerid;
 		
 		this.entity = world.getEntityByID(entityId);
+		Entity arrow = world.getEntityByID(arrowId);
+		if (arrow != null) {
+			((grappleArrow) arrow).segmenthandler = this.segmenthandler;
+		}
 		
 		this.r = this.pos.sub(vec.positionvec(entity)).length();
 		this.motion = vec.motionvec(entity);
@@ -222,7 +226,8 @@ public class grappleController {
 					entity.motionY = newmotion.y;
 					entity.motionZ = newmotion.z;
 					
-					segmenthandler.update(arrowpos, playerpos);
+					vec playereye = playerpos.add(new vec(0, entity.getEyeHeight(), 0));
+					segmenthandler.update(arrowpos, playereye);
 					
 //					if (entity instanceof EntityPlayerMP) {
 						
