@@ -237,11 +237,12 @@ public class RenderGrappleArrow<T extends Entity> extends Render<T>
             float f10 = (float)i1 / 16.0F;
         	X = x + d10 * (double)f10;
         	Z = z + d12 * (double)f10;
-            if (reverse) {
+/*            if (reverse) {
             	Y = y + (d11 * (double) f10) * taut + (1-taut) * (d11 * (double)(f10*f10 + f10) * 0.5D);
             } else {
             	Y = y + (d11 * (double) f10) * taut + (1-taut) * (d11 * (double)(Math.sqrt(f10)));
-            }
+            }*/
+        	Y = y + d11 * (double)f10 - (1 - taut) * (0.25 - Math.pow((f10 - 0.5), 2)) * 1.5;
             
             vertexbuffer.pos(X, Y + 0.025D, Z).color(R, G, B, 1.0F).endVertex();
             vertexbuffer.pos(X - 0.025D, Y, Z - 0.025D).color(R, G, B, 1.0F).endVertex();
@@ -266,11 +267,12 @@ public class RenderGrappleArrow<T extends Entity> extends Render<T>
             float f10 = (float)i1 / 16.0F;
         	X = x + d10 * (double)f10;
         	Z = z + d12 * (double)f10;
-            if (reverse) {
+/*            if (reverse) {
             	Y = y + (d11 * (double) f10) * taut + (1-taut) * (d11 * (double)(f10*f10 + f10) * 0.5D);
             } else {
             	Y = y + (d11 * (double) f10) * taut + (1-taut) * (d11 * (double)(Math.sqrt(f10)));
-            }
+            }*/
+        	Y = y + d11 * (double)f10 - (1 - taut) * (0.25 - Math.pow((f10 - 0.5), 2)) * 1.5;
             vertexbuffer.pos(X + 0.025D, Y, Z - 0.025D).color(R, G, B, 1.0F).endVertex();
             vertexbuffer.pos(X, Y + 0.025D, Z).color(R, G, B, 1.0F).endVertex();
         }
@@ -294,11 +296,12 @@ public class RenderGrappleArrow<T extends Entity> extends Render<T>
             float f10 = (float)i1 / 16.0F;
         	X = x + d10 * (double)f10;
         	Z = z + d12 * (double)f10;
-            if (reverse) {
+/*            if (reverse) {
             	Y = y + (d11 * (double) f10) * taut + (1-taut) * (d11 * (double)(f10*f10 + f10) * 0.5D);
             } else {
             	Y = y + (d11 * (double) f10) * taut + (1-taut) * (d11 * (double)(Math.sqrt(f10)));
-            }
+            }*/
+        	Y = y + d11 * (double)f10 - (1 - taut) * (0.25 - Math.pow((f10 - 0.5), 2)) * 1.5;
             vertexbuffer.pos(X, Y - 0.025D, Z).color(R, G, B, 1.0F).endVertex();
             vertexbuffer.pos(X + 0.025D, Y, Z - 0.025D).color(R, G, B, 1.0F).endVertex();
         }
@@ -322,11 +325,12 @@ public class RenderGrappleArrow<T extends Entity> extends Render<T>
             float f10 = (float)i1 / 16.0F;
         	X = x + d10 * (double)f10;
         	Z = z + d12 * (double)f10;
-            if (reverse) {
+/*            if (reverse) {
             	Y = y + (d11 * (double) f10) * taut + (1-taut) * (d11 * (double)(f10*f10 + f10) * 0.5D);
             } else {
             	Y = y + (d11 * (double) f10) * taut + (1-taut) * (d11 * (double)(Math.sqrt(f10)));
-            }
+            }*/
+        	Y = y + d11 * (double)f10 - (1 - taut) * (0.25 - Math.pow((f10 - 0.5), 2)) * 1.5;
             vertexbuffer.pos(X - 0.025D, Y, Z - 0.025D).color(R, G, B, 1.0F).endVertex();
             vertexbuffer.pos(X, Y - 0.025D, Z).color(R, G, B, 1.0F).endVertex();
          }

@@ -56,6 +56,8 @@ public class grappleArrow extends EntityThrowable implements IEntityAdditionalSp
 	
 	public boolean ignoreFrustumCheck = true;
 	
+	public int maxlen = 20;
+	
 	public grappleArrow(World worldIn) {
 		super(worldIn);
 	}
@@ -82,8 +84,8 @@ public class grappleArrow extends EntityThrowable implements IEntityAdditionalSp
 	}
 	
 	@Override
-	public void onEntityUpdate(){
-		super.onEntityUpdate();
+	public void onUpdate(){
+		super.onUpdate();
 		
 		if (this.shootingEntityID == 0) { // removes ghost grappling hooks
 			this.remove();
@@ -98,9 +100,27 @@ public class grappleArrow extends EntityThrowable implements IEntityAdditionalSp
 		}
 		
 		
-		if (this.toofaraway()) {
-			this.removeServer();
+		if (!grapplemod.attached.contains(this.shootingEntityID)) {
+			vec ropevec = vec.positionvec(this).sub(vec.positionvec(this.shootingEntity));
+			double d = ropevec.length();
+			if (d > this.maxlen) {
+				vec motion = vec.motionvec(this);
+				
+				if (motion.dot(ropevec) > 0) {
+					motion = motion.removealong(ropevec);
+				}
+				
+				this.setVelocity(motion.x, motion.y, motion.z);
+				
+				ropevec.changelen_ip(this.maxlen);
+				vec newpos = ropevec.add(vec.positionvec(this.shootingEntity));
+				
+				this.setPosition(newpos.x, newpos.y, newpos.z);
+			}
+			
+			this.taut = d / maxlen;
 		}
+
 	}
 		
 	
@@ -124,7 +144,7 @@ public class grappleArrow extends EntityThrowable implements IEntityAdditionalSp
 				RenderBoundingBoxSize, RenderBoundingBoxSize, RenderBoundingBoxSize);
 	}
 
-	public boolean toofaraway() {
+/*	public boolean toofaraway() {
     	if (this.shootingEntity == null) {return false;}
 		if (!this.world.isRemote) {
 			if (!grapplemod.attached.contains(this.shootingEntityID)) {
@@ -137,7 +157,7 @@ public class grappleArrow extends EntityThrowable implements IEntityAdditionalSp
 			}
 		}
 		return false;
-	}
+	}*/
 
 	public void setPosition(double x, double y, double z) {
 		if (this.thispos != null) {
@@ -245,12 +265,6 @@ public class grappleArrow extends EntityThrowable implements IEntityAdditionalSp
 		} else if (sideHit == EnumFacing.NORTH) {
 			this.posZ -= 0.05;
 		}
-
-
-		if (this.toofaraway()) {
-			System.out.println("TOOFAR");
-			return;
-		}
 		
         this.motionX = 0;
         this.motionY = 0;
@@ -286,12 +300,12 @@ public class grappleArrow extends EntityThrowable implements IEntityAdditionalSp
 	@Override
     protected float getGravityVelocity()
     {
-        return 0F;
+        return 0.05F;
     }
 	
     public float getVelocity()
     {
-        return 5F;
+        return 2F;
     }
 
 	public void removeServer() {
