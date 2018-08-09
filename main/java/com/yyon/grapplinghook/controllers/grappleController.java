@@ -1,14 +1,14 @@
 package com.yyon.grapplinghook.controllers;
 
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.world.World;
-
 import com.yyon.grapplinghook.grapplemod;
 import com.yyon.grapplinghook.vec;
 import com.yyon.grapplinghook.entities.grappleArrow;
 import com.yyon.grapplinghook.network.GrappleEndMessage;
 import com.yyon.grapplinghook.network.PlayerMovementMessage;
+
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.world.World;
 
 /*
  * This file is part of GrappleMod.
@@ -58,12 +58,16 @@ public class grappleController {
 	
 	public final double playermovementmult = 0.5;
 	
+	SegmentHandler segmenthandler;
+	
 	public grappleController(int arrowId, int entityId, World world, vec pos, int maxlen, int controllerid) {
 		this.arrowId = arrowId;
 		this.entityId = entityId;
 		this.world = world;
 		this.pos = pos;
 		this.maxlen = maxlen;
+		
+		this.segmenthandler = new SegmentHandler(world);
 		
 		this.controllerid = controllerid;
 		
@@ -148,13 +152,17 @@ public class grappleController {
 					vec playerpos = vec.positionvec(entity);
 //					Vec3 playermotion = new Vec3(entity.motionX, entity.motionY, entity.motionZ);
 					
-					vec oldspherevec = playerpos.sub(arrowpos);
-					vec spherevec = oldspherevec.changelen(r);
+					vec anchor = this.segmenthandler.getclosest(arrowpos);
+					double distToAnchor = this.segmenthandler.getDistToAnchor();
+					double remaininglength = r - distToAnchor;
+					
+					vec oldspherevec = playerpos.sub(anchor);
+					vec spherevec = oldspherevec.changelen(remaininglength);
 					vec spherechange = spherevec.sub(oldspherevec);
 //					Vec3 spherepos = spherevec.add(arrowpos);
 					
 					vec additionalmotion;
-					if (arrowpos.sub(playerpos).length() < this.r) {
+					if (anchor.sub(playerpos).length() < remaininglength) {
 						additionalmotion = new vec(0,0,0);
 					} else {
 						additionalmotion = spherechange;//new Vec3(0,0,0);
@@ -169,7 +177,7 @@ public class grappleController {
 							this.dojump(player, spherevec);
 							return;
 						} else if (grapplemod.proxy.isSneaking(entity)) {
-							if (arrowpos.y > playerpos.y) {
+							if (anchor.y > playerpos.y) {
 	//							motion = multvec(motion, 0.9);
 								vec motiontorwards = spherevec.changelen(-0.1);
 								motiontorwards = new vec(motiontorwards.x, 0, motiontorwards.z);
@@ -186,10 +194,10 @@ public class grappleController {
 //											double motionup = this.playerforward;
 											additionalmotion = new vec(0, this.playerforward, 0);
 //											this.r = dist;
-											this.r = dist;
+											this.r = dist + distToAnchor;
 											this.r -= this.playerforward*0.3;
 											if (this.r < 0) {
-												this.r = dist;
+												this.r = dist + distToAnchor;
 											}
 										}
 								}
@@ -205,7 +213,7 @@ public class grappleController {
 					
 					vec newmotion = motion.add(additionalmotion);
 					
-					if (arrowpos.sub(playerpos.add(motion)).length() > r) { // moving away
+					if (anchor.sub(playerpos.add(motion)).length() > remaininglength) { // moving away
 						motion = motion.removealong(spherevec);
 					}
 					
@@ -213,6 +221,8 @@ public class grappleController {
 					entity.motionX = newmotion.x;
 					entity.motionY = newmotion.y;
 					entity.motionZ = newmotion.z;
+					
+					segmenthandler.update(arrowpos, playerpos);
 					
 //					if (entity instanceof EntityPlayerMP) {
 						

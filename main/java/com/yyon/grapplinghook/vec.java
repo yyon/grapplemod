@@ -20,6 +20,10 @@ public class vec {
 		this.z = vec3d.z;
 	}
 	
+	public Vec3d toVec3d() {
+		return new Vec3d(this.x, this.y, this.z);
+	}
+	
 	public static vec positionvec(Entity e) {
 		return new vec(e.posX, e.posY, e.posZ);
 	}

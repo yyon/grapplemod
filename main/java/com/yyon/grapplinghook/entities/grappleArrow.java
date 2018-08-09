@@ -87,7 +87,7 @@ public class grappleArrow extends EntityThrowable implements IEntityAdditionalSp
 	public void onUpdate(){
 		super.onUpdate();
 		
-		if (this.shootingEntityID == 0) { // removes ghost grappling hooks
+		if (this.shootingEntityID == 0 || this.shootingEntity == null) { // removes ghost grappling hooks
 			this.remove();
 		}
 		
@@ -99,8 +99,7 @@ public class grappleArrow extends EntityThrowable implements IEntityAdditionalSp
 			super.setPosition(this.thispos.x, this.thispos.y, this.thispos.z);
 		}
 		
-		
-		if (!grapplemod.attached.contains(this.shootingEntityID)) {
+		if (this.shootingEntity != null)  {
 			vec ropevec = vec.positionvec(this).sub(vec.positionvec(this.shootingEntity));
 			double d = ropevec.length();
 			if (d > this.maxlen) {

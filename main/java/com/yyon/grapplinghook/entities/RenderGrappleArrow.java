@@ -213,11 +213,6 @@ public class RenderGrappleArrow<T extends Entity> extends Render<T>
         
         double taut = arrow.taut;
         
-    	boolean reverse = false;
-    	if (arrow.posY < e.posY+1.62) {
-    		reverse = true;
-    	}
-    	
         double X;
         double Y;
         double Z;
