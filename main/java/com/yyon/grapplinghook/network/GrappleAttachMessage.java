@@ -1,18 +1,22 @@
 package com.yyon.grapplinghook.network;
 
+import java.util.LinkedList;
+
+import com.yyon.grapplinghook.grapplemod;
+import com.yyon.grapplinghook.vec;
+import com.yyon.grapplinghook.controllers.SegmentHandler;
+import com.yyon.grapplinghook.entities.grappleArrow;
+
 import io.netty.buffer.ByteBuf;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
+import net.minecraft.util.EnumFacing;
 import net.minecraft.util.IThreadListener;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
-
-import com.yyon.grapplinghook.grapplemod;
-import com.yyon.grapplinghook.vec;
-import com.yyon.grapplinghook.entities.grappleArrow;
 
 /*
  * This file is part of GrappleMod.
@@ -39,12 +43,15 @@ public class GrappleAttachMessage implements IMessage {
 	public double z;
 	public int controlid;
 	public int entityid;
-	public int maxlen;
+	public double maxlen;
 	public BlockPos blockpos;
+	public LinkedList<vec> segments;
+	public LinkedList<EnumFacing> segmenttopsides;
+	public LinkedList<EnumFacing> segmentbottomsides;
 
     public GrappleAttachMessage() { }
 
-    public GrappleAttachMessage(int id, double x, double y, double z, int controlid, int entityid, int maxlen, BlockPos blockpos) {
+    public GrappleAttachMessage(int id, double x, double y, double z, int controlid, int entityid, double maxlen, BlockPos blockpos, LinkedList<vec> segments, LinkedList<EnumFacing> segmenttopsides, LinkedList<EnumFacing> segmentbottomsides) {
     	this.id = id;
         this.x = x;
         this.y = y;
@@ -53,6 +60,9 @@ public class GrappleAttachMessage implements IMessage {
         this.entityid = entityid;
         this.maxlen = maxlen;
         this.blockpos = blockpos;
+        this.segments = segments;
+        this.segmenttopsides = segmenttopsides;
+        this.segmentbottomsides = segmentbottomsides;
     }
 
     @Override
@@ -63,11 +73,30 @@ public class GrappleAttachMessage implements IMessage {
         this.z = buf.readDouble();
         this.controlid = buf.readInt();
         this.entityid = buf.readInt();
-        this.maxlen = buf.readInt();
+        this.maxlen = buf.readDouble();
         int blockx = buf.readInt();
         int blocky = buf.readInt();
         int blockz = buf.readInt();
         this.blockpos = new BlockPos(blockx, blocky, blockz);
+        
+        int size = buf.readInt();
+        this.segments = new LinkedList<vec>();
+        this.segmentbottomsides = new LinkedList<EnumFacing>();
+        this.segmenttopsides = new LinkedList<EnumFacing>();
+
+		segments.add(new vec(0, 0, 0));
+		segmentbottomsides.add(null);
+		segmenttopsides.add(null);
+		
+		for (int i = 1; i < size-1; i++) {
+        	this.segments.add(new vec(buf.readDouble(), buf.readDouble(), buf.readDouble()));
+        	this.segmentbottomsides.add(EnumFacing.getFront(buf.readInt()));
+        	this.segmenttopsides.add(EnumFacing.getFront(buf.readInt()));
+        }
+		
+		segments.add(new vec(0, 0, 0));
+		segmentbottomsides.add(null);
+		segmenttopsides.add(null);
     }
 
     @Override
@@ -78,10 +107,19 @@ public class GrappleAttachMessage implements IMessage {
         buf.writeDouble(this.z);
         buf.writeInt(this.controlid);
         buf.writeInt(this.entityid);
-        buf.writeInt(this.maxlen);
+        buf.writeDouble(this.maxlen);
         buf.writeInt(this.blockpos.getX());
         buf.writeInt(this.blockpos.getY());
         buf.writeInt(this.blockpos.getZ());
+        
+        buf.writeInt(this.segments.size());
+        for (int i = 1; i < this.segments.size()-1; i++) {
+        	buf.writeDouble(this.segments.get(i).x);
+        	buf.writeDouble(this.segments.get(i).y);
+        	buf.writeDouble(this.segments.get(i).z);
+        	buf.writeInt(this.segmentbottomsides.get(i).getIndex());
+        	buf.writeInt(this.segmenttopsides.get(i).getIndex());
+        }
     }
 
     public static class Handler implements IMessageHandler<GrappleAttachMessage, IMessage> {
@@ -100,6 +138,11 @@ public class GrappleAttachMessage implements IMessage {
             	Entity grapple = world.getEntityByID(message.id);
             	if (grapple instanceof grappleArrow) {
 	            	((grappleArrow) grapple).clientAttach(message.x, message.y, message.z);
+	            	SegmentHandler segmenthandler = ((grappleArrow) grapple).segmenthandler;
+	            	segmenthandler.segments = message.segments;
+	            	segmenthandler.segmentbottomsides = message.segmentbottomsides;
+	            	segmenthandler.segmenttopsides = message.segmenttopsides;
+	            	
             	} else {
             	}
             	

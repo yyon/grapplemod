@@ -52,7 +52,7 @@ public class grappleController {
 	public int ongroundtimer = 0;
 	public int maxongroundtimer = 3;
 	
-	public int maxlen;
+	public double maxlen;
 	
 	public int controllerid;
 	
@@ -60,24 +60,24 @@ public class grappleController {
 	
 	SegmentHandler segmenthandler;
 	
-	public grappleController(int arrowId, int entityId, World world, vec pos, int maxlen, int controllerid) {
+	public grappleController(int arrowId, int entityId, World world, vec pos, double maxlen, int controllerid) {
 		this.arrowId = arrowId;
 		this.entityId = entityId;
 		this.world = world;
 		this.pos = pos;
 		this.maxlen = maxlen;
 		
-		this.segmenthandler = new SegmentHandler(world);
-		
 		this.controllerid = controllerid;
 		
 		this.entity = world.getEntityByID(entityId);
 		Entity arrow = world.getEntityByID(arrowId);
 		if (arrow != null) {
-			((grappleArrow) arrow).segmenthandler = this.segmenthandler;
+//			((grappleArrow) arrow).segmenthandler = this.segmenthandler;
+			this.segmenthandler = ((grappleArrow) arrow).segmenthandler;
+			this.r = ((grappleArrow) arrow).segmenthandler.getDist(this.pos, vec.positionvec(entity).add(new vec(0, entity.getEyeHeight(), 0)));
 		}
 		
-		this.r = this.pos.sub(vec.positionvec(entity)).length();
+//		this.r = this.pos.sub(vec.positionvec(entity)).length();
 		this.motion = vec.motionvec(entity);
 		
 		this.ongroundtimer = 0;
@@ -229,7 +229,7 @@ public class grappleController {
 					entity.motionY = newmotion.y;
 					entity.motionZ = newmotion.z;
 					
-					segmenthandler.update(arrowpos, playerpos, r);
+					segmenthandler.update(arrowpos, playerpos, r, false);
 					
 //					if (entity instanceof EntityPlayerMP) {
 						

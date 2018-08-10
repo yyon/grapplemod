@@ -2,12 +2,16 @@ package com.yyon.grapplinghook.controllers;
 
 import java.util.LinkedList;
 
+import com.yyon.grapplinghook.grapplemod;
 import com.yyon.grapplinghook.vec;
+import com.yyon.grapplinghook.entities.grappleArrow;
+import com.yyon.grapplinghook.network.SegmentMessage;
 
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.math.Vec3i;
 import net.minecraft.world.World;
+import net.minecraftforge.fml.common.network.NetworkRegistry.TargetPoint;
 
 public class SegmentHandler {
 
@@ -15,11 +19,12 @@ public class SegmentHandler {
 	public LinkedList<EnumFacing> segmentbottomsides;
 	public LinkedList<EnumFacing> segmenttopsides;
 	public World world;
+	public grappleArrow arrow;
 	
 	vec prevhookpos = null;
 	vec prevplayerpos = null;;
 	
-	public SegmentHandler(World w) {
+	public SegmentHandler(World w, grappleArrow arrow) {
 		segments = new LinkedList<vec>();
 		segments.add(new vec(0, 0, 0));
 		segments.add(new vec(0, 0, 0));
@@ -30,11 +35,12 @@ public class SegmentHandler {
 		segmenttopsides.add(null);
 		segmenttopsides.add(null);
 		this.world = w;
+		this.arrow = arrow;
 	}
 	
 	double ropelen;
 	
-	public void update(vec hookpos, vec playerpos, double ropelen) {
+	public void update(vec hookpos, vec playerpos, double ropelen, boolean movinghook) {
 		if (prevhookpos == null) {
 	        prevhookpos = hookpos;
 	        prevplayerpos = playerpos;
@@ -73,11 +79,57 @@ public class SegmentHandler {
 			}
 		}
 		
+		vec farthest = segments.get(1);
+		
+		if (movinghook) {
+			while (true) {
+				if (segments.size() == 2) {
+					break;
+				}
+				
+				int index = 1;
+				farthest = segments.get(index);
+				EnumFacing bottomside = segmentbottomsides.get(index);
+				EnumFacing topside = segmenttopsides.get(index);
+				vec ropevec = farthest.sub(hookpos);
+				
+				vec beforepoint = segments.get(index+1);
+				
+				vec edgevec = getnormal(bottomside).cross(getnormal(topside));
+				vec planenormal = beforepoint.sub(farthest).cross(edgevec);
+//				planenormal = getnormal(bottomside).add(getnormal(topside)).proj(planenormal);
+				
+//				System.out.println(ropevec.dot(planenormal));
+				
+				if (ropevec.dot(planenormal) > 0 || ropevec.length() < 0.1) {
+					System.out.println("removed farthest");
+					this.removesegment(index);
+				} else {
+					break;
+				}
+			}
+			
+			while (true) {
+				if (this.getDistToFarthest() > ropelen) {
+					this.removesegment(1);
+				} else {
+					break;
+				}
+			}
+		}
+		
 		vec prevclosest = closest;
 		if (segments.size() == 2) {
 			prevclosest = prevhookpos;
 		}
 		updatesegment(closest, prevclosest, playerpos, prevplayerpos, segments.size() - 1);
+		
+		farthest = segments.get(1);
+		vec prevfarthest = farthest;
+		if (segments.size() == 2) {
+			prevfarthest = prevplayerpos;
+		}
+		updatesegment(hookpos, prevhookpos, farthest, prevfarthest, 1);
 		
         prevhookpos = hookpos;
         prevplayerpos = playerpos;
@@ -88,6 +140,12 @@ public class SegmentHandler {
 		segments.remove(index);
 		segmentbottomsides.remove(index);
 		segmenttopsides.remove(index);
+
+		if (!this.world.isRemote) {
+			SegmentMessage addmessage = new SegmentMessage(this.arrow.getEntityId(), false, index, new vec(0, 0, 0), EnumFacing.DOWN, EnumFacing.DOWN);
+			vec playerpoint = vec.positionvec(this.arrow.shootingEntity);
+			grapplemod.network.sendToAllAround(addmessage, new TargetPoint(this.world.provider.getDimension(), playerpoint.x, playerpoint.y, playerpoint.z, 100));
+		}
 	}
 	
 	public void updatesegment(vec top, vec prevtop, vec bottom, vec prevbottom, int index) {
@@ -182,16 +240,26 @@ public class SegmentHandler {
 		vec offset = bottomnormal.add(topnormal).mult(0.1);
 		vec bendpoint = intersectionpoint.add(offset);
 		
-        segments.add(index, bendpoint);
-        segmentbottomsides.add(index, bottomside);
-        segmenttopsides.add(index, topside);
-		System.out.println("added segment");
-		this.print();
+		this.actuallyaddsegment(index, bendpoint, bottomside, topside);
 
 		if(this.getDistToAnchor() + .2 > this.ropelen) {
 			System.out.println("not enough length left, removing");
 			this.removesegment(index);
 			return;
+		}
+	}
+	
+	public void actuallyaddsegment(int index, vec bendpoint, EnumFacing bottomside, EnumFacing topside) {
+        segments.add(index, bendpoint);
+        segmentbottomsides.add(index, bottomside);
+        segmenttopsides.add(index, topside);
+		System.out.println("added segment");
+		this.print();
+		
+		if (!this.world.isRemote) {
+			SegmentMessage addmessage = new SegmentMessage(this.arrow.getEntityId(), true, index, bendpoint, topside, bottomside);
+			vec playerpoint = vec.positionvec(this.arrow.shootingEntity);
+			grapplemod.network.sendToAllAround(addmessage, new TargetPoint(this.world.provider.getDimension(), playerpoint.x, playerpoint.y, playerpoint.z, 100));
 		}
 	}
 	
@@ -216,6 +284,30 @@ public class SegmentHandler {
 	public double getDistToAnchor() {
 		double dist = 0;
 		for (int i = 0; i < segments.size() - 2; i++) {
+			dist += segments.get(i).sub(segments.get(i+1)).length();
+		}
+		
+		return dist;
+	}
+	
+	public vec getfarthest() {
+		return segments.get(1);
+	}
+	
+	public double getDistToFarthest() {
+		double dist = 0;
+		for (int i = 1; i < segments.size() - 1; i++) {
+			dist += segments.get(i).sub(segments.get(i+1)).length();
+		}
+		
+		return dist;
+	}
+	
+	public double getDist(vec hookpos, vec playerpos) {
+		segments.set(0, hookpos);
+		segments.set(segments.size() - 1, playerpos);
+		double dist = 0;
+		for (int i = 0; i < segments.size() - 1; i++) {
 			dist += segments.get(i).sub(segments.get(i+1)).length();
 		}
 		

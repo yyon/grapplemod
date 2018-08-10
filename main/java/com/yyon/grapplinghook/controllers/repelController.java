@@ -11,7 +11,7 @@ public class repelController extends magnetController {
 	public final double playermovementmult = 1.5;
 	
 	public repelController(int arrowId, int entityId, World world, vec pos,
-			int maxlen, int id) {
+			double maxlen, int id) {
 		super(arrowId, entityId, world, pos, maxlen, id, 0);
 	}
 

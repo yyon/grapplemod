@@ -27,7 +27,7 @@ import com.yyon.grapplinghook.entities.multihookArrow;
  */
 
 public class multihookController extends grappleController {
-	public multihookController(int arrowId, int entityId, World world, vec pos, int maxlen, int id) {
+	public multihookController(int arrowId, int entityId, World world, vec pos, double maxlen, int id) {
 		super(arrowId, entityId, world, pos, maxlen, id);
 	}
 
