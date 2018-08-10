@@ -242,10 +242,6 @@ public class RenderGrappleArrow<T extends Entity> extends Render<T>
         			taut = arrow.taut;
         		}
         		
-        		System.out.print(i);
-        		from.print();
-        		to.print();
-        		
                 this.drawSegment(from, to, taut, tessellator, vertexbuffer); 
         	}
         }

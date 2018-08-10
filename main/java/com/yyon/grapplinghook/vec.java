@@ -143,4 +143,8 @@ public class vec {
 		vec norm = this.normalize();
 		return Math.toDegrees(-Math.asin(norm.y));
 	}
+	
+	public vec cross(vec b) {
+		return new vec(this.y * b.z - this.z * b.y, this.z * b.x - this.x * b.z, this.x * b.y - this.y * b.x);
+	}
 }

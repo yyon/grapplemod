@@ -154,6 +154,9 @@ public class grappleController {
 					
 					vec arrowpos = this.pos;//this.getPositionVector();
 					vec playerpos = vec.positionvec(entity);
+					playerpos = playerpos.add(new vec(0, entity.getEyeHeight(), 0));
+					
+
 //					Vec3 playermotion = new Vec3(entity.motionX, entity.motionY, entity.motionZ);
 					
 					vec anchor = this.segmenthandler.getclosest(arrowpos);
@@ -200,7 +203,7 @@ public class grappleController {
 //											this.r = dist;
 											this.r = dist + distToAnchor;
 											this.r -= this.playerforward*0.3;
-											if (this.r < 0) {
+											if (this.r < distToAnchor) {
 												this.r = dist + distToAnchor;
 											}
 										}
@@ -226,8 +229,7 @@ public class grappleController {
 					entity.motionY = newmotion.y;
 					entity.motionZ = newmotion.z;
 					
-					vec playereye = playerpos.add(new vec(0, entity.getEyeHeight(), 0));
-					segmenthandler.update(arrowpos, playereye);
+					segmenthandler.update(arrowpos, playerpos, r);
 					
 //					if (entity instanceof EntityPlayerMP) {
 						
