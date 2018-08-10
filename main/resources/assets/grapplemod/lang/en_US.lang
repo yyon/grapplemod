@@ -7,3 +7,4 @@ item.magnetbow.name=Magnetic Grappling Hook
 item.repeller.name=Magnetic Forcefield
 item.multihook.name=Dual Motorized Grappling Hooks
 item.smarthook.name=Smart Motorized Grappling Hook
+tile.block_grapple_modifier.name=Grappling Hook Modifier

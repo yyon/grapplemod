@@ -5,6 +5,8 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Random;
 
+import com.yyon.grapplinghook.blocks.BlockGrappleModifier;
+import com.yyon.grapplinghook.blocks.TileEntityGrappleModifier;
 import com.yyon.grapplinghook.controllers.airfrictionController;
 import com.yyon.grapplinghook.controllers.enderController;
 import com.yyon.grapplinghook.controllers.grappleController;
@@ -43,6 +45,7 @@ import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemArmor;
+import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ResourceLocation;
@@ -64,6 +67,8 @@ import net.minecraftforge.fml.common.network.NetworkRegistry;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 import net.minecraftforge.fml.common.network.simpleimpl.SimpleNetworkWrapper;
 import net.minecraftforge.fml.common.registry.EntityRegistry;
+import net.minecraftforge.fml.common.registry.ForgeRegistries;
+import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.fml.relauncher.Side;
 
 /*
@@ -136,7 +141,33 @@ public class grapplemod {
 	public static ArrayList<Block> grapplingblocks;
 	public static boolean removeblocks = false;
 	
+	public static Block blockGrappleModifier;
+	public static ItemBlock itemBlockGrappleModifier;
+	
 	public ResourceLocation resourceLocation;
+	
+	public enum upgradeCategories {
+		ROPE ("Rope"), 
+		THROW ("Hook Thrower"), 
+		MOTOR ("Motor"), 
+		SWING ("Swing Speed"), 
+		STAFF ("Ender Staff"), 
+		FORCEFIELD ("Forcefield"), 
+		MAGNET ("Hook Magnet"), 
+		DOUBLE ("Double Hook");
+		
+		public String description;
+		private upgradeCategories(String desc) {
+			this.description = desc;
+		}
+		
+		public static upgradeCategories fromInt(int i) {
+			return upgradeCategories.values()[i];
+		}
+		public static int size() {
+			return upgradeCategories.values().length;
+		}
+		};
 	
 	@SidedProxy(clientSide="com.yyon.grapplinghook.ClientProxyClass", serverSide="com.yyon.grapplinghook.ServerProxyClass")
 	public static CommonProxyClass proxy;
@@ -207,7 +238,7 @@ public class grapplemod {
 	public void registerItems(RegistryEvent.Register<Item> event) {
 		System.out.println("REGISTERING ITEMS");
 		System.out.println(grapplebowitem);
-	    event.getRegistry().registerAll(grapplebowitem, hookshotitem, smarthookitem, launcheritem, longfallboots, enderhookitem, magnetbowitem, magnetbowitem, repelleritem, multihookitem);
+	    event.getRegistry().registerAll(grapplebowitem, hookshotitem, smarthookitem, launcheritem, longfallboots, enderhookitem, magnetbowitem, repelleritem, multihookitem);
 	}
 	
 	@EventHandler
@@ -243,7 +274,6 @@ public class grapplemod {
 		registerEntity(multihookArrow.class, "multihookArrow");
 		registerEntity(smartHookArrow.class, "smartHookArrow");
 		
-		proxy.preInit(event);
 		network = NetworkRegistry.INSTANCE.newSimpleChannel("grapplemodchannel");
 		byte id = 0;
 		network.registerMessage(PlayerMovementMessage.Handler.class, PlayerMovementMessage.class, id++, Side.SERVER);
@@ -255,7 +285,21 @@ public class grapplemod {
 		network.registerMessage(ToolConfigMessage.Handler.class, ToolConfigMessage.class, id++, Side.SERVER);
 		network.registerMessage(SegmentMessage.Handler.class, SegmentMessage.class, id++, Side.CLIENT);
 		
+		blockGrappleModifier = (BlockGrappleModifier)(new BlockGrappleModifier().setUnlocalizedName("block_grapple_modifier"));
+		blockGrappleModifier.setHardness(10F);
+		blockGrappleModifier.setRegistryName("block_grapple_modifier");
+	    ForgeRegistries.BLOCKS.register(blockGrappleModifier);
+
+	    itemBlockGrappleModifier = new ItemBlock(blockGrappleModifier);
+	    itemBlockGrappleModifier.setRegistryName(blockGrappleModifier.getRegistryName());
+	    ForgeRegistries.ITEMS.register(itemBlockGrappleModifier);
+
+	    // Each of your tile entities needs to be registered with a name that is unique to your mod.
+		GameRegistry.registerTileEntity(TileEntityGrappleModifier.class, "tile_entity_grapple_modifier");
+	
 	    MinecraftForge.EVENT_BUS.register(this);
+	    
+		proxy.preInit(event);
 	}
 	
 	@EventHandler
