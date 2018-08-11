@@ -239,14 +239,27 @@ public class RenderGrappleArrow<T extends Entity> extends Render<T>
         		
         		double taut = 1;
         		if (i == segmenthandler.segments.size() - 2) {
-        			taut = arrow.taut;
+//        			taut = arrow.taut;
         		}
         		
                 this.drawSegment(from, to, taut, tessellator, vertexbuffer); 
         	}
         }
         
-
+/*        if (arrow.debugpos != null) {
+        	vec debugpos = arrow.debugpos.sub(somethingpos);
+        	this.drawDebug(debugpos, tessellator, vertexbuffer, 1, 0, 0);
+        }
+        if (arrow.debugpos2 != null) {
+        	vec debugpos = arrow.debugpos.sub(somethingpos);
+        	this.drawDebug(debugpos, tessellator, vertexbuffer, 0, 1, 0);
+        }
+        if (arrow.debugpos3 != null) {
+        	vec debugpos = arrow.debugpos.sub(somethingpos);
+        	this.drawDebug(debugpos, tessellator, vertexbuffer, 0, 0, 1);
+        }*/
+        
+        
         vertexbuffer.begin(5, DefaultVertexFormats.POSITION_COLOR);
     	X = x + d10;
     	Y = y + d11;
@@ -266,6 +279,45 @@ public class RenderGrappleArrow<T extends Entity> extends Render<T>
         super.doRender(entity, x, y, z, entityYaw, partialTicks);
         
         
+    }
+    
+    public void drawDebug(vec point, Tessellator tessellator, BufferBuilder vertexbuffer, float R, float G, float B) {
+        double X = point.x;
+        double Y = point.y;
+        double Z = point.z;
+        
+        vertexbuffer.begin(5, DefaultVertexFormats.POSITION_COLOR);
+
+        vertexbuffer.pos(X, Y + 0.025D, Z).color(R, G, B, 1.0F).endVertex();
+        vertexbuffer.pos(X - 0.025D, Y, Z - 0.025D).color(R, G, B, 1.0F).endVertex();
+        vertexbuffer.pos(X, Y + 1 + 0.025D, Z).color(R, G, B, 1.0F).endVertex();
+        vertexbuffer.pos(X - 0.025D, Y + 1, Z - 0.025D).color(R, G, B, 1.0F).endVertex();
+        
+        tessellator.draw();
+        vertexbuffer.begin(5, DefaultVertexFormats.POSITION_COLOR);
+
+        vertexbuffer.pos(X + 0.025D, Y, Z - 0.025D).color(R, G, B, 1.0F).endVertex();
+        vertexbuffer.pos(X, Y + 0.025D, Z).color(R, G, B, 1.0F).endVertex();
+        vertexbuffer.pos(X + 0.025D, Y+1, Z - 0.025D).color(R, G, B, 1.0F).endVertex();
+        vertexbuffer.pos(X, Y+1 + 0.025D, Z).color(R, G, B, 1.0F).endVertex();
+        
+        tessellator.draw();
+        vertexbuffer.begin(5, DefaultVertexFormats.POSITION_COLOR);
+
+        vertexbuffer.pos(X, Y - 0.025D, Z).color(R, G, B, 1.0F).endVertex();
+        vertexbuffer.pos(X + 0.025D, Y, Z - 0.025D).color(R, G, B, 1.0F).endVertex();
+        vertexbuffer.pos(X, Y+1 - 0.025D, Z).color(R, G, B, 1.0F).endVertex();
+        vertexbuffer.pos(X + 0.025D, Y+1, Z - 0.025D).color(R, G, B, 1.0F).endVertex();
+        
+        tessellator.draw();
+        vertexbuffer.begin(5, DefaultVertexFormats.POSITION_COLOR);
+
+        vertexbuffer.pos(X - 0.025D, Y, Z - 0.025D).color(R, G, B, 1.0F).endVertex();
+        vertexbuffer.pos(X, Y - 0.025D, Z).color(R, G, B, 1.0F).endVertex();
+        vertexbuffer.pos(X - 0.025D, Y+1, Z - 0.025D).color(R, G, B, 1.0F).endVertex();
+        vertexbuffer.pos(X, Y+1 - 0.025D, Z).color(R, G, B, 1.0F).endVertex();
+        
+        tessellator.draw();
     }
     
     public void drawSegment(vec start, vec finish, double taut, Tessellator tessellator, BufferBuilder vertexbuffer) {

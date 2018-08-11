@@ -18,6 +18,7 @@ import net.minecraft.util.EnumActionResult;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.relauncher.Side;
@@ -111,7 +112,11 @@ public class grappleBow extends Item {
 			float f = 2.0F;
 			if (entityarrow == null) {
 				entityarrow = this.createarrow(stack, worldIn, entityLiving, righthand);
-	            entityarrow.shoot(entityLiving, entityLiving.rotationPitch, entityLiving.rotationYaw, 0.0F, entityarrow.getVelocity(), 0.0F);
+		        float velx = -MathHelper.sin(entityLiving.rotationYaw * 0.017453292F) * MathHelper.cos(entityLiving.rotationPitch * 0.017453292F);
+		        float vely = -MathHelper.sin(entityLiving.rotationPitch * 0.017453292F);
+		        float velz = MathHelper.cos(entityLiving.rotationYaw * 0.017453292F) * MathHelper.cos(entityLiving.rotationPitch * 0.017453292F);
+//		        entityarrow.shoot(entityLiving, entityLiving.rotationPitch, entityLiving.rotationYaw, 0.0F, entityarrow.getVelocity(), 0.0F);
+		        entityarrow.shoot((double) velx, (double) vely, (double) velz, entityarrow.getVelocity(), 0.0F);
 				setArrow(entityLiving, stack, entityarrow);
 	
 				stack.damageItem(1, entityLiving);

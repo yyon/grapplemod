@@ -24,6 +24,9 @@ public class SegmentHandler {
 	vec prevhookpos = null;
 	vec prevplayerpos = null;;
 	
+	final double bendoffset = 0.05;
+	final double intoblock = 0.05;
+	
 	public SegmentHandler(World w, grappleArrow arrow) {
 		segments = new LinkedList<vec>();
 		segments.add(new vec(0, 0, 0));
@@ -102,7 +105,7 @@ public class SegmentHandler {
 //				System.out.println(ropevec.dot(planenormal));
 				
 				if (ropevec.dot(planenormal) > 0 || ropevec.length() < 0.1) {
-					System.out.println("removed farthest");
+//					System.out.println("removed farthest");
 					this.removesegment(index);
 				} else {
 					break;
@@ -122,21 +125,24 @@ public class SegmentHandler {
 		if (segments.size() == 2) {
 			prevclosest = prevhookpos;
 		}
-		updatesegment(closest, prevclosest, playerpos, prevplayerpos, segments.size() - 1);
+		updatesegment(closest, prevclosest, playerpos, prevplayerpos, segments.size() - 1, 0);
 		
-		farthest = segments.get(1);
-		vec prevfarthest = farthest;
-		if (segments.size() == 2) {
-			prevfarthest = prevplayerpos;
+		if (movinghook) {
+			farthest = segments.get(1);
+			vec prevfarthest = farthest;
+			if (segments.size() == 2) {
+				prevfarthest = prevplayerpos;
+			}
+			updatesegment(hookpos, prevhookpos, farthest, prevfarthest, 1, 0);
 		}
-		updatesegment(hookpos, prevhookpos, farthest, prevfarthest, 1);
 		
         prevhookpos = hookpos;
         prevplayerpos = playerpos;
 	}
 	
 	public void removesegment(int index) {
-		System.out.println("removed segment");
+/*		System.out.println("removed segment");*/
+		
 		segments.remove(index);
 		segmentbottomsides.remove(index);
 		segmenttopsides.remove(index);
@@ -148,14 +154,112 @@ public class SegmentHandler {
 		}
 	}
 	
-	public void updatesegment(vec top, vec prevtop, vec bottom, vec prevbottom, int index) {
+	public void updatesegment(vec top, vec prevtop, vec bottom, vec prevbottom, int index, int numberrecursions) {
         RayTraceResult bottomraytraceresult = this.world.rayTraceBlocks(bottom.toVec3d(), top.toVec3d());
         
+        // if rope hit block
         if (bottomraytraceresult != null)
         {
+//        	System.out.println(bottomraytraceresult.typeOfHit);
             vec bottomhitvec = new vec(bottomraytraceresult.hitVec.x, bottomraytraceresult.hitVec.y, bottomraytraceresult.hitVec.z);
+/*            this.arrow.debugpos = bottomhitvec;
+            this.arrow.debugpos2 = bottom;
+            this.arrow.debugpos3 = top;*/
             EnumFacing bottomside = bottomraytraceresult.sideHit;
-            RayTraceResult topraytraceresult = this.world.rayTraceBlocks(top.toVec3d(), bottom.toVec3d());
+            vec bottomnormal = this.getnormal(bottomside);
+            
+            // calculate where bottomhitvec was along the rope in the previous tick
+            double ropelen = top.sub(bottom).length();
+            double prevropelen = prevtop.sub(prevbottom).length();
+            
+            double bottomtohit = bottom.sub(bottomhitvec).length();
+            double prevbottomtohit = bottomtohit * ropelen / prevropelen;
+            
+            vec prevbottomhit = prevtop.sub(prevbottom).changelen(prevbottomtohit).add(prevbottom);
+            
+            // use prevbottomhit to calculate the velocity of that part of the rope when it hit the block
+            vec motionalonghit = bottomhitvec.sub(prevbottomhit);
+            
+            // calculate the motion parallel to the block side
+            vec motionparallel = motionalonghit.removealong(bottomnormal);
+            
+            // the rope must have hit the corner on the plane across the edge of the block
+            // and is bounded by the quadrilateral top, prevtop, prevbottom, bottom
+            vec cornerbound1 = bottomhitvec.add(bottomnormal.changelen(-intoblock));
+            
+            vec cornerbound2 = null;
+            double cornerlinedist = Double.POSITIVE_INFINITY;
+            
+            vec bound_option1 = line_plane_intersection(prevtop, prevbottom, cornerbound1, bottomnormal);
+            if (/*cornerbound1.sub(bound_option1).dot(motionparallel) > 0 &&*/ cornerbound1.sub(bound_option1).length() < cornerlinedist) {
+            	cornerbound2 = bound_option1;
+            	cornerlinedist = cornerbound1.sub(bound_option1).length();
+            }
+            vec bound_option2 = line_plane_intersection(top, prevtop, cornerbound1, bottomnormal);
+            if (/*cornerbound1.sub(bound_option2).dot(motionparallel) > 0 &&*/ cornerbound1.sub(bound_option2).length() < cornerlinedist) {
+            	cornerbound2 = bound_option2;
+            	cornerlinedist = cornerbound1.sub(bound_option2).length();
+            }
+            vec bound_option3 = line_plane_intersection(prevbottom, bottom, cornerbound1, bottomnormal);
+            if (/*cornerbound1.sub(bound_option3).dot(motionparallel) > 0 &&*/ cornerbound1.sub(bound_option3).length() < cornerlinedist) {
+            	cornerbound2 = bound_option3;
+            	cornerlinedist = cornerbound1.sub(bound_option3).length();
+            }
+            
+            if (cornerbound2 != null) {
+            	// the corner must be in the line (cornerbound2, cornerbound1)
+                RayTraceResult cornerraytraceresult = this.world.rayTraceBlocks(cornerbound2.toVec3d(), cornerbound1.toVec3d());
+                if (cornerraytraceresult != null) {
+                	vec cornerhitpos = new vec(cornerraytraceresult.hitVec.x, cornerraytraceresult.hitVec.y, cornerraytraceresult.hitVec.z);
+                	EnumFacing cornerside = cornerraytraceresult.sideHit;
+                	
+                	if (cornerside == bottomside || 
+                			cornerside.getOpposite() == bottomside) {
+                		// this should not happen
+//                		System.out.println("Warning: corner is same or opposite of bottomside");
+                		return;
+                	} else {
+                		// add a bend around the corner
+                		vec actualcorner = cornerhitpos.add(bottomnormal.changelen(intoblock));
+                		vec bend = actualcorner.add(bottomnormal.changelen(bendoffset)).add(getnormal(cornerside).changelen(bendoffset));
+                		vec topropevec = bend.sub(top);
+                		vec bottomropevec = bend.sub(bottom);
+                		
+                		if (topropevec.length() > 0.05 && bottomropevec.length() > 0.05) { // ignore bends that are too close to another bend
+                    		this.actuallyaddsegment(index, bend, bottomside, cornerside);
+                    		
+                    		// if not enough rope length left, undo
+                    		if(this.getDistToAnchor() + .2 > this.ropelen) {
+//                    			System.out.println("Warning: not enough length left, removing");
+                    			this.removesegment(index);
+                    			return;
+                    		}
+                    		
+                    		// now to recurse on top section of rope
+                    		double newropelen = topropevec.length() + bottomropevec.length();
+                    		
+                    		double prevtoptobend = topropevec.length() * prevropelen / newropelen;
+                    		vec prevbend = prevtop.add(prevbottom.sub(prevtop).changelen(prevtoptobend));
+                    		
+                    		if (numberrecursions < 10) {
+                        		updatesegment(top, prevtop, bend, prevbend, index, numberrecursions+1);
+                    		} else {
+                    			System.out.println("Warning: number recursions exceeded");
+                    		}
+                		} else {
+//                			System.out.println("Warning: bends are too close");
+                		}
+                	}
+                } else {
+//                	System.out.println("Warning: no corner collision");
+                }
+            } else {
+//            	System.out.println("Warning: cornerbound2 is null");
+            }
+            
+            
+            
+/*            RayTraceResult topraytraceresult = this.world.rayTraceBlocks(top.toVec3d(), bottom.toVec3d());
             vec tophitvec = new vec(topraytraceresult.hitVec.x, topraytraceresult.hitVec.y, topraytraceresult.hitVec.z);
             EnumFacing topside = topraytraceresult.sideHit;
             
@@ -194,8 +298,18 @@ public class SegmentHandler {
 	            } else {
                     this.addsegment(bottomhitvec, tophitvec, bottomside, topside, index, top, prevtop, bottom, prevbottom);
 	            }
-            }
+            }*/
         }
+	}
+	
+	public vec line_plane_intersection(vec linepoint1, vec linepoint2, vec planepoint, vec planenormal) {
+		// calculate the intersection of a line and a plane
+		// formula: https://en.wikipedia.org/wiki/Line%E2%80%93plane_intersection#Algebraic_form
+		
+		vec linevec = linepoint2.sub(linepoint1);
+		
+		double d = planepoint.sub(linepoint1).dot(planenormal) / linevec.dot(planenormal);
+		return linepoint1.add(linevec.mult(d));
 	}
 	
 	public vec getnormal(EnumFacing facing) {
@@ -203,7 +317,7 @@ public class SegmentHandler {
 		return new vec(facingvec.getX(), facingvec.getY(), facingvec.getZ());
 	}
 	
-	public void addsegment(vec bottomhit, vec tophit, EnumFacing bottomside, EnumFacing topside, int index, vec top, vec prevtop, vec bottom, vec prevbottom) {
+/*	public void addsegment(vec bottomhit, vec tophit, EnumFacing bottomside, EnumFacing topside, int index, vec top, vec prevtop, vec bottom, vec prevbottom) {
 		System.out.println("Computing bend point");
 		
 		vec bottomnormal = getnormal(bottomside);
@@ -247,14 +361,15 @@ public class SegmentHandler {
 			this.removesegment(index);
 			return;
 		}
-	}
+	}*/
 	
 	public void actuallyaddsegment(int index, vec bendpoint, EnumFacing bottomside, EnumFacing topside) {
         segments.add(index, bendpoint);
         segmentbottomsides.add(index, bottomside);
         segmenttopsides.add(index, topside);
-		System.out.println("added segment");
-		this.print();
+
+        /*System.out.println("added segment");
+		this.print();*/
 		
 		if (!this.world.isRemote) {
 			SegmentMessage addmessage = new SegmentMessage(this.arrow.getEntityId(), true, index, bendpoint, topside, bottomside);

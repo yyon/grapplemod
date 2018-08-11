@@ -30,6 +30,15 @@ import com.yyon.grapplinghook.items.magnetBow;
 import com.yyon.grapplinghook.items.multiBow;
 import com.yyon.grapplinghook.items.repeller;
 import com.yyon.grapplinghook.items.smartHookBow;
+import com.yyon.grapplinghook.items.upgrades.BaseUpgradeItem;
+import com.yyon.grapplinghook.items.upgrades.DoubleUpgradeItem;
+import com.yyon.grapplinghook.items.upgrades.ForcefieldUpgradeItem;
+import com.yyon.grapplinghook.items.upgrades.MagnetUpgradeItem;
+import com.yyon.grapplinghook.items.upgrades.MotorUpgradeItem;
+import com.yyon.grapplinghook.items.upgrades.RopeUpgradeItem;
+import com.yyon.grapplinghook.items.upgrades.StaffUpgradeItem;
+import com.yyon.grapplinghook.items.upgrades.SwingUpgradeItem;
+import com.yyon.grapplinghook.items.upgrades.ThrowUpgradeItem;
 import com.yyon.grapplinghook.network.GrappleAttachMessage;
 import com.yyon.grapplinghook.network.GrappleAttachPosMessage;
 import com.yyon.grapplinghook.network.GrappleClickMessage;
@@ -110,7 +119,17 @@ public class grapplemod {
     public static Item magnetbowitem;
     public static Item repelleritem;
     public static Item multihookitem;
-    
+
+    public static Item baseupgradeitem;
+    public static Item doubleupgradeitem;
+    public static Item forcefieldupgradeitem;
+    public static Item magnetupgradeitem;
+    public static Item motorupgradeitem;
+    public static Item ropeupgradeitem;
+    public static Item staffupgradeitem;
+    public static Item swingupgradeitem;
+    public static Item throwupgradeitem;
+
 	public static Object instance;
 	
 	public static SimpleNetworkWrapper network;
@@ -164,10 +183,38 @@ public class grapplemod {
 		public static upgradeCategories fromInt(int i) {
 			return upgradeCategories.values()[i];
 		}
+		public int toInt() {
+			for (int i = 0; i < size(); i++) {
+				if (upgradeCategories.values()[i] == this) {
+					return i;
+				}
+			}
+			return -1;
+		}
 		public static int size() {
 			return upgradeCategories.values().length;
 		}
-		};
+		public Item getItem() {
+			if (this == upgradeCategories.ROPE) {
+				return ropeupgradeitem;
+			} else if (this == upgradeCategories.THROW) {
+				return throwupgradeitem;
+			} else if (this == upgradeCategories.MOTOR) {
+				return motorupgradeitem;
+			} else if (this == upgradeCategories.SWING) {
+				return swingupgradeitem;
+			} else if (this == upgradeCategories.STAFF) {
+				return staffupgradeitem;
+			} else if (this == upgradeCategories.FORCEFIELD) {
+				return forcefieldupgradeitem;
+			} else if (this == upgradeCategories.MAGNET) {
+				return magnetupgradeitem;
+			} else if (this == upgradeCategories.DOUBLE) {
+				return doubleupgradeitem;
+			}
+			return null;
+		}
+	};
 	
 	@SidedProxy(clientSide="com.yyon.grapplinghook.ClientProxyClass", serverSide="com.yyon.grapplinghook.ServerProxyClass")
 	public static CommonProxyClass proxy;
@@ -236,14 +283,15 @@ public class grapplemod {
 	
 	@SubscribeEvent
 	public void registerItems(RegistryEvent.Register<Item> event) {
-		System.out.println("REGISTERING ITEMS");
-		System.out.println(grapplebowitem);
-	    event.getRegistry().registerAll(grapplebowitem, hookshotitem, smarthookitem, launcheritem, longfallboots, enderhookitem, magnetbowitem, repelleritem, multihookitem);
+//		System.out.println("REGISTERING ITEMS");
+//		System.out.println(grapplebowitem);
+	    event.getRegistry().registerAll(grapplebowitem, hookshotitem, smarthookitem, launcheritem, longfallboots, enderhookitem, magnetbowitem, repelleritem, multihookitem, baseupgradeitem, doubleupgradeitem, forcefieldupgradeitem, magnetupgradeitem, motorupgradeitem, ropeupgradeitem, staffupgradeitem, swingupgradeitem, throwupgradeitem);
+
 	}
 	
 	@EventHandler
 	public void preInit(FMLPreInitializationEvent event){
-		System.out.println("PREINIT!!!");
+//		System.out.println("PREINIT!!!");
 		grapplebowitem = new grappleBow();
 		grapplebowitem.setRegistryName("grapplinghook");
 		hookshotitem = new hookBow();
@@ -262,8 +310,26 @@ public class grapplemod {
 		repelleritem.setRegistryName("repeller");
 		multihookitem = new multiBow();
 		multihookitem.setRegistryName("multihook");
-		
-		System.out.println(grapplebowitem);
+	    baseupgradeitem = new BaseUpgradeItem();
+	    baseupgradeitem.setRegistryName("baseupgradeitem");
+	    doubleupgradeitem = new DoubleUpgradeItem();
+	    doubleupgradeitem.setRegistryName("doubleupgradeitem");
+	    forcefieldupgradeitem = new ForcefieldUpgradeItem();
+	    forcefieldupgradeitem.setRegistryName("forcefieldupgradeitem");
+	    magnetupgradeitem = new MagnetUpgradeItem();
+	    magnetupgradeitem.setRegistryName("magnetupgradeitem");
+	    motorupgradeitem = new MotorUpgradeItem();
+	    motorupgradeitem.setRegistryName("motorupgradeitem");
+	    ropeupgradeitem = new RopeUpgradeItem();
+	    ropeupgradeitem.setRegistryName("ropeupgradeitem");
+	    staffupgradeitem = new StaffUpgradeItem();
+	    staffupgradeitem.setRegistryName("staffupgradeitem");
+	    swingupgradeitem = new SwingUpgradeItem();
+	    swingupgradeitem.setRegistryName("swingupgradeitem");
+	    throwupgradeitem = new ThrowUpgradeItem();
+	    throwupgradeitem.setRegistryName("throwupgradeitem");
+	    
+//		System.out.println(grapplebowitem);
 		
 		resourceLocation = new ResourceLocation(grapplemod.MODID, "grapplemod");
 		
@@ -373,7 +439,7 @@ public class grapplemod {
 			}
 		}
 		
-		System.out.println(blockpos);
+//		System.out.println(blockpos);
 		
 		grappleController control = null;
 		if (id == GRAPPLEID) {
@@ -414,7 +480,7 @@ public class grapplemod {
 				grapplemod.removesubarrow(arrowid);
 			}
 		} else if (id == AIRID) {
-			System.out.println("AIR FRICTION CONTROLLER");
+//			System.out.println("AIR FRICTION CONTROLLER");
 			control = new airfrictionController(arrowid, entityid, world, pos, maxlen, id);
 		}
 		if (blockpos != null && control != null) {

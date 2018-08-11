@@ -101,6 +101,15 @@ public class ClientProxyClass extends CommonProxyClass {
 		setgrapplebowtextures(grapplemod.repelleritem, repellerloc, repelleronloc);
 		setgrapplebowtextures(grapplemod.multihookitem, multihookloc, multihookropeloc);
 		setgrapplebowtextures(grapplemod.smarthookitem, smarthookloc, smarthookropeloc);
+		registerItemModel(grapplemod.baseupgradeitem);
+		registerItemModel(grapplemod.doubleupgradeitem);
+		registerItemModel(grapplemod.forcefieldupgradeitem);
+		registerItemModel(grapplemod.magnetupgradeitem);
+		registerItemModel(grapplemod.motorupgradeitem);
+		registerItemModel(grapplemod.ropeupgradeitem);
+		registerItemModel(grapplemod.staffupgradeitem);
+		registerItemModel(grapplemod.swingupgradeitem);
+		registerItemModel(grapplemod.throwupgradeitem);
 	}
 
 	@SubscribeEvent

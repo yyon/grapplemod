@@ -58,7 +58,11 @@ public class grappleArrow extends EntityThrowable implements IEntityAdditionalSp
 	
 	public double maxlen = 20;
 	
-	public SegmentHandler segmenthandler = null;;
+	public SegmentHandler segmenthandler = null;
+	
+//	public vec debugpos = null;
+//	public vec debugpos2 = null;
+//	public vec debugpos3 = null;
 	
 	public grappleArrow(World worldIn) {
 		super(worldIn);
@@ -278,6 +282,12 @@ public class grappleArrow extends EntityThrowable implements IEntityAdditionalSp
 			this.posX -= 0.05;
 		} else if (sideHit == EnumFacing.NORTH) {
 			this.posZ -= 0.05;
+		} else if (sideHit == EnumFacing.SOUTH) {
+			this.posZ += 0.05;
+		} else if (sideHit == EnumFacing.EAST) {
+			this.posX -= 0.05;
+		} else if (sideHit == EnumFacing.UP) {
+			this.posY += 0.05;
 		}
 		
         this.motionX = 0;
