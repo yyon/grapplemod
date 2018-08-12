@@ -329,5 +329,7 @@ public class grappleBow extends Item implements clickitem {
 
 	@Override
 	public void onLeftClickRelease(ItemStack stack, EntityPlayer player) {
+
 	}
+	
 }

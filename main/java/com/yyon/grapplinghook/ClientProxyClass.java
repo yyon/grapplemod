@@ -100,6 +100,7 @@ public class ClientProxyClass extends CommonProxyClass {
 		registerItemModel(grapplemod.staffupgradeitem);
 		registerItemModel(grapplemod.swingupgradeitem);
 		registerItemModel(grapplemod.throwupgradeitem);
+		ModelBakery.registerItemVariants(grapplemod.grapplebowitem, hookshotloc);
 	}
 
 	@SubscribeEvent
