@@ -381,7 +381,7 @@ public class grapplemod {
 		}
 	}
 	
-	public static grappleController createControl(int id, int arrowid, int entityid, World world, vec pos, double maxlen, BlockPos blockpos, GrappleCustomization custom) {
+	public static grappleController createControl(int id, int arrowid, int entityid, World world, vec pos, BlockPos blockpos, GrappleCustomization custom) {
 
 		grappleArrow arrow = null;
 		Entity arrowentity = world.getEntityByID(arrowid);
@@ -401,7 +401,7 @@ public class grapplemod {
 		grappleController control = null;
 		if (id == GRAPPLEID) {
 			if (!multi) {
-				control = new grappleController(arrowid, entityid, world, pos, maxlen, id, custom);
+				control = new grappleController(arrowid, entityid, world, pos, id, custom);
 			} else {
 				control = grapplemod.controllers.get(entityid);
 				boolean created = false;
@@ -418,13 +418,13 @@ public class grapplemod {
 				if (!created) {
 /*					System.out.println("Couldn't create");
 					grapplemod.removesubarrow(arrowid);*/
-					control = new grappleController(arrowid, entityid, world, pos, maxlen, id, custom);
+					control = new grappleController(arrowid, entityid, world, pos, id, custom);
 				}
 			}
 		} else if (id == REPELID) {
-			control = new repelController(arrowid, entityid, world, pos, maxlen, id);
+			control = new repelController(arrowid, entityid, world, pos, id);
 		} else if (id == AIRID) {
-			control = new airfrictionController(arrowid, entityid, world, pos, maxlen, id);
+			control = new airfrictionController(arrowid, entityid, world, pos, id);
 		}
 		if (blockpos != null && control != null) {
 			grapplemod.controllerpos.put(blockpos, control);

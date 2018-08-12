@@ -168,7 +168,7 @@ public class grappleBow extends Item implements clickitem {
     	        float velx = -MathHelper.sin((float) anglevec.getYaw() * 0.017453292F) * MathHelper.cos((float) anglevec.getPitch() * 0.017453292F);
     	        float vely = -MathHelper.sin((float) anglevec.getPitch() * 0.017453292F);
     	        float velz = MathHelper.cos((float) anglevec.getYaw() * 0.017453292F) * MathHelper.cos((float) anglevec.getPitch() * 0.017453292F);
-    			grappleArrow entityarrow = this.createarrow(stack, worldIn, entityLiving, righthand);// new grappleArrow(worldIn, player, false);
+    			grappleArrow entityarrow = this.createarrow(stack, worldIn, entityLiving, false);// new grappleArrow(worldIn, player, false);
 //                entityarrow.shoot(player, (float) anglevec.getPitch(), (float)anglevec.getYaw(), 0.0F, entityarrow.getVelocity(), 0.0F);
     	        entityarrow.shoot((double) velx, (double) vely, (double) velz, entityarrow.getVelocity(), 0.0F);
                 
@@ -181,7 +181,7 @@ public class grappleBow extends Item implements clickitem {
     	        velx = -MathHelper.sin((float) anglevec.getYaw() * 0.017453292F) * MathHelper.cos((float) anglevec.getPitch() * 0.017453292F);
     	        vely = -MathHelper.sin((float) anglevec.getPitch() * 0.017453292F);
     	        velz = MathHelper.cos((float) anglevec.getYaw() * 0.017453292F) * MathHelper.cos((float) anglevec.getPitch() * 0.017453292F);
-    			entityarrow = this.createarrow(stack, worldIn, entityLiving, righthand);//new grappleArrow(worldIn, player, true);
+    			entityarrow = this.createarrow(stack, worldIn, entityLiving, true);//new grappleArrow(worldIn, player, true);
 //                entityarrow.shoot(player, (float) anglevec.getPitch(), (float)anglevec.getYaw(), 0.0F, entityarrow.getVelocity(), 0.0F);
     	        entityarrow.shoot((double) velx, (double) vely, (double) velz, entityarrow.getVelocity(), 0.0F);
                 

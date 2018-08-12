@@ -4,16 +4,17 @@ import io.netty.buffer.ByteBuf;
 import net.minecraft.nbt.NBTTagCompound;
 
 public class GrappleCustomization {
-	public static final String[] booleanoptions = new String[] {"phaserope", "motor", "motorwhencrouching", "motorwhennotcrouching", "smartmotor", "enderstaff", "repel", "attract", "doublehook", "smartdoublemotor", "motordampener"};
+	public static final String[] booleanoptions = new String[] {"phaserope", "motor", "motorwhencrouching", "motorwhennotcrouching", "smartmotor", "enderstaff", "repel", "attract", "doublehook", "smartdoublemotor", "motordampener", "reelin", "pullbackwards"};
 	public static final String[] doubleoptions = new String[] {"maxlen", "hookgravity", "throwspeed", "motormaxspeed", "motoracceleration", "playermovementmult", "repelforce", "attractradius", "angle", "sneakingangle"};
 	
 	// rope
-	public double maxlen = 20;
+	public double maxlen = 30;
 	public boolean phaserope = false;
 
 	// hook thrower
 	public double hookgravity = 0.05F;
 	public double throwspeed = 2F;
+	public boolean reelin = true;
 
 	// motor
 	public boolean motor = false;
@@ -23,6 +24,7 @@ public class GrappleCustomization {
 	public boolean motorwhennotcrouching = true;
 	public boolean smartmotor = false;
 	public boolean motordampener = false;
+	public boolean pullbackwards = true;
 	
 	// swing speed
 	public double playermovementmult = 1;
@@ -80,6 +82,9 @@ public class GrappleCustomization {
 		else if (option == "doublehook") {this.doublehook = bool;}
 		else if (option == "smartdoublemotor") {this.smartdoublemotor = bool;}
 		else if (option == "motordampener") {this.motordampener = bool;}
+		else if (option == "reelin") {this.reelin = bool;}
+		else if (option == "pullbackwards") {this.pullbackwards = bool;}
+		
 	}
 	
 	public boolean getBoolean(String option) {
@@ -94,6 +99,8 @@ public class GrappleCustomization {
 		else if (option == "doublehook") {return this.doublehook;}
 		else if (option == "smartdoublemotor") {return this.smartdoublemotor;}
 		else if (option == "motordampener") {return this.motordampener;}
+		else if (option == "reelin") {return this.reelin;}
+		else if (option == "pullbackwards") {return this.pullbackwards;}
 		System.out.println("Option doesn't exist: " + option);
 		return false;
 	}

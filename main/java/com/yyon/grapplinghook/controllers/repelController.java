@@ -8,9 +8,8 @@ import com.yyon.grapplinghook.grapplemod;
 import com.yyon.grapplinghook.vec;
 
 public class repelController extends grappleController {
-	public repelController(int arrowId, int entityId, World world, vec pos,
-			double maxlen, int id) {
-		super(arrowId, entityId, world, pos, maxlen, id, null);
+	public repelController(int arrowId, int entityId, World world, vec pos, int id) {
+		super(arrowId, entityId, world, pos, id, null);
 		
 		this.playermovementmult = 1;
 	}

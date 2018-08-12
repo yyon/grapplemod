@@ -175,19 +175,19 @@ public class SegmentHandler {
             vec bottomnormal = this.getnormal(bottomside);
             
             // calculate where bottomhitvec was along the rope in the previous tick
-            double ropelen = top.sub(bottom).length();
+//            double ropelen = top.sub(bottom).length();
             double prevropelen = prevtop.sub(prevbottom).length();
             
-            double bottomtohit = bottom.sub(bottomhitvec).length();
-            double prevbottomtohit = bottomtohit * ropelen / prevropelen;
+//            double bottomtohit = bottom.sub(bottomhitvec).length();
+//            double prevbottomtohit = bottomtohit * ropelen / prevropelen;
             
-            vec prevbottomhit = prevtop.sub(prevbottom).changelen(prevbottomtohit).add(prevbottom);
+//            vec prevbottomhit = prevtop.sub(prevbottom).changelen(prevbottomtohit).add(prevbottom);
             
             // use prevbottomhit to calculate the velocity of that part of the rope when it hit the block
-            vec motionalonghit = bottomhitvec.sub(prevbottomhit);
+ //           vec motionalonghit = bottomhitvec.sub(prevbottomhit);
             
             // calculate the motion parallel to the block side
-            vec motionparallel = motionalonghit.removealong(bottomnormal);
+//            vec motionparallel = motionalonghit.removealong(bottomnormal);
             
             // the rope must have hit the corner on the plane across the edge of the block
             // and is bounded by the quadrilateral top, prevtop, prevbottom, bottom

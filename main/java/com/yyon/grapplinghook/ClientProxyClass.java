@@ -228,7 +228,7 @@ public class ClientProxyClass extends CommonProxyClass {
 	        	System.out.println("Launch!");
 				if (!grapplemod.controllers.containsKey(player.getEntityId())) {
 					player.onGround = false;
-					grapplemod.createControl(grapplemod.AIRID, -1, player.getEntityId(), player.world, new vec(0,0,0), 0, null, null);
+					grapplemod.createControl(grapplemod.AIRID, -1, player.getEntityId(), player.world, new vec(0,0,0), null, null);
 				}
 				facing.mult_ip(3);
 				grapplemod.receiveEnderLaunch(player.getEntityId(), facing.x, facing.y, facing.z);

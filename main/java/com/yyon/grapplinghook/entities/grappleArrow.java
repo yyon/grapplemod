@@ -62,7 +62,7 @@ public class grappleArrow extends EntityThrowable implements IEntityAdditionalSp
 	
 	public boolean ignoreFrustumCheck = true;
 	
-	public double maxlen = 20;
+//	public double maxlen = 20;
 	public double r;
 	
 	public SegmentHandler segmenthandler = null;
@@ -107,7 +107,7 @@ public class grappleArrow extends EntityThrowable implements IEntityAdditionalSp
 		this.segmenthandler = new SegmentHandler(this.world, this);
 		
 		this.customization = customization;
-		this.maxlen = customization.maxlen;
+		this.r = customization.maxlen;
 		
 		this.righthand = righthand;
 	}
@@ -132,9 +132,9 @@ public class grappleArrow extends EntityThrowable implements IEntityAdditionalSp
 			if (this.shootingEntity != null)  {
 				if (!this.attached) {
 					if (!this.customization.phaserope) {
-						this.segmenthandler.update(vec.positionvec(this), vec.positionvec(this.shootingEntity).add(new vec(0, this.shootingEntity.getEyeHeight(), 0)), this.maxlen, true);
+						this.segmenthandler.update(vec.positionvec(this), vec.positionvec(this.shootingEntity).add(new vec(0, this.shootingEntity.getEyeHeight(), 0)), this.r, true);
 					} else {
-						this.segmenthandler.updatepos(vec.positionvec(this), vec.positionvec(this.shootingEntity).add(new vec(0, this.shootingEntity.getEyeHeight(), 0)), this.maxlen);
+						this.segmenthandler.updatepos(vec.positionvec(this), vec.positionvec(this.shootingEntity).add(new vec(0, this.shootingEntity.getEyeHeight(), 0)), this.r);
 					}
 					
 					vec farthest = this.segmenthandler.getfarthest();
@@ -142,7 +142,16 @@ public class grappleArrow extends EntityThrowable implements IEntityAdditionalSp
 					
 					vec ropevec = vec.positionvec(this).sub(farthest);
 					double d = ropevec.length();
-					if (d + distToFarthest > this.maxlen) {
+					
+					if (this.customization.reelin && this.shootingEntity.isSneaking()) {
+						double newdist = d + distToFarthest - 0.2;
+						if (newdist > 1) {
+							this.r = newdist;
+						}
+					}
+
+
+					if (d + distToFarthest > this.r) {
 						vec motion = vec.motionvec(this);
 						
 						if (motion.dot(ropevec) > 0) {
@@ -151,7 +160,7 @@ public class grappleArrow extends EntityThrowable implements IEntityAdditionalSp
 						
 						this.setVelocity(motion.x, motion.y, motion.z);
 						
-						ropevec.changelen_ip(this.maxlen - distToFarthest);
+						ropevec.changelen_ip(this.r - distToFarthest);
 						vec newpos = ropevec.add(farthest);
 						
 						this.setPosition(newpos.x, newpos.y, newpos.z);
@@ -168,7 +177,7 @@ public class grappleArrow extends EntityThrowable implements IEntityAdditionalSp
 			
 			this.taut = d + distToFarthest / maxlen;*/
 		}
-
+		
 		// magnet attraction
 		if (this.customization.attract && vec.positionvec(this).sub(vec.positionvec(this.shootingEntity)).length() > this.customization.attractradius) {
 	    	if (this.shootingEntity == null) {return;}
@@ -396,7 +405,7 @@ public class grappleArrow extends EntityThrowable implements IEntityAdditionalSp
 		this.firstattach = true;
 		grapplemod.attached.add(this.shootingEntityID);
 		
-		grapplemod.sendtocorrectclient(new GrappleAttachMessage(this.getEntityId(), this.posX, this.posY, this.posZ, this.getControlId(), this.shootingEntityID, this.maxlen, blockpos, this.segmenthandler.segments, this.segmenthandler.segmenttopsides, this.segmenthandler.segmentbottomsides, this.customization), this.shootingEntityID, this.world);
+		grapplemod.sendtocorrectclient(new GrappleAttachMessage(this.getEntityId(), this.posX, this.posY, this.posZ, this.getControlId(), this.shootingEntityID, blockpos, this.segmenthandler.segments, this.segmenthandler.segmenttopsides, this.segmenthandler.segmentbottomsides, this.customization), this.shootingEntityID, this.world);
 		if (this.shootingEntity instanceof EntityPlayerMP) { // fixes strange bug in LAN
 			EntityPlayerMP sender = (EntityPlayerMP) this.shootingEntity;
 			int dimension = sender.dimension;

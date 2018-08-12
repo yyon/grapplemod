@@ -113,6 +113,7 @@ public class GuiModifier extends GuiScreen {
 		} else if (category == grapplemod.upgradeCategories.THROW) {
 			addSlider("hookgravity", "Gravity on hook", "Gravity on hook when thrown", 1);
 			addSlider("throwspeed", "Throw Speed", "Speed of hook when thrown", 20);
+			addCheckbox("reelin", "Crouch to Reel In", "Before the hook is attached, crouching will stop the hook from moving farther and slowly reel it in");
 		} else if (category == grapplemod.upgradeCategories.MOTOR) {
 			addCheckbox("motor", "Motor Enabled", "Pulls player towards hook");
 			addSlider("motormaxspeed", "Motor Maximum Speed", "Maximum speed of motor", 10);
@@ -121,6 +122,7 @@ public class GuiModifier extends GuiScreen {
 			addCheckbox("motorwhennotcrouching", "Motor when not crouching", "Motor is active when crouching");
 			addCheckbox("smartmotor", "Smart Motor", "Adjusts motor speed so that player moves towards crosshairs (up/down)");
 			addCheckbox("motordampener", "Sideways Motion Dampener", "Reduces motion perpendicular to the rope so that the rope pulls straighter");
+			addCheckbox("pullbackwards", "Pull Backwards", "Motor pulls even if you are facing the other way");
 		} else if (category == grapplemod.upgradeCategories.SWING) {
 			addSlider("playermovementmult", "Swing speed", "Acceleration of player when using movement keys while swinging", 5);
 		} else if (category == grapplemod.upgradeCategories.STAFF) {
@@ -135,7 +137,7 @@ public class GuiModifier extends GuiScreen {
 			addCheckbox("doublehook", "Double Hook", "Two hooks are thrown at once");
 			addCheckbox("smartdoublemotor", "Smart Motor", "Adjusts motor speed so that player moves towards crosshairs (left/right) when used with motor");
 			addSlider("angle", "Angle", "Angle that each hook is thrown from center", 90);
-			addSlider("sneakingangle", "Angle when crouching", "Angle that each hook is thrown from center when crouching", 90);
+			addSlider("sneakingangle", "Angle when crouching", "Angle that each hook is thrown from center when crouching (don't have 'crouch to reel in' enabled if you want to use this)", 90);
 		}
 	}
 	

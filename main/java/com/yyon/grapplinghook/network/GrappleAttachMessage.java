@@ -44,7 +44,6 @@ public class GrappleAttachMessage implements IMessage {
 	public double z;
 	public int controlid;
 	public int entityid;
-	public double maxlen;
 	public BlockPos blockpos;
 	public LinkedList<vec> segments;
 	public LinkedList<EnumFacing> segmenttopsides;
@@ -53,14 +52,13 @@ public class GrappleAttachMessage implements IMessage {
 
     public GrappleAttachMessage() { }
 
-    public GrappleAttachMessage(int id, double x, double y, double z, int controlid, int entityid, double maxlen, BlockPos blockpos, LinkedList<vec> segments, LinkedList<EnumFacing> segmenttopsides, LinkedList<EnumFacing> segmentbottomsides, GrappleCustomization custom) {
+    public GrappleAttachMessage(int id, double x, double y, double z, int controlid, int entityid, BlockPos blockpos, LinkedList<vec> segments, LinkedList<EnumFacing> segmenttopsides, LinkedList<EnumFacing> segmentbottomsides, GrappleCustomization custom) {
     	this.id = id;
         this.x = x;
         this.y = y;
         this.z = z;
         this.controlid = controlid;
         this.entityid = entityid;
-        this.maxlen = maxlen;
         this.blockpos = blockpos;
         this.segments = segments;
         this.segmenttopsides = segmenttopsides;
@@ -76,7 +74,6 @@ public class GrappleAttachMessage implements IMessage {
         this.z = buf.readDouble();
         this.controlid = buf.readInt();
         this.entityid = buf.readInt();
-        this.maxlen = buf.readDouble();
         int blockx = buf.readInt();
         int blocky = buf.readInt();
         int blockz = buf.readInt();
@@ -113,7 +110,6 @@ public class GrappleAttachMessage implements IMessage {
         buf.writeDouble(this.z);
         buf.writeInt(this.controlid);
         buf.writeInt(this.entityid);
-        buf.writeDouble(this.maxlen);
         buf.writeInt(this.blockpos.getX());
         buf.writeInt(this.blockpos.getY());
         buf.writeInt(this.blockpos.getZ());
@@ -154,7 +150,7 @@ public class GrappleAttachMessage implements IMessage {
             	} else {
             	}
             	
-            	grapplemod.createControl(message.controlid, message.id, message.entityid, world, new vec(message.x, message.y, message.z), message.maxlen, message.blockpos, message.custom);
+            	grapplemod.createControl(message.controlid, message.id, message.entityid, world, new vec(message.x, message.y, message.z), message.blockpos, message.custom);
             }
     	}
     	
