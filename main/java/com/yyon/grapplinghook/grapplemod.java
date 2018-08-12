@@ -43,6 +43,7 @@ import com.yyon.grapplinghook.network.GrappleAttachMessage;
 import com.yyon.grapplinghook.network.GrappleAttachPosMessage;
 import com.yyon.grapplinghook.network.GrappleClickMessage;
 import com.yyon.grapplinghook.network.GrappleEndMessage;
+import com.yyon.grapplinghook.network.GrappleModifierMessage;
 import com.yyon.grapplinghook.network.MultiHookMessage;
 import com.yyon.grapplinghook.network.PlayerMovementMessage;
 import com.yyon.grapplinghook.network.SegmentMessage;
@@ -350,6 +351,7 @@ public class grapplemod {
 		network.registerMessage(MultiHookMessage.Handler.class, MultiHookMessage.class, id++, Side.SERVER);
 		network.registerMessage(ToolConfigMessage.Handler.class, ToolConfigMessage.class, id++, Side.SERVER);
 		network.registerMessage(SegmentMessage.Handler.class, SegmentMessage.class, id++, Side.CLIENT);
+		network.registerMessage(GrappleModifierMessage.Handler.class, GrappleModifierMessage.class, id++, Side.SERVER);
 		
 		blockGrappleModifier = (BlockGrappleModifier)(new BlockGrappleModifier().setUnlocalizedName("block_grapple_modifier"));
 		blockGrappleModifier.setHardness(10F);

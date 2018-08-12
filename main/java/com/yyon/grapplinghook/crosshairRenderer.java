@@ -1,5 +1,8 @@
 package com.yyon.grapplinghook;
 
+import com.yyon.grapplinghook.items.grappleBow;
+import com.yyon.grapplinghook.items.multiBow;
+
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.gui.ScaledResolution;
@@ -9,12 +12,11 @@ import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.client.settings.GameSettings;
 import net.minecraft.inventory.EntityEquipmentSlot;
+import net.minecraft.item.ItemStack;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.client.event.RenderGameOverlayEvent.ElementType;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-
-import com.yyon.grapplinghook.items.multiBow;
 
 public class crosshairRenderer {
 	public Minecraft mc;
@@ -30,8 +32,14 @@ public class crosshairRenderer {
 	public void onRenderGameOverlayPost(RenderGameOverlayEvent.Post event) {
 		if (event.getType() == ElementType.CROSSHAIRS) {
 			EntityPlayerSP player = this.mc.player;
+			ItemStack bow = null;
+			if ((player.getItemStackFromSlot(EntityEquipmentSlot.MAINHAND) != null && player.getItemStackFromSlot(EntityEquipmentSlot.MAINHAND).getItem() instanceof grappleBow)) {
+				bow = player.getItemStackFromSlot(EntityEquipmentSlot.MAINHAND);
+			} else if ((player.getItemStackFromSlot(EntityEquipmentSlot.OFFHAND) != null && player.getItemStackFromSlot(EntityEquipmentSlot.OFFHAND).getItem() instanceof grappleBow)) {
+				bow = player.getItemStackFromSlot(EntityEquipmentSlot.OFFHAND);
+			}
 			
-			if ((player.getItemStackFromSlot(EntityEquipmentSlot.MAINHAND) != null && player.getItemStackFromSlot(EntityEquipmentSlot.MAINHAND).getItem() instanceof multiBow) || (player.getItemStackFromSlot(EntityEquipmentSlot.OFFHAND) != null && player.getItemStackFromSlot(EntityEquipmentSlot.OFFHAND).getItem() instanceof multiBow)) {
+			if (bow != null) {
 //				float partialticks = event.getPartialTicks();
 				ScaledResolution resolution = event.getResolution();
 				
@@ -60,7 +68,7 @@ public class crosshairRenderer {
 		            	double fov = Math.toRadians(gamesettings.fovSetting);
 		            	fov *= player.getFovModifier();
 		            	
-		            	double angle = Math.toRadians(multiBow.getAngle(player));
+		            	double angle = Math.toRadians(((grappleBow) grapplemod.grapplebowitem).getAngle(player, bow));
 		            	
 		            	double l = ((double) h/2) / Math.tan(fov/2);
 		            	

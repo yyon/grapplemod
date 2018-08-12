@@ -7,6 +7,7 @@ import javax.annotation.Nullable;
 import com.yyon.grapplinghook.GrappleCustomization;
 import com.yyon.grapplinghook.grapplemod;
 import com.yyon.grapplinghook.grapplemod.upgradeCategories;
+import com.yyon.grapplinghook.network.GrappleModifierMessage;
 
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.NetworkManager;
@@ -26,11 +27,17 @@ public class TileEntityGrappleModifier extends TileEntity {
 		this.sendUpdates();
 	}
 	
-	public void setCustomization(GrappleCustomization customization) {
+	public void setCustomizationClient(GrappleCustomization customization) {
+		this.customization = customization;
+		grapplemod.network.sendToServer(new GrappleModifierMessage(this.pos, this.customization));
+		this.sendUpdates();
+	}
+
+	public void setCustomizationServer(GrappleCustomization customization) {
 		this.customization = customization;
 		this.sendUpdates();
 	}
-	
+
 	private void sendUpdates() {
 //		this.world.markBlockRangeForRenderUpdate(pos, pos);
 		this.world.notifyBlockUpdate(pos, this.world.getBlockState(this.pos), this.world.getBlockState(this.pos), 3);
@@ -129,7 +136,7 @@ public class TileEntityGrappleModifier extends TileEntity {
 			this.unlockedCategories.put(category, unlocked);
 		}
 		
-		NBTTagCompound custom = parentNBTTagCompound.getCompoundTag("custom");
+		NBTTagCompound custom = parentNBTTagCompound.getCompoundTag("customization");
 		this.customization.loadNBT(custom);
 	}
 }

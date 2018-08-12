@@ -1,7 +1,7 @@
 package com.yyon.grapplinghook;
 
 import java.awt.Color;
-import java.lang.reflect.Field;
+import java.io.IOException;
 import java.util.HashMap;
 
 import com.yyon.grapplinghook.blocks.TileEntityGrappleModifier;
@@ -20,8 +20,8 @@ public class GuiModifier extends GuiScreen {
 	private static final ResourceLocation texture = new ResourceLocation("grapplemod",
 			"textures/gui/guimodifier_bg.png");
 
-	int xSize;
-	int ySize;
+	int xSize = 221;
+	int ySize = 221;
 
 	protected int guiLeft;
 	protected int guiTop;
@@ -29,6 +29,7 @@ public class GuiModifier extends GuiScreen {
 	int posy;
 	int id;
 	HashMap<GuiButton, String> options;
+	HashMap<GuiButton, String> tooltips;
 
 	TileEntityGrappleModifier tileent;
 	GrappleCustomization customization;
@@ -38,11 +39,9 @@ public class GuiModifier extends GuiScreen {
 
 	public GuiModifier(TileEntityGrappleModifier tileent) {
 		super();
-		xSize = 176;
-		ySize = 221;
 
 		this.tileent = tileent;
-		customization = tileent.customization.copy();
+		customization = tileent.customization;
 	}
 
 	@Override
@@ -75,6 +74,7 @@ public class GuiModifier extends GuiScreen {
 		posy = 10;
 		id = 4;
 		options = new HashMap<GuiButton, String>();
+		tooltips = new HashMap<GuiButton, String>();
 	}
 
 	public void notAllowedScreen(grapplemod.upgradeCategories category) {
@@ -88,13 +88,18 @@ public class GuiModifier extends GuiScreen {
 		posy += 20;
 		this.buttonList.add(checkbox);
 		options.put(checkbox, option);
+		tooltips.put(checkbox, desc);
 	}
 	
 	public void addSlider(String option, String text, String desc, double max) {
-		GuiSlider slider = new GuiSlider(id++, 10 + this.guiLeft, posy + this.guiTop, 150, 20, text + ": ", "", 0, max, customization.getDouble(option), true, true);
+		double d = customization.getDouble(option);
+		d = Math.floor(d * 100 + 0.5) / 100;
+		GuiSlider slider = new GuiSlider(id++, 10 + this.guiLeft, posy + this.guiTop, this.xSize - 20, 20, text + ": ", "", 0, max, d, true, true);
+		slider.precision = 2;
 		posy += 25;
 		this.buttonList.add(slider);
 		options.put(slider, option);
+		tooltips.put(slider, desc);
 	}
 
 	public void showCategoryScreen(grapplemod.upgradeCategories category) {
@@ -135,8 +140,31 @@ public class GuiModifier extends GuiScreen {
 	
 	GuiButton buttonpressed = null;
 	
+	@Override
 	public void onGuiClosed() {
-		this.tileent.setCustomization(customization);
+		this.updateOptions();
+		this.tileent.setCustomizationClient(customization);
+		
+		super.onGuiClosed();
+	}
+	
+	public void updateOptions() {
+		for (GuiButton b : this.options.keySet()) {
+			this.updateOption(b);
+		}
+	}
+	
+	public void updateOption(GuiButton b) {
+		if (b instanceof GuiCheckBox) {
+			boolean checked = ((GuiCheckBox) b).isChecked();
+			String option = options.get(b);
+			customization.setBoolean(option, checked);
+		} else if (b instanceof GuiSlider) {
+			double d = ((GuiSlider) b).getValue();
+			d = Math.floor(d * 100 + 0.5) / 100;
+			String option = options.get(b);
+			customization.setDouble(option, d);
+		}
 	}
 	
 	@Override
@@ -151,18 +179,11 @@ public class GuiModifier extends GuiScreen {
 			} else if (b.id == 2) {
 				this.customization = new GrappleCustomization();
 			} else if (b.id == 3) {
+				this.updateOptions();
 				clearscreen();
 				mainscreen();
 			} else if (options.containsKey(b)) {
-				if (b instanceof GuiCheckBox) {
-					boolean checked = ((GuiCheckBox) b).isChecked();
-					String option = options.get(b);
-					customization.setBoolean(option, checked);
-				} else if (b instanceof GuiSlider) {
-					double d = ((GuiSlider) b).getValue();
-					String option = options.get(b);
-					customization.setDouble(option, d);
-				}
+				this.updateOption(b);
 			} else {
 				int categoryid = b.id - 99;
 				grapplemod.upgradeCategories category = grapplemod.upgradeCategories.fromInt(categoryid);
@@ -178,14 +199,28 @@ public class GuiModifier extends GuiScreen {
 				}
 			}
 		}
+		
+		super.updateScreen();
     }
 
 	@Override
 	protected void actionPerformed(GuiButton b) {
 		buttonpressed = b;
+		
+		try {
+			super.actionPerformed(b);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
+	@Override
 	public void drawScreen(int mouseX, int mouseY, float partialTicks) {
+		if (fontRenderer == null) {
+			return;
+		}
+		
 		// background
 		Minecraft.getMinecraft().getTextureManager().bindTexture(texture);
 		GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
@@ -205,8 +240,10 @@ public class GuiModifier extends GuiScreen {
 			} else {
 
 			}
+		} else {
+			fontRenderer.drawString("Right click with grappling hook to apply", 10, this.ySize - 20 - 10 - 10, Color.darkGray.getRGB());
 		}
-
+		
 		GlStateManager.translate(-guiLeft, -guiTop, 0.0F);
 
 		GlStateManager.disableRescaleNormal();
@@ -220,5 +257,11 @@ public class GuiModifier extends GuiScreen {
 		GlStateManager.enableDepth();
 		GlStateManager.enableRescaleNormal();
 		RenderHelper.enableStandardItemLighting();
+		
+		for (GuiButton b : this.tooltips.keySet()) {
+			if (mouseX >= b.x && mouseY >= b.y && mouseX <= b.x + b.width && mouseY <= b.y + b.height) {
+				this.drawHoveringText(this.tooltips.get(b), mouseX, mouseY);
+			}
+		}
 	}
 }

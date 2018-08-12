@@ -1,7 +1,9 @@
 package com.yyon.grapplinghook.blocks;
 
+import com.yyon.grapplinghook.GrappleCustomization;
 import com.yyon.grapplinghook.GuiModifier;
 import com.yyon.grapplinghook.grapplemod;
+import com.yyon.grapplinghook.items.grappleBow;
 import com.yyon.grapplinghook.items.upgrades.BaseUpgradeItem;
 
 import net.minecraft.block.Block;
@@ -12,6 +14,7 @@ import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.BlockRenderLayer;
 import net.minecraft.util.EnumBlockRenderType;
@@ -93,7 +96,17 @@ public class BlockGrappleModifier extends Block {
 				}
 			}
 		} else if (helditem == grapplemod.grapplebowitem) {
-
+			if (!worldIn.isRemote) {
+				TileEntity ent = worldIn.getTileEntity(pos);
+				TileEntityGrappleModifier tileent = (TileEntityGrappleModifier) ent;
+				
+				GrappleCustomization custom = tileent.customization;
+				NBTTagCompound nbt = custom.writeNBT();
+				
+				helditemstack.setTagCompound(nbt);
+				
+				playerIn.sendMessage(new TextComponentString("Applied configuration"));
+			}
 		} else {
 			TileEntity ent = worldIn.getTileEntity(pos);
 			TileEntityGrappleModifier tileent = (TileEntityGrappleModifier) ent;

@@ -1,5 +1,6 @@
 package com.yyon.grapplinghook;
 
+import io.netty.buffer.ByteBuf;
 import net.minecraft.nbt.NBTTagCompound;
 
 public class GrappleCustomization {
@@ -147,11 +148,59 @@ public class GrappleCustomization {
 		return 0;
 	}
 	
+	/*
 	public GrappleCustomization copy() {
 		GrappleCustomization newcustom = new GrappleCustomization();
 		
 		newcustom.loadNBT(this.writeNBT());
 		
 		return newcustom;
+	}
+	*/
+
+	public void writeToBuf(ByteBuf buf) {
+		buf.writeDouble(this.maxlen);
+		buf.writeBoolean(this.phaserope);
+		buf.writeDouble(this.hookgravity);
+		buf.writeDouble(this.throwspeed);
+		buf.writeBoolean(this.motor);
+		buf.writeDouble(this.motormaxspeed);
+		buf.writeDouble(this.motoracceleration);
+		buf.writeBoolean(this.motorwhencrouching);
+		buf.writeBoolean(this.motorwhennotcrouching);
+		buf.writeBoolean(this.smartmotor);
+		buf.writeDouble(this.playermovementmult);
+		buf.writeBoolean(this.enderstaff);
+		buf.writeBoolean(this.repel);
+		buf.writeDouble(this.repelforce);
+		buf.writeBoolean(this.attract);
+		buf.writeDouble(this.attractradius);
+		buf.writeBoolean(this.doublehook);
+		buf.writeBoolean(this.smartdoublemotor);
+		buf.writeDouble(this.angle);
+		buf.writeDouble(this.sneakingangle);
+	}
+	
+	public void readFromBuf(ByteBuf buf) {
+		this.maxlen = buf.readDouble();
+		this.phaserope = buf.readBoolean();
+		this.hookgravity = buf.readDouble();
+		this.throwspeed = buf.readDouble();
+		this.motor = buf.readBoolean();
+		this.motormaxspeed = buf.readDouble();
+		this.motoracceleration = buf.readDouble();
+		this.motorwhencrouching = buf.readBoolean();
+		this.motorwhennotcrouching = buf.readBoolean();
+		this.smartmotor = buf.readBoolean();
+		this.playermovementmult = buf.readDouble();
+		this.enderstaff = buf.readBoolean();
+		this.repel = buf.readBoolean();
+		this.repelforce = buf.readDouble();
+		this.attract = buf.readBoolean();
+		this.attractradius = buf.readDouble();
+		this.doublehook = buf.readBoolean();
+		this.smartdoublemotor = buf.readBoolean();
+		this.angle = buf.readDouble();
+		this.sneakingangle = buf.readDouble();
 	}
 }
