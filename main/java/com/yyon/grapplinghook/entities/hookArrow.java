@@ -30,7 +30,7 @@ public class hookArrow extends grappleArrow
 	
 	public hookArrow(World worldIn, EntityLivingBase shooter,
 			boolean righthand) {
-		super(worldIn, shooter, righthand);
+		super(worldIn, shooter, righthand, null);
 	}
 	
     public float getVelocity()

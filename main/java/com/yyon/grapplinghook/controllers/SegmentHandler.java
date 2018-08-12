@@ -43,6 +43,12 @@ public class SegmentHandler {
 	
 	double ropelen;
 	
+	public void updatepos(vec hookpos, vec playerpos, double ropelen) {
+		segments.set(0, hookpos);
+		segments.set(segments.size() - 1, playerpos);
+		this.ropelen = ropelen;
+	}
+	
 	public void update(vec hookpos, vec playerpos, double ropelen, boolean movinghook) {
 		if (prevhookpos == null) {
 	        prevhookpos = hookpos;

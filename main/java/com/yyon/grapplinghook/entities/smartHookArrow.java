@@ -33,7 +33,7 @@ public class smartHookArrow extends grappleArrow
 	
 	public smartHookArrow(World worldIn, EntityLivingBase shooter,
 			boolean righthand, boolean slow) {
-		super(worldIn, shooter, righthand);
+		super(worldIn, shooter, righthand, null);
 		this.slow = slow;
 	}
 	

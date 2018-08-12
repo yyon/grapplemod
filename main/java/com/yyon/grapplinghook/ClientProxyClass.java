@@ -211,7 +211,7 @@ public class ClientProxyClass extends CommonProxyClass {
 		}
 		long timer = player.world.getTotalWorldTime() - prevtime;
 		if (timer > reusetime) {
-			if ((player.getHeldItemMainhand()!=null && (player.getHeldItemMainhand().getItem() instanceof enderBow || player.getHeldItemMainhand().getItem() instanceof launcherItem)) || (player.getHeldItemOffhand()!=null && (player.getHeldItemOffhand().getItem() instanceof enderBow || player.getHeldItemOffhand().getItem() instanceof launcherItem))) {
+			if ((player.getHeldItemMainhand()!=null && (player.getHeldItemMainhand().getItem() instanceof enderBow || player.getHeldItemMainhand().getItem() instanceof launcherItem || player.getHeldItemMainhand().getItem() instanceof grappleBow)) || (player.getHeldItemOffhand()!=null && (player.getHeldItemOffhand().getItem() instanceof enderBow || player.getHeldItemOffhand().getItem() instanceof launcherItem || player.getHeldItemOffhand().getItem() instanceof grappleBow))) {
 				enderlaunchtimer.put(player.getEntityId(), player.world.getTotalWorldTime());
 				
 	        	vec facing = new vec(player.getLookVec());
@@ -234,9 +234,10 @@ public class ClientProxyClass extends CommonProxyClass {
 					grapplemod.receiveEnderLaunch(player.getEntityId(), facing.x, facing.y, facing.z);
 				}
 				*/
+	        	System.out.println("Launch!");
 				if (!grapplemod.controllers.containsKey(player.getEntityId())) {
 					player.onGround = false;
-					grapplemod.createControl(grapplemod.AIRID, -1, player.getEntityId(), player.world, new vec(0,0,0), 0, null);
+					grapplemod.createControl(grapplemod.AIRID, -1, player.getEntityId(), player.world, new vec(0,0,0), 0, null, null);
 				}
 				facing.mult_ip(3);
 				grapplemod.receiveEnderLaunch(player.getEntityId(), facing.x, facing.y, facing.z);

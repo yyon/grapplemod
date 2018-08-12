@@ -4,6 +4,9 @@ import io.netty.buffer.ByteBuf;
 import net.minecraft.nbt.NBTTagCompound;
 
 public class GrappleCustomization {
+	public static final String[] booleanoptions = new String[] {"phaserope", "motor", "motorwhencrouching", "motorwhennotcrouching", "smartmotor", "enderstaff", "repel", "attract", "doublehook", "smartdoublemotor", "motordampener"};
+	public static final String[] doubleoptions = new String[] {"maxlen", "hookgravity", "throwspeed", "motormaxspeed", "motoracceleration", "playermovementmult", "repelforce", "attractradius", "angle", "sneakingangle"};
+	
 	// rope
 	public double maxlen = 20;
 	public boolean phaserope = false;
@@ -19,6 +22,7 @@ public class GrappleCustomization {
 	public boolean motorwhencrouching = true;
 	public boolean motorwhennotcrouching = true;
 	public boolean smartmotor = false;
+	public boolean motordampener = false;
 	
 	// swing speed
 	public double playermovementmult = 1;
@@ -28,7 +32,7 @@ public class GrappleCustomization {
 
 	// forcefield
 	public boolean repel = false;
-	public double repelforce = 1.5;
+	public double repelforce = 1;
 	
 	// hook magnet
 	public boolean attract = false;
@@ -46,50 +50,22 @@ public class GrappleCustomization {
 	
 	public NBTTagCompound writeNBT() {
 		NBTTagCompound compound = new NBTTagCompound();
-		compound.setDouble("maxlen", this.maxlen);
-		compound.setBoolean("phaserope", this.phaserope);
-		compound.setDouble("hookgravity", this.hookgravity);
-		compound.setDouble("throwspeed", this.throwspeed);
-		compound.setBoolean("motor", this.motor);
-		compound.setDouble("motormaxspeed", this.motormaxspeed);
-		compound.setDouble("motoracceleration", this.motoracceleration);
-		compound.setBoolean("motorwhencrouching", this.motorwhencrouching);
-		compound.setBoolean("motorwhennotcrouching", this.motorwhennotcrouching);
-		compound.setBoolean("smartmotor", this.smartmotor);
-		compound.setDouble("playermovementmult", this.playermovementmult);
-		compound.setBoolean("enderstaff", this.enderstaff);
-		compound.setBoolean("repel", this.repel);
-		compound.setDouble("repelforce", this.repelforce);
-		compound.setBoolean("attract", this.attract);
-		compound.setDouble("attractradius", this.attractradius);
-		compound.setBoolean("doublehook", this.doublehook);
-		compound.setBoolean("smartdoublemotor", this.smartdoublemotor);
-		compound.setDouble("angle", this.angle);
-		compound.setDouble("sneakingangle", this.sneakingangle);
+		for (String option : booleanoptions) {
+			compound.setBoolean(option, this.getBoolean(option));
+		}
+		for (String option : doubleoptions) {
+			compound.setDouble(option, this.getDouble(option));
+		}
 		return compound;
 	}
 	
 	public void loadNBT(NBTTagCompound compound) {
-		this.maxlen = compound.getDouble("maxlen");
-		this.phaserope = compound.getBoolean("phaserope");
-		this.hookgravity = compound.getDouble("hookgravity");
-		this.throwspeed = compound.getDouble("throwspeed");
-		this.motor = compound.getBoolean("motor");
-		this.motormaxspeed = compound.getDouble("motormaxspeed");
-		this.motoracceleration = compound.getDouble("motoracceleration");
-		this.motorwhencrouching = compound.getBoolean("motorwhencrouching");
-		this.motorwhennotcrouching = compound.getBoolean("motorwhennotcrouching");
-		this.smartmotor = compound.getBoolean("smartmotor");
-		this.playermovementmult = compound.getDouble("playermovementmult");
-		this.enderstaff = compound.getBoolean("enderstaff");
-		this.repel = compound.getBoolean("repel");
-		this.repelforce = compound.getDouble("repelforce");
-		this.attract = compound.getBoolean("attract");
-		this.attractradius = compound.getDouble("attractradius");
-		this.doublehook = compound.getBoolean("doublehook");
-		this.smartdoublemotor = compound.getBoolean("smartdoublemotor");
-		this.angle = compound.getDouble("angle");
-		this.sneakingangle = compound.getDouble("sneakingangle");
+		for (String option : booleanoptions) {
+			this.setBoolean(option, compound.getBoolean(option));
+		}
+		for (String option : doubleoptions) {
+			this.setDouble(option, compound.getDouble(option));
+		}
 	}
 	
 	public void setBoolean(String option, boolean bool) {
@@ -103,6 +79,7 @@ public class GrappleCustomization {
 		else if (option == "attract") {this.attract = bool;}
 		else if (option == "doublehook") {this.doublehook = bool;}
 		else if (option == "smartdoublemotor") {this.smartdoublemotor = bool;}
+		else if (option == "motordampener") {this.motordampener = bool;}
 	}
 	
 	public boolean getBoolean(String option) {
@@ -116,6 +93,7 @@ public class GrappleCustomization {
 		else if (option == "attract") {return this.attract;}
 		else if (option == "doublehook") {return this.doublehook;}
 		else if (option == "smartdoublemotor") {return this.smartdoublemotor;}
+		else if (option == "motordampener") {return this.motordampener;}
 		System.out.println("Option doesn't exist: " + option);
 		return false;
 	}
@@ -148,59 +126,21 @@ public class GrappleCustomization {
 		return 0;
 	}
 	
-	/*
-	public GrappleCustomization copy() {
-		GrappleCustomization newcustom = new GrappleCustomization();
-		
-		newcustom.loadNBT(this.writeNBT());
-		
-		return newcustom;
-	}
-	*/
-
 	public void writeToBuf(ByteBuf buf) {
-		buf.writeDouble(this.maxlen);
-		buf.writeBoolean(this.phaserope);
-		buf.writeDouble(this.hookgravity);
-		buf.writeDouble(this.throwspeed);
-		buf.writeBoolean(this.motor);
-		buf.writeDouble(this.motormaxspeed);
-		buf.writeDouble(this.motoracceleration);
-		buf.writeBoolean(this.motorwhencrouching);
-		buf.writeBoolean(this.motorwhennotcrouching);
-		buf.writeBoolean(this.smartmotor);
-		buf.writeDouble(this.playermovementmult);
-		buf.writeBoolean(this.enderstaff);
-		buf.writeBoolean(this.repel);
-		buf.writeDouble(this.repelforce);
-		buf.writeBoolean(this.attract);
-		buf.writeDouble(this.attractradius);
-		buf.writeBoolean(this.doublehook);
-		buf.writeBoolean(this.smartdoublemotor);
-		buf.writeDouble(this.angle);
-		buf.writeDouble(this.sneakingangle);
+		for (String option : booleanoptions) {
+			buf.writeBoolean(this.getBoolean(option));
+		}
+		for (String option : doubleoptions) {
+			buf.writeDouble(this.getDouble(option));
+		}
 	}
 	
 	public void readFromBuf(ByteBuf buf) {
-		this.maxlen = buf.readDouble();
-		this.phaserope = buf.readBoolean();
-		this.hookgravity = buf.readDouble();
-		this.throwspeed = buf.readDouble();
-		this.motor = buf.readBoolean();
-		this.motormaxspeed = buf.readDouble();
-		this.motoracceleration = buf.readDouble();
-		this.motorwhencrouching = buf.readBoolean();
-		this.motorwhennotcrouching = buf.readBoolean();
-		this.smartmotor = buf.readBoolean();
-		this.playermovementmult = buf.readDouble();
-		this.enderstaff = buf.readBoolean();
-		this.repel = buf.readBoolean();
-		this.repelforce = buf.readDouble();
-		this.attract = buf.readBoolean();
-		this.attractradius = buf.readDouble();
-		this.doublehook = buf.readBoolean();
-		this.smartdoublemotor = buf.readBoolean();
-		this.angle = buf.readDouble();
-		this.sneakingangle = buf.readDouble();
+		for (String option : booleanoptions) {
+			this.setBoolean(option, buf.readBoolean());
+		}
+		for (String option : doubleoptions) {
+			this.setDouble(option, buf.readDouble());
+		}
 	}
 }

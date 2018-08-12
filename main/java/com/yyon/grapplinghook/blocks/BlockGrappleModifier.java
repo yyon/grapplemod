@@ -1,9 +1,10 @@
 package com.yyon.grapplinghook.blocks;
 
+import javax.annotation.Nullable;
+
 import com.yyon.grapplinghook.GrappleCustomization;
 import com.yyon.grapplinghook.GuiModifier;
 import com.yyon.grapplinghook.grapplemod;
-import com.yyon.grapplinghook.items.grappleBow;
 import com.yyon.grapplinghook.items.upgrades.BaseUpgradeItem;
 
 import net.minecraft.block.Block;
@@ -20,8 +21,10 @@ import net.minecraft.util.BlockRenderLayer;
 import net.minecraft.util.EnumBlockRenderType;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
+import net.minecraft.util.NonNullList;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextComponentString;
+import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -70,12 +73,44 @@ public class BlockGrappleModifier extends Block {
 	public EnumBlockRenderType getRenderType(IBlockState iBlockState) {
 		return EnumBlockRenderType.MODEL;
 	}
-
+	
+	@Override
+	public void getDrops(NonNullList<ItemStack> drops, IBlockAccess world, BlockPos pos, IBlockState state, int fortune) {
+		super.getDrops(drops, world, pos, state, fortune);
+		
+		TileEntity ent = world.getTileEntity(pos);
+		TileEntityGrappleModifier tileent = (TileEntityGrappleModifier) ent;
+		
+		for (grapplemod.upgradeCategories category : grapplemod.upgradeCategories.values()) {
+			if (tileent.unlockedCategories.containsKey(category) && tileent.unlockedCategories.get(category)) {
+				drops.add(new ItemStack(category.getItem()));
+			}
+		}
+	}
+	
+    @Override
+    public boolean removedByPlayer(IBlockState state, World world, BlockPos pos, EntityPlayer player, boolean willHarvest)
+    {
+        if (willHarvest) return true; //If it will harvest, delay deletion of the block until after getDrops
+        return super.removedByPlayer(state, world, pos, player, willHarvest);
+    }
+    /**
+     * Spawns the block's drops in the world. By the time this is called the Block has possibly been set to air via
+     * Block.removedByPlayer
+     */
+    @Override
+    public void harvestBlock(World world, EntityPlayer player, BlockPos pos, IBlockState state, @Nullable TileEntity te, ItemStack tool)
+    {
+        super.harvestBlock(world, player, pos, state, te, tool);
+        world.setBlockToAir(pos);
+    }
+	
 	@Override
 	public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn,
 			EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
 		ItemStack helditemstack = playerIn.getHeldItemMainhand();
 		Item helditem = helditemstack.getItem();
+
 		if (helditem instanceof BaseUpgradeItem) {
 			if (!worldIn.isRemote) {
 				TileEntity ent = worldIn.getTileEntity(pos);

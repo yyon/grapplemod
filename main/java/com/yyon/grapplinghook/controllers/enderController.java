@@ -25,7 +25,7 @@ public class enderController extends grappleController {
 	public final double playermovementmult = 1;
 	
 	public enderController(int arrowId, int entityId, World world, vec pos, double maxlen, int id) {
-		super(arrowId, entityId, world, pos, maxlen, id);
+		super(arrowId, entityId, world, pos, maxlen, id, null);
 	}
 
 	public void receiveGrappleClick(boolean leftclick) {

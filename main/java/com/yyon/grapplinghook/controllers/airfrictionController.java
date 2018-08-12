@@ -27,7 +27,7 @@ public class airfrictionController extends grappleController {
 	public final double playermovementmult = 0.5;
 	
 	public airfrictionController(int arrowId, int entityId, World world, vec pos, double maxlen, int id) {
-		super(arrowId, entityId, world, pos, maxlen, id);
+		super(arrowId, entityId, world, pos, maxlen, id, null);
 	}
 	
 	@Override

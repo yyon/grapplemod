@@ -139,6 +139,8 @@ public class grapplemod {
 	public static HashMap<BlockPos, grappleController> controllerpos = new HashMap<BlockPos, grappleController>();
 	public static HashSet<Integer> attached = new HashSet<Integer>(); // server side
 	
+	public static HashMap<Integer, HashSet<grappleArrow>> allarrows = new HashMap<Integer, HashSet<grappleArrow>>(); // server side
+	
 	private static int controllerid = 0;
 	public static int GRAPPLEID = controllerid++;
 	public static int ENDERID = controllerid++;
@@ -426,7 +428,7 @@ public class grapplemod {
 		}
 	}
 	
-	public static grappleController createControl(int id, int arrowid, int entityid, World world, vec pos, double maxlen, BlockPos blockpos) {
+	public static grappleController createControl(int id, int arrowid, int entityid, World world, vec pos, double maxlen, BlockPos blockpos, GrappleCustomization custom) {
 
 		grappleArrow arrow = null;
 		Entity arrowentity = world.getEntityByID(arrowid);
@@ -434,18 +436,38 @@ public class grapplemod {
 			arrow = (grappleArrow) arrowentity;
 		}
 		
-		if (id != MULTISUBID) {
-			grappleController currentcontroller = controllers.get(entityid);
-			if (currentcontroller != null) {
-				currentcontroller.unattach();
-			}
+		boolean multi = (custom != null) && (custom.doublehook);
+		
+		grappleController currentcontroller = controllers.get(entityid);
+		if (currentcontroller != null && !(multi && currentcontroller.custom != null && currentcontroller.custom.doublehook)) {
+			currentcontroller.unattach();
 		}
 		
 //		System.out.println(blockpos);
 		
 		grappleController control = null;
 		if (id == GRAPPLEID) {
-			control = new grappleController(arrowid, entityid, world, pos, maxlen, id);
+			if (!multi) {
+				control = new grappleController(arrowid, entityid, world, pos, maxlen, id, custom);
+			} else {
+				control = grapplemod.controllers.get(entityid);
+				boolean created = false;
+				if (control instanceof grappleController) {
+					grappleController c = (grappleController) control;
+					if (control.custom.doublehook) {
+						if (arrow != null && arrow instanceof grappleArrow) {
+							grappleArrow multiarrow = (grappleArrow) arrowentity;
+							created = true;
+							c.addArrow(multiarrow);
+						}
+					}
+				}
+				if (!created) {
+/*					System.out.println("Couldn't create");
+					grapplemod.removesubarrow(arrowid);*/
+					control = new grappleController(arrowid, entityid, world, pos, maxlen, id, custom);
+				}
+			}
 		} else if (id == ENDERID) {
 			control = new enderController(arrowid, entityid, world, pos, maxlen, id);
 		} else if (id == HOOKID) {
@@ -482,7 +504,6 @@ public class grapplemod {
 				grapplemod.removesubarrow(arrowid);
 			}
 		} else if (id == AIRID) {
-//			System.out.println("AIR FRICTION CONTROLLER");
 			control = new airfrictionController(arrowid, entityid, world, pos, maxlen, id);
 		}
 		if (blockpos != null && control != null) {
@@ -493,17 +514,19 @@ public class grapplemod {
 	}
 	
 	public static void removesubarrow(int id) {
-		grapplemod.network.sendToServer(new GrappleEndMessage(-1, id));
+		HashSet<Integer> arrowIds = new HashSet<Integer>();
+		arrowIds.add(id);
+		grapplemod.network.sendToServer(new GrappleEndMessage(-1, arrowIds));
 	}
 
-	public static void receiveGrappleEnd(int id, World world, int arrowid) {
+	public static void receiveGrappleEnd(int id, World world, HashSet<Integer> arrowIds) {
 		if (grapplemod.attached.contains(id)) {
 			grapplemod.attached.remove(new Integer
 					(id));
 		} else {
 		}
 		
-		if (arrowid != -1) {
+		for (int arrowid : arrowIds) {
 	      	Entity grapple = world.getEntityByID(arrowid);
 	  		if (grapple instanceof grappleArrow) {
 	  			((grappleArrow) grapple).removeServer();
@@ -517,10 +540,10 @@ public class grapplemod {
       		entity.fallDistance = 0;
   		}
   		
-  		grapplemod.removeallmultihookarrows();
+  		grapplemod.removeallmultihookarrows(id);
 	}
 
-	public static HashSet<multihookArrow> multihookarrows = new HashSet<multihookArrow>();
+//	public static HashSet<multihookArrow> multihookarrows = new HashSet<multihookArrow>();
 	public static void receiveMultihookMessage(int id, World w, boolean sneaking) {
       	Entity e = w.getEntityByID(id);
       	if (e != null && e instanceof EntityLivingBase) {
@@ -552,7 +575,7 @@ public class grapplemod {
             */
             
 			w.spawnEntity(entityarrow);
-			multihookarrows.add(entityarrow);
+//			multihookarrows.add(entityarrow);
 			
 			
       		anglevec = new vec(0,0,1).rotate_yaw(Math.toRadians(angle));
@@ -568,16 +591,27 @@ public class grapplemod {
             */
             
 			w.spawnEntity(entityarrow);
-			multihookarrows.add(entityarrow);
+//			multihookarrows.add(entityarrow);
       	}
 	}
-		
-	public static void removeallmultihookarrows() {
-		for (multihookArrow arrow : multihookarrows) {
+	
+	public static void addarrow(int id, grappleArrow arrow) {
+		if (!allarrows.containsKey(id)) {
+			allarrows.put(id, new HashSet<grappleArrow>());
+		}
+		allarrows.get(id).add(arrow);
+	}
+	
+	public static void removeallmultihookarrows(int id) {
+		if (!allarrows.containsKey(id)) {
+			allarrows.put(id, new HashSet<grappleArrow>());
+		}
+		for (grappleArrow arrow : allarrows.get(id)) {
 			if (arrow != null && !arrow.isDead) {
 				arrow.removeServer();
 			}
 		}
+		allarrows.put(id, new HashSet<grappleArrow>());
 	}
 	
 

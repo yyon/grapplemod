@@ -25,7 +25,7 @@ import com.yyon.grapplinghook.vec;
 
 public class smartHookControl extends grappleController {
 	public smartHookControl(int arrowId, int entityId, World world, vec pos, double maxlen, int id, boolean slow) {
-		super(arrowId, entityId, world, pos, maxlen, id);
+		super(arrowId, entityId, world, pos, maxlen, id, null);
 		if (slow) {
 			this.acceleration = this.acceleration / 2;
 		}
@@ -48,11 +48,11 @@ public class smartHookControl extends grappleController {
 					this.normalCollisions();
 					this.applyAirFriction();
 					
-					vec arrowpos = this.pos;
+					vec arrowpos = null;//this.pos;
 					vec playerpos = vec.positionvec(player);
 					
 					vec oldspherevec = playerpos.sub(arrowpos);
-					vec spherevec = oldspherevec.changelen(r);
+					vec spherevec = oldspherevec.changelen(0);
 //					Vec3 spherechange = spherevec.subtract(oldspherevec);
 //					Vec3 spherepos = spherevec.add(arrowpos);
 
@@ -61,7 +61,7 @@ public class smartHookControl extends grappleController {
 					double dist = oldspherevec.length();
 					
 					if (this.isjumping()) {
-						this.dojump(player, spherevec);
+//						this.dojump(player, spherevec);
 						return;
 					} else {
 						applyPlayerMovement();

@@ -33,9 +33,9 @@ public class crosshairRenderer {
 		if (event.getType() == ElementType.CROSSHAIRS) {
 			EntityPlayerSP player = this.mc.player;
 			ItemStack bow = null;
-			if ((player.getItemStackFromSlot(EntityEquipmentSlot.MAINHAND) != null && player.getItemStackFromSlot(EntityEquipmentSlot.MAINHAND).getItem() instanceof grappleBow)) {
+			if ((player.getItemStackFromSlot(EntityEquipmentSlot.MAINHAND) != null && player.getItemStackFromSlot(EntityEquipmentSlot.MAINHAND).getItem() instanceof grappleBow) && ((grappleBow) grapplemod.grapplebowitem).getCustomization(player.getItemStackFromSlot(EntityEquipmentSlot.MAINHAND)).doublehook) {
 				bow = player.getItemStackFromSlot(EntityEquipmentSlot.MAINHAND);
-			} else if ((player.getItemStackFromSlot(EntityEquipmentSlot.OFFHAND) != null && player.getItemStackFromSlot(EntityEquipmentSlot.OFFHAND).getItem() instanceof grappleBow)) {
+			} else if ((player.getItemStackFromSlot(EntityEquipmentSlot.OFFHAND) != null && player.getItemStackFromSlot(EntityEquipmentSlot.OFFHAND).getItem() instanceof grappleBow) && ((grappleBow) grapplemod.grapplebowitem).getCustomization(player.getItemStackFromSlot(EntityEquipmentSlot.OFFHAND)).doublehook) {
 				bow = player.getItemStackFromSlot(EntityEquipmentSlot.OFFHAND);
 			}
 			

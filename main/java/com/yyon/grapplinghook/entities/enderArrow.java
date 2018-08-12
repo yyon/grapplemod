@@ -30,7 +30,7 @@ public class enderArrow extends grappleArrow
 	
 	public enderArrow(World worldIn, EntityLivingBase shooter,
 			boolean righthand) {
-		super(worldIn, shooter, righthand);
+		super(worldIn, shooter, righthand, null);
 	}
 	
     public float getVelocity()

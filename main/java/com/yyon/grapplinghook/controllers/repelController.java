@@ -7,12 +7,12 @@ import net.minecraft.world.World;
 import com.yyon.grapplinghook.grapplemod;
 import com.yyon.grapplinghook.vec;
 
-public class repelController extends magnetController {
-	public final double playermovementmult = 1.5;
-	
+public class repelController extends grappleController {
 	public repelController(int arrowId, int entityId, World world, vec pos,
 			double maxlen, int id) {
-		super(arrowId, entityId, world, pos, maxlen, id, 0);
+		super(arrowId, entityId, world, pos, maxlen, id, null);
+		
+		this.playermovementmult = 1;
 	}
 
 	public void updatePlayerPos() {
@@ -37,7 +37,7 @@ public class repelController extends magnetController {
 						applyPlayerMovement();
 					}
 					
-					vec blockpush = check(playerpos, entity.world);
+					vec blockpush = check_repel(playerpos, entity.world);
 					blockpush.mult_ip(0.5);
 					blockpush = new vec(blockpush.x*0.5, blockpush.y*2, blockpush.z*0.5);
 					this.motion.add_ip(blockpush);

@@ -120,6 +120,7 @@ public class GuiModifier extends GuiScreen {
 			addCheckbox("motorwhencrouching", "Motor when crouching", "Motor is active when crouching");
 			addCheckbox("motorwhennotcrouching", "Motor when not crouching", "Motor is active when crouching");
 			addCheckbox("smartmotor", "Smart Motor", "Adjusts motor speed so that player moves towards crosshairs (up/down)");
+			addCheckbox("motordampener", "Sideways Motion Dampener", "Reduces motion perpendicular to the rope so that the rope pulls straighter");
 		} else if (category == grapplemod.upgradeCategories.SWING) {
 			addSlider("playermovementmult", "Swing speed", "Acceleration of player when using movement keys while swinging", 5);
 		} else if (category == grapplemod.upgradeCategories.STAFF) {

@@ -58,7 +58,7 @@ public class multiBow extends Item implements clickitem {
 				NBTTagCompound compound = grapplemod.getstackcompound(stack, "grapplemod");
 				boolean slow = compound.getBoolean("slow");
 				
-				grappleController control = grapplemod.createControl(grapplemod.MULTIID, -1, playerid, worldIn, new vec(0,0,0), -1, null);
+				grappleController control = grapplemod.createControl(grapplemod.MULTIID, -1, playerid, worldIn, new vec(0,0,0), -1, null, null);
 				if (control instanceof multihookController) {
 					multihookController multicontrol = (multihookController) control;
 					if (slow) {

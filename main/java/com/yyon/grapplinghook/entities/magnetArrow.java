@@ -47,7 +47,7 @@ public class magnetArrow extends grappleArrow
 	
 	public magnetArrow(World worldIn, EntityLivingBase shooter,
 			boolean righthand) {
-		super(worldIn, shooter, righthand);
+		super(worldIn, shooter, righthand, null);
 	}
 	
 	public magnetArrow(World worldIn, EntityLivingBase shooter, boolean righthand, int repelconf) {
@@ -78,6 +78,7 @@ public class magnetArrow extends grappleArrow
     @Override
     public void onEntityUpdate() {
     	super.onEntityUpdate();
+    	
     	if (this.shootingEntity == null) {return;}
     	if (!this.foundblock) {
     		if (!this.world.isRemote) {

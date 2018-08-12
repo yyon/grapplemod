@@ -8,6 +8,8 @@ import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 
+import java.util.HashSet;
+
 import com.yyon.grapplinghook.grapplemod;
 //* // 1.8 Compatability
 
@@ -31,25 +33,32 @@ import com.yyon.grapplinghook.grapplemod;
 public class GrappleEndMessage implements IMessage {
    
 	public int entityid;
-	public int arrowid;
+	public HashSet<Integer> arrowIds;
 
     public GrappleEndMessage() { }
 
-    public GrappleEndMessage(int entityid, int arrowid) {
+    public GrappleEndMessage(int entityid, HashSet<Integer> arrowIds) {
     	this.entityid = entityid;
-    	this.arrowid = arrowid;
+    	this.arrowIds = arrowIds;
     }
 
     @Override
     public void fromBytes(ByteBuf buf) {
     	this.entityid = buf.readInt();
-    	this.arrowid = buf.readInt();
+    	int size = buf.readInt();
+    	this.arrowIds = new HashSet<Integer>();
+    	for (int i = 0; i < size; i++) {
+    		this.arrowIds.add(buf.readInt());
+    	}
     }
 
     @Override
     public void toBytes(ByteBuf buf) {
     	buf.writeInt(this.entityid);
-    	buf.writeInt(this.arrowid);
+    	buf.writeInt(this.arrowIds.size());
+    	for (int id : this.arrowIds) {
+        	buf.writeInt(id);
+    	}
     }
 
     public static class Handler implements IMessageHandler<GrappleEndMessage, IMessage> {
@@ -69,7 +78,7 @@ public class GrappleEndMessage implements IMessage {
 				
 				World w = ctx.getServerHandler().player.world;
 				
-				grapplemod.receiveGrappleEnd(id, w, message.arrowid);
+				grapplemod.receiveGrappleEnd(id, w, message.arrowIds);
             }
     	}
     	

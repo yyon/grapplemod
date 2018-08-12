@@ -25,7 +25,7 @@ import com.yyon.grapplinghook.vec;
 
 public class hookControl extends grappleController {
 	public hookControl(int arrowId, int entityId, World world, vec pos, double maxlen, int id) {
-		super(arrowId, entityId, world, pos, maxlen, id);
+		super(arrowId, entityId, world, pos, maxlen, id, null);
 	}
 
 	public double maxspeed = 4;
@@ -58,27 +58,20 @@ public class hookControl extends grappleController {
 					this.normalCollisions();
 //					this.applyAirFriction();
 					
-					vec arrowpos = this.pos;
+//					vec arrowpos = this.pos;
 					vec playerpos = vec.positionvec(player);
 					
-					vec oldspherevec = playerpos.sub(arrowpos);
-					vec spherevec = oldspherevec.changelen(r);
+					vec oldspherevec = playerpos.sub(null);
+					vec spherevec = oldspherevec.changelen(0);
 //					Vec3 spherechange = spherevec.subtract(oldspherevec);
 //					Vec3 spherepos = spherevec.add(arrowpos);
 					
 					double dist = oldspherevec.length();
 					
 					if (this.isjumping()) {
-						this.dojump(player, spherevec);
+//						this.dojump(player, spherevec);
 						return;
-/*					} else if (this.shootingEntity.isSneaking()) {
-						motion = multvec(motion, 0.9);
-						if (this.playerforward != 0) {
-							if (this.r > this.playerforward * 0.5) {
-								this.r -= this.playerforward * 0.5;
-							}
-							System.out.println(this.r);
-						}*/
+
 					} else {
 						applyPlayerMovement();
 					}
@@ -103,7 +96,7 @@ public class hookControl extends grappleController {
 						}
 					}
 					
-					motion.add_ip(arrowpos.sub(playerpos).changelen(acceleration));
+//					motion.add_ip(arrowpos.sub(playerpos).changelen(acceleration));
 					
 					double speed = motion.proj(oldspherevec).length();
 					
@@ -111,15 +104,7 @@ public class hookControl extends grappleController {
 						motion.changelen_ip(maxspeed);
 					}
 					
-					/*
-					if (!player.onGround) {
-						motion = motion.addVector(0, -0.05, 0);
-					} else {
-						if (dist > 4) {
-							motion = motion.addVector(0, 0.3, 0);
-						}
-					}
-					*/
+
 					
 					newmotion = motion;
 					

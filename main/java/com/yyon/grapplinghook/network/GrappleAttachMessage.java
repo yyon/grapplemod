@@ -2,6 +2,7 @@ package com.yyon.grapplinghook.network;
 
 import java.util.LinkedList;
 
+import com.yyon.grapplinghook.GrappleCustomization;
 import com.yyon.grapplinghook.grapplemod;
 import com.yyon.grapplinghook.vec;
 import com.yyon.grapplinghook.controllers.SegmentHandler;
@@ -48,10 +49,11 @@ public class GrappleAttachMessage implements IMessage {
 	public LinkedList<vec> segments;
 	public LinkedList<EnumFacing> segmenttopsides;
 	public LinkedList<EnumFacing> segmentbottomsides;
+	public GrappleCustomization custom;
 
     public GrappleAttachMessage() { }
 
-    public GrappleAttachMessage(int id, double x, double y, double z, int controlid, int entityid, double maxlen, BlockPos blockpos, LinkedList<vec> segments, LinkedList<EnumFacing> segmenttopsides, LinkedList<EnumFacing> segmentbottomsides) {
+    public GrappleAttachMessage(int id, double x, double y, double z, int controlid, int entityid, double maxlen, BlockPos blockpos, LinkedList<vec> segments, LinkedList<EnumFacing> segmenttopsides, LinkedList<EnumFacing> segmentbottomsides, GrappleCustomization custom) {
     	this.id = id;
         this.x = x;
         this.y = y;
@@ -63,6 +65,7 @@ public class GrappleAttachMessage implements IMessage {
         this.segments = segments;
         this.segmenttopsides = segmenttopsides;
         this.segmentbottomsides = segmentbottomsides;
+        this.custom = custom;
     }
 
     @Override
@@ -78,6 +81,9 @@ public class GrappleAttachMessage implements IMessage {
         int blocky = buf.readInt();
         int blockz = buf.readInt();
         this.blockpos = new BlockPos(blockx, blocky, blockz);
+        
+        this.custom = new GrappleCustomization();
+        this.custom.readFromBuf(buf);
         
         int size = buf.readInt();
         this.segments = new LinkedList<vec>();
@@ -111,6 +117,8 @@ public class GrappleAttachMessage implements IMessage {
         buf.writeInt(this.blockpos.getX());
         buf.writeInt(this.blockpos.getY());
         buf.writeInt(this.blockpos.getZ());
+        
+        this.custom.writeToBuf(buf);
         
         buf.writeInt(this.segments.size());
         for (int i = 1; i < this.segments.size()-1; i++) {
@@ -146,7 +154,7 @@ public class GrappleAttachMessage implements IMessage {
             	} else {
             	}
             	
-            	grapplemod.createControl(message.controlid, message.id, message.entityid, world, new vec(message.x, message.y, message.z), message.maxlen, message.blockpos);
+            	grapplemod.createControl(message.controlid, message.id, message.entityid, world, new vec(message.x, message.y, message.z), message.maxlen, message.blockpos, message.custom);
             }
     	}
     	

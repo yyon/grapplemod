@@ -28,7 +28,7 @@ import com.yyon.grapplinghook.entities.multihookArrow;
 
 public class multihookController extends grappleController {
 	public multihookController(int arrowId, int entityId, World world, vec pos, double maxlen, int id) {
-		super(arrowId, entityId, world, pos, maxlen, id);
+		super(arrowId, entityId, world, pos, maxlen, id, null);
 	}
 
 	public double maxspeed = 2;//4;
@@ -67,7 +67,7 @@ public class multihookController extends grappleController {
 							jumpvec.y = 1;
 						}
 						
-						this.dojump(player, jumpvec.y);
+//						this.dojump(player, jumpvec.y);
 						return;
 					} else {
 						applyPlayerMovement();
