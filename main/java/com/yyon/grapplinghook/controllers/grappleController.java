@@ -288,7 +288,6 @@ public class grappleController {
 
 					if (motor) {
 						if (close) {
-							System.out.println("close");
 							if (motion.length() > 0.3) {
 								motion.mult_ip(0.6);
 							}

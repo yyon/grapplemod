@@ -8,28 +8,13 @@ import java.util.Random;
 import com.yyon.grapplinghook.blocks.BlockGrappleModifier;
 import com.yyon.grapplinghook.blocks.TileEntityGrappleModifier;
 import com.yyon.grapplinghook.controllers.airfrictionController;
-import com.yyon.grapplinghook.controllers.enderController;
 import com.yyon.grapplinghook.controllers.grappleController;
-import com.yyon.grapplinghook.controllers.hookControl;
-import com.yyon.grapplinghook.controllers.magnetController;
-import com.yyon.grapplinghook.controllers.multihookController;
 import com.yyon.grapplinghook.controllers.repelController;
-import com.yyon.grapplinghook.controllers.smartHookControl;
-import com.yyon.grapplinghook.entities.enderArrow;
 import com.yyon.grapplinghook.entities.grappleArrow;
-import com.yyon.grapplinghook.entities.hookArrow;
-import com.yyon.grapplinghook.entities.magnetArrow;
-import com.yyon.grapplinghook.entities.multihookArrow;
-import com.yyon.grapplinghook.entities.smartHookArrow;
 import com.yyon.grapplinghook.items.LongFallBoots;
-import com.yyon.grapplinghook.items.enderBow;
 import com.yyon.grapplinghook.items.grappleBow;
-import com.yyon.grapplinghook.items.hookBow;
 import com.yyon.grapplinghook.items.launcherItem;
-import com.yyon.grapplinghook.items.magnetBow;
-import com.yyon.grapplinghook.items.multiBow;
 import com.yyon.grapplinghook.items.repeller;
-import com.yyon.grapplinghook.items.smartHookBow;
 import com.yyon.grapplinghook.items.upgrades.BaseUpgradeItem;
 import com.yyon.grapplinghook.items.upgrades.DoubleUpgradeItem;
 import com.yyon.grapplinghook.items.upgrades.ForcefieldUpgradeItem;
@@ -44,14 +29,11 @@ import com.yyon.grapplinghook.network.GrappleAttachPosMessage;
 import com.yyon.grapplinghook.network.GrappleClickMessage;
 import com.yyon.grapplinghook.network.GrappleEndMessage;
 import com.yyon.grapplinghook.network.GrappleModifierMessage;
-import com.yyon.grapplinghook.network.MultiHookMessage;
 import com.yyon.grapplinghook.network.PlayerMovementMessage;
 import com.yyon.grapplinghook.network.SegmentMessage;
-import com.yyon.grapplinghook.network.ToolConfigMessage;
 
 import net.minecraft.block.Block;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemArmor;
@@ -60,7 +42,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.text.TextComponentString;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
@@ -112,14 +93,9 @@ public class grapplemod {
     public static final String VERSION = "1.12.2-v10";
 
     public static Item grapplebowitem;
-    public static Item hookshotitem;
-    public static Item smarthookitem;
-    public static Item enderhookitem;
     public static Item launcheritem;
     public static Item longfallboots;
-    public static Item magnetbowitem;
     public static Item repelleritem;
-    public static Item multihookitem;
 
     public static Item baseupgradeitem;
     public static Item doubleupgradeitem;
@@ -143,14 +119,8 @@ public class grapplemod {
 	
 	private static int controllerid = 0;
 	public static int GRAPPLEID = controllerid++;
-	public static int ENDERID = controllerid++;
-	public static int HOOKID = controllerid++;
-	public static int MAGNETID = controllerid++;
 	public static int REPELID = controllerid++;
-	public static int MULTIID = controllerid++;
-	public static int MULTISUBID = controllerid++;
 	public static int AIRID = controllerid++;
-	public static int SMARTHOOKID = controllerid++;
 	
 	public static int REPELCONFIGS = 0;
 //	public static int REPELSPEED = REPELCONFIGS++;
@@ -288,7 +258,7 @@ public class grapplemod {
 	public void registerItems(RegistryEvent.Register<Item> event) {
 //		System.out.println("REGISTERING ITEMS");
 //		System.out.println(grapplebowitem);
-	    event.getRegistry().registerAll(grapplebowitem, hookshotitem, smarthookitem, launcheritem, longfallboots, enderhookitem, magnetbowitem, repelleritem, multihookitem, baseupgradeitem, doubleupgradeitem, forcefieldupgradeitem, magnetupgradeitem, motorupgradeitem, ropeupgradeitem, staffupgradeitem, swingupgradeitem, throwupgradeitem);
+	    event.getRegistry().registerAll(grapplebowitem, launcheritem, longfallboots, repelleritem, baseupgradeitem, doubleupgradeitem, forcefieldupgradeitem, magnetupgradeitem, motorupgradeitem, ropeupgradeitem, staffupgradeitem, swingupgradeitem, throwupgradeitem);
 
 	}
 	
@@ -297,22 +267,12 @@ public class grapplemod {
 //		System.out.println("PREINIT!!!");
 		grapplebowitem = new grappleBow();
 		grapplebowitem.setRegistryName("grapplinghook");
-		hookshotitem = new hookBow();
-		hookshotitem.setRegistryName("hookshot");
-		smarthookitem = new smartHookBow();
-		smarthookitem.setRegistryName("smarthook");
 		launcheritem = new launcherItem();
 		launcheritem.setRegistryName("launcheritem");
 		longfallboots = new LongFallBoots(ItemArmor.ArmorMaterial.DIAMOND, 3);
 		longfallboots.setRegistryName("longfallboots");
-		enderhookitem = new enderBow();
-		enderhookitem.setRegistryName("enderhook");
-		magnetbowitem = new magnetBow();
-		magnetbowitem.setRegistryName("magnetbow");
 		repelleritem = new repeller();
 		repelleritem.setRegistryName("repeller");
-		multihookitem = new multiBow();
-		multihookitem.setRegistryName("multihook");
 	    baseupgradeitem = new BaseUpgradeItem();
 	    baseupgradeitem.setRegistryName("baseupgradeitem");
 	    doubleupgradeitem = new DoubleUpgradeItem();
@@ -337,11 +297,6 @@ public class grapplemod {
 		resourceLocation = new ResourceLocation(grapplemod.MODID, "grapplemod");
 		
 		registerEntity(grappleArrow.class, "grappleArrow");
-		registerEntity(enderArrow.class, "enderArrow");
-		registerEntity(hookArrow.class, "hookArrow");
-		registerEntity(magnetArrow.class, "magnetArrow");
-		registerEntity(multihookArrow.class, "multihookArrow");
-		registerEntity(smartHookArrow.class, "smartHookArrow");
 		
 		network = NetworkRegistry.INSTANCE.newSimpleChannel("grapplemodchannel");
 		byte id = 0;
@@ -350,8 +305,6 @@ public class grapplemod {
 		network.registerMessage(GrappleEndMessage.Handler.class, GrappleEndMessage.class, id++, Side.SERVER);
 		network.registerMessage(GrappleClickMessage.Handler.class, GrappleClickMessage.class, id++, Side.CLIENT);
 		network.registerMessage(GrappleAttachPosMessage.Handler.class, GrappleAttachPosMessage.class, id++, Side.CLIENT);
-		network.registerMessage(MultiHookMessage.Handler.class, MultiHookMessage.class, id++, Side.SERVER);
-		network.registerMessage(ToolConfigMessage.Handler.class, ToolConfigMessage.class, id++, Side.SERVER);
 		network.registerMessage(SegmentMessage.Handler.class, SegmentMessage.class, id++, Side.CLIENT);
 		network.registerMessage(GrappleModifierMessage.Handler.class, GrappleModifierMessage.class, id++, Side.SERVER);
 		
@@ -468,41 +421,8 @@ public class grapplemod {
 					control = new grappleController(arrowid, entityid, world, pos, maxlen, id, custom);
 				}
 			}
-		} else if (id == ENDERID) {
-			control = new enderController(arrowid, entityid, world, pos, maxlen, id);
-		} else if (id == HOOKID) {
-			control = new hookControl(arrowid, entityid, world, pos, maxlen, id);
-		} else if (id == SMARTHOOKID) {
-			boolean slow = false;
-			if (arrow != null && arrow instanceof smartHookArrow) {
-				slow = ((smartHookArrow) arrow).slow;
-			}
-			control = new smartHookControl(arrowid, entityid, world, pos, maxlen, id, slow);
-		} else if (id == MAGNETID) {
-			int repelconf = 0;
-			if (arrow != null && arrow instanceof magnetArrow) {
-				repelconf = ((magnetArrow) arrow).repelconf;
-			}
-			control = new magnetController(arrowid, entityid, world, pos, maxlen, id, repelconf);
 		} else if (id == REPELID) {
 			control = new repelController(arrowid, entityid, world, pos, maxlen, id);
-		} else if (id == MULTIID) {
-			control = new multihookController(arrowid, entityid, world, pos, maxlen, id);
-		} else if (id == MULTISUBID) {
-			control = grapplemod.controllers.get(entityid);
-			boolean created = false;
-			if (control instanceof multihookController) {
-				multihookController c = (multihookController) control;
-				if (arrow != null && arrow instanceof multihookArrow) {
-					multihookArrow multiarrow = (multihookArrow) arrowentity;
-					created = true;
-					c.addArrow(multiarrow, pos);
-				}
-			}
-			if (!created) {
-				System.out.println("Couldn't create");
-				grapplemod.removesubarrow(arrowid);
-			}
 		} else if (id == AIRID) {
 			control = new airfrictionController(arrowid, entityid, world, pos, maxlen, id);
 		}
@@ -542,59 +462,6 @@ public class grapplemod {
   		
   		grapplemod.removeallmultihookarrows(id);
 	}
-
-//	public static HashSet<multihookArrow> multihookarrows = new HashSet<multihookArrow>();
-	public static void receiveMultihookMessage(int id, World w, boolean sneaking) {
-      	Entity e = w.getEntityByID(id);
-      	if (e != null && e instanceof EntityLivingBase) {
-      		EntityLivingBase player = (EntityLivingBase) e;
-      		
-      		float angle = multiBow.getAngle(player);
-      		
-      		//vec look = new vec(player.getLookVec());
-      		
-      		//System.out.println(player.rotationPitch);
-      		//System.out.println(player.rotationYaw);
-      		
-      		/*
-      		grappleArrow arrow = new grappleArrow(w, player, false);
-      		arrow.setHeadingFromThrower(player, (float)look.getPitch(), (float)look.getYaw(), 0.0F, arrow.getVelocity(), 0.0F);
-			w.spawnEntityInWorld(arrow);
-			*/
-      		
-      		vec anglevec = new vec(0,0,1).rotate_yaw(Math.toRadians(-angle));
-      		anglevec = anglevec.rotate_pitch(Math.toRadians(-player.rotationPitch));
-      		anglevec = anglevec.rotate_yaw(Math.toRadians(player.rotationYaw));
-			multihookArrow entityarrow = new multihookArrow(w, player, false);
-            entityarrow.shoot(player, (float) anglevec.getPitch(), (float)anglevec.getYaw(), 0.0F, entityarrow.getVelocity(), 0.0F);
-            
-            /*
-            vec pos = vec.positionvec(entityarrow);
-            pos.add_ip(new vec(0.36, -0.175, 0.45).rotate_yaw(Math.toRadians(player.rotationYaw)));
-            entityarrow.setPosition(pos.x, pos.y, pos.z);
-            */
-            
-			w.spawnEntity(entityarrow);
-//			multihookarrows.add(entityarrow);
-			
-			
-      		anglevec = new vec(0,0,1).rotate_yaw(Math.toRadians(angle));
-      		anglevec = anglevec.rotate_pitch(Math.toRadians(-player.rotationPitch));
-      		anglevec = anglevec.rotate_yaw(Math.toRadians(player.rotationYaw));
-			entityarrow = new multihookArrow(w, player, true);
-            entityarrow.shoot(player, (float) anglevec.getPitch(), (float)anglevec.getYaw(), 0.0F, entityarrow.getVelocity(), 0.0F);
-            
-            /*
-            pos = vec.positionvec(entityarrow);
-            pos.add_ip(new vec(-0.36, -0.175, 0.45).rotate_yaw(Math.toRadians(player.rotationYaw)));
-            entityarrow.setPosition(pos.x, pos.y, pos.z);
-            */
-            
-			w.spawnEntity(entityarrow);
-//			multihookarrows.add(entityarrow);
-      	}
-	}
-	
 	public static void addarrow(int id, grappleArrow arrow) {
 		if (!allarrows.containsKey(id)) {
 			allarrows.put(id, new HashSet<grappleArrow>());
@@ -630,56 +497,5 @@ public class grapplemod {
             stack.setTagInfo(key, nbttagcompound);
             return nbttagcompound;
         }
-	}
-
-	public static void receiveToolConfigMessage(int id, World w) {
-      	Entity e = w.getEntityByID(id);
-      	if (e != null && e instanceof EntityLivingBase) {
-      		EntityLivingBase player = (EntityLivingBase) e;
-      		
-      		ItemStack stack = player.getHeldItemMainhand();
-      		Item item = stack.getItem();
-      		if (item instanceof multiBow) {
-      			NBTTagCompound compound = grapplemod.getstackcompound(stack, "grapplemod");
-    			boolean slow = compound.getBoolean("slow");
-    			slow = !slow;
-    			compound.setBoolean("slow", slow);
-    			
-    			if (slow) {
-    				player.sendMessage(new TextComponentString("Set to slow mode"));
-    			} else {
-    				player.sendMessage(new TextComponentString("Set to fast mode"));
-    			}
-      		} else if (item instanceof magnetBow) {
-      			NBTTagCompound compound = grapplemod.getstackcompound(stack, "grapplemod");
-    			int repelconf = compound.getInteger("repelconf");
-    			repelconf++;
-    			if (repelconf >= REPELCONFIGS) {
-    				repelconf = 0;
-    			}
-    			compound.setInteger("repelconf", repelconf);
-    			
-//    			if (repelconf == REPELSPEED) {
-//    				player.addChatMessage(new TextComponentString("Repel force set to speed based"));
-    			if (repelconf == REPELSTRONG) {
-    				player.sendMessage(new TextComponentString("Repel force set to strong"));
-    			} else if (repelconf == REPELWEAK) {
-    				player.sendMessage(new TextComponentString("Repel force set to weak"));
-    			} else if (repelconf == REPELNONE) {
-    				player.sendMessage(new TextComponentString("Repel force set to off"));
-    			}
-      		} else if (item instanceof smartHookBow) {
-      			NBTTagCompound compound = grapplemod.getstackcompound(stack, "grapplemod");
-    			boolean slow = compound.getBoolean("slow");
-    			slow = !slow;
-    			compound.setBoolean("slow", slow);
-    			
-    			if (slow) {
-    				player.sendMessage(new TextComponentString("Set to slow mode"));
-    			} else {
-    				player.sendMessage(new TextComponentString("Set to fast mode"));
-    			}
-      		}
-      	}
 	}
 }

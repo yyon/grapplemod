@@ -1,7 +1,6 @@
 package com.yyon.grapplinghook;
 
 import com.yyon.grapplinghook.items.grappleBow;
-import com.yyon.grapplinghook.items.multiBow;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;

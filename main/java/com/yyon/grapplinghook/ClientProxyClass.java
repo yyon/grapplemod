@@ -4,6 +4,14 @@ import java.util.Collection;
 import java.util.ConcurrentModificationException;
 import java.util.HashMap;
 
+import com.yyon.grapplinghook.controllers.grappleController;
+import com.yyon.grapplinghook.entities.RenderGrappleArrow;
+import com.yyon.grapplinghook.entities.grappleArrow;
+import com.yyon.grapplinghook.items.clickitem;
+import com.yyon.grapplinghook.items.grappleBow;
+import com.yyon.grapplinghook.items.launcherItem;
+import com.yyon.grapplinghook.items.repeller;
+
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.renderer.ItemMeshDefinition;
@@ -28,19 +36,6 @@ import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
-
-import com.yyon.grapplinghook.controllers.grappleController;
-import com.yyon.grapplinghook.entities.RenderGrappleArrow;
-import com.yyon.grapplinghook.entities.grappleArrow;
-import com.yyon.grapplinghook.items.clickitem;
-import com.yyon.grapplinghook.items.enderBow;
-import com.yyon.grapplinghook.items.grappleBow;
-import com.yyon.grapplinghook.items.hookBow;
-import com.yyon.grapplinghook.items.launcherItem;
-import com.yyon.grapplinghook.items.magnetBow;
-import com.yyon.grapplinghook.items.multiBow;
-import com.yyon.grapplinghook.items.repeller;
-import com.yyon.grapplinghook.items.smartHookBow;
 
 public class ClientProxyClass extends CommonProxyClass {
 	public boolean leftclick = false;
@@ -93,14 +88,9 @@ public class ClientProxyClass extends CommonProxyClass {
 	
 	private void registerItemModels() {
 		setgrapplebowtextures(grapplemod.grapplebowitem, grapplinghookloc, ropeloc);
-		setgrapplebowtextures(grapplemod.hookshotitem, hookshotloc, hookshotropeloc);
 		registerItemModel(grapplemod.launcheritem);
 		registerItemModel(grapplemod.longfallboots);
-		setgrapplebowtextures(grapplemod.enderhookitem, enderhookloc, ropeloc);
-		setgrapplebowtextures(grapplemod.magnetbowitem, magnetbowloc, ropeloc);
 		setgrapplebowtextures(grapplemod.repelleritem, repellerloc, repelleronloc);
-		setgrapplebowtextures(grapplemod.multihookitem, multihookloc, multihookropeloc);
-		setgrapplebowtextures(grapplemod.smarthookitem, smarthookloc, smarthookropeloc);
 		registerItemModel(grapplemod.baseupgradeitem);
 		registerItemModel(grapplemod.doubleupgradeitem);
 		registerItemModel(grapplemod.forcefieldupgradeitem);
@@ -211,7 +201,7 @@ public class ClientProxyClass extends CommonProxyClass {
 		}
 		long timer = player.world.getTotalWorldTime() - prevtime;
 		if (timer > reusetime) {
-			if ((player.getHeldItemMainhand()!=null && (player.getHeldItemMainhand().getItem() instanceof enderBow || player.getHeldItemMainhand().getItem() instanceof launcherItem || player.getHeldItemMainhand().getItem() instanceof grappleBow)) || (player.getHeldItemOffhand()!=null && (player.getHeldItemOffhand().getItem() instanceof enderBow || player.getHeldItemOffhand().getItem() instanceof launcherItem || player.getHeldItemOffhand().getItem() instanceof grappleBow))) {
+			if ((player.getHeldItemMainhand()!=null && (player.getHeldItemMainhand().getItem() instanceof launcherItem || player.getHeldItemMainhand().getItem() instanceof grappleBow)) || (player.getHeldItemOffhand()!=null && (player.getHeldItemOffhand().getItem() instanceof launcherItem || player.getHeldItemOffhand().getItem() instanceof grappleBow))) {
 				enderlaunchtimer.put(player.getEntityId(), player.world.getTotalWorldTime());
 				
 	        	vec facing = new vec(player.getLookVec());
@@ -330,17 +320,7 @@ public class ClientProxyClass extends CommonProxyClass {
 				grappleController controller = grapplemod.controllers.get(entityid);
 				if (item.getClass() == grappleBow.class && controller.controllerid == grapplemod.GRAPPLEID) {
 					return true;
-				} else if (item.getClass() == enderBow.class && controller.controllerid == grapplemod.ENDERID) {
-					return true;
-				} else if (item.getClass() == hookBow.class && controller.controllerid == grapplemod.HOOKID) {
-					return true;
-				} else if (item.getClass() == magnetBow.class && controller.controllerid == grapplemod.MAGNETID) {
-					return true;
 				} else if (item.getClass() == repeller.class && controller.controllerid == grapplemod.REPELID) {
-					return true;
-				} else if (item.getClass() == multiBow.class && controller.controllerid == grapplemod.MULTIID) {
-					return true;
-				} else if (item.getClass() == smartHookBow.class && controller.controllerid == grapplemod.SMARTHOOKID) {
 					return true;
 				}
 			}

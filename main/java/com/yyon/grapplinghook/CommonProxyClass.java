@@ -1,5 +1,9 @@
 package com.yyon.grapplinghook;
 
+import com.yyon.grapplinghook.controllers.grappleController;
+import com.yyon.grapplinghook.entities.grappleArrow;
+import com.yyon.grapplinghook.items.grappleBow;
+
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
@@ -14,11 +18,6 @@ import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-
-import com.yyon.grapplinghook.controllers.grappleController;
-import com.yyon.grapplinghook.entities.grappleArrow;
-import com.yyon.grapplinghook.items.grappleBow;
-import com.yyon.grapplinghook.items.multiBow;
 
 public class CommonProxyClass {
 	public enum keys {
@@ -76,7 +75,7 @@ public class CommonProxyClass {
 	    	ItemStack stack = player.getHeldItemMainhand();
 	    	if (stack != null) {
 	    		Item item = stack.getItem();
-	    		if (item instanceof grappleBow || item instanceof multiBow) {
+	    		if (item instanceof grappleBow) {
 	    			event.setCanceled(true);
 	    			return;
 	    		}
