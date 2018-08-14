@@ -32,13 +32,20 @@ public class crosshairRenderer {
 		if (event.getType() == ElementType.CROSSHAIRS) {
 			EntityPlayerSP player = this.mc.player;
 			ItemStack bow = null;
-			if ((player.getItemStackFromSlot(EntityEquipmentSlot.MAINHAND) != null && player.getItemStackFromSlot(EntityEquipmentSlot.MAINHAND).getItem() instanceof grappleBow) && ((grappleBow) grapplemod.grapplebowitem).getCustomization(player.getItemStackFromSlot(EntityEquipmentSlot.MAINHAND)).doublehook) {
+			if ((player.getItemStackFromSlot(EntityEquipmentSlot.MAINHAND) != null && player.getItemStackFromSlot(EntityEquipmentSlot.MAINHAND).getItem() instanceof grappleBow)) {
 				bow = player.getItemStackFromSlot(EntityEquipmentSlot.MAINHAND);
-			} else if ((player.getItemStackFromSlot(EntityEquipmentSlot.OFFHAND) != null && player.getItemStackFromSlot(EntityEquipmentSlot.OFFHAND).getItem() instanceof grappleBow) && ((grappleBow) grapplemod.grapplebowitem).getCustomization(player.getItemStackFromSlot(EntityEquipmentSlot.OFFHAND)).doublehook) {
+			} else if ((player.getItemStackFromSlot(EntityEquipmentSlot.OFFHAND) != null && player.getItemStackFromSlot(EntityEquipmentSlot.OFFHAND).getItem() instanceof grappleBow)) {
 				bow = player.getItemStackFromSlot(EntityEquipmentSlot.OFFHAND);
 			}
 			
 			if (bow != null) {
+				GrappleCustomization custom = ((grappleBow) grapplemod.grapplebowitem).getCustomization(bow);
+            	double angle = Math.toRadians(((grappleBow) grapplemod.grapplebowitem).getAngle(player, bow));
+            	
+				if (!custom.doublehook || angle == 0) {
+					return;
+				}
+				
 //				float partialticks = event.getPartialTicks();
 				ScaledResolution resolution = event.getResolution();
 				
@@ -66,8 +73,6 @@ public class crosshairRenderer {
 		            {
 		            	double fov = Math.toRadians(gamesettings.fovSetting);
 		            	fov *= player.getFovModifier();
-		            	
-		            	double angle = Math.toRadians(((grappleBow) grapplemod.grapplebowitem).getAngle(player, bow));
 		            	
 		            	double l = ((double) h/2) / Math.tan(fov/2);
 		            	

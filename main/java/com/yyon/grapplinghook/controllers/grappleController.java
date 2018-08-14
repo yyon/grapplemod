@@ -337,9 +337,11 @@ public class grappleController {
 							if (pull.dot(facing) > 0 || this.custom.pullbackwards) {
 								if (this.custom.smartdoublemotor && this.arrows.size() > 1) {
 									vec facingxy = new vec(facing.x, 0, facing.z);
-									vec pullxy = new vec(pull.x, 0, pull.z);
-									vec sideways = pullxy.removealong(facing);
-									double sidewayspull = facingxy.cross(sideways).y;
+									vec facingside = facingxy.cross(new vec(0, 1, 0)).normalize();
+//									vec pullxy = new vec(pull.x, 0, pull.z);
+									vec sideways = pull.proj(facingside); // pullxy.removealong(facing);
+									double sidewayspull = sideways.dot(facingside); // facingxy.cross(sideways).y;
+									
 									if (Math.abs(sidewayspull) < minabssidewayspull) {
 										minabssidewayspull = Math.abs(sidewayspull);
 									}
@@ -372,13 +374,15 @@ public class grappleController {
 								
 								if (pull.dot(facing) > 0 || this.custom.pullbackwards) {
 									vec facingxy = new vec(facing.x, 0, facing.z);
-									vec pullxy = new vec(pull.x, 0, pull.z);
-									vec sideways = pullxy.removealong(facing);
-									double sidewayspull = facingxy.cross(sideways).y;
+									vec facingside = facingxy.cross(new vec(0, 1, 0)).normalize();
+//									vec pullxy = new vec(pull.x, 0, pull.z);
+									vec sideways = pull.proj(facingside); // pullxy.removealong(facing);
+									double sidewayspull = sideways.dot(facingside); // facingxy.cross(sideways).y;
 									
 									if (pullissameway) {
 										// only 1 rope pulls
 										if (Math.abs(sidewayspull) > minabssidewayspull+0.05) {
+											System.out.println("1 rope");
 											arrow.pull = 0;
 										}
 									} else {
@@ -419,10 +423,12 @@ public class grappleController {
 							pullmult = pulll / totalpull.length();
 						}
 						
-						if (this.motion.proj(totalpull).length() + totalpull.mult(pullmult).length() > this.custom.motormaxspeed) {
-							pullmult = (this.custom.motormaxspeed - this.motion.proj(totalpull).length()) / totalpull.length();
-							if (pullmult < 0) {
-								pullmult = 0;
+						if (this.motion.dot(totalpull) > 0) {
+							if (this.motion.proj(totalpull).length() + totalpull.mult(pullmult).length() > this.custom.motormaxspeed) {
+								pullmult = (this.custom.motormaxspeed - this.motion.proj(totalpull).length()) / totalpull.length();
+								if (pullmult < 0) {
+									pullmult = 0;
+								}
 							}
 						}
 						
