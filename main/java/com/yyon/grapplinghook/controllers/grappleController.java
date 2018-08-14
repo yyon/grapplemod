@@ -422,26 +422,36 @@ public class grappleController {
 							}
 						}
 						
-						// smart motor - match the ratio of pulling upwards to pulling sideways
+						// smart motor - angle of motion = angle facing
+						// match angle (the ratio of pulling upwards to pulling sideways)
 						// between the motion (after pulling and gravity) vector and the facing vector
 						// if double hooks, all hooks are scaled by the same amount (to prevent pulling to the left/right)
 						double pullmult = 1;
 						if (this.custom.smartmotor && totalpull.y > 0 && !(this.ongroundtimer > 0 || entity.onGround)) {
-							double pullxz = new vec(totalpull.x, 0, totalpull.z).length();
-							double facingxz = new vec(facing.x, 0, facing.z).length();//.proj(ropexz);
+							vec pullxzvector = new vec(totalpull.x, 0, totalpull.z);
+							double pullxz = pullxzvector.length();
+							double motionxz = motion.proj(pullxzvector).dot(pullxzvector.normalize());
+//							double facingxz = new vec(facing.x, 0, facing.z).length();//.proj(ropexz);
+							double facingxz = facing.proj(pullxzvector).dot(pullxzvector.normalize());
 //							double facinglmult = (totalpull.length()) / (facing.length());
 //							double pulll = gravity.y / (facing.y * facinglmult - totalpull.y);
 							
 							
 							
 							// (newpully + gravityy) / newpullx = facingy / facingxz
-							// newmotiony = totalpully * pullmult
-							// newpullxz = pullxz * pullmult
-							// (totalpully * pullmult + gravityy) / (pullxz * pullmult) = facingy / facingxz
-							// (y          * m        + g       ) / (x      * m       ) = f       / w
-							// pullmult = (gravityy * facingxz) / (facingy * pullxz - facingxz * totalpully)
+							// newmotiony = totalpully * pullmult + motion.y
+							// newpullxz = pullxz * pullmult + motionxz
+							// (totalpully * pullmult + motion.y + gravityy) / (pullxz * pullmult + motionxz) = facingy / facingxz
+							// (y          * m        + a        + g       ) / (x      * m        + b       ) = f       / w          (1-letter vars for wolframalpha)
+							// m = (w (a + g) - b f)/(f x - w y)
+							// pullmult = (facingxz * (motion.y + gravity.y) - motionxz * facing.y)/(facing.y * pullxz - facingxz * totalpull.y)
 							
-							pullmult = (gravity.y * facingxz) / (facing.y * pullxz - facingxz * totalpull.y);
+							pullmult = (facingxz * (motion.y + gravity.y) - motionxz * facing.y)/(facing.y * pullxz - facingxz * totalpull.y); // (gravity.y * facingxz) / (facing.y * pullxz - facingxz * totalpull.y);
+							
+							if ((facing.y * pullxz - facingxz * totalpull.y) == 0) {
+								// division by zero
+								pullmult = 9999;
+							}
 									
 							double pulll = pullmult * totalpull.length();
 							
