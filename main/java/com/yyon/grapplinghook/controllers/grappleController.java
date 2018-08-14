@@ -190,6 +190,7 @@ public class grappleController {
 					double jumpSpeed = 0;
 					boolean isClimbing = false;
 					
+					// is motor active? (check motorwhencrouching / motorwhennotcrouching)
 					boolean motor = false;
 					if (this.custom.motor) {
 						if (grapplemod.proxy.isSneaking(entity) && this.custom.motorwhencrouching) {
@@ -198,6 +199,7 @@ public class grappleController {
 							motor = true;
 						}
 					}
+					// if only one rope is pulling and not oneropepull, disable motor
 					if (motor) {
 						if (this.custom.doublehook && this.arrows.size() == 1) {
 							boolean isdouble = true;
@@ -212,11 +214,12 @@ public class grappleController {
 						}
 					}
 					
-					double curspeed = 0;
+//					double curspeed = 0;
 					boolean close = false;
-					vec averagemotiontowards = new vec(0, 0, 0);
+//					vec averagemotiontowards = new vec(0, 0, 0);
 					
 					for (grappleArrow arrow : this.arrows) {
+						// vectors along rope
 						vec arrowpos = vec.positionvec(arrow);//this.getPositionVector();
 						
 						vec anchor = arrow.segmenthandler.getclosest(arrowpos);
@@ -232,13 +235,13 @@ public class grappleController {
 							arrow.r = distToAnchor + oldspherevec.length();
 						}
 						
-						averagemotiontowards.add_ip(spherevec.changelen(-1));
+//						averagemotiontowards.add_ip(spherevec.changelen(-1));
 						
-						curspeed += motion.proj(oldspherevec).length();
+//						curspeed += motion.proj(oldspherevec).length();
 						
+						// snap to rope length
 						if (oldspherevec.length() < remaininglength) {
 						} else {
-							// snap to rope length
 							if (!motor) {
 								additionalmotion = spherechange;
 							}
@@ -248,9 +251,11 @@ public class grappleController {
 						
 						this.calctaut(dist, arrow);
 
+						// handle keyboard input (jumping and climbing)
 						if (entity instanceof EntityPlayer) {
 							EntityPlayer player = (EntityPlayer) entity;
 							if (this.isjumping()) {
+								// jumping
 								if (ongroundtimer > 0) { // on ground: jump normally
 									
 								} else {
@@ -258,6 +263,7 @@ public class grappleController {
 									jumpSpeed = this.getJumpPower(player, spherevec, arrow);
 								}
 							} else if (grapplemod.proxy.isSneaking(entity) && !motor) {
+								// climbing
 								isClimbing = true;
 								if (anchor.y > playerpos.y) {
 		//							motion = multvec(motion, 0.9);
@@ -267,10 +273,12 @@ public class grappleController {
 										motion.add_ip(motiontorwards);
 									}
 									
+									// when shift is pressed, stop swinging
 									vec newmotion = dampenmotion(motion, motiontorwards);
 									motion = new vec(newmotion.x, motion.y, newmotion.z);
 		//							motion = multvec(motion, 0.98);
 									
+									// climb up/down rope
 									if (this.playerforward != 0) {
 											if (dist < maxlen || this.playerforward > 0 || maxlen == 0) {
 //												double motionup = this.playerforward;
@@ -286,14 +294,16 @@ public class grappleController {
 								}
 							}
 						}
-						if (dist < 2) {
+						if (dist + distToAnchor < 2) {
 							close = true;
 						}
 						
+						// swing along max rope length
 						if (anchor.sub(playerpos.add(motion)).length() > remaininglength && !motor) { // moving away
 							motion = motion.removealong(spherevec);
 						}
 						
+						// Update segment handler (handles rope bends)
 						if (this.custom.phaserope) {
 							arrow.segmenthandler.updatepos(arrowpos, playerpos, arrow.r);
 						} else {
@@ -301,24 +311,14 @@ public class grappleController {
 						}
 					}
 					
-					curspeed = curspeed / this.arrows.size();
-					averagemotiontowards.mult_ip(1 / this.arrows.size());
+//					curspeed = curspeed / this.arrows.size();
+//					averagemotiontowards.mult_ip(1 / this.arrows.size());
 					
 		        	vec facing = new vec(entity.getLookVec()).normalize();
 		        	
+		        	// Motor
 					if (motor) {
-						if (close && !(this.arrows.size() > 1)) {
-/*							if (motion.length() > 0.3) {
-								motion.mult_ip(0.6);
-							}*/
-							
-							if (entity.onGround) {
-								entity.motionX = 0;
-//								entity.motionY = 0;
-								entity.motionZ = 0;
-								this.updateServerPos();
-							}
-						}
+						boolean dopull = true;
 						
 /*						if (curspeed > this.custom.motormaxspeed) {
 							motion.changelen_ip(this.custom.motormaxspeed);
@@ -329,12 +329,13 @@ public class grappleController {
 						double accel = this.custom.motoracceleration / this.arrows.size();
 						
 						double minabssidewayspull = 999;
-						double maxabssidewayspull = 0;
+//						double maxabssidewayspull = 0;
 						
 						boolean firstpull = true;
 						boolean pullispositive = true;
 						boolean pullissameway = true;
 						
+						// set all motors to maximum pull and precalculate some stuff for smart motor / smart double motor
 						for (grappleArrow arrow : this.arrows) {
 							vec arrowpos = vec.positionvec(arrow);//this.getPositionVector();
 							vec anchor = arrow.segmenthandler.getclosest(arrowpos);
@@ -342,11 +343,16 @@ public class grappleController {
 							vec pull = spherevec.mult(-1);
 							
 							arrow.pull = accel;
-								
+							
 							totalpull.add_ip(pull.changelen(accel));
 							
 							pull.changelen_ip(arrow.pull);
 
+							// precalculate some stuff for smart double motor
+							// For smart double motor: the motors should pull left and right equally
+							// one side will be less able to pull to its side due to the angle
+							// therefore the other side should slow down in order to match and have both sides pull left/right equally
+							// the amount each should pull (the lesser of the two) is minabssidewayspull
 							if (pull.dot(facing) > 0 || this.custom.pullbackwards) {
 								if (this.custom.smartdoublemotor && this.arrows.size() > 1) {
 									vec facingxy = new vec(facing.x, 0, facing.z);
@@ -360,9 +366,9 @@ public class grappleController {
 									if (Math.abs(sidewayspull) < minabssidewayspull) {
 										minabssidewayspull = Math.abs(sidewayspull);
 									}
-									if (Math.abs(sidewayspull) > maxabssidewayspull) {
+/*									if (Math.abs(sidewayspull) > maxabssidewayspull) {
 										maxabssidewayspull = Math.abs(sidewayspull);
-									}
+									}*/
 									
 									if (firstpull) {
 										firstpull = false;
@@ -377,8 +383,7 @@ public class grappleController {
 							}
 						}
 						
-						boolean dopull = true;
-						
+						// Smart double motor - calculate the speed each motor should pull at
 						if (this.custom.smartdoublemotor && this.arrows.size() > 1) {
 							totalpull = new vec(0, 0, 0);
 							
@@ -417,6 +422,9 @@ public class grappleController {
 							}
 						}
 						
+						// smart motor - match the ratio of pulling upwards to pulling sideways
+						// between the motion (after pulling and gravity) vector and the facing vector
+						// if double hooks, all hooks are scaled by the same amount (to prevent pulling to the left/right)
 						double pullmult = 1;
 						if (this.custom.smartmotor && totalpull.y > 0 && !(this.ongroundtimer > 0 || entity.onGround)) {
 							double pullxz = new vec(totalpull.x, 0, totalpull.z).length();
@@ -447,6 +455,7 @@ public class grappleController {
 							pullmult = pulll / totalpull.length();
 						}
 						
+						// Prevent motor from moving too fast (motormaxspeed)
 						if (this.motion.dot(totalpull) > 0) {
 							if (this.motion.proj(totalpull).length() + totalpull.mult(pullmult).length() > this.custom.motormaxspeed) {
 								pullmult = (this.custom.motormaxspeed - this.motion.proj(totalpull).length()) / totalpull.length();
@@ -456,10 +465,12 @@ public class grappleController {
 							}
 						}
 						
+						// sideways dampener
 						if (this.custom.motordampener && totalpull.length() != 0) {
 							motion = dampenmotion(motion, totalpull);
 						}
 						
+						// actually pull with the motor
 						if (dopull) {
 							for (grappleArrow arrow : this.arrows) {
 								vec arrowpos = vec.positionvec(arrow);//this.getPositionVector();
@@ -478,9 +489,17 @@ public class grappleController {
 								}
 							}
 						}
+						
+						// if player is at the destination, slow down
+						if (close && !(this.arrows.size() > 1)) {
+							if (entity.collided || entity.onGround) {
+								motion.mult_ip(0.6);
+							}
+						}
 //						System.out.println();
 					}
 					
+					// forcefield
 					if (this.custom.repel) {
 						vec blockpush = check_repel(playerpos, entity.world);
 						blockpush.mult_ip(this.custom.repelforce * 0.5);
@@ -488,10 +507,12 @@ public class grappleController {
 						this.motion.add_ip(blockpush);
 					}
 					
+					// WASD movement
 					if (!doJump && !isClimbing) {
 						applyPlayerMovement();
 					}
-
+					
+					// jump
 					if (doJump) {
 						if (jumpSpeed <= 0) {
 							jumpSpeed = 0;
@@ -503,7 +524,7 @@ public class grappleController {
 						return;
 					}
 					
-						
+					// now to actually apply everything to the player
 					vec newmotion = motion.add(additionalmotion);
 					
 					if (Double.isNaN(newmotion.x) || Double.isNaN(newmotion.y) || Double.isNaN(newmotion.z)) {
