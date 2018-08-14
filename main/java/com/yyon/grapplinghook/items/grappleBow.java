@@ -148,10 +148,12 @@ public class grappleBow extends Item implements clickitem {
         	GrappleCustomization custom = this.getCustomization(stack);
         	
       		double angle = custom.angle;
+      		double verticalangle = custom.verticalthrowangle;
       		if (entityLiving.isSneaking()) {
       			angle = custom.sneakingangle;
+      			verticalangle = custom.sneakingverticalthrowangle;
       		}
-      		double verticalangle = custom.verticalthrowangle;
+      		
         	if (!custom.doublehook || angle == 0) {
     			grappleArrow entityarrow = this.createarrow(stack, worldIn, entityLiving, righthand, false);
           		vec anglevec = new vec(0,0,1).rotate_pitch(Math.toRadians(verticalangle));

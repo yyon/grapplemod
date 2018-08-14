@@ -40,8 +40,12 @@ public class crosshairRenderer {
 			
 			if (bow != null) {
 				GrappleCustomization custom = ((grappleBow) grapplemod.grapplebowitem).getCustomization(bow);
-            	double angle = Math.toRadians(((grappleBow) grapplemod.grapplebowitem).getAngle(player, bow));
+            	double angle = Math.toRadians(custom.angle);//((grappleBow) grapplemod.grapplebowitem).getAngle(player, bow));
             	double verticalangle = Math.toRadians(custom.verticalthrowangle);
+            	if (player.isSneaking()) {
+            		angle = Math.toRadians(custom.sneakingangle);
+            		verticalangle = Math.toRadians(custom.sneakingverticalthrowangle);
+            	}
             	
             	if (verticalangle == 0) {
     				if (!custom.doublehook || angle == 0) {

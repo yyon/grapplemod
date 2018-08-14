@@ -123,6 +123,7 @@ public class GuiModifier extends GuiScreen {
 			addSlider("throwspeed", 20);
 			addCheckbox("reelin");
 			addSlider("verticalthrowangle", 90);
+			addSlider("sneakingverticalthrowangle", 90);
 		} else if (category == grapplemod.upgradeCategories.MOTOR) {
 			addCheckbox("motor");
 			addSlider("motormaxspeed", 10);
