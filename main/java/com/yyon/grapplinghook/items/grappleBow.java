@@ -147,7 +147,11 @@ public class grappleBow extends Item implements clickitem {
         	
         	GrappleCustomization custom = this.getCustomization(stack);
         	
-        	if (!custom.doublehook) {
+      		double angle = custom.angle;
+      		if (entityLiving.isSneaking()) {
+      			angle = custom.sneakingangle;
+      		}
+        	if (!custom.doublehook || angle == 0) {
     			grappleArrow entityarrow = this.createarrow(stack, worldIn, entityLiving, righthand);
     	        float velx = -MathHelper.sin(entityLiving.rotationYaw * 0.017453292F) * MathHelper.cos(entityLiving.rotationPitch * 0.017453292F);
     	        float vely = -MathHelper.sin(entityLiving.rotationPitch * 0.017453292F);
@@ -156,10 +160,6 @@ public class grappleBow extends Item implements clickitem {
     			setArrow1(entityLiving, entityarrow);
     			worldIn.spawnEntity(entityarrow);
         	} else {
-          		double angle = custom.angle;
-          		if (entityLiving.isSneaking()) {
-          			angle = custom.sneakingangle;
-          		}
           		EntityLivingBase player = entityLiving;
           		
           		vec anglevec = new vec(0,0,1).rotate_yaw(Math.toRadians(-angle));

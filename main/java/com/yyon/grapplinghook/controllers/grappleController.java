@@ -169,7 +169,7 @@ public class grappleController {
 				if (true) {
 					this.normalGround();
 					this.normalCollisions();
-//					this.applyAirFriction();
+					this.applyAirFriction();
 					
 					vec playerpos = vec.positionvec(entity);
 					playerpos = playerpos.add(new vec(0, entity.getEyeHeight(), 0));
@@ -273,7 +273,7 @@ public class grappleController {
 								}
 							}
 						}
-						if (dist < 4) {
+						if (dist < 2) {
 							close = true;
 						}
 						
@@ -292,12 +292,12 @@ public class grappleController {
 					averagemotiontowards.mult_ip(1 / this.arrows.size());
 					
 		        	vec facing = new vec(entity.getLookVec()).normalize();
-
+		        	
 					if (motor) {
-						if (close) {
-							if (motion.length() > 0.3) {
+						if (close && !(this.arrows.size() > 1)) {
+/*							if (motion.length() > 0.3) {
 								motion.mult_ip(0.6);
-							}
+							}*/
 							
 							if (entity.onGround) {
 								entity.motionX = 0;
@@ -307,19 +307,16 @@ public class grappleController {
 							}
 						}
 						
-						if (curspeed > this.custom.motormaxspeed) {
+/*						if (curspeed > this.custom.motormaxspeed) {
 							motion.changelen_ip(this.custom.motormaxspeed);
-						}
-						
-						if (this.custom.motordampener && arrows.size() == 1) {
-							motion = dampenmotion(motion, averagemotiontowards);
-						}
+						}*/
 						
 						vec totalpull = new vec(0, 0, 0);
 						
 						double accel = this.custom.motoracceleration / this.arrows.size();
 						
 						double minabssidewayspull = 999;
+						double maxabssidewayspull = 0;
 						
 						boolean firstpull = true;
 						boolean pullispositive = true;
@@ -331,14 +328,23 @@ public class grappleController {
 							vec spherevec = playerpos.sub(anchor);
 							vec pull = spherevec.mult(-1);
 							
+							arrow.pull = accel;
+								
+							totalpull.add_ip(pull.changelen(accel));
+							
+							pull.changelen_ip(arrow.pull);
+
 							if (pull.dot(facing) > 0 || this.custom.pullbackwards) {
-								if (this.custom.smartdoublemotor && this.custom.doublehook) {
+								if (this.custom.smartdoublemotor && this.arrows.size() > 1) {
 									vec facingxy = new vec(facing.x, 0, facing.z);
 									vec pullxy = new vec(pull.x, 0, pull.z);
 									vec sideways = pullxy.removealong(facing);
 									double sidewayspull = facingxy.cross(sideways).y;
 									if (Math.abs(sidewayspull) < minabssidewayspull) {
 										minabssidewayspull = Math.abs(sidewayspull);
+									}
+									if (Math.abs(sidewayspull) > maxabssidewayspull) {
+										maxabssidewayspull = Math.abs(sidewayspull);
 									}
 									
 									if (firstpull) {
@@ -351,13 +357,10 @@ public class grappleController {
 									}
 								}
 								
-								arrow.pull = accel;
-								
-								totalpull.add_ip(pull.changelen(accel));
 							}
 						}
 						
-						if (this.custom.smartdoublemotor && this.custom.doublehook) {
+						if (this.custom.smartdoublemotor && this.arrows.size() > 1) {
 							totalpull = new vec(0, 0, 0);
 							
 							for (grappleArrow arrow : this.arrows) {
@@ -365,6 +368,7 @@ public class grappleController {
 								vec anchor = arrow.segmenthandler.getclosest(arrowpos);
 								vec spherevec = playerpos.sub(anchor);
 								vec pull = spherevec.mult(-1);
+								pull.changelen_ip(arrow.pull);
 								
 								if (pull.dot(facing) > 0 || this.custom.pullbackwards) {
 									vec facingxy = new vec(facing.x, 0, facing.z);
@@ -386,7 +390,7 @@ public class grappleController {
 						}
 						
 						double pullmult = 1;
-						if (this.custom.smartmotor && totalpull.y > 0) {
+						if (this.custom.smartmotor && totalpull.y > 0 && !(this.ongroundtimer > 0 || entity.onGround)) {
 							double pullxz = new vec(totalpull.x, 0, totalpull.z).length();
 							double facingxz = new vec(facing.x, 0, facing.z).length();//.proj(ropexz);
 //							double facinglmult = (totalpull.length()) / (facing.length());
@@ -415,23 +419,34 @@ public class grappleController {
 							pullmult = pulll / totalpull.length();
 						}
 						
+						if (this.motion.proj(totalpull).length() + totalpull.mult(pullmult).length() > this.custom.motormaxspeed) {
+							pullmult = (this.custom.motormaxspeed - this.motion.proj(totalpull).length()) / totalpull.length();
+							if (pullmult < 0) {
+								pullmult = 0;
+							}
+						}
+						
+						if (this.custom.motordampener) {
+							motion = dampenmotion(motion, totalpull);
+						}
+						
 						for (grappleArrow arrow : this.arrows) {
 							vec arrowpos = vec.positionvec(arrow);//this.getPositionVector();
 							vec anchor = arrow.segmenthandler.getclosest(arrowpos);
 							vec spherevec = playerpos.sub(anchor);
 							vec pull = spherevec.mult(-1);
+							pull.changelen_ip(arrow.pull * pullmult);
 							
-//							System.out.println(arrow.pull);
+//							System.out.print(arrow.pull * pullmult);
+//							System.out.print(" ");
 							
 							if (pull.dot(facing) > 0 || this.custom.pullbackwards) {
 								if (arrow.pull > 0) {
-									pull.changelen_ip(arrow.pull * pullmult);
-									
 									motion.add_ip(pull);
 								}
 							}
 						}
-
+//						System.out.println();
 					}
 					
 					if (this.custom.repel) {
@@ -455,7 +470,6 @@ public class grappleController {
 						this.doJump(entity, jumpSpeed);
 						return;
 					}
-					
 					
 						
 					vec newmotion = motion.add(additionalmotion);
@@ -612,13 +626,28 @@ public class grappleController {
 	}
 	
 	public void applyAirFriction() {
+		double dragforce = 1 / 200F;
+		if (this.entity.isInWater()) {
+//			this.applyWaterFriction();
+			dragforce = 1 / 4F;
+		}
+		
 		double vel = this.motion.length();
-		double dragforce = vel*vel / 200;
+		dragforce = vel*vel * dragforce;
 		
 		vec airfric = new vec(this.motion.x, this.motion.y, this.motion.z);
 		airfric.changelen_ip(-dragforce);
 		this.motion.add_ip(airfric);
 	}
+	
+/*	public void applyWaterFriction() {
+		double vel = this.motion.length();
+		double dragforce = vel*vel / 4;
+		
+		vec airfric = new vec(this.motion.x, this.motion.y, this.motion.z);
+		airfric.changelen_ip(-dragforce);
+		this.motion.add_ip(airfric);
+	}*/
 	
 	public void applyPlayerMovement() {
 		motion.add_ip(this.playermovement.changelen(0.015 + motion.length() * 0.01).mult(this.playermovementmult));//0.02 * playermovementmult));
