@@ -198,6 +198,19 @@ public class grappleController {
 							motor = true;
 						}
 					}
+					if (motor) {
+						if (this.custom.doublehook && this.arrows.size() == 1) {
+							boolean isdouble = true;
+							for (grappleArrow arrow : this.arrows) {
+								if (!arrow.isdouble) {
+									isdouble = false;
+								}
+							}
+							if (isdouble && !this.custom.oneropepull) {
+								motor = false;
+							}
+						}
+					}
 					
 					double curspeed = 0;
 					boolean close = false;
@@ -362,6 +375,8 @@ public class grappleController {
 							}
 						}
 						
+						boolean dopull = true;
+						
 						if (this.custom.smartdoublemotor && this.arrows.size() > 1) {
 							totalpull = new vec(0, 0, 0);
 							
@@ -382,13 +397,18 @@ public class grappleController {
 									if (pullissameway) {
 										// only 1 rope pulls
 										if (Math.abs(sidewayspull) > minabssidewayspull+0.05) {
-											System.out.println("1 rope");
 											arrow.pull = 0;
 										}
 									} else {
 										arrow.pull = arrow.pull * minabssidewayspull / Math.abs(sidewayspull);
 									}
 									totalpull.add_ip(pull.changelen(arrow.pull));
+								} else {
+									if (arrow.isdouble) {
+										if (!this.custom.oneropepull) {
+											dopull = false;
+										}
+									}
 								}
 							}
 						}
@@ -432,23 +452,25 @@ public class grappleController {
 							}
 						}
 						
-						if (this.custom.motordampener) {
+						if (this.custom.motordampener && totalpull.length() != 0) {
 							motion = dampenmotion(motion, totalpull);
 						}
 						
-						for (grappleArrow arrow : this.arrows) {
-							vec arrowpos = vec.positionvec(arrow);//this.getPositionVector();
-							vec anchor = arrow.segmenthandler.getclosest(arrowpos);
-							vec spherevec = playerpos.sub(anchor);
-							vec pull = spherevec.mult(-1);
-							pull.changelen_ip(arrow.pull * pullmult);
-							
-//							System.out.print(arrow.pull * pullmult);
-//							System.out.print(" ");
-							
-							if (pull.dot(facing) > 0 || this.custom.pullbackwards) {
-								if (arrow.pull > 0) {
-									motion.add_ip(pull);
+						if (dopull) {
+							for (grappleArrow arrow : this.arrows) {
+								vec arrowpos = vec.positionvec(arrow);//this.getPositionVector();
+								vec anchor = arrow.segmenthandler.getclosest(arrowpos);
+								vec spherevec = playerpos.sub(anchor);
+								vec pull = spherevec.mult(-1);
+								pull.changelen_ip(arrow.pull * pullmult);
+								
+//								System.out.print(arrow.pull * pullmult);
+//								System.out.print(" ");
+								
+								if (pull.dot(facing) > 0 || this.custom.pullbackwards) {
+									if (arrow.pull > 0) {
+										motion.add_ip(pull);
+									}
 								}
 							}
 						}
@@ -479,6 +501,12 @@ public class grappleController {
 					
 						
 					vec newmotion = motion.add(additionalmotion);
+					
+					if (Double.isNaN(newmotion.x) || Double.isNaN(newmotion.y) || Double.isNaN(newmotion.z)) {
+						newmotion = new vec(0, 0, 0);
+						motion = new vec(0, 0, 0);
+						System.out.println("error: motion is NaN");
+					}
 					
 //					entity.setVelocity(newmotion.xCoord, newmotion.yCoord, newmotion.zCoord);
 					entity.motionX = newmotion.x;

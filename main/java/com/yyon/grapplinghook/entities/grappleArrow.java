@@ -62,6 +62,8 @@ public class grappleArrow extends EntityThrowable implements IEntityAdditionalSp
 	
 	public boolean ignoreFrustumCheck = true;
 	
+	public boolean isdouble = false;
+	
 //	public double maxlen = 20;
 	public double r;
 	
@@ -87,11 +89,13 @@ public class grappleArrow extends EntityThrowable implements IEntityAdditionalSp
 	}
 	
 	public grappleArrow(World worldIn, EntityLivingBase shooter,
-			boolean righthand, GrappleCustomization customization) {
+			boolean righthand, GrappleCustomization customization, boolean isdouble) {
 		super(worldIn, shooter);
 		
 		this.shootingEntity = shooter;
 		this.shootingEntityID = this.shootingEntity.getEntityId();
+		
+		this.isdouble = isdouble;
 		
 		/*
 		double x = 0.36;
@@ -293,6 +297,7 @@ public class grappleArrow extends EntityThrowable implements IEntityAdditionalSp
     {
 	    data.writeInt(this.shootingEntity != null ? this.shootingEntity.getEntityId() : 0);
 	    data.writeBoolean(this.righthand);
+	    data.writeBoolean(this.isdouble);
 	    if (this.customization == null) {
 	    	System.out.println("error: customization null");
 	    }
@@ -305,6 +310,7 @@ public class grappleArrow extends EntityThrowable implements IEntityAdditionalSp
     	this.shootingEntityID = data.readInt();
 	    this.shootingEntity = this.world.getEntityByID(this.shootingEntityID);
 	    this.righthand = data.readBoolean();
+	    this.isdouble = data.readBoolean();
 	    this.customization = new GrappleCustomization();
 	    this.customization.readFromBuf(data);
     }
@@ -431,7 +437,7 @@ public class grappleArrow extends EntityThrowable implements IEntityAdditionalSp
 	@Override
     protected float getGravityVelocity()
     {
-        return (float) this.customization.hookgravity;
+        return (float) this.customization.hookgravity * 0.05F;
     }
 	
     public float getVelocity()

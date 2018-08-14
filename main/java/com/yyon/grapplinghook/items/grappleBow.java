@@ -151,37 +151,41 @@ public class grappleBow extends Item implements clickitem {
       		if (entityLiving.isSneaking()) {
       			angle = custom.sneakingangle;
       		}
+      		double verticalangle = custom.verticalthrowangle;
         	if (!custom.doublehook || angle == 0) {
-    			grappleArrow entityarrow = this.createarrow(stack, worldIn, entityLiving, righthand);
-    	        float velx = -MathHelper.sin(entityLiving.rotationYaw * 0.017453292F) * MathHelper.cos(entityLiving.rotationPitch * 0.017453292F);
-    	        float vely = -MathHelper.sin(entityLiving.rotationPitch * 0.017453292F);
-    	        float velz = MathHelper.cos(entityLiving.rotationYaw * 0.017453292F) * MathHelper.cos(entityLiving.rotationPitch * 0.017453292F);
+    			grappleArrow entityarrow = this.createarrow(stack, worldIn, entityLiving, righthand, false);
+          		vec anglevec = new vec(0,0,1).rotate_pitch(Math.toRadians(verticalangle));
+          		anglevec = anglevec.rotate_pitch(Math.toRadians(-entityLiving.rotationPitch));
+          		anglevec = anglevec.rotate_yaw(Math.toRadians(entityLiving.rotationYaw));
+    	        float velx = -MathHelper.sin((float) anglevec.getYaw() * 0.017453292F) * MathHelper.cos((float) anglevec.getPitch() * 0.017453292F);
+    	        float vely = -MathHelper.sin((float) anglevec.getPitch() * 0.017453292F);
+    	        float velz = MathHelper.cos((float) anglevec.getYaw() * 0.017453292F) * MathHelper.cos((float) anglevec.getPitch() * 0.017453292F);
     	        entityarrow.shoot((double) velx, (double) vely, (double) velz, entityarrow.getVelocity(), 0.0F);
     			setArrow1(entityLiving, entityarrow);
     			worldIn.spawnEntity(entityarrow);
         	} else {
           		EntityLivingBase player = entityLiving;
           		
-          		vec anglevec = new vec(0,0,1).rotate_yaw(Math.toRadians(-angle));
+          		vec anglevec = new vec(0,0,1).rotate_yaw(Math.toRadians(-angle)).rotate_pitch(Math.toRadians(verticalangle));
           		anglevec = anglevec.rotate_pitch(Math.toRadians(-player.rotationPitch));
           		anglevec = anglevec.rotate_yaw(Math.toRadians(player.rotationYaw));
     	        float velx = -MathHelper.sin((float) anglevec.getYaw() * 0.017453292F) * MathHelper.cos((float) anglevec.getPitch() * 0.017453292F);
     	        float vely = -MathHelper.sin((float) anglevec.getPitch() * 0.017453292F);
     	        float velz = MathHelper.cos((float) anglevec.getYaw() * 0.017453292F) * MathHelper.cos((float) anglevec.getPitch() * 0.017453292F);
-    			grappleArrow entityarrow = this.createarrow(stack, worldIn, entityLiving, false);// new grappleArrow(worldIn, player, false);
+    			grappleArrow entityarrow = this.createarrow(stack, worldIn, entityLiving, false, true);// new grappleArrow(worldIn, player, false);
 //                entityarrow.shoot(player, (float) anglevec.getPitch(), (float)anglevec.getYaw(), 0.0F, entityarrow.getVelocity(), 0.0F);
     	        entityarrow.shoot((double) velx, (double) vely, (double) velz, entityarrow.getVelocity(), 0.0F);
                 
     			worldIn.spawnEntity(entityarrow);
     			setArrow1(entityLiving, entityarrow);    			
     			
-          		anglevec = new vec(0,0,1).rotate_yaw(Math.toRadians(angle));
+          		anglevec = new vec(0,0,1).rotate_yaw(Math.toRadians(angle)).rotate_pitch(Math.toRadians(verticalangle));
           		anglevec = anglevec.rotate_pitch(Math.toRadians(-player.rotationPitch));
           		anglevec = anglevec.rotate_yaw(Math.toRadians(player.rotationYaw));
     	        velx = -MathHelper.sin((float) anglevec.getYaw() * 0.017453292F) * MathHelper.cos((float) anglevec.getPitch() * 0.017453292F);
     	        vely = -MathHelper.sin((float) anglevec.getPitch() * 0.017453292F);
     	        velz = MathHelper.cos((float) anglevec.getYaw() * 0.017453292F) * MathHelper.cos((float) anglevec.getPitch() * 0.017453292F);
-    			entityarrow = this.createarrow(stack, worldIn, entityLiving, true);//new grappleArrow(worldIn, player, true);
+    			entityarrow = this.createarrow(stack, worldIn, entityLiving, true, true);//new grappleArrow(worldIn, player, true);
 //                entityarrow.shoot(player, (float) anglevec.getPitch(), (float)anglevec.getYaw(), 0.0F, entityarrow.getVelocity(), 0.0F);
     	        entityarrow.shoot((double) velx, (double) vely, (double) velz, entityarrow.getVelocity(), 0.0F);
                 
@@ -204,8 +208,8 @@ public class grappleBow extends Item implements clickitem {
     	}
     }
 	
-	public grappleArrow createarrow(ItemStack stack, World worldIn, EntityLivingBase entityLiving, boolean righthand) {
-		grappleArrow arrow = new grappleArrow(worldIn, entityLiving, righthand, this.getCustomization(stack));
+	public grappleArrow createarrow(ItemStack stack, World worldIn, EntityLivingBase entityLiving, boolean righthand, boolean isdouble) {
+		grappleArrow arrow = new grappleArrow(worldIn, entityLiving, righthand, this.getCustomization(stack), isdouble);
 		grapplemod.addarrow(entityLiving.getEntityId(), arrow);
 		return arrow;
 	}
@@ -281,31 +285,8 @@ public class grappleBow extends Item implements clickitem {
 	{
 		GrappleCustomization custom = getCustomization(stack);
 
-		if (!Keyboard.isKeyDown(Keyboard.KEY_LSHIFT)) {
-			if (custom.doublehook) {
-				list.add("Double Hook");
-			}
-			if (custom.motor) {
-				if (custom.smartmotor) {
-					list.add("Smart Motor");
-				} else {
-					list.add("Motorized");
-				}
-			}
-			if (custom.enderstaff) {
-				list.add("Ender Staff");
-			}
-			if (custom.attract) {
-				list.add("Magnetized");
-			}
-			if (custom.repel) {
-				list.add("Forcefield");
-			}
-		}
 		
 		if (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT)) {
-			list.add("A basic grappling hook for swinging");
-			list.add("");
 			list.add(grapplemod.proxy.getkeyname(CommonProxyClass.keys.keyBindUseItem) + " - Throw grappling hook");
 			list.add(grapplemod.proxy.getkeyname(CommonProxyClass.keys.keyBindUseItem) + " again - Release");
 			list.add("Double-" + grapplemod.proxy.getkeyname(CommonProxyClass.keys.keyBindUseItem) + " - Release and throw again");
@@ -323,8 +304,45 @@ public class grappleBow extends Item implements clickitem {
 					grapplemod.proxy.getkeyname(CommonProxyClass.keys.keyBindBack) + 
 					" - Climb down");
 		} else {
-			list.add("Hold " + grapplemod.proxy.getkeyname(CommonProxyClass.keys.keyBindSneak) + " to see controls");
+			if (Keyboard.isKeyDown(Keyboard.KEY_LCONTROL)) {
+				for (String option : GrappleCustomization.booleanoptions) {
+					if (custom.isoptionvalid(option) && custom.getBoolean(option)) {
+						list.add(custom.getName(option));
+					}
+				}
+				for (String option : GrappleCustomization.doubleoptions) {
+					if (custom.isoptionvalid(option)) {
+						list.add(custom.getName(option) + ": " + Math.floor(custom.getDouble(option) * 100) / 100);
+					}
+				}
+			} else {
+				if (custom.doublehook) {
+					list.add("Double Hook");
+				}
+				if (custom.motor) {
+					if (custom.smartmotor) {
+						list.add("Smart Motor");
+					} else {
+						list.add("Motorized");
+					}
+				}
+				if (custom.enderstaff) {
+					list.add("Ender Staff");
+				}
+				if (custom.attract) {
+					list.add("Magnetized");
+				}
+				if (custom.repel) {
+					list.add("Forcefield");
+				}
+				
+				list.add("");
+				list.add("(Hold Shift to see controls)");
+				list.add("(Hold Control to see full configuration)");
+			}
 		}
+		
+
 	}
 
 	@Override

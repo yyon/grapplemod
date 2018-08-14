@@ -41,10 +41,13 @@ public class crosshairRenderer {
 			if (bow != null) {
 				GrappleCustomization custom = ((grappleBow) grapplemod.grapplebowitem).getCustomization(bow);
             	double angle = Math.toRadians(((grappleBow) grapplemod.grapplebowitem).getAngle(player, bow));
+            	double verticalangle = Math.toRadians(custom.verticalthrowangle);
             	
-				if (!custom.doublehook || angle == 0) {
-					return;
-				}
+            	if (verticalangle == 0) {
+    				if (!custom.doublehook || angle == 0) {
+    					return;
+    				}
+            	}
 				
 //				float partialticks = event.getPartialTicks();
 				ScaledResolution resolution = event.getResolution();
@@ -77,11 +80,14 @@ public class crosshairRenderer {
 		            	double l = ((double) h/2) / Math.tan(fov/2);
 		            	
 		            	int offset = (int) (Math.tan(angle) * l);
+		            	int verticaloffset = (int) (-Math.tan(verticalangle) * l);
 		            	
 		                GlStateManager.tryBlendFuncSeparate(GlStateManager.SourceFactor.ONE_MINUS_DST_COLOR, GlStateManager.DestFactor.ONE_MINUS_SRC_COLOR, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
 		                GlStateManager.enableAlpha();
-		                this.drawTexturedModalRect(w / 2 - 7 + offset, h / 2 - 7, 0, 0, 16, 16);
-		                this.drawTexturedModalRect(w / 2 - 7 - offset, h / 2 - 7, 0, 0, 16, 16);
+		                this.drawTexturedModalRect(w / 2 - 7 + offset, h / 2 - 7 + verticaloffset, 0, 0, 16, 16);
+		                if (angle != 0) {
+			                this.drawTexturedModalRect(w / 2 - 7 - offset, h / 2 - 7 + verticaloffset, 0, 0, 16, 16);
+		                }
 		            }
 		        }
 			}

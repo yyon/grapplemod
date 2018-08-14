@@ -83,7 +83,9 @@ public class GuiModifier extends GuiScreen {
 		this.allowed = false;
 	}
 
-	public void addCheckbox(String option, String text, String desc) {
+	public void addCheckbox(String option) {
+		String text = this.customization.getName(option);
+		String desc = this.customization.getDescription(option);
 		GuiCheckBox checkbox = new GuiCheckBox(id++, 10 + this.guiLeft, posy + this.guiTop, text, customization.getBoolean(option));
 		posy += 20;
 		this.buttonList.add(checkbox);
@@ -91,11 +93,17 @@ public class GuiModifier extends GuiScreen {
 		tooltips.put(checkbox, desc);
 	}
 	
-	public void addSlider(String option, String text, String desc, double max) {
+	public void addSlider(String option, double max) {
 		double d = customization.getDouble(option);
-		d = Math.floor(d * 100 + 0.5) / 100;
+		d = Math.floor(d * 10 + 0.5) / 10;
+		
+		String text = this.customization.getName(option);
+		String desc = this.customization.getDescription(option);
 		GuiSlider slider = new GuiSlider(id++, 10 + this.guiLeft, posy + this.guiTop, this.xSize - 20, 20, text + ": ", "", 0, max, d, true, true);
-		slider.precision = 2;
+		
+		slider.displayString = text + ": " + Double.toString(d);
+		slider.precision = 1;
+		
 		posy += 25;
 		this.buttonList.add(slider);
 		options.put(slider, option);
@@ -108,37 +116,41 @@ public class GuiModifier extends GuiScreen {
 		this.allowed = true;
 
 		if (category == grapplemod.upgradeCategories.ROPE) {
-			addSlider("maxlen", "Rope Length", "The length of the rope", 200);
-			addCheckbox("phaserope", "Phase Rope", "Allows rope to phase through blocks");
+			addSlider("maxlen", 200);
+			addCheckbox("phaserope");
 		} else if (category == grapplemod.upgradeCategories.THROW) {
-			addSlider("hookgravity", "Gravity on hook", "Gravity on hook when thrown", 1);
-			addSlider("throwspeed", "Throw Speed", "Speed of hook when thrown", 20);
-			addCheckbox("reelin", "Crouch to Reel In", "Before the hook is attached, crouching will stop the hook from moving farther and slowly reel it in");
+			addSlider("hookgravity", 20);
+			addSlider("throwspeed", 20);
+			addCheckbox("reelin");
+			addSlider("verticalthrowangle", 90);
 		} else if (category == grapplemod.upgradeCategories.MOTOR) {
-			addCheckbox("motor", "Motor Enabled", "Pulls player towards hook");
-			addSlider("motormaxspeed", "Motor Maximum Speed", "Maximum speed of motor", 10);
-			addSlider("motoracceleration", "Motor Acceleration", "Acceleration of motor", 1);
-			addCheckbox("motorwhencrouching", "Motor when crouching", "Motor is active when crouching");
-			addCheckbox("motorwhennotcrouching", "Motor when not crouching", "Motor is active when crouching");
-			addCheckbox("smartmotor", "Smart Motor", "Adjusts motor speed so that player moves towards crosshairs (up/down)");
-			addCheckbox("motordampener", "Sideways Motion Dampener", "Reduces motion perpendicular to the rope so that the rope pulls straighter");
-			addCheckbox("pullbackwards", "Pull Backwards", "Motor pulls even if you are facing the other way");
+			addCheckbox("motor");
+			addSlider("motormaxspeed", 10);
+			addSlider("motoracceleration", 1);
+			addCheckbox("motorwhencrouching");
+			addCheckbox("motorwhennotcrouching");
+			addCheckbox("smartmotor");
+			addCheckbox("motordampener");
+			addCheckbox("pullbackwards");
 		} else if (category == grapplemod.upgradeCategories.SWING) {
-			addSlider("playermovementmult", "Swing speed", "Acceleration of player when using movement keys while swinging", 5);
+			addSlider("playermovementmult", 5);
 		} else if (category == grapplemod.upgradeCategories.STAFF) {
-			addCheckbox("enderstaff", "Ender Staff", "Left click launches player forwards");
+			addCheckbox("enderstaff");
 		} else if (category == grapplemod.upgradeCategories.FORCEFIELD) {
-			addCheckbox("repel", "Forcefield Enabled", "Player is repelled from nearby blocks when swinging");
-			addSlider("repelforce", "Repel Force", "Force nearby blocks exert on the player", 5);
+			addCheckbox("repel");
+			addSlider("repelforce", 5);
 		} else if (category == grapplemod.upgradeCategories.MAGNET) {
-			addCheckbox("attract", "Magnet Enabled", "Hook is attracted to nearby blocks when thrown");
-			addSlider("attractradius", "Attraction Radius", "Radius of attraction", 10);
+			addCheckbox("attract");
+			addSlider("attractradius", 10);
 		} else if (category == grapplemod.upgradeCategories.DOUBLE) {
-			addCheckbox("doublehook", "Double Hook", "Two hooks are thrown at once");
-			addCheckbox("smartdoublemotor", "Smart Motor", "Adjusts motor speed so that player moves towards crosshairs (left/right) when used with motor");
-			addSlider("angle", "Angle", "Angle that each hook is thrown from center", 90);
-			addSlider("sneakingangle", "Angle when crouching", "Angle that each hook is thrown from center when crouching (don't have 'crouch to reel in' enabled if you want to use this)", 90);
+			addCheckbox("doublehook");
+			addCheckbox("smartdoublemotor");
+			addSlider("angle", 90);
+			addSlider("sneakingangle", 90);
+			addCheckbox("oneropepull");
 		}
+		
+		this.updateEnabled();
 	}
 	
 	GuiButton buttonpressed = null;
@@ -164,9 +176,21 @@ public class GuiModifier extends GuiScreen {
 			customization.setBoolean(option, checked);
 		} else if (b instanceof GuiSlider) {
 			double d = ((GuiSlider) b).getValue();
-			d = Math.floor(d * 100 + 0.5) / 100;
+			d = Math.floor(d * 10 + 0.5) / 10;
 			String option = options.get(b);
 			customization.setDouble(option, d);
+		}
+		this.updateEnabled();
+	}
+	
+	public void updateEnabled() {
+		for (GuiButton b : this.options.keySet()) {
+			String option = this.options.get(b);
+			if (this.customization.isoptionvalid(option)) {
+				b.enabled = true;
+			} else {
+				b.enabled = false;
+			}
 		}
 	}
 	
