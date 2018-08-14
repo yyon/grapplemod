@@ -353,6 +353,8 @@ public class grappleController {
 									vec facingside = facingxy.cross(new vec(0, 1, 0)).normalize();
 //									vec pullxy = new vec(pull.x, 0, pull.z);
 									vec sideways = pull.proj(facingside); // pullxy.removealong(facing);
+									vec currentsideways = motion.proj(facingside);
+									sideways.add_ip(currentsideways);
 									double sidewayspull = sideways.dot(facingside); // facingxy.cross(sideways).y;
 									
 									if (Math.abs(sidewayspull) < minabssidewayspull) {
@@ -392,6 +394,8 @@ public class grappleController {
 									vec facingside = facingxy.cross(new vec(0, 1, 0)).normalize();
 //									vec pullxy = new vec(pull.x, 0, pull.z);
 									vec sideways = pull.proj(facingside); // pullxy.removealong(facing);
+									vec currentsideways = motion.proj(facingside);
+									sideways.add_ip(currentsideways);
 									double sidewayspull = sideways.dot(facingside); // facingxy.cross(sideways).y;
 									
 									if (pullissameway) {
