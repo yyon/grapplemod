@@ -26,6 +26,8 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.event.ModelRegistryEvent;
 import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.event.world.BlockEvent.BreakEvent;
@@ -87,7 +89,7 @@ public class ClientProxyClass extends CommonProxyClass {
 	}
 	
 	private void registerItemModels() {
-		setgrapplebowtextures(grapplemod.grapplebowitem, grapplinghookloc, ropeloc);
+//		setgrapplebowtextures(grapplemod.grapplebowitem, grapplinghookloc, ropeloc);
 		registerItemModel(grapplemod.launcheritem);
 		registerItemModel(grapplemod.longfallboots);
 		setgrapplebowtextures(grapplemod.repelleritem, repellerloc, repelleronloc);
@@ -100,7 +102,36 @@ public class ClientProxyClass extends CommonProxyClass {
 		registerItemModel(grapplemod.staffupgradeitem);
 		registerItemModel(grapplemod.swingupgradeitem);
 		registerItemModel(grapplemod.throwupgradeitem);
-		ModelBakery.registerItemVariants(grapplemod.grapplebowitem, hookshotloc);
+		
+		ModelLoader.setCustomMeshDefinition(grapplemod.grapplebowitem, new ItemMeshDefinition() {
+			@Override
+			public ModelResourceLocation getModelLocation(ItemStack stack) {
+				boolean active = !ClientProxyClass.isactive(stack);
+		    	if (stack.hasTagCompound()) {
+		    		NBTTagCompound compound = stack.getTagCompound();
+		    		if (compound.getBoolean("motor")) {
+		    			if (compound.getBoolean("doublehook")) {
+		    				return active ? multihookloc : multihookropeloc;
+		    			}
+		    			if (compound.getBoolean("smartmotor")) {
+		    				return active ? smarthookloc : smarthookropeloc;
+		    			}
+		    			return active ? hookshotloc : hookshotropeloc;
+		    		}
+		    		if (compound.getBoolean("enderstaff")) {
+		    			return active ? enderhookloc : ropeloc;
+		    		}
+		    		if (compound.getBoolean("repel") || compound.getBoolean("attract")) {
+		    			return active ? magnetbowloc : ropeloc;
+		    		}
+		    	}
+
+		    	return active ? grapplinghookloc : ropeloc;
+			}
+		});
+		for (ResourceLocation loc : new ResourceLocation[] {multihookloc, multihookropeloc, smarthookloc, smarthookropeloc, hookshotloc, hookshotropeloc, enderhookloc, magnetbowloc, grapplinghookloc, ropeloc}) {
+			ModelBakery.registerItemVariants(grapplemod.grapplebowitem, loc);
+		}
 	}
 
 	@SubscribeEvent
