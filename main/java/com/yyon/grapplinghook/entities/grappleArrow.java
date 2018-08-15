@@ -71,9 +71,9 @@ public class grappleArrow extends EntityThrowable implements IEntityAdditionalSp
 	
 	public GrappleCustomization customization = null;
 	
-//	public vec debugpos = null;
-//	public vec debugpos2 = null;
-//	public vec debugpos3 = null;
+	public vec debugpos = null;
+	public vec debugpos2 = null;
+	public vec debugpos3 = null;
 	
 	// magnet attract
 	public vec prevpos = null;

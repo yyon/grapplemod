@@ -127,12 +127,6 @@ public class SegmentHandler {
 			}
 		}
 		
-		vec prevclosest = closest;
-		if (segments.size() == 2) {
-			prevclosest = prevhookpos;
-		}
-		updatesegment(closest, prevclosest, playerpos, prevplayerpos, segments.size() - 1, 0);
-		
 		if (movinghook) {
 			farthest = segments.get(1);
 			vec prevfarthest = farthest;
@@ -141,6 +135,13 @@ public class SegmentHandler {
 			}
 			updatesegment(hookpos, prevhookpos, farthest, prevfarthest, 1, 0);
 		}
+		
+		vec prevclosest = closest;
+		if (segments.size() == 2) {
+			prevclosest = prevhookpos;
+		}
+		updatesegment(closest, prevclosest, playerpos, prevplayerpos, segments.size() - 1, 0);
+		
 		
         prevhookpos = hookpos;
         prevplayerpos = playerpos;
@@ -166,6 +167,11 @@ public class SegmentHandler {
         // if rope hit block
         if (bottomraytraceresult != null)
         {
+        	if (this.world.rayTraceBlocks(prevbottom.toVec3d(), prevtop.toVec3d()) != null) {
+//        		System.out.println("Warning: prev collision");
+        		return;
+        	}
+        	
 //        	System.out.println(bottomraytraceresult.typeOfHit);
             vec bottomhitvec = new vec(bottomraytraceresult.hitVec.x, bottomraytraceresult.hitVec.y, bottomraytraceresult.hitVec.z);
 /*            this.arrow.debugpos = bottomhitvec;
@@ -193,26 +199,28 @@ public class SegmentHandler {
             // and is bounded by the quadrilateral top, prevtop, prevbottom, bottom
             vec cornerbound1 = bottomhitvec.add(bottomnormal.changelen(-intoblock));
             
-            vec cornerbound2 = null;
-            double cornerlinedist = Double.POSITIVE_INFINITY;
+//            vec cornerbound2 = null;
+//            double cornerlinedist = Double.POSITIVE_INFINITY;
             
             vec bound_option1 = line_plane_intersection(prevtop, prevbottom, cornerbound1, bottomnormal);
-            if (/*cornerbound1.sub(bound_option1).dot(motionparallel) > 0 &&*/ cornerbound1.sub(bound_option1).length() < cornerlinedist) {
+/*            if (cornerbound1.sub(bound_option1).length() < cornerlinedist) {
             	cornerbound2 = bound_option1;
             	cornerlinedist = cornerbound1.sub(bound_option1).length();
-            }
+            }*/
             vec bound_option2 = line_plane_intersection(top, prevtop, cornerbound1, bottomnormal);
-            if (/*cornerbound1.sub(bound_option2).dot(motionparallel) > 0 &&*/ cornerbound1.sub(bound_option2).length() < cornerlinedist) {
+/*            if (cornerbound1.sub(bound_option2).length() < cornerlinedist) {
             	cornerbound2 = bound_option2;
             	cornerlinedist = cornerbound1.sub(bound_option2).length();
-            }
+            }*/
             vec bound_option3 = line_plane_intersection(prevbottom, bottom, cornerbound1, bottomnormal);
-            if (/*cornerbound1.sub(bound_option3).dot(motionparallel) > 0 &&*/ cornerbound1.sub(bound_option3).length() < cornerlinedist) {
+/*            if (cornerbound1.sub(bound_option3).length() < cornerlinedist) {
             	cornerbound2 = bound_option3;
             	cornerlinedist = cornerbound1.sub(bound_option3).length();
-            }
+            }*/
             
-            if (cornerbound2 != null) {
+//            if (cornerbound2 != null) {
+            for (vec cornerbound2 : new vec[] {bound_option1, bound_option2, bound_option3}) {
+            	
             	// the corner must be in the line (cornerbound2, cornerbound1)
                 RayTraceResult cornerraytraceresult = this.world.rayTraceBlocks(cornerbound2.toVec3d(), cornerbound1.toVec3d());
                 if (cornerraytraceresult != null) {
@@ -223,7 +231,7 @@ public class SegmentHandler {
                 			cornerside.getOpposite() == bottomside) {
                 		// this should not happen
 //                		System.out.println("Warning: corner is same or opposite of bottomside");
-                		return;
+                		continue;
                 	} else {
                 		// add a bend around the corner
                 		vec actualcorner = cornerhitpos.add(bottomnormal.changelen(intoblock));
@@ -231,35 +239,47 @@ public class SegmentHandler {
                 		vec topropevec = bend.sub(top);
                 		vec bottomropevec = bend.sub(bottom);
                 		
-                		if (topropevec.length() > 0.05 && bottomropevec.length() > 0.05) { // ignore bends that are too close to another bend
-                    		this.actuallyaddsegment(index, bend, bottomside, cornerside);
-                    		
-                    		// if not enough rope length left, undo
-                    		if(this.getDistToAnchor() + .2 > this.ropelen) {
-//                    			System.out.println("Warning: not enough length left, removing");
-                    			this.removesegment(index);
-                    			return;
-                    		}
-                    		
-                    		// now to recurse on top section of rope
-                    		double newropelen = topropevec.length() + bottomropevec.length();
-                    		
-                    		double prevtoptobend = topropevec.length() * prevropelen / newropelen;
-                    		vec prevbend = prevtop.add(prevbottom.sub(prevtop).changelen(prevtoptobend));
-                    		
-                    		if (numberrecursions < 10) {
-                        		updatesegment(top, prevtop, bend, prevbend, index, numberrecursions+1);
-                    		} else {
-                    			System.out.println("Warning: number recursions exceeded");
-                    		}
-                		} else {
-//                			System.out.println("Warning: bends are too close");
+                		// ignore bends that are too close to another bend
+                		if (topropevec.length() < 0.05) {
+                			if (this.segmentbottomsides.get(index - 1) == bottomside && this.segmenttopsides.get(index - 1) == cornerside) {
+//                    			System.out.println("Warning: top bend is too close");
+                    			continue;
+                			}
                 		}
+                		if (bottomropevec.length() < 0.05) {
+                			if (this.segmentbottomsides.get(index) == bottomside && this.segmenttopsides.get(index) == cornerside) {
+//                    			System.out.println("Warning: bottom bend is too close");
+                    			this.arrow.debugpos = bend;
+                    			continue;
+                			}
+                		}
+                		
+                		this.actuallyaddsegment(index, bend, bottomside, cornerside);
+                		
+                		// if not enough rope length left, undo
+                		if(this.getDistToAnchor() + .2 > this.ropelen) {
+//                			System.out.println("Warning: not enough length left, removing");
+                			this.removesegment(index);
+                			continue;
+                		}
+                		
+                		// now to recurse on top section of rope
+                		double newropelen = topropevec.length() + bottomropevec.length();
+                		
+                		double prevtoptobend = topropevec.length() * prevropelen / newropelen;
+                		vec prevbend = prevtop.add(prevbottom.sub(prevtop).changelen(prevtoptobend));
+                		
+                		if (numberrecursions < 10) {
+                    		updatesegment(top, prevtop, bend, prevbend, index, numberrecursions+1);
+                		} else {
+                			System.out.println("Warning: number recursions exceeded");
+                		}
+                		break;
                 	}
                 } else {
 //                	System.out.println("Warning: no corner collision");
                 }
-            } else {
+//            } else {
 //            	System.out.println("Warning: cornerbound2 is null");
             }
             
@@ -313,6 +333,10 @@ public class SegmentHandler {
 		// formula: https://en.wikipedia.org/wiki/Line%E2%80%93plane_intersection#Algebraic_form
 		
 		vec linevec = linepoint2.sub(linepoint1);
+		
+		if (linevec.dot(planenormal) == 0) {
+			return null;
+		}
 		
 		double d = planepoint.sub(linepoint1).dot(planenormal) / linevec.dot(planenormal);
 		return linepoint1.add(linevec.mult(d));
