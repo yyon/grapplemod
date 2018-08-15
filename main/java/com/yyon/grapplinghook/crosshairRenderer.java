@@ -47,6 +47,10 @@ public class crosshairRenderer {
             		verticalangle = Math.toRadians(custom.sneakingverticalthrowangle);
             	}
             	
+            	if (!custom.doublehook) {
+            		angle = 0;
+            	}
+            	
             	if (verticalangle == 0) {
     				if (!custom.doublehook || angle == 0) {
     					return;

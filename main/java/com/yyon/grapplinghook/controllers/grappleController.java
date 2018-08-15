@@ -219,9 +219,16 @@ public class grappleController {
 //					vec averagemotiontowards = new vec(0, 0, 0);
 					
 					for (grappleArrow arrow : this.arrows) {
-						// vectors along rope
 						vec arrowpos = vec.positionvec(arrow);//this.getPositionVector();
 						
+						// Update segment handler (handles rope bends)
+						if (this.custom.phaserope) {
+							arrow.segmenthandler.updatepos(arrowpos, playerpos, arrow.r);
+						} else {
+							arrow.segmenthandler.update(arrowpos, playerpos, arrow.r, false);
+						}
+						
+						// vectors along rope
 						vec anchor = arrow.segmenthandler.getclosest(arrowpos);
 						double distToAnchor = arrow.segmenthandler.getDistToAnchor();
 						double remaininglength = arrow.r - distToAnchor;
@@ -301,13 +308,6 @@ public class grappleController {
 						// swing along max rope length
 						if (anchor.sub(playerpos.add(motion)).length() > remaininglength && !motor) { // moving away
 							motion = motion.removealong(spherevec);
-						}
-						
-						// Update segment handler (handles rope bends)
-						if (this.custom.phaserope) {
-							arrow.segmenthandler.updatepos(arrowpos, playerpos, arrow.r);
-						} else {
-							arrow.segmenthandler.update(arrowpos, playerpos, arrow.r, false);
 						}
 					}
 					

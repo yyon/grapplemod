@@ -1,14 +1,19 @@
 {
-	"type": "minecraft:crafting_shapeless",
-	"ingredients": [
-		{
-			"item": "grapplemod:grapplinghook"
+	"type": "minecraft:crafting_shaped",
+	"pattern": [
+		"222", 
+		"242",
+		"222"
+	],
+	"key": {
+		"2": {
+			"item": "grapplemod:baseupgradeitem"
 		}, 
-		{
+		"4": {
 			"item": "minecraft:anvil",
 			"data": 0
 		}
-	],
+	},
 	"result": {
 		"item": "grapplemod:block_grapple_modifier"
 	}

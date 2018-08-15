@@ -11,8 +11,8 @@ public class BaseUpgradeItem extends Item {
 	
 	public BaseUpgradeItem() {
 		super();
-		setvars();
 		maxStackSize = 1;
+		setvars();
 		setFull3D();
 		setUnlocalizedName(unlocalizedname);
 		
@@ -22,5 +22,6 @@ public class BaseUpgradeItem extends Item {
 	public void setvars() {
 		unlocalizedname = "baseupgradeitem";
 		category = null;
+		maxStackSize = 64;
 	}
 }
