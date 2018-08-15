@@ -220,6 +220,9 @@ public class SegmentHandler {
             
 //            if (cornerbound2 != null) {
             for (vec cornerbound2 : new vec[] {bound_option1, bound_option2, bound_option3}) {
+            	if (cornerbound2 == null) {
+            		continue;
+            	}
             	
             	// the corner must be in the line (cornerbound2, cornerbound1)
                 RayTraceResult cornerraytraceresult = this.world.rayTraceBlocks(cornerbound2.toVec3d(), cornerbound1.toVec3d());
