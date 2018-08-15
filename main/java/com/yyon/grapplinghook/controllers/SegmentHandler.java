@@ -8,6 +8,7 @@ import com.yyon.grapplinghook.entities.grappleArrow;
 import com.yyon.grapplinghook.network.SegmentMessage;
 
 import net.minecraft.util.EnumFacing;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.math.Vec3i;
 import net.minecraft.world.World;
@@ -348,6 +349,17 @@ public class SegmentHandler {
 	public vec getnormal(EnumFacing facing) {
 		Vec3i facingvec = facing.getDirectionVec();
 		return new vec(facingvec.getX(), facingvec.getY(), facingvec.getZ());
+	}
+	
+	public boolean hookpastbend(double ropelen) {
+		return (this.getDistToFarthest() > ropelen);
+	}
+	
+	public BlockPos getbendblock(int index) {
+		vec bendpos = this.segments.get(index);
+		bendpos.add_ip(this.getnormal(this.segmentbottomsides.get(index)).changelen(-this.intoblock * 2));
+		bendpos.add_ip(this.getnormal(this.segmenttopsides.get(index)).changelen(-this.intoblock * 2));
+		return new BlockPos(bendpos.x, bendpos.y, bendpos.z);
 	}
 	
 /*	public void addsegment(vec bottomhit, vec tophit, EnumFacing bottomside, EnumFacing topside, int index, vec top, vec prevtop, vec bottom, vec prevbottom) {

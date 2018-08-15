@@ -135,6 +135,12 @@ public class grappleArrow extends EntityThrowable implements IEntityAdditionalSp
 		if (!this.world.isRemote) {
 			if (this.shootingEntity != null)  {
 				if (!this.attached) {
+					if (this.segmenthandler.hookpastbend(this.r)) {
+						System.out.println("around bend");
+						vec farthest = this.segmenthandler.getfarthest();
+						this.serverAttach(this.segmenthandler.getbendblock(1), farthest, null);
+					}
+					
 					if (!this.customization.phaserope) {
 						this.segmenthandler.update(vec.positionvec(this), vec.positionvec(this.shootingEntity).add(new vec(0, this.shootingEntity.getEyeHeight(), 0)), this.r, true);
 					} else {
@@ -148,8 +154,8 @@ public class grappleArrow extends EntityThrowable implements IEntityAdditionalSp
 					double d = ropevec.length();
 					
 					if (this.customization.reelin && this.shootingEntity.isSneaking()) {
-						double newdist = d + distToFarthest - 0.2;
-						if (newdist > 1) {
+						double newdist = d + distToFarthest - 0.4;
+						if (newdist > 1 && newdist <= this.customization.maxlen) {
 							this.r = newdist;
 						}
 					}
