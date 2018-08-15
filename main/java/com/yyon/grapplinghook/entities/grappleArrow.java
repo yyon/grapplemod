@@ -398,7 +398,7 @@ public class grappleArrow extends EntityThrowable implements IEntityAdditionalSp
 		} else if (sideHit == EnumFacing.SOUTH) {
 			this.posZ += 0.05;
 		} else if (sideHit == EnumFacing.EAST) {
-			this.posX -= 0.05;
+			this.posX += 0.05;
 		} else if (sideHit == EnumFacing.UP) {
 			this.posY += 0.05;
 		}
