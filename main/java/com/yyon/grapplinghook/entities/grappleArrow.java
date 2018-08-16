@@ -105,9 +105,6 @@ public class grappleArrow extends EntityThrowable implements IEntityAdditionalSp
         this.setPosition(pos.x, pos.y, pos.z);
         */
 
-		grapplemod.updateMaxLen(worldIn);
-		grapplemod.updateGrapplingBlocks(worldIn);
-		
 		this.segmenthandler = new SegmentHandler(this.world, this);
 		
 		this.customization = customization;

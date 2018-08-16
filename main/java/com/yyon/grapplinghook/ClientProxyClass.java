@@ -102,6 +102,7 @@ public class ClientProxyClass extends CommonProxyClass {
 		registerItemModel(grapplemod.staffupgradeitem);
 		registerItemModel(grapplemod.swingupgradeitem);
 		registerItemModel(grapplemod.throwupgradeitem);
+		registerItemModel(grapplemod.limitsupgradeitem);
 		
 		ModelLoader.setCustomMeshDefinition(grapplemod.grapplebowitem, new ItemMeshDefinition() {
 			@Override

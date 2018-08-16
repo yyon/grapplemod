@@ -8,46 +8,46 @@ public class GrappleCustomization {
 	public static final String[] doubleoptions = new String[] {"maxlen", "hookgravity", "throwspeed", "motormaxspeed", "motoracceleration", "playermovementmult", "repelforce", "attractradius", "angle", "sneakingangle", "verticalthrowangle", "sneakingverticalthrowangle"};
 	
 	// rope
-	public double maxlen = 30;
-	public boolean phaserope = false;
+	public double maxlen = GrappleConfig.default_maxlen;
+	public boolean phaserope = GrappleConfig.default_phaserope;
 
 	// hook thrower
-	public double hookgravity = 1F;
-	public double throwspeed = 2F;
-	public boolean reelin = true;
-	public double verticalthrowangle = 0F;
-	public double sneakingverticalthrowangle = 0F;
+	public double hookgravity = GrappleConfig.default_hookgravity;
+	public double throwspeed = GrappleConfig.default_throwspeed;
+	public boolean reelin = GrappleConfig.default_reelin;
+	public double verticalthrowangle = GrappleConfig.default_verticalthrowangle;
+	public double sneakingverticalthrowangle = GrappleConfig.default_sneakingverticalthrowangle;
 
 	// motor
-	public boolean motor = false;
-	public double motormaxspeed = 4;
-	public double motoracceleration = 0.2;
-	public boolean motorwhencrouching = true;
-	public boolean motorwhennotcrouching = true;
-	public boolean smartmotor = false;
-	public boolean motordampener = false;
-	public boolean pullbackwards = true;
+	public boolean motor = GrappleConfig.default_motor;
+	public double motormaxspeed = GrappleConfig.default_motormaxspeed;
+	public double motoracceleration = GrappleConfig.default_motoracceleration;
+	public boolean motorwhencrouching = GrappleConfig.default_motorwhencrouching;
+	public boolean motorwhennotcrouching = GrappleConfig.default_motorwhennotcrouching;
+	public boolean smartmotor = GrappleConfig.default_smartmotor;
+	public boolean motordampener = GrappleConfig.default_motordampener;
+	public boolean pullbackwards = GrappleConfig.default_pullbackwards;
 	
 	// swing speed
-	public double playermovementmult = 1;
+	public double playermovementmult = GrappleConfig.default_playermovementmult;
 
 	// ender staff
-	public boolean enderstaff = false;
+	public boolean enderstaff = GrappleConfig.default_enderstaff;
 
 	// forcefield
-	public boolean repel = false;
-	public double repelforce = 1;
+	public boolean repel = GrappleConfig.default_repel;
+	public double repelforce = GrappleConfig.default_repelforce;
 	
 	// hook magnet
-	public boolean attract = false;
-	public double attractradius = 3;
+	public boolean attract = GrappleConfig.default_attract;
+	public double attractradius = GrappleConfig.default_attractradius;
 	
 	// double hook
-	public boolean doublehook = false;
-	public boolean smartdoublemotor = true;
-	public double angle = 20;
-	public double sneakingangle = 10;
-	public boolean oneropepull = false;
+	public boolean doublehook = GrappleConfig.default_doublehook;
+	public boolean smartdoublemotor = GrappleConfig.default_smartdoublemotor;
+	public double angle = GrappleConfig.default_angle;
+	public double sneakingangle = GrappleConfig.default_sneakingangle;
+	public boolean oneropepull = GrappleConfig.default_oneropepull;
 	
 	public GrappleCustomization() {
 		
@@ -245,5 +245,28 @@ public class GrappleCustomization {
 		}
 		
 		return true;
+	}
+	
+	public double getMax(String option, int upgrade) {
+		if (option.equals("maxlen")) {return upgrade == 1 ? GrappleConfig.max_upgrade_maxlen : GrappleConfig.max_maxlen;}
+		else if (option.equals("hookgravity")) {return upgrade == 1 ? GrappleConfig.max_upgrade_hookgravity : GrappleConfig.max_hookgravity;}
+		else if (option.equals("throwspeed")) {return upgrade == 1 ? GrappleConfig.max_upgrade_throwspeed : GrappleConfig.max_throwspeed;}
+		else if (option.equals("motormaxspeed")) {return upgrade == 1 ? GrappleConfig.max_upgrade_motormaxspeed : GrappleConfig.max_motormaxspeed;}
+		else if (option.equals("motoracceleration")) {return upgrade == 1 ? GrappleConfig.max_upgrade_motoracceleration : GrappleConfig.max_motoracceleration;}
+		else if (option.equals("playermovementmult")) {return upgrade == 1 ? GrappleConfig.max_upgrade_playermovementmult : GrappleConfig.max_playermovementmult;}
+		else if (option.equals("repelforce")) {return upgrade == 1 ? GrappleConfig.max_upgrade_repelforce : GrappleConfig.max_repelforce;}
+		else if (option.equals("attractradius")) {return upgrade == 1 ? GrappleConfig.max_upgrade_attractradius : GrappleConfig.max_attractradius;}
+		else if (option.equals("angle")) {return upgrade == 1 ? GrappleConfig.max_upgrade_angle : GrappleConfig.max_angle;}
+		else if (option.equals("sneakingangle")) {return upgrade == 1 ? GrappleConfig.max_upgrade_sneakingangle : GrappleConfig.max_sneakingangle;}
+		else if (option.equals("verticalthrowangle")) {return upgrade == 1 ? GrappleConfig.max_upgrade_verticalthrowangle : GrappleConfig.max_verticalthrowangle;}
+		else if (option.equals("sneakingverticalthrowangle")) {return upgrade == 1 ? GrappleConfig.max_upgrade_sneakingverticalthrowangle : GrappleConfig.max_sneakingverticalthrowangle;}
+		System.out.println("Option doesn't exist: " + option);
+		return 0;
+	}
+	
+	public double getMin(String option, int upgrade) {
+		if (option.equals("hookgravity")) {return upgrade == 1 ? GrappleConfig.min_upgrade_hookgravity : GrappleConfig.min_hookgravity;}
+		
+		return 0;
 	}
 }

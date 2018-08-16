@@ -60,10 +60,14 @@ public class GuiModifier extends GuiScreen {
 		this.buttonList.add(new GuiButton(2, this.guiLeft + this.xSize - 50 - 10, this.guiTop + this.ySize - 20 - 10,
 				50, 20, "Reset"));
 
+		int y = 0;
 		for (int i = 0; i < grapplemod.upgradeCategories.size(); i++) {
 			grapplemod.upgradeCategories category = grapplemod.upgradeCategories.fromInt(i);
-			this.buttonList.add(
-					new GuiButton(99 + i, this.guiLeft + 10, this.guiTop + 5 + 22 * i, 100, 20, category.description));
+			if (category != grapplemod.upgradeCategories.LIMITS) {
+				this.buttonList.add(
+						new GuiButton(99 + i, this.guiLeft + 10, this.guiTop + 5 + 22 * y, 100, 20, category.description));
+				y += 1;
+			}
 		}
 	}
 
@@ -93,13 +97,16 @@ public class GuiModifier extends GuiScreen {
 		tooltips.put(checkbox, desc);
 	}
 	
-	public void addSlider(String option, double max) {
+	public void addSlider(String option) {
 		double d = customization.getDouble(option);
 		d = Math.floor(d * 10 + 0.5) / 10;
 		
+		double max = customization.getMax(option, this.getLimits());
+		double min = customization.getMin(option, this.getLimits());
+		
 		String text = this.customization.getName(option);
 		String desc = this.customization.getDescription(option);
-		GuiSlider slider = new GuiSlider(id++, 10 + this.guiLeft, posy + this.guiTop, this.xSize - 20, 20, text + ": ", "", 0, max, d, true, true);
+		GuiSlider slider = new GuiSlider(id++, 10 + this.guiLeft, posy + this.guiTop, this.xSize - 20, 20, text + ": ", "", min, max, d, true, true);
 		
 		slider.displayString = text + ": " + Double.toString(d);
 		slider.precision = 1;
@@ -116,38 +123,38 @@ public class GuiModifier extends GuiScreen {
 		this.allowed = true;
 
 		if (category == grapplemod.upgradeCategories.ROPE) {
-			addSlider("maxlen", 200);
+			addSlider("maxlen");
 			addCheckbox("phaserope");
 		} else if (category == grapplemod.upgradeCategories.THROW) {
-			addSlider("hookgravity", 20);
-			addSlider("throwspeed", 20);
+			addSlider("hookgravity");
+			addSlider("throwspeed");
 			addCheckbox("reelin");
-			addSlider("verticalthrowangle", 90);
-			addSlider("sneakingverticalthrowangle", 90);
+			addSlider("verticalthrowangle");
+			addSlider("sneakingverticalthrowangle");
 		} else if (category == grapplemod.upgradeCategories.MOTOR) {
 			addCheckbox("motor");
-			addSlider("motormaxspeed", 10);
-			addSlider("motoracceleration", 1);
+			addSlider("motormaxspeed");
+			addSlider("motoracceleration");
 			addCheckbox("motorwhencrouching");
 			addCheckbox("motorwhennotcrouching");
 			addCheckbox("smartmotor");
 			addCheckbox("motordampener");
 			addCheckbox("pullbackwards");
 		} else if (category == grapplemod.upgradeCategories.SWING) {
-			addSlider("playermovementmult", 5);
+			addSlider("playermovementmult");
 		} else if (category == grapplemod.upgradeCategories.STAFF) {
 			addCheckbox("enderstaff");
 		} else if (category == grapplemod.upgradeCategories.FORCEFIELD) {
 			addCheckbox("repel");
-			addSlider("repelforce", 5);
+			addSlider("repelforce");
 		} else if (category == grapplemod.upgradeCategories.MAGNET) {
 			addCheckbox("attract");
-			addSlider("attractradius", 10);
+			addSlider("attractradius");
 		} else if (category == grapplemod.upgradeCategories.DOUBLE) {
 			addCheckbox("doublehook");
 			addCheckbox("smartdoublemotor");
-			addSlider("angle", 90);
-			addSlider("sneakingangle", 90);
+			addSlider("angle");
+			addSlider("sneakingangle");
 			addCheckbox("oneropepull");
 		}
 		
@@ -193,6 +200,13 @@ public class GuiModifier extends GuiScreen {
 				b.enabled = false;
 			}
 		}
+	}
+	
+	public int getLimits() {
+		if (this.tileent.isUnlocked(grapplemod.upgradeCategories.LIMITS) || Minecraft.getMinecraft().player.capabilities.isCreativeMode) {
+			return 1;
+		}
+		return 0;
 	}
 	
 	@Override

@@ -18,6 +18,7 @@ import com.yyon.grapplinghook.items.repeller;
 import com.yyon.grapplinghook.items.upgrades.BaseUpgradeItem;
 import com.yyon.grapplinghook.items.upgrades.DoubleUpgradeItem;
 import com.yyon.grapplinghook.items.upgrades.ForcefieldUpgradeItem;
+import com.yyon.grapplinghook.items.upgrades.LimitsUpgradeItem;
 import com.yyon.grapplinghook.items.upgrades.MagnetUpgradeItem;
 import com.yyon.grapplinghook.items.upgrades.MotorUpgradeItem;
 import com.yyon.grapplinghook.items.upgrades.RopeUpgradeItem;
@@ -42,7 +43,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.GameRules;
 import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.RegistryEvent;
@@ -106,6 +106,7 @@ public class grapplemod {
     public static Item staffupgradeitem;
     public static Item swingupgradeitem;
     public static Item throwupgradeitem;
+    public static Item limitsupgradeitem;
 
 	public static Object instance;
 	
@@ -121,14 +122,7 @@ public class grapplemod {
 	public static int GRAPPLEID = controllerid++;
 	public static int REPELID = controllerid++;
 	public static int AIRID = controllerid++;
-	
-	public static int REPELCONFIGS = 0;
-//	public static int REPELSPEED = REPELCONFIGS++;
-	public static int REPELSTRONG = REPELCONFIGS++;
-	public static int REPELWEAK = REPELCONFIGS++;
-	public static int REPELNONE = REPELCONFIGS++;
-	
-	public static int grapplingLength = 0;
+		
 	public static boolean anyblocks = true;
 	public static ArrayList<Block> grapplingblocks;
 	public static boolean removeblocks = false;
@@ -146,7 +140,8 @@ public class grapplemod {
 		STAFF ("Ender Staff"), 
 		FORCEFIELD ("Forcefield"), 
 		MAGNET ("Hook Magnet"), 
-		DOUBLE ("Double Hook");
+		DOUBLE ("Double Hook"),
+		LIMITS ("Limits");
 		
 		public String description;
 		private upgradeCategories(String desc) {
@@ -184,6 +179,8 @@ public class grapplemod {
 				return magnetupgradeitem;
 			} else if (this == upgradeCategories.DOUBLE) {
 				return doubleupgradeitem;
+			} else if (this == upgradeCategories.LIMITS) {
+				return limitsupgradeitem;
 			}
 			return null;
 		}
@@ -205,19 +202,12 @@ public class grapplemod {
 	}
 
 	public void serverLoad(FMLServerStartingEvent event){
-		event.getServer().worlds[0].getGameRules().addGameRule("grapplingLength", "0", GameRules.ValueType.NUMERICAL_VALUE);
-		event.getServer().worlds[0].getGameRules().addGameRule("grapplingBlocks", "any", GameRules.ValueType.ANY_VALUE);
-		event.getServer().worlds[0].getGameRules().addGameRule("grapplingNonBlocks", "none", GameRules.ValueType.ANY_VALUE);
 	}
 	
-	public static void updateMaxLen(World world) {
-		grapplemod.grapplingLength = world.getMinecraftServer().worlds[0].getGameRules().getInt("grapplingLength");
-	}
-	
-	public static void updateGrapplingBlocks(World world) {
-		String s = world.getMinecraftServer().worlds[0].getGameRules().getString("grapplingBlocks");
+	public static void updateGrapplingBlocks() {
+		String s = GrappleConfig.grapplingBlocks;
 		if (s.equals("any") || s.equals("")) {
-			s = world.getMinecraftServer().worlds[0].getGameRules().getString("grapplingNonBlocks");
+			s = GrappleConfig.grapplingNonBlocks;
 			if (s.equals("none") || s.equals("")) {
 				anyblocks = true;
 			} else {
@@ -258,7 +248,7 @@ public class grapplemod {
 	public void registerItems(RegistryEvent.Register<Item> event) {
 //		System.out.println("REGISTERING ITEMS");
 //		System.out.println(grapplebowitem);
-	    event.getRegistry().registerAll(grapplebowitem, launcheritem, longfallboots, repelleritem, baseupgradeitem, doubleupgradeitem, forcefieldupgradeitem, magnetupgradeitem, motorupgradeitem, ropeupgradeitem, staffupgradeitem, swingupgradeitem, throwupgradeitem);
+	    event.getRegistry().registerAll(grapplebowitem, launcheritem, longfallboots, repelleritem, baseupgradeitem, doubleupgradeitem, forcefieldupgradeitem, magnetupgradeitem, motorupgradeitem, ropeupgradeitem, staffupgradeitem, swingupgradeitem, throwupgradeitem, limitsupgradeitem);
 
 	}
 	
@@ -291,6 +281,8 @@ public class grapplemod {
 	    swingupgradeitem.setRegistryName("swingupgradeitem");
 	    throwupgradeitem = new ThrowUpgradeItem();
 	    throwupgradeitem.setRegistryName("throwupgradeitem");
+	    limitsupgradeitem = new LimitsUpgradeItem();
+	    limitsupgradeitem.setRegistryName("limitsupgradeitem");
 	    
 //		System.out.println(grapplebowitem);
 		
@@ -333,6 +325,8 @@ public class grapplemod {
 	@EventHandler
 	public void postInit(FMLPostInitializationEvent event) {
 		proxy.postInit(event);
+		
+		grapplemod.updateGrapplingBlocks();
 	}
 	
 	int entityID = 0;
