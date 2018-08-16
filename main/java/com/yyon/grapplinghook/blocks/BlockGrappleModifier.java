@@ -1,7 +1,10 @@
 package com.yyon.grapplinghook.blocks;
 
+import java.util.Map;
+
 import javax.annotation.Nullable;
 
+import com.yyon.grapplinghook.GrappleConfig;
 import com.yyon.grapplinghook.GrappleCustomization;
 import com.yyon.grapplinghook.GuiModifier;
 import com.yyon.grapplinghook.grapplemod;
@@ -12,7 +15,11 @@ import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.creativetab.CreativeTabs;
+import net.minecraft.enchantment.Enchantment;
+import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.Enchantments;
+import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -141,6 +148,28 @@ public class BlockGrappleModifier extends Block {
 				helditemstack.setTagCompound(nbt);
 				
 				playerIn.sendMessage(new TextComponentString("Applied configuration"));
+			}
+		} else if (helditem == Items.DIAMOND_BOOTS) {
+			if (!worldIn.isRemote) {
+				if (GrappleConfig.longfallbootsrecipe) {
+					boolean gaveitem = false;
+					if (helditemstack.isItemEnchanted()) {
+						Map<Enchantment, Integer> enchantments = EnchantmentHelper.getEnchantments(helditemstack);
+						if (enchantments.containsKey(Enchantments.FEATHER_FALLING)) {
+							if (enchantments.get(Enchantments.FEATHER_FALLING) >= 4) {
+								ItemStack newitemstack = new ItemStack(grapplemod.longfallboots);
+								EnchantmentHelper.setEnchantments(enchantments, newitemstack);
+								playerIn.setHeldItem(EnumHand.MAIN_HAND, newitemstack);
+								gaveitem = true;
+							}
+						}
+					}
+					if (!gaveitem) {
+						playerIn.sendMessage(new TextComponentString("Right click with diamond boots enchanted with feather falling IV to get long fall boots"));
+					}
+				} else {
+					playerIn.sendMessage(new TextComponentString("Making long fall boots this way was disabled in the config. It probably has been replaced by a crafting recipe."));
+				}
 			}
 		} else {
 			TileEntity ent = worldIn.getTileEntity(pos);

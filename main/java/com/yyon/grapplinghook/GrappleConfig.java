@@ -121,4 +121,6 @@ public class GrappleConfig {
 	public static int enable_angle = 0;
 	public static int enable_sneakingangle = 0;
 	public static int enable_oneropepull = 0;
+	
+	public static boolean longfallbootsrecipe = true;
 }

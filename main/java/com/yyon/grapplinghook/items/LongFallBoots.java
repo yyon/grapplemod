@@ -2,6 +2,8 @@ package com.yyon.grapplinghook.items;
 
 import java.util.List;
 
+import com.yyon.grapplinghook.GrappleConfig;
+
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.EntityEquipmentSlot;
@@ -80,6 +82,11 @@ public class LongFallBoots extends ItemArmor {
     @SideOnly(Side.CLIENT)
 	public void addInformation(ItemStack stack, World world, List<String> list, ITooltipFlag par4)
 	{
+		if (!stack.isItemEnchanted()) {
+			if (GrappleConfig.longfallbootsrecipe) {
+				list.add("Right click a Grappling Hook Modifier block with Feather Falling IV Diamond Boots to obtain");
+			}
+		}
 		list.add("Cancels fall damage when worn");
 	}
 }
