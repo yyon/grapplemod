@@ -593,8 +593,16 @@ public class grappleController {
 			}
 		}
 		if (entity.collidedVertically) {
-			if (entity.motionY == 0) {
-				this.motion.y = 0;
+			if (entity.onGround) {
+				if (this.motion.y < 0) {
+					this.motion.y = 0;
+				}
+			} else {
+				if (this.motion.y > 0) {
+					if (entity.lastTickPosY == entity.posY) {
+						this.motion.y = 0;
+					}
+				}
 			}
 		}
 	}
