@@ -48,8 +48,8 @@ public class GrappleConfig {
 	public static double max_verticalthrowangle = 45;
 	public static double max_sneakingverticalthrowangle = 45;
 	// motor
-	public static double max_motormaxspeed = 5;
-	public static double max_motoracceleration = 0.4;
+	public static double max_motormaxspeed = 4;
+	public static double max_motoracceleration = 0.2;
 	// swing speed
 	public static double max_playermovementmult = 2;
 	// forcefield
