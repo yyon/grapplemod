@@ -86,4 +86,39 @@ public class GrappleConfig {
 	
 	public static String grapplingBlocks = "any";
 	public static String grapplingNonBlocks = "none";
+	
+	// rope
+	public static int enable_maxlen = 0;
+	public static int enable_phaserope = 0;
+	// hook thrower
+	public static int enable_hookgravity = 0;
+	public static int enable_throwspeed = 0;
+	public static int enable_reelin = 0;
+	public static int enable_verticalthrowangle = 0;
+	public static int enable_sneakingverticalthrowangle = 0;
+	// motor
+	public static int enable_motor = 0;
+	public static int enable_motormaxspeed = 0;
+	public static int enable_motoracceleration = 0;
+	public static int enable_motorwhencrouching = 0;
+	public static int enable_motorwhennotcrouching = 0;
+	public static int enable_smartmotor = 0;
+	public static int enable_motordampener = 1;
+	public static int enable_pullbackwards = 0;
+	// swing speed
+	public static int enable_playermovementmult = 0;
+	// ender staff
+	public static int enable_enderstaff = 0;
+	// forcefield
+	public static int enable_repel = 0;
+	public static int enable_repelforce = 0;
+	// hook magnet
+	public static int enable_attract = 0;
+	public static int enable_attractradius = 0;
+	// double hook
+	public static int enable_doublehook = 0;
+	public static int enable_smartdoublemotor = 0;
+	public static int enable_angle = 0;
+	public static int enable_sneakingangle = 0;
+	public static int enable_oneropepull = 0;
 }

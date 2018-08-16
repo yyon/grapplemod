@@ -105,7 +105,6 @@ public class GuiModifier extends GuiScreen {
 		double min = customization.getMin(option, this.getLimits());
 		
 		String text = this.customization.getName(option);
-		String desc = this.customization.getDescription(option);
 		GuiSlider slider = new GuiSlider(id++, 10 + this.guiLeft, posy + this.guiTop, this.xSize - 20, 20, text + ": ", "", min, max, d, true, true);
 		
 		slider.displayString = text + ": " + Double.toString(d);
@@ -114,6 +113,8 @@ public class GuiModifier extends GuiScreen {
 		posy += 25;
 		this.buttonList.add(slider);
 		options.put(slider, option);
+		
+		String desc = this.customization.getDescription(option);
 		tooltips.put(slider, desc);
 	}
 
@@ -194,11 +195,29 @@ public class GuiModifier extends GuiScreen {
 	public void updateEnabled() {
 		for (GuiButton b : this.options.keySet()) {
 			String option = this.options.get(b);
+			boolean enabled = true;
+			
+			String desc = this.customization.getDescription(option);
+			
 			if (this.customization.isoptionvalid(option)) {
-				b.enabled = true;
 			} else {
-				b.enabled = false;
+				desc = "Incompatability with other options\n" + desc;
+				enabled = false;
 			}
+			
+			int level = this.customization.optionEnabled(option);
+			if (this.getLimits() < level) {
+				if (level == 1) {
+					desc = "Use limits upgrade to unlock\n" + desc;
+				} else {
+					desc = "Option locked due to config file, complain to your modpack maker\n" + desc;
+				}
+				enabled = false;
+			}
+			
+			b.enabled = enabled;
+
+			tooltips.put(b, desc);
 		}
 	}
 	

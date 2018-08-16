@@ -269,4 +269,35 @@ public class GrappleCustomization {
 		
 		return 0;
 	}
+	
+	public int optionEnabled(String option) {
+		if (option.equals("maxlen")) {return GrappleConfig.enable_maxlen;}
+		else if (option.equals("phaserope")) {return GrappleConfig.enable_phaserope;}
+		else if (option.equals("hookgravity")) {return GrappleConfig.enable_hookgravity;}
+		else if (option.equals("throwspeed")) {return GrappleConfig.enable_throwspeed;}
+		else if (option.equals("reelin")) {return GrappleConfig.enable_reelin;}
+		else if (option.equals("verticalthrowangle")) {return GrappleConfig.enable_verticalthrowangle;}
+		else if (option.equals("motor")) {return GrappleConfig.enable_motor;}
+		else if (option.equals("motormaxspeed")) {return GrappleConfig.enable_motormaxspeed;}
+		else if (option.equals("motoracceleration")) {return GrappleConfig.enable_motoracceleration;}
+		else if (option.equals("motorwhencrouching")) {return GrappleConfig.enable_motorwhencrouching;}
+		else if (option.equals("motorwhennotcrouching")) {return GrappleConfig.enable_motorwhennotcrouching;}
+		else if (option.equals("smartmotor")) {return GrappleConfig.enable_smartmotor;}
+		else if (option.equals("motordampener")) {return GrappleConfig.enable_motordampener;}
+		else if (option.equals("pullbackwards")) {return GrappleConfig.enable_pullbackwards;}
+		else if (option.equals("playermovementmult")) {return GrappleConfig.enable_playermovementmult;}
+		else if (option.equals("enderstaff")) {return GrappleConfig.enable_enderstaff;}
+		else if (option.equals("repel")) {return GrappleConfig.enable_repel;}
+		else if (option.equals("repelforce")) {return GrappleConfig.enable_repelforce;}
+		else if (option.equals("attract")) {return GrappleConfig.enable_attract;}
+		else if (option.equals("attractradius")) {return GrappleConfig.enable_attractradius;}
+		else if (option.equals("doublehook")) {return GrappleConfig.enable_doublehook;}
+		else if (option.equals("smartdoublemotor")) {return GrappleConfig.enable_smartdoublemotor;}
+		else if (option.equals("angle")) {return GrappleConfig.enable_angle;}
+		else if (option.equals("sneakingangle")) {return GrappleConfig.enable_sneakingangle;}
+		else if (option.equals("oneropepull")) {return GrappleConfig.enable_oneropepull;}
+		else if (option.equals("sneakingverticalthrowangle")) {return GrappleConfig.enable_sneakingverticalthrowangle;}
+		System.out.println("Unknown option");
+		return 0;
+	}
 }
