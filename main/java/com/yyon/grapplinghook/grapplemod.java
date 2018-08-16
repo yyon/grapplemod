@@ -45,7 +45,10 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.common.config.Config.Type;
+import net.minecraftforge.common.config.ConfigManager;
 import net.minecraftforge.event.RegistryEvent;
+import net.minecraftforge.fml.client.event.ConfigChangedEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventHandler;
 import net.minecraftforge.fml.common.SidedProxy;
@@ -491,5 +494,16 @@ public class grapplemod {
             stack.setTagInfo(key, nbttagcompound);
             return nbttagcompound;
         }
+	}
+	
+
+	@SubscribeEvent
+	public void onConfigChanged(ConfigChangedEvent.OnConfigChangedEvent eventArgs) {
+	    if(eventArgs.getModID().equals("grapplemod")){
+			System.out.println("grapplemod config updated");
+			ConfigManager.sync("grapplemod", Type.INSTANCE);;
+			
+			grapplemod.updateGrapplingBlocks();
+		}
 	}
 }

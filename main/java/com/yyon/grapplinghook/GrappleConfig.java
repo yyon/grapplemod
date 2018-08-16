@@ -1,6 +1,7 @@
 package com.yyon.grapplinghook;
 
 import net.minecraftforge.common.config.Config;
+import net.minecraftforge.common.config.Config.RequiresMcRestart;
 
 @Config(modid="grapplemod", name="grapplingHook")
 public class GrappleConfig {
