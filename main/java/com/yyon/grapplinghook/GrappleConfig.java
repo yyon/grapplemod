@@ -1,7 +1,6 @@
 package com.yyon.grapplinghook;
 
 import net.minecraftforge.common.config.Config;
-import net.minecraftforge.common.config.Config.RequiresMcRestart;
 
 @Config(modid="grapplemod", name="grapplingHook")
 public class GrappleConfig {
@@ -42,10 +41,10 @@ public class GrappleConfig {
 
 
 	// rope
-	public static double max_maxlen = 100;
+	public static double max_maxlen = 60;
 	// hook thrower
 	public static double max_hookgravity = 20;
-	public static double max_throwspeed = 10;
+	public static double max_throwspeed = 5;
 	public static double max_verticalthrowangle = 45;
 	public static double max_sneakingverticalthrowangle = 45;
 	// motor

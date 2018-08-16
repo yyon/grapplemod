@@ -246,7 +246,7 @@ public class RenderGrappleArrow<T extends Entity> extends Render<T>
         	}
         }
         
-        if (arrow.debugpos != null) {
+/*        if (arrow.debugpos != null) {
         	vec debugpos = arrow.debugpos.sub(somethingpos);
         	this.drawDebug(debugpos, tessellator, vertexbuffer, 1, 0, 0);
         }
@@ -257,7 +257,7 @@ public class RenderGrappleArrow<T extends Entity> extends Render<T>
         if (arrow.debugpos3 != null) {
         	vec debugpos = arrow.debugpos.sub(somethingpos);
         	this.drawDebug(debugpos, tessellator, vertexbuffer, 0, 0, 1);
-        }
+        }*/
         
         
         vertexbuffer.begin(5, DefaultVertexFormats.POSITION_COLOR);

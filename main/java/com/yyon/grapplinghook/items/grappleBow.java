@@ -162,7 +162,9 @@ public class grappleBow extends Item implements clickitem {
     	        float velx = -MathHelper.sin((float) anglevec.getYaw() * 0.017453292F) * MathHelper.cos((float) anglevec.getPitch() * 0.017453292F);
     	        float vely = -MathHelper.sin((float) anglevec.getPitch() * 0.017453292F);
     	        float velz = MathHelper.cos((float) anglevec.getYaw() * 0.017453292F) * MathHelper.cos((float) anglevec.getPitch() * 0.017453292F);
-    	        entityarrow.shoot((double) velx, (double) vely, (double) velz, entityarrow.getVelocity(), 0.0F);
+    	        float extravelocity = (float) vec.motionvec(entityLiving).dist_along(new vec(velx, vely, velz));
+    	        if (extravelocity < 0) { extravelocity = 0; }
+    	        entityarrow.shoot((double) velx, (double) vely, (double) velz, entityarrow.getVelocity() + extravelocity, 0.0F);
     			setArrow1(entityLiving, entityarrow);
     			worldIn.spawnEntity(entityarrow);
         	} else {
@@ -176,7 +178,9 @@ public class grappleBow extends Item implements clickitem {
     	        float velz = MathHelper.cos((float) anglevec.getYaw() * 0.017453292F) * MathHelper.cos((float) anglevec.getPitch() * 0.017453292F);
     			grappleArrow entityarrow = this.createarrow(stack, worldIn, entityLiving, false, true);// new grappleArrow(worldIn, player, false);
 //                entityarrow.shoot(player, (float) anglevec.getPitch(), (float)anglevec.getYaw(), 0.0F, entityarrow.getVelocity(), 0.0F);
-    	        entityarrow.shoot((double) velx, (double) vely, (double) velz, entityarrow.getVelocity(), 0.0F);
+    	        float extravelocity = (float) vec.motionvec(entityLiving).dist_along(new vec(velx, vely, velz));
+    	        if (extravelocity < 0) { extravelocity = 0; }
+    	        entityarrow.shoot((double) velx, (double) vely, (double) velz, entityarrow.getVelocity() + extravelocity, 0.0F);
                 
     			worldIn.spawnEntity(entityarrow);
     			setArrow1(entityLiving, entityarrow);    			
@@ -189,7 +193,9 @@ public class grappleBow extends Item implements clickitem {
     	        velz = MathHelper.cos((float) anglevec.getYaw() * 0.017453292F) * MathHelper.cos((float) anglevec.getPitch() * 0.017453292F);
     			entityarrow = this.createarrow(stack, worldIn, entityLiving, true, true);//new grappleArrow(worldIn, player, true);
 //                entityarrow.shoot(player, (float) anglevec.getPitch(), (float)anglevec.getYaw(), 0.0F, entityarrow.getVelocity(), 0.0F);
-    	        entityarrow.shoot((double) velx, (double) vely, (double) velz, entityarrow.getVelocity(), 0.0F);
+    	        extravelocity = (float) vec.motionvec(entityLiving).dist_along(new vec(velx, vely, velz));
+    	        if (extravelocity < 0) { extravelocity = 0; }
+    	        entityarrow.shoot((double) velx, (double) vely, (double) velz, entityarrow.getVelocity() + extravelocity, 0.0F);
                 
     			worldIn.spawnEntity(entityarrow);
     			setArrow2(entityLiving, entityarrow);

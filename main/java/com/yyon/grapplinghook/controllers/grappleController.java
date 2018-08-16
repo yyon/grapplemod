@@ -199,20 +199,6 @@ public class grappleController {
 							motor = true;
 						}
 					}
-					// if only one rope is pulling and not oneropepull, disable motor
-					if (motor) {
-						if (this.custom.doublehook && this.arrows.size() == 1) {
-							boolean isdouble = true;
-							for (grappleArrow arrow : this.arrows) {
-								if (!arrow.isdouble) {
-									isdouble = false;
-								}
-							}
-							if (isdouble && !this.custom.oneropepull) {
-								motor = false;
-							}
-						}
-					}
 					
 //					double curspeed = 0;
 					boolean close = false;
@@ -319,6 +305,19 @@ public class grappleController {
 		        	// Motor
 					if (motor) {
 						boolean dopull = true;
+						
+						// if only one rope is pulling and not oneropepull, disable motor
+						if (this.custom.doublehook && this.arrows.size() == 1) {
+							boolean isdouble = true;
+							for (grappleArrow arrow : this.arrows) {
+								if (!arrow.isdouble) {
+									isdouble = false;
+								}
+							}
+							if (isdouble && !this.custom.oneropepull) {
+								dopull = false;
+							}
+						}
 						
 /*						if (curspeed > this.custom.motormaxspeed) {
 							motion.changelen_ip(this.custom.motormaxspeed);

@@ -71,9 +71,9 @@ public class grappleArrow extends EntityThrowable implements IEntityAdditionalSp
 	
 	public GrappleCustomization customization = null;
 	
-	public vec debugpos = null;
+/*	public vec debugpos = null;
 	public vec debugpos2 = null;
-	public vec debugpos3 = null;
+	public vec debugpos3 = null;*/
 	
 	// magnet attract
 	public vec prevpos = null;
@@ -440,7 +440,7 @@ public class grappleArrow extends EntityThrowable implements IEntityAdditionalSp
 	@Override
     protected float getGravityVelocity()
     {
-        return (float) this.customization.hookgravity * 0.05F;
+        return (float) this.customization.hookgravity * 0.1F;
     }
 	
     public float getVelocity()

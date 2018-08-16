@@ -116,6 +116,11 @@ public class vec {
 		return v3.changelen(dot);
 	}
 	
+	public double dist_along(vec v2) {
+		vec v3 = v2.normalize();
+		return this.dot(v3);
+	}
+	
 	public vec removealong(vec v2) {
 		return this.sub(this.proj(v2));
 	}

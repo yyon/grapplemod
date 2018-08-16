@@ -253,7 +253,6 @@ public class SegmentHandler {
                 		if (bottomropevec.length() < 0.05) {
                 			if (this.segmentbottomsides.get(index) == bottomside && this.segmenttopsides.get(index) == cornerside) {
 //                    			System.out.println("Warning: bottom bend is too close");
-                    			this.arrow.debugpos = bend;
                     			continue;
                 			}
                 		}
