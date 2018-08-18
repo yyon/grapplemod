@@ -4,6 +4,7 @@ import java.util.Collection;
 import java.util.ConcurrentModificationException;
 import java.util.HashMap;
 
+import com.yyon.grapplinghook.blocks.TileEntityGrappleModifier;
 import com.yyon.grapplinghook.controllers.grappleController;
 import com.yyon.grapplinghook.entities.RenderGrappleArrow;
 import com.yyon.grapplinghook.entities.grappleArrow;
@@ -360,4 +361,11 @@ public class ClientProxyClass extends CommonProxyClass {
 //		}
 		return false;
 	}
+	
+	@Override
+	public void openModifierScreen(TileEntityGrappleModifier tileent) {
+		Minecraft.getMinecraft().displayGuiScreen(new GuiModifier(tileent));
+
+	}
+
 }

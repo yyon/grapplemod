@@ -1,5 +1,6 @@
 package com.yyon.grapplinghook;
 
+import com.yyon.grapplinghook.blocks.TileEntityGrappleModifier;
 import com.yyon.grapplinghook.controllers.grappleController;
 import com.yyon.grapplinghook.entities.grappleArrow;
 import com.yyon.grapplinghook.items.grappleBow;
@@ -108,5 +109,8 @@ public class CommonProxyClass {
     
 	public String getkeyname(CommonProxyClass.keys keyenum) {
 		return null;
+	}
+
+	public void openModifierScreen(TileEntityGrappleModifier tileent) {
 	}
 }

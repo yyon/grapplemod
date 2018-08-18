@@ -21,6 +21,7 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.registry.IEntityAdditionalSpawnData;
@@ -165,7 +166,7 @@ public class grappleArrow extends EntityThrowable implements IEntityAdditionalSp
 							motion = motion.removealong(ropevec);
 						}
 						
-						this.setVelocity(motion.x, motion.y, motion.z);
+						this.setVelocityActually(motion.x, motion.y, motion.z);
 						
 						ropevec.changelen_ip(this.r - distToFarthest);
 						vec newpos = ropevec.add(farthest);
@@ -248,7 +249,21 @@ public class grappleArrow extends EntityThrowable implements IEntityAdditionalSp
 	    	}
 		}
 	}
-		
+	
+	public void setVelocityActually(double x, double y, double z) {
+        this.motionX = x;
+        this.motionY = y;
+        this.motionZ = z;
+
+        if (this.prevRotationPitch == 0.0F && this.prevRotationYaw == 0.0F)
+        {
+            float f = MathHelper.sqrt(x * x + z * z);
+            this.rotationYaw = (float)(MathHelper.atan2(x, z) * (180D / Math.PI));
+            this.rotationPitch = (float)(MathHelper.atan2(y, (double)f) * (180D / Math.PI));
+            this.prevRotationYaw = this.rotationYaw;
+            this.prevRotationPitch = this.rotationPitch;
+        }
+	}
 	
 	@Override
 	@SideOnly(Side.CLIENT)

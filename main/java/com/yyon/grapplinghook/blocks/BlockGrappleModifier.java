@@ -6,14 +6,12 @@ import javax.annotation.Nullable;
 
 import com.yyon.grapplinghook.GrappleConfig;
 import com.yyon.grapplinghook.GrappleCustomization;
-import com.yyon.grapplinghook.GuiModifier;
 import com.yyon.grapplinghook.grapplemod;
 import com.yyon.grapplinghook.items.upgrades.BaseUpgradeItem;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
-import net.minecraft.client.Minecraft;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;
@@ -175,7 +173,7 @@ public class BlockGrappleModifier extends Block {
 			TileEntity ent = worldIn.getTileEntity(pos);
 			TileEntityGrappleModifier tileent = (TileEntityGrappleModifier) ent;
 			
-			Minecraft.getMinecraft().displayGuiScreen(new GuiModifier(tileent));
+			grapplemod.proxy.openModifierScreen(tileent);
 		}
 		return true;
 
