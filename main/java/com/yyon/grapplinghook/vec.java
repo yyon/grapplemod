@@ -1,7 +1,10 @@
 package com.yyon.grapplinghook;
 
 import net.minecraft.entity.Entity;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
+import net.minecraftforge.fml.common.Loader;
+import net.minecraftforge.fml.common.Optional;
 
 public class vec {
 	public double x;
@@ -25,7 +28,23 @@ public class vec {
 	}
 	
 	public static vec positionvec(Entity e) {
+		if(Loader.isModLoaded("valkyrienwarfare"))
+			return positionship(e);
 		return new vec(e.posX, e.posY, e.posZ);
+	}
+	
+	@Optional.Method(modid = "valkyrienwarfare")
+	private static vec positionship(Entity e) {
+		BlockPos pos = new BlockPos((int)e.posX, (int)e.posY, (int)e.posZ);
+		if(valkyrienwarfare.deprecated_api.ValkyrienWarfareHooks.isBlockPartOfShip(e.world, pos)) {
+			valkyrienwarfare.math.Vector vs = new valkyrienwarfare.math.Vector(e.posX, e.posY, e.posZ);
+			valkyrienwarfare.physics.management.PhysicsWrapperEntity pe = valkyrienwarfare.deprecated_api.ValkyrienWarfareHooks.getShipEntityManagingPos(e.world, pos);
+			valkyrienwarfare.math.Vector vw = valkyrienwarfare.deprecated_api.ValkyrienWarfareHooks.getPositionInRealFromShip(e.world, pe, vs);
+			return new vec(vw.X, vw.Y, vw.Z);
+		}
+		else {
+			return new vec(e.posX, e.posY, e.posZ);
+		}
 	}
 	
 	public static vec motionvec(Entity e) {
