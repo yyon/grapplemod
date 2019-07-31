@@ -32,6 +32,7 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.event.ModelRegistryEvent;
 import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.event.world.BlockEvent.BreakEvent;
+import net.minecraftforge.fml.client.registry.ClientRegistry;
 import net.minecraftforge.fml.client.registry.IRenderFactory;
 import net.minecraftforge.fml.client.registry.RenderingRegistry;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
@@ -39,6 +40,7 @@ import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
+import net.minecraftforge.fml.common.gameevent.TickEvent.ClientTickEvent;
 
 public class ClientProxyClass extends CommonProxyClass {
 	public boolean leftclick = false;
@@ -152,6 +154,9 @@ public class ClientProxyClass extends CommonProxyClass {
 		ModelLoader.setCustomModelResourceLocation(item, 0, fullModelLocation);
 	}
 	
+	
+	public static KeyBinding[] keyBindings;
+
 	@Override
 	public void init(FMLInitializationEvent event, grapplemod grappleModInst) {
 		super.init(event, grappleModInst);
@@ -160,6 +165,19 @@ public class ClientProxyClass extends CommonProxyClass {
 //		Minecraft.getMinecraft().getRenderItem().getItemModelMesher().register(grapplemod.launcheritem, 0, new ModelResourceLocation("grapplemod:launcheritem", "inventory"));
 //		Minecraft.getMinecraft().getRenderItem().getItemModelMesher().register(grapplemod.longfallboots, 0, new ModelResourceLocation("grapplemod:longfallboots", "inventory"));
 //		Minecraft.getMinecraft().getRenderItem().getItemModelMesher().register(grapplemod.enderhookitem, 0, new ModelResourceLocation("grapplemod:enderhook", "inventory"));
+		
+		// custom keys: https://jabelarminecraft.blogspot.com/p/minecraft-forge-1721710-keybinding.html
+		// declare an array of key bindings
+		keyBindings = new KeyBinding[1]; 
+		
+		// instantiate the key bindings
+		keyBindings[0] = new KeyBinding("key.structure.desc", -100, "key.grapplemod.category");
+		  
+		// register all the key bindings
+		for (int i = 0; i < keyBindings.length; ++i) 
+		{
+		    ClientRegistry.registerKeyBinding(keyBindings[i]);
+		}
 	}
 	
 	public crosshairRenderer crosshairrenderer;
@@ -366,6 +384,16 @@ public class ClientProxyClass extends CommonProxyClass {
 	public void openModifierScreen(TileEntityGrappleModifier tileent) {
 		Minecraft.getMinecraft().displayGuiScreen(new GuiModifier(tileent));
 
+	}
+
+
+	@SubscribeEvent
+	public void clientTick(ClientTickEvent event) {
+		if (event.phase == TickEvent.Phase.END) {
+			if (keyBindings[0].isKeyDown()) {
+				System.out.println("Down");
+			}
+		}
 	}
 
 }
