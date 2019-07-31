@@ -1,10 +1,7 @@
 package com.yyon.grapplinghook;
 
 import net.minecraft.entity.Entity;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
-import net.minecraftforge.fml.common.Loader;
-import net.minecraftforge.fml.common.Optional;
 
 public class vec {
 	public double x;
@@ -28,11 +25,12 @@ public class vec {
 	}
 	
 	public static vec positionvec(Entity e) {
-		if(Loader.isModLoaded("valkyrienwarfare"))
-			return positionship(e);
+//		if(Loader.isModLoaded("valkyrienwarfare"))
+//			return positionship(e);
 		return new vec(e.posX, e.posY, e.posZ);
 	}
 	
+	/*
 	@Optional.Method(modid = "valkyrienwarfare")
 	private static vec positionship(Entity e) {
 		BlockPos pos = new BlockPos((int)e.posX, (int)e.posY, (int)e.posZ);
@@ -46,6 +44,7 @@ public class vec {
 			return new vec(e.posX, e.posY, e.posZ);
 		}
 	}
+	*/
 	
 	public static vec motionvec(Entity e) {
 		return new vec(e.motionX, e.motionY, e.motionZ);
