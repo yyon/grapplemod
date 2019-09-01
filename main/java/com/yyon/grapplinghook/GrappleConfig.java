@@ -123,4 +123,8 @@ public class GrappleConfig {
 	public static int enable_oneropepull = 0;
 	
 	public static boolean longfallbootsrecipe = true;
+
+	// ender staff
+	public static double ender_staff_strength = 3;
+	public static int ender_staff_recharge = 50;
 }
