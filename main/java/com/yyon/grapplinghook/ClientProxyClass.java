@@ -39,6 +39,7 @@ import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
+import net.minecraftforge.fml.common.network.FMLNetworkEvent.ClientDisconnectionFromServerEvent;
 
 public class ClientProxyClass extends CommonProxyClass {
 	public boolean leftclick = false;
@@ -233,7 +234,7 @@ public class ClientProxyClass extends CommonProxyClass {
 			prevtime = 0;
 		}
 		long timer = player.world.getTotalWorldTime() - prevtime;
-		if (timer > GrappleConfig.ender_staff_recharge) {
+		if (timer > GrappleConfig.getconf().ender_staff_recharge) {
 			if ((player.getHeldItemMainhand()!=null && (player.getHeldItemMainhand().getItem() instanceof launcherItem || player.getHeldItemMainhand().getItem() instanceof grappleBow)) || (player.getHeldItemOffhand()!=null && (player.getHeldItemOffhand().getItem() instanceof launcherItem || player.getHeldItemOffhand().getItem() instanceof grappleBow))) {
 				enderlaunchtimer.put(player.getEntityId(), player.world.getTotalWorldTime());
 				
@@ -262,7 +263,7 @@ public class ClientProxyClass extends CommonProxyClass {
 					player.onGround = false;
 					grapplemod.createControl(grapplemod.AIRID, -1, player.getEntityId(), player.world, new vec(0,0,0), null, null);
 				}
-				facing.mult_ip(GrappleConfig.ender_staff_strength);
+				facing.mult_ip(GrappleConfig.getconf().ender_staff_strength);
 				grapplemod.receiveEnderLaunch(player.getEntityId(), facing.x, facing.y, facing.z);
 			}
 		}
@@ -365,6 +366,12 @@ public class ClientProxyClass extends CommonProxyClass {
 	public void openModifierScreen(TileEntityGrappleModifier tileent) {
 		Minecraft.getMinecraft().displayGuiScreen(new GuiModifier(tileent));
 
+	}
+	
+	@SubscribeEvent
+	public void onPlayerLoggedOutEvent(ClientDisconnectionFromServerEvent e) {
+		System.out.println("deleting server options");
+		GrappleConfig.setserveroptions(null);
 	}
 
 }

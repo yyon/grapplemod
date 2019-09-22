@@ -83,7 +83,7 @@ public class LongFallBoots extends ItemArmor {
 	public void addInformation(ItemStack stack, World world, List<String> list, ITooltipFlag par4)
 	{
 		if (!stack.isItemEnchanted()) {
-			if (GrappleConfig.longfallbootsrecipe) {
+			if (GrappleConfig.getconf().longfallbootsrecipe) {
 				list.add("Right click a Grappling Hook Modifier block with Feather Falling IV Diamond Boots to obtain");
 			}
 		}
