@@ -94,7 +94,7 @@ public class grapplemod {
 
     public static final String MODID = "grapplemod";
     
-    public static final String VERSION = "1.12.2-v11.1";
+    public static final String VERSION = "1.12.2-v12";
 
     public static Item grapplebowitem;
     public static Item launcheritem;

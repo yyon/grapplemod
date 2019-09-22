@@ -3,6 +3,7 @@ package com.yyon.grapplinghook.network;
 import java.lang.reflect.Field;
 import java.lang.reflect.Type;
 import java.nio.charset.Charset;
+import java.util.Arrays;
 import java.util.Comparator;
 
 import com.yyon.grapplinghook.GrappleConfig;
@@ -13,7 +14,6 @@ import net.minecraft.util.IThreadListener;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
-import scala.actors.threadpool.Arrays;
 
 /*
  * This file is part of GrappleMod.
