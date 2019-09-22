@@ -30,6 +30,7 @@ import com.yyon.grapplinghook.network.GrappleAttachPosMessage;
 import com.yyon.grapplinghook.network.GrappleClickMessage;
 import com.yyon.grapplinghook.network.GrappleEndMessage;
 import com.yyon.grapplinghook.network.GrappleModifierMessage;
+import com.yyon.grapplinghook.network.LoggedInMessage;
 import com.yyon.grapplinghook.network.PlayerMovementMessage;
 import com.yyon.grapplinghook.network.SegmentMessage;
 
@@ -93,7 +94,7 @@ public class grapplemod {
 
     public static final String MODID = "grapplemod";
     
-    public static final String VERSION = "1.12.2-v11.1";
+    public static final String VERSION = "1.12.2-v12";
 
     public static Item grapplebowitem;
     public static Item launcheritem;
@@ -208,9 +209,9 @@ public class grapplemod {
 	}
 	
 	public static void updateGrapplingBlocks() {
-		String s = GrappleConfig.grapplingBlocks;
+		String s = GrappleConfig.getconf().grapplingBlocks;
 		if (s.equals("any") || s.equals("")) {
-			s = GrappleConfig.grapplingNonBlocks;
+			s = GrappleConfig.getconf().grapplingNonBlocks;
 			if (s.equals("none") || s.equals("")) {
 				anyblocks = true;
 			} else {
@@ -302,6 +303,7 @@ public class grapplemod {
 		network.registerMessage(GrappleAttachPosMessage.Handler.class, GrappleAttachPosMessage.class, id++, Side.CLIENT);
 		network.registerMessage(SegmentMessage.Handler.class, SegmentMessage.class, id++, Side.CLIENT);
 		network.registerMessage(GrappleModifierMessage.Handler.class, GrappleModifierMessage.class, id++, Side.SERVER);
+		network.registerMessage(LoggedInMessage.Handler.class, LoggedInMessage.class, id++, Side.CLIENT);
 		
 		blockGrappleModifier = (BlockGrappleModifier)(new BlockGrappleModifier().setUnlocalizedName("block_grapple_modifier"));
 		blockGrappleModifier.setHardness(10F);
