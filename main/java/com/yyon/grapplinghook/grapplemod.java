@@ -19,6 +19,7 @@ import com.yyon.grapplinghook.items.alternategrapple.DoubleMotorHook;
 import com.yyon.grapplinghook.items.alternategrapple.EnderHook;
 import com.yyon.grapplinghook.items.alternategrapple.MagnetHook;
 import com.yyon.grapplinghook.items.alternategrapple.MotorHook;
+import com.yyon.grapplinghook.items.alternategrapple.SmartHook;
 import com.yyon.grapplinghook.items.upgrades.BaseUpgradeItem;
 import com.yyon.grapplinghook.items.upgrades.DoubleUpgradeItem;
 import com.yyon.grapplinghook.items.upgrades.ForcefieldUpgradeItem;
@@ -102,6 +103,7 @@ public class grapplemod {
 
     public static Item grapplebowitem;
     public static Item motorhookitem;
+    public static Item smarthookitem;
     public static Item doublemotorhookitem;
     public static Item enderhookitem;
     public static Item magnethookitem;
@@ -260,7 +262,7 @@ public class grapplemod {
 	public void registerItems(RegistryEvent.Register<Item> event) {
 //		System.out.println("REGISTERING ITEMS");
 //		System.out.println(grapplebowitem);
-	    event.getRegistry().registerAll(grapplebowitem, motorhookitem, doublemotorhookitem, enderhookitem, magnethookitem, launcheritem, longfallboots, repelleritem, baseupgradeitem, doubleupgradeitem, forcefieldupgradeitem, magnetupgradeitem, motorupgradeitem, ropeupgradeitem, staffupgradeitem, swingupgradeitem, throwupgradeitem, limitsupgradeitem);
+	    event.getRegistry().registerAll(grapplebowitem, motorhookitem, smarthookitem, doublemotorhookitem, enderhookitem, magnethookitem, launcheritem, longfallboots, repelleritem, baseupgradeitem, doubleupgradeitem, forcefieldupgradeitem, magnetupgradeitem, motorupgradeitem, ropeupgradeitem, staffupgradeitem, swingupgradeitem, throwupgradeitem, limitsupgradeitem);
 
 	}
 	
@@ -271,6 +273,8 @@ public class grapplemod {
 		grapplebowitem.setRegistryName("grapplinghook");
 		motorhookitem = new MotorHook();
 		motorhookitem.setRegistryName("motorhook");
+		smarthookitem = new SmartHook();
+		smarthookitem.setRegistryName("smarthook");
 		doublemotorhookitem = new DoubleMotorHook();
 		doublemotorhookitem.setRegistryName("doublemotorhook");
 		enderhookitem = new EnderHook();

@@ -20,7 +20,7 @@ public class GrappleConfig {
 		public boolean default_motor = false;
 		public double default_motormaxspeed = 4;
 		public double default_motoracceleration = 0.2;
-		public boolean default_motorwhencrouching = true;
+		public boolean default_motorwhencrouching = false;
 		public boolean default_motorwhennotcrouching = true;
 		public boolean default_smartmotor = false;
 		public boolean default_motordampener = false;

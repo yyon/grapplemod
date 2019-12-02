@@ -139,12 +139,14 @@ public class ClientProxyClass extends CommonProxyClass {
 		
 		ModelLoader.setCustomMeshDefinition(grapplemod.grapplebowitem, itemmeshdefinition);
 		ModelLoader.setCustomMeshDefinition(grapplemod.motorhookitem, itemmeshdefinition);
+		ModelLoader.setCustomMeshDefinition(grapplemod.smarthookitem, itemmeshdefinition);
 		ModelLoader.setCustomMeshDefinition(grapplemod.doublemotorhookitem, itemmeshdefinition);
 		ModelLoader.setCustomMeshDefinition(grapplemod.enderhookitem, itemmeshdefinition);
 		ModelLoader.setCustomMeshDefinition(grapplemod.magnethookitem, itemmeshdefinition);
 		for (ResourceLocation loc : new ResourceLocation[] {multihookloc, multihookropeloc, smarthookloc, smarthookropeloc, hookshotloc, hookshotropeloc, enderhookloc, magnetbowloc, grapplinghookloc, ropeloc}) {
 			ModelBakery.registerItemVariants(grapplemod.grapplebowitem, loc);
 			ModelBakery.registerItemVariants(grapplemod.motorhookitem, loc);
+			ModelBakery.registerItemVariants(grapplemod.smarthookitem, loc);
 			ModelBakery.registerItemVariants(grapplemod.doublemotorhookitem, loc);
 			ModelBakery.registerItemVariants(grapplemod.enderhookitem, loc);
 			ModelBakery.registerItemVariants(grapplemod.magnethookitem, loc);

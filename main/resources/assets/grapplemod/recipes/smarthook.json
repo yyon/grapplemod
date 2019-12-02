@@ -1,0 +1,17 @@
+{
+	"type": "minecraft:crafting_shapeless",
+	"ingredients": [
+		{
+			"item": "grapplemod:grapplinghook"
+		}, 
+		{
+			"item": "grapplemod:motorupgradeitem"
+		},
+		{
+			"item": "minecraft:redstone"
+		}
+	],
+	"result": {
+		"item": "grapplemod:smarthook"
+	}
+}
