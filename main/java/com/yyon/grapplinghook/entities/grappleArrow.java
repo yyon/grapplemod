@@ -141,6 +141,14 @@ public class grappleArrow extends EntityThrowable implements IEntityAdditionalSp
 					
 					if (!this.customization.phaserope) {
 						this.segmenthandler.update(vec.positionvec(this), vec.positionvec(this.shootingEntity).add(new vec(0, this.shootingEntity.getEyeHeight(), 0)), this.r, true);
+						
+						if (this.customization.sticky) {
+							if (this.segmenthandler.segments.size() > 2) {
+								int bendnumber = this.segmenthandler.segments.size() - 2;
+								vec closest = this.segmenthandler.segments.get(bendnumber);
+								this.serverAttach(this.segmenthandler.getbendblock(bendnumber), closest, null);
+							}
+						}
 					} else {
 						this.segmenthandler.updatepos(vec.positionvec(this), vec.positionvec(this.shootingEntity).add(new vec(0, this.shootingEntity.getEyeHeight(), 0)), this.r);
 					}

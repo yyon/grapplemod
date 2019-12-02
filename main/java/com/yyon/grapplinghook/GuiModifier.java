@@ -126,6 +126,7 @@ public class GuiModifier extends GuiScreen {
 		if (category == grapplemod.upgradeCategories.ROPE) {
 			addSlider("maxlen");
 			addCheckbox("phaserope");
+			addCheckbox("sticky");
 			addCheckbox("climbkey");
 		} else if (category == grapplemod.upgradeCategories.THROW) {
 			addSlider("hookgravity");
