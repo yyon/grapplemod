@@ -4,12 +4,13 @@ import io.netty.buffer.ByteBuf;
 import net.minecraft.nbt.NBTTagCompound;
 
 public class GrappleCustomization {
-	public static final String[] booleanoptions = new String[] {"phaserope", "motor", "motorwhencrouching", "motorwhennotcrouching", "smartmotor", "enderstaff", "repel", "attract", "doublehook", "smartdoublemotor", "motordampener", "reelin", "pullbackwards", "oneropepull"};
+	public static final String[] booleanoptions = new String[] {"phaserope", "motor", "motorwhencrouching", "motorwhennotcrouching", "smartmotor", "enderstaff", "repel", "attract", "doublehook", "smartdoublemotor", "motordampener", "reelin", "pullbackwards", "oneropepull", "climbkey"};
 	public static final String[] doubleoptions = new String[] {"maxlen", "hookgravity", "throwspeed", "motormaxspeed", "motoracceleration", "playermovementmult", "repelforce", "attractradius", "angle", "sneakingangle", "verticalthrowangle", "sneakingverticalthrowangle"};
 	
 	// rope
 	public double maxlen = GrappleConfig.getconf().default_maxlen;
 	public boolean phaserope = GrappleConfig.getconf().default_phaserope;
+	public boolean climbkey = GrappleConfig.getconf().default_climbkey;
 
 	// hook thrower
 	public double hookgravity = GrappleConfig.getconf().default_hookgravity;
@@ -66,10 +67,14 @@ public class GrappleCustomization {
 	
 	public void loadNBT(NBTTagCompound compound) {
 		for (String option : booleanoptions) {
-			this.setBoolean(option, compound.getBoolean(option));
+			if (compound.hasKey(option)) {
+				this.setBoolean(option, compound.getBoolean(option));
+			}
 		}
 		for (String option : doubleoptions) {
-			this.setDouble(option, compound.getDouble(option));
+			if (compound.hasKey(option)) {
+				this.setDouble(option, compound.getDouble(option));
+			}
 		}
 	}
 	
@@ -88,6 +93,7 @@ public class GrappleCustomization {
 		else if (option.equals("reelin")) {this.reelin = bool;}
 		else if (option.equals("pullbackwards")) {this.pullbackwards = bool;}
 		else if (option.equals("oneropepull")) {this.oneropepull = bool;}
+		else if (option.equals("climbkey")) {this.climbkey = bool;}
 	}
 	
 	public boolean getBoolean(String option) {
@@ -105,6 +111,7 @@ public class GrappleCustomization {
 		else if (option.equals("reelin")) {return this.reelin;}
 		else if (option.equals("pullbackwards")) {return this.pullbackwards;}
 		else if (option.equals("oneropepull")) {return this.oneropepull;}
+		else if (option.equals("climbkey")) {return this.climbkey;}
 		System.out.println("Option doesn't exist: " + option);
 		return false;
 	}
@@ -186,6 +193,7 @@ public class GrappleCustomization {
 		else if (option.equals("sneakingangle")) {return "Angle when crouching";}
 		else if (option.equals("oneropepull")) {return "Allow pulling with one rope";}
 		else if (option.equals("sneakingverticalthrowangle")) {return "Crouching Vertical Angle ";}
+		else if (option.equals("climbkey")) {return "Dedicated Climbing Key";}
 		return "unknown option";
 	}
 	
@@ -216,6 +224,7 @@ public class GrappleCustomization {
 		else if (option.equals("sneakingangle")) {return "Angle that each hook is thrown from center when crouching (don't have 'crouch to reel in' enabled if you want to use this)";}
 		else if (option.equals("oneropepull")) {return "When motor is enabled and only one hook is attached, activate the motor (if disabled, wait until both hooks are attached before pulling)";}
 		else if (option.equals("sneakingverticalthrowangle")) {return "Throws the grappling hook above the crosshairs by this angle when crouching";}
+		else if (option.equals("climbkey")) {return "Ignore climb up/climb down keys unless the \"climb\" key is held";}
 		return "unknown option";
 	}
 	

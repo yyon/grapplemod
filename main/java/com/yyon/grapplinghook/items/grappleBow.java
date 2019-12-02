@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.lwjgl.input.Keyboard;
 
+import com.yyon.grapplinghook.ClientProxyClass;
 import com.yyon.grapplinghook.CommonProxyClass;
 import com.yyon.grapplinghook.GrappleCustomization;
 import com.yyon.grapplinghook.grapplemod;
@@ -303,13 +304,13 @@ public class grappleBow extends Item implements clickitem {
 					grapplemod.proxy.getkeyname(CommonProxyClass.keys.keyBindBack) + ", " +
 					grapplemod.proxy.getkeyname(CommonProxyClass.keys.keyBindRight) +
 					" - Swing");
-			list.add(grapplemod.proxy.getkeyname(CommonProxyClass.keys.keyBindJump) + " - Release and jump (while in midair)");
-			list.add(grapplemod.proxy.getkeyname(CommonProxyClass.keys.keyBindSneak) + " - Stop swinging");
-			list.add(grapplemod.proxy.getkeyname(CommonProxyClass.keys.keyBindSneak) + " + " +
-					grapplemod.proxy.getkeyname(CommonProxyClass.keys.keyBindForward) + 
+			list.add(ClientProxyClass.key_jumpanddetach.getDisplayName() + " - Release and jump (while in midair)");
+			list.add(ClientProxyClass.key_slow.getDisplayName() + " - Stop swinging");
+			list.add((custom.climbkey ? ClientProxyClass.key_climb.getDisplayName() + " + " : "") +
+					ClientProxyClass.key_climbup.getDisplayName() + 
 					" - Climb up");
-			list.add(grapplemod.proxy.getkeyname(CommonProxyClass.keys.keyBindSneak) + " + " +
-					grapplemod.proxy.getkeyname(CommonProxyClass.keys.keyBindBack) + 
+			list.add((custom.climbkey ? ClientProxyClass.key_climb.getDisplayName() + " + " : "") +
+					ClientProxyClass.key_climbdown.getDisplayName() + 
 					" - Climb down");
 		} else {
 			if (Keyboard.isKeyDown(Keyboard.KEY_LCONTROL)) {

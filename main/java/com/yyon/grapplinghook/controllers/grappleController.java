@@ -265,30 +265,38 @@ public class grappleController {
 									doJump = true;
 									jumpSpeed = this.getJumpPower(player, spherevec, arrow);
 								}
-							} else if (grapplemod.proxy.isSneaking(entity) && !motor) {
+							}
+							if (ClientProxyClass.key_slow.isKeyDown()) {
 								// climbing
+	//							motion = multvec(motion, 0.9);
+								vec motiontorwards = spherevec.changelen(-0.1);
+								motiontorwards = new vec(motiontorwards.x, 0, motiontorwards.z);
+								if (motion.dot(motiontorwards) < 0) {
+									motion.add_ip(motiontorwards);
+								}
+
+								vec newmotion = dampenmotion(motion, motiontorwards);
+								motion = new vec(newmotion.x, motion.y, newmotion.z);
+	//							motion = multvec(motion, 0.98);
+
+							}
+							if ((ClientProxyClass.key_climb.isKeyDown() || !this.custom.climbkey) && !motor) {
 								isClimbing = true;
 								if (anchor.y > playerpos.y) {
-		//							motion = multvec(motion, 0.9);
-									vec motiontorwards = spherevec.changelen(-0.1);
-									motiontorwards = new vec(motiontorwards.x, 0, motiontorwards.z);
-									if (motion.dot(motiontorwards) < 0) {
-										motion.add_ip(motiontorwards);
-									}
-									
 									// when shift is pressed, stop swinging
-									vec newmotion = dampenmotion(motion, motiontorwards);
-									motion = new vec(newmotion.x, motion.y, newmotion.z);
-		//							motion = multvec(motion, 0.98);
 									
 									// climb up/down rope
-									if (this.playerforward != 0) {
+									float playerforward = 0;
+									System.out.println(this.playerforward);
+									if (ClientProxyClass.key_climbup.isKeyDown()) { playerforward = 0.3f; }
+									else if (ClientProxyClass.key_climbdown.isKeyDown()) { playerforward = -0.3f; }
+									if (playerforward != 0) {
 											if (dist < maxlen || this.playerforward > 0 || maxlen == 0) {
 //												double motionup = this.playerforward;
-												additionalmotion = new vec(0, this.playerforward, 0);
+												additionalmotion = new vec(0, playerforward, 0);
 //												this.r = dist;
 												arrow.r = dist + distToAnchor;
-												arrow.r -= this.playerforward*0.3;
+												arrow.r -= playerforward*0.3;
 												if (arrow.r < distToAnchor) {
 													arrow.r = dist + distToAnchor;
 												}

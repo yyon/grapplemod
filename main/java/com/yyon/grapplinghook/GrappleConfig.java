@@ -8,6 +8,7 @@ public class GrappleConfig {
 		// rope
 		public double default_maxlen = 30;
 		public boolean default_phaserope = false;
+		public boolean default_climbkey = true;
 		// hook thrower
 		public double default_hookgravity = 1F;
 		public double default_throwspeed = 2F;
@@ -126,7 +127,7 @@ public class GrappleConfig {
 		public boolean longfallbootsrecipe = true;
 
 		// ender staff
-		public double ender_staff_strength = 2;
+		public double ender_staff_strength = 1.5;
 		public int ender_staff_recharge = 100;
 	}
 	

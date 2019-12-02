@@ -168,6 +168,11 @@ public class ClientProxyClass extends CommonProxyClass {
 	
 	public static KeyBinding key_motoronoff = createkeybinding("key.motoronoff.desc", Keyboard.KEY_LSHIFT, "key.grapplemod.category");
 	public static KeyBinding key_jumpanddetach = createkeybinding("key.jumpanddetach.desc", Keyboard.KEY_SPACE, "key.grapplemod.category");
+	public static KeyBinding key_slow = createkeybinding("key.slow.desc", Keyboard.KEY_LSHIFT, "key.grapplemod.category");
+	public static KeyBinding key_climb = createkeybinding("key.climb.desc", Keyboard.KEY_LSHIFT, "key.grapplemod.category");
+	public static KeyBinding key_climbup = createkeybinding("key.climbup.desc", Keyboard.KEY_W, "key.grapplemod.category");
+	public static KeyBinding key_climbdown = createkeybinding("key.climbdown.desc", Keyboard.KEY_S, "key.grapplemod.category");
+	public static KeyBinding key_enderlaunch = createkeybinding("key.enderlaunch.desc", -100, "key.grapplemod.category");
 	
 	
 
@@ -220,7 +225,7 @@ public class ClientProxyClass extends CommonProxyClass {
 					System.out.println("ConcurrentModificationException caught");
 				}
 				
-				leftclick = (GameSettings.isKeyDown(Minecraft.getMinecraft().gameSettings.keyBindAttack) && Minecraft.getMinecraft().currentScreen == null);
+				leftclick = (key_enderlaunch.isKeyDown() && Minecraft.getMinecraft().currentScreen == null);
 				if (prevleftclick != leftclick) {
 					if (player != null) {
 						ItemStack stack = player.getHeldItemMainhand();
