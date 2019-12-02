@@ -7,6 +7,7 @@ import javax.annotation.Nullable;
 import com.yyon.grapplinghook.GrappleConfig;
 import com.yyon.grapplinghook.GrappleCustomization;
 import com.yyon.grapplinghook.grapplemod;
+import com.yyon.grapplinghook.items.grappleBow;
 import com.yyon.grapplinghook.items.upgrades.BaseUpgradeItem;
 
 import net.minecraft.block.Block;
@@ -135,7 +136,7 @@ public class BlockGrappleModifier extends Block {
 					playerIn.sendMessage(new TextComponentString("Applied upgrade: " + category.description));
 				}
 			}
-		} else if (helditem == grapplemod.grapplebowitem) {
+		} else if (helditem instanceof grappleBow) {
 			if (!worldIn.isRemote) {
 				TileEntity ent = worldIn.getTileEntity(pos);
 				TileEntityGrappleModifier tileent = (TileEntityGrappleModifier) ent;

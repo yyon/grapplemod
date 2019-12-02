@@ -1,0 +1,17 @@
+{
+	"type": "minecraft:crafting_shapeless",
+	"ingredients": [
+		{
+			"item": "grapplemod:grapplinghook"
+		}, 
+		{
+			"item": "grapplemod:forcefieldupgradeitem"
+		}, 
+		{
+			"item": "grapplemod:magnetupgradeitem"
+		}
+	],
+	"result": {
+		"item": "grapplemod:magnethook"
+	}
+}

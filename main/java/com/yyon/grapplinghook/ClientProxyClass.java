@@ -110,7 +110,7 @@ public class ClientProxyClass extends CommonProxyClass {
 		registerItemModel(grapplemod.throwupgradeitem);
 		registerItemModel(grapplemod.limitsupgradeitem);
 		
-		ModelLoader.setCustomMeshDefinition(grapplemod.grapplebowitem, new ItemMeshDefinition() {
+		ItemMeshDefinition itemmeshdefinition = new ItemMeshDefinition() {
 			@Override
 			public ModelResourceLocation getModelLocation(ItemStack stack) {
 				boolean active = !ClientProxyClass.isactive(stack);
@@ -135,9 +135,19 @@ public class ClientProxyClass extends CommonProxyClass {
 
 		    	return active ? grapplinghookloc : ropeloc;
 			}
-		});
+		};
+		
+		ModelLoader.setCustomMeshDefinition(grapplemod.grapplebowitem, itemmeshdefinition);
+		ModelLoader.setCustomMeshDefinition(grapplemod.motorhookitem, itemmeshdefinition);
+		ModelLoader.setCustomMeshDefinition(grapplemod.doublemotorhookitem, itemmeshdefinition);
+		ModelLoader.setCustomMeshDefinition(grapplemod.enderhookitem, itemmeshdefinition);
+		ModelLoader.setCustomMeshDefinition(grapplemod.magnethookitem, itemmeshdefinition);
 		for (ResourceLocation loc : new ResourceLocation[] {multihookloc, multihookropeloc, smarthookloc, smarthookropeloc, hookshotloc, hookshotropeloc, enderhookloc, magnetbowloc, grapplinghookloc, ropeloc}) {
 			ModelBakery.registerItemVariants(grapplemod.grapplebowitem, loc);
+			ModelBakery.registerItemVariants(grapplemod.motorhookitem, loc);
+			ModelBakery.registerItemVariants(grapplemod.doublemotorhookitem, loc);
+			ModelBakery.registerItemVariants(grapplemod.enderhookitem, loc);
+			ModelBakery.registerItemVariants(grapplemod.magnethookitem, loc);
 		}
 	}
 
@@ -383,7 +393,7 @@ public class ClientProxyClass extends CommonProxyClass {
 			if (grapplemod.controllers.containsKey(entityid)) {
 				Item item = stack.getItem();
 				grappleController controller = grapplemod.controllers.get(entityid);
-				if (item.getClass() == grappleBow.class && controller.controllerid == grapplemod.GRAPPLEID) {
+				if (item instanceof grappleBow && controller.controllerid == grapplemod.GRAPPLEID) {
 					return true;
 				} else if (item.getClass() == repeller.class && controller.controllerid == grapplemod.REPELID) {
 					return true;

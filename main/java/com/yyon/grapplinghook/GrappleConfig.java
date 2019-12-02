@@ -41,6 +41,9 @@ public class GrappleConfig {
 		public double default_sneakingangle = 10;
 		public boolean default_oneropepull = false;
 
+		// upgraded values for alternativegrapple items
+		public double upgraded_throwspeed = 3.5;
+		public double upgraded_maxlen = 40;
 
 		// rope
 		public double max_maxlen = 60;

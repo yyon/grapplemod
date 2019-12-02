@@ -23,9 +23,11 @@ import net.minecraft.init.SoundEvents;
 import net.minecraft.item.EnumAction;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.EnumActionResult;
 import net.minecraft.util.EnumHand;
+import net.minecraft.util.NonNullList;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
@@ -281,11 +283,23 @@ public class grappleBow extends Item implements clickitem {
     }
     
     public GrappleCustomization getCustomization(ItemStack itemstack) {
-    	GrappleCustomization custom = new GrappleCustomization();
     	if (itemstack.hasTagCompound()) {
+        	GrappleCustomization custom = new GrappleCustomization();
     		custom.loadNBT(itemstack.getTagCompound());
+        	return custom;
+    	} else {
+    		GrappleCustomization custom = this.getDefaultCustomization();
+
+			NBTTagCompound nbt = custom.writeNBT();
+			
+			itemstack.setTagCompound(nbt);
+    		
+    		return custom;
     	}
-    	return custom;
+    }
+    
+    public GrappleCustomization getDefaultCustomization() {
+    	return new GrappleCustomization();
     }
     
 	@Override
@@ -359,4 +373,23 @@ public class grappleBow extends Item implements clickitem {
 
 	}
 	
+	@Override
+    @SideOnly(Side.CLIENT)
+    public ItemStack getDefaultInstance()
+    {
+        ItemStack stack = new ItemStack(this);
+        this.getCustomization(stack);
+        return stack;
+    }
+	
+	@Override
+    public void getSubItems(CreativeTabs tab, NonNullList<ItemStack> items)
+    {
+        if (this.isInCreativeTab(tab))
+        {
+        	ItemStack stack = new ItemStack(this);
+        	this.getCustomization(stack);
+            items.add(stack);
+        }
+    }
 }

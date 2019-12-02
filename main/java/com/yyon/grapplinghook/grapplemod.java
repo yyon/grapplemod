@@ -15,6 +15,10 @@ import com.yyon.grapplinghook.items.LongFallBoots;
 import com.yyon.grapplinghook.items.grappleBow;
 import com.yyon.grapplinghook.items.launcherItem;
 import com.yyon.grapplinghook.items.repeller;
+import com.yyon.grapplinghook.items.alternategrapple.DoubleMotorHook;
+import com.yyon.grapplinghook.items.alternategrapple.EnderHook;
+import com.yyon.grapplinghook.items.alternategrapple.MagnetHook;
+import com.yyon.grapplinghook.items.alternategrapple.MotorHook;
 import com.yyon.grapplinghook.items.upgrades.BaseUpgradeItem;
 import com.yyon.grapplinghook.items.upgrades.DoubleUpgradeItem;
 import com.yyon.grapplinghook.items.upgrades.ForcefieldUpgradeItem;
@@ -97,6 +101,10 @@ public class grapplemod {
     public static final String VERSION = "1.12.2-v12";
 
     public static Item grapplebowitem;
+    public static Item motorhookitem;
+    public static Item doublemotorhookitem;
+    public static Item enderhookitem;
+    public static Item magnethookitem;
     public static Item launcheritem;
     public static Item longfallboots;
     public static Item repelleritem;
@@ -252,7 +260,7 @@ public class grapplemod {
 	public void registerItems(RegistryEvent.Register<Item> event) {
 //		System.out.println("REGISTERING ITEMS");
 //		System.out.println(grapplebowitem);
-	    event.getRegistry().registerAll(grapplebowitem, launcheritem, longfallboots, repelleritem, baseupgradeitem, doubleupgradeitem, forcefieldupgradeitem, magnetupgradeitem, motorupgradeitem, ropeupgradeitem, staffupgradeitem, swingupgradeitem, throwupgradeitem, limitsupgradeitem);
+	    event.getRegistry().registerAll(grapplebowitem, motorhookitem, doublemotorhookitem, enderhookitem, magnethookitem, launcheritem, longfallboots, repelleritem, baseupgradeitem, doubleupgradeitem, forcefieldupgradeitem, magnetupgradeitem, motorupgradeitem, ropeupgradeitem, staffupgradeitem, swingupgradeitem, throwupgradeitem, limitsupgradeitem);
 
 	}
 	
@@ -261,6 +269,14 @@ public class grapplemod {
 //		System.out.println("PREINIT!!!");
 		grapplebowitem = new grappleBow();
 		grapplebowitem.setRegistryName("grapplinghook");
+		motorhookitem = new MotorHook();
+		motorhookitem.setRegistryName("motorhook");
+		doublemotorhookitem = new DoubleMotorHook();
+		doublemotorhookitem.setRegistryName("doublemotorhook");
+		enderhookitem = new EnderHook();
+		enderhookitem.setRegistryName("enderhook");
+		magnethookitem = new MagnetHook();
+		magnethookitem.setRegistryName("magnethook");
 		launcheritem = new launcherItem();
 		launcheritem.setRegistryName("launcheritem");
 		longfallboots = new LongFallBoots(ItemArmor.ArmorMaterial.DIAMOND, 3);
@@ -271,22 +287,31 @@ public class grapplemod {
 	    baseupgradeitem.setRegistryName("baseupgradeitem");
 	    doubleupgradeitem = new DoubleUpgradeItem();
 	    doubleupgradeitem.setRegistryName("doubleupgradeitem");
+	    doubleupgradeitem.setContainerItem(doubleupgradeitem);
 	    forcefieldupgradeitem = new ForcefieldUpgradeItem();
 	    forcefieldupgradeitem.setRegistryName("forcefieldupgradeitem");
+	    forcefieldupgradeitem.setContainerItem(forcefieldupgradeitem);
 	    magnetupgradeitem = new MagnetUpgradeItem();
 	    magnetupgradeitem.setRegistryName("magnetupgradeitem");
+	    magnetupgradeitem.setContainerItem(magnetupgradeitem);
 	    motorupgradeitem = new MotorUpgradeItem();
 	    motorupgradeitem.setRegistryName("motorupgradeitem");
+	    motorupgradeitem.setContainerItem(motorupgradeitem);
 	    ropeupgradeitem = new RopeUpgradeItem();
 	    ropeupgradeitem.setRegistryName("ropeupgradeitem");
+	    ropeupgradeitem.setContainerItem(ropeupgradeitem);
 	    staffupgradeitem = new StaffUpgradeItem();
 	    staffupgradeitem.setRegistryName("staffupgradeitem");
+	    staffupgradeitem.setContainerItem(staffupgradeitem);
 	    swingupgradeitem = new SwingUpgradeItem();
 	    swingupgradeitem.setRegistryName("swingupgradeitem");
+	    swingupgradeitem.setContainerItem(swingupgradeitem);
 	    throwupgradeitem = new ThrowUpgradeItem();
 	    throwupgradeitem.setRegistryName("throwupgradeitem");
+	    throwupgradeitem.setContainerItem(throwupgradeitem);
 	    limitsupgradeitem = new LimitsUpgradeItem();
 	    limitsupgradeitem.setRegistryName("limitsupgradeitem");
+	    limitsupgradeitem.setContainerItem(limitsupgradeitem);
 	    
 //		System.out.println(grapplebowitem);
 		
