@@ -169,8 +169,8 @@ public class GrappleCustomization {
 		else if (option.equals("motor")) {return "Motor Enabled";}
 		else if (option.equals("motormaxspeed")) {return "Motor Maximum Speed";}
 		else if (option.equals("motoracceleration")) {return "Motor Acceleration";}
-		else if (option.equals("motorwhencrouching")) {return "Motor when crouching";}
-		else if (option.equals("motorwhennotcrouching")) {return "Motor when not crouching";}
+		else if (option.equals("motorwhencrouching")) {return "Motor when On/Off button held";}
+		else if (option.equals("motorwhennotcrouching")) {return "Motor when On/Off button not held";}
 		else if (option.equals("smartmotor")) {return "Smart Motor";}
 		else if (option.equals("motordampener")) {return "Sideways Motion Dampener";}
 		else if (option.equals("pullbackwards")) {return "Pull Backwards";}
@@ -199,8 +199,8 @@ public class GrappleCustomization {
 		else if (option.equals("motor")) {return "Pulls player towards hook";}
 		else if (option.equals("motormaxspeed")) {return "Maximum speed of motor";}
 		else if (option.equals("motoracceleration")) {return "Acceleration of motor";}
-		else if (option.equals("motorwhencrouching")) {return "Motor is active when crouching";}
-		else if (option.equals("motorwhennotcrouching")) {return "Motor is active when crouching";}
+		else if (option.equals("motorwhencrouching")) {return "Motor is active when On/Off button (default: shift) is being held";}
+		else if (option.equals("motorwhennotcrouching")) {return "Motor is active when On/Off button (default: shift) is not being held";}
 		else if (option.equals("smartmotor")) {return "Adjusts motor speed so that player moves towards crosshairs (up/down)";}
 		else if (option.equals("motordampener")) {return "Reduces motion perpendicular to the rope so that the rope pulls straighter";}
 		else if (option.equals("pullbackwards")) {return "Motor pulls even if you are facing the other way";}

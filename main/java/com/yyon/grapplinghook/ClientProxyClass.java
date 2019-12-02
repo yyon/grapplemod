@@ -1,8 +1,11 @@
 package com.yyon.grapplinghook;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.ConcurrentModificationException;
 import java.util.HashMap;
+
+import org.lwjgl.input.Keyboard;
 
 import com.yyon.grapplinghook.blocks.TileEntityGrappleModifier;
 import com.yyon.grapplinghook.controllers.grappleController;
@@ -155,7 +158,18 @@ public class ClientProxyClass extends CommonProxyClass {
 	}
 	
 	
-	public static KeyBinding[] keyBindings;
+	public static ArrayList<KeyBinding> keyBindings = new ArrayList<KeyBinding>();
+	
+	public static KeyBinding createkeybinding(String desc, int key, String category) {
+		KeyBinding k = new KeyBinding(desc, key, category);
+		keyBindings.add(k);
+		return k;
+	}
+	
+	public static KeyBinding key_motoronoff = createkeybinding("key.motoronoff.desc", Keyboard.KEY_LSHIFT, "key.grapplemod.category");
+	public static KeyBinding key_jumpanddetach = createkeybinding("key.jumpanddetach.desc", Keyboard.KEY_SPACE, "key.grapplemod.category");
+	
+	
 
 	@Override
 	public void init(FMLInitializationEvent event, grapplemod grappleModInst) {
@@ -166,17 +180,11 @@ public class ClientProxyClass extends CommonProxyClass {
 //		Minecraft.getMinecraft().getRenderItem().getItemModelMesher().register(grapplemod.longfallboots, 0, new ModelResourceLocation("grapplemod:longfallboots", "inventory"));
 //		Minecraft.getMinecraft().getRenderItem().getItemModelMesher().register(grapplemod.enderhookitem, 0, new ModelResourceLocation("grapplemod:enderhook", "inventory"));
 		
-		// custom keys: https://jabelarminecraft.blogspot.com/p/minecraft-forge-1721710-keybinding.html
-		// declare an array of key bindings
-		keyBindings = new KeyBinding[1]; 
-		
-		// instantiate the key bindings
-		keyBindings[0] = new KeyBinding("key.structure.desc", -100, "key.grapplemod.category");
 		  
 		// register all the key bindings
-		for (int i = 0; i < keyBindings.length; ++i) 
+		for (int i = 0; i < keyBindings.size(); ++i) 
 		{
-		    ClientRegistry.registerKeyBinding(keyBindings[i]);
+		    ClientRegistry.registerKeyBinding(keyBindings.get(i));
 		}
 	}
 	
@@ -396,9 +404,9 @@ public class ClientProxyClass extends CommonProxyClass {
 	@SubscribeEvent
 	public void clientTick(ClientTickEvent event) {
 		if (event.phase == TickEvent.Phase.END) {
-			if (keyBindings[0].isKeyDown()) {
-				System.out.println("Down");
-			}
+//			if (keyBindings[0].isKeyDown()) {
+//				System.out.println("Down");
+//			}
 		}
 	}
 

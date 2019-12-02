@@ -2,6 +2,7 @@ package com.yyon.grapplinghook.controllers;
 
 import java.util.HashSet;
 
+import com.yyon.grapplinghook.ClientProxyClass;
 import com.yyon.grapplinghook.GrappleCustomization;
 import com.yyon.grapplinghook.grapplemod;
 import com.yyon.grapplinghook.vec;
@@ -53,7 +54,7 @@ public class grappleController {
 	public double playerforward = 0;
 	public double playerstrafe = 0;
 	public boolean playerjump = false;
-	public boolean waitingonplayerjump = false;
+//	public boolean waitingonplayerjump = false;
 	public vec playermovement_unrotated = new vec(0,0,0);
 	public vec playermovement = new vec(0,0,0);
 	
@@ -66,6 +67,8 @@ public class grappleController {
 	public double playermovementmult = 0;
 	
 	public int controllerid;
+	
+//	public ClientProxyClass clientproxy = null;
 	
 //	public final double playermovementmult = 0.5;
 	
@@ -100,6 +103,10 @@ public class grappleController {
 		this.ongroundtimer = 0;
 		
 		grapplemod.registerController(this.entityId, this);
+		
+//		if (grapplemod.proxy instanceof ClientProxyClass) {
+//			this.clientproxy = (ClientProxyClass) grapplemod.proxy;
+//		}
 		
 		if (arrowId != -1) {
 			Entity arrowentity = world.getEntityByID(arrowId);
@@ -143,23 +150,23 @@ public class grappleController {
 			float forward, boolean jump) {
 		playerforward = forward;
 		playerstrafe = strafe;
-		if (!jump) {
-			playerjump = false;
-		} else if (jump && !playerjump) {
-			playerjump = true;
-			waitingonplayerjump = true;
-		}
+//		if (!jump) {
+//			playerjump = false;
+//		} else if (jump && !playerjump) {
+//			playerjump = true;
+//			waitingonplayerjump = true;
+//		}
 		playermovement_unrotated = new vec(strafe, 0, forward);
 		playermovement = playermovement_unrotated.rotate_yaw((float) (this.entity.rotationYaw * (Math.PI / 180.0)));
 	}
 	
-	public boolean isjumping() {
-		if (playerjump && waitingonplayerjump) {
-			waitingonplayerjump = false;
-			return true;
-		}
-		return false;
-	}
+//	public boolean isjumping() {
+//		if (playerjump && waitingonplayerjump) {
+//			waitingonplayerjump = false;
+//			return true;
+//		}
+//		return false;
+//	}
 		
 	public void updatePlayerPos() {
 		Entity entity = this.entity;
@@ -182,9 +189,9 @@ public class grappleController {
 					vec gravity = new vec(0, -0.05, 0);
 
 					
-					if (!(this.ongroundtimer > 0)) {
+//					if (!(this.ongroundtimer > 0)) {
 						motion.add_ip(gravity);
-					}
+//					}
 					
 					boolean doJump = false;
 					double jumpSpeed = 0;
@@ -193,9 +200,9 @@ public class grappleController {
 					// is motor active? (check motorwhencrouching / motorwhennotcrouching)
 					boolean motor = false;
 					if (this.custom.motor) {
-						if (grapplemod.proxy.isSneaking(entity) && this.custom.motorwhencrouching) {
+						if (ClientProxyClass.key_motoronoff.isKeyDown() && this.custom.motorwhencrouching) {
 							motor = true;
-						} else if (!grapplemod.proxy.isSneaking(entity) && this.custom.motorwhennotcrouching) {
+						} else if (!ClientProxyClass.key_motoronoff.isKeyDown() && this.custom.motorwhennotcrouching) {
 							motor = true;
 						}
 					}
@@ -247,7 +254,10 @@ public class grappleController {
 						// handle keyboard input (jumping and climbing)
 						if (entity instanceof EntityPlayer) {
 							EntityPlayer player = (EntityPlayer) entity;
-							if (this.isjumping()) {
+							boolean isjumping = ClientProxyClass.key_jumpanddetach.isKeyDown();
+							isjumping = isjumping && !playerjump; // only jump once when key is first pressed
+							playerjump = ClientProxyClass.key_jumpanddetach.isKeyDown();
+							if (isjumping) {
 								// jumping
 								if (ongroundtimer > 0) { // on ground: jump normally
 									
