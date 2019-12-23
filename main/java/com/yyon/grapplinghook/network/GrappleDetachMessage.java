@@ -26,35 +26,31 @@ import com.yyon.grapplinghook.grapplemod;
     along with GrappleMod.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-public class GrappleClickMessage implements IMessage {
+public class GrappleDetachMessage implements IMessage {
    
 	public int id;
-	public boolean leftclick;
 
-    public GrappleClickMessage() { }
+    public GrappleDetachMessage() { }
 
-    public GrappleClickMessage(int id, boolean leftclick) {
+    public GrappleDetachMessage(int id) {
     	this.id = id;
-    	this.leftclick = leftclick;
     }
 
     @Override
     public void fromBytes(ByteBuf buf) {
     	this.id = buf.readInt();
-    	this.leftclick = buf.readBoolean();
     }
 
     @Override
     public void toBytes(ByteBuf buf) {
     	buf.writeInt(this.id);
-    	buf.writeBoolean(this.leftclick);
     }
 
-    public static class Handler implements IMessageHandler<GrappleClickMessage, IMessage> {
+    public static class Handler implements IMessageHandler<GrappleDetachMessage, IMessage> {
     	public class runner implements Runnable {
-    		GrappleClickMessage message;
+    		GrappleDetachMessage message;
     		MessageContext ctx;
-    		public runner(GrappleClickMessage message, MessageContext ctx) {
+    		public runner(GrappleDetachMessage message, MessageContext ctx) {
     			super();
     			this.message = message;
     			this.ctx = ctx;
@@ -62,13 +58,13 @@ public class GrappleClickMessage implements IMessage {
     		
             @Override
             public void run() {
-            	grapplemod.receiveGrappleClick(message.id, message.leftclick);
+            	grapplemod.receiveGrappleDetach(message.id);
             }
     	}
     	
        
         @Override
-        public IMessage onMessage(GrappleClickMessage message, MessageContext ctx) {
+        public IMessage onMessage(GrappleDetachMessage message, MessageContext ctx) {
 
         	IThreadListener mainThread = Minecraft.getMinecraft(); // or Minecraft.getMinecraft() on the client
             mainThread.addScheduledTask(new runner(message, ctx));

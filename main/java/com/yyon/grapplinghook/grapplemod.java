@@ -11,6 +11,8 @@ import com.yyon.grapplinghook.controllers.airfrictionController;
 import com.yyon.grapplinghook.controllers.grappleController;
 import com.yyon.grapplinghook.controllers.repelController;
 import com.yyon.grapplinghook.entities.grappleArrow;
+import com.yyon.grapplinghook.items.KeypressItem;
+import com.yyon.grapplinghook.items.KeypressItem.Keys;
 import com.yyon.grapplinghook.items.LongFallBoots;
 import com.yyon.grapplinghook.items.grappleBow;
 import com.yyon.grapplinghook.items.launcherItem;
@@ -30,17 +32,20 @@ import com.yyon.grapplinghook.items.upgrades.RopeUpgradeItem;
 import com.yyon.grapplinghook.items.upgrades.StaffUpgradeItem;
 import com.yyon.grapplinghook.items.upgrades.SwingUpgradeItem;
 import com.yyon.grapplinghook.items.upgrades.ThrowUpgradeItem;
+import com.yyon.grapplinghook.network.DetachSingleHookMessage;
 import com.yyon.grapplinghook.network.GrappleAttachMessage;
 import com.yyon.grapplinghook.network.GrappleAttachPosMessage;
-import com.yyon.grapplinghook.network.GrappleClickMessage;
+import com.yyon.grapplinghook.network.GrappleDetachMessage;
 import com.yyon.grapplinghook.network.GrappleEndMessage;
 import com.yyon.grapplinghook.network.GrappleModifierMessage;
+import com.yyon.grapplinghook.network.KeypressMessage;
 import com.yyon.grapplinghook.network.LoggedInMessage;
 import com.yyon.grapplinghook.network.PlayerMovementMessage;
 import com.yyon.grapplinghook.network.SegmentMessage;
 
 import net.minecraft.block.Block;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemArmor;
@@ -328,11 +333,13 @@ public class grapplemod {
 		network.registerMessage(PlayerMovementMessage.Handler.class, PlayerMovementMessage.class, id++, Side.SERVER);
 		network.registerMessage(GrappleAttachMessage.Handler.class, GrappleAttachMessage.class, id++, Side.CLIENT);
 		network.registerMessage(GrappleEndMessage.Handler.class, GrappleEndMessage.class, id++, Side.SERVER);
-		network.registerMessage(GrappleClickMessage.Handler.class, GrappleClickMessage.class, id++, Side.CLIENT);
+		network.registerMessage(GrappleDetachMessage.Handler.class, GrappleDetachMessage.class, id++, Side.CLIENT);
+		network.registerMessage(DetachSingleHookMessage.Handler.class, DetachSingleHookMessage.class, id++, Side.CLIENT);
 		network.registerMessage(GrappleAttachPosMessage.Handler.class, GrappleAttachPosMessage.class, id++, Side.CLIENT);
 		network.registerMessage(SegmentMessage.Handler.class, SegmentMessage.class, id++, Side.CLIENT);
 		network.registerMessage(GrappleModifierMessage.Handler.class, GrappleModifierMessage.class, id++, Side.SERVER);
 		network.registerMessage(LoggedInMessage.Handler.class, LoggedInMessage.class, id++, Side.CLIENT);
+		network.registerMessage(KeypressMessage.Handler.class, KeypressMessage.class, id++, Side.SERVER);
 		
 		blockGrappleModifier = (BlockGrappleModifier)(new BlockGrappleModifier().setUnlocalizedName("block_grapple_modifier"));
 		blockGrappleModifier.setHardness(10F);
@@ -381,11 +388,19 @@ public class grapplemod {
 		controllers.remove(entityId);
 	}
 
-	public static void receiveGrappleClick(int id,
-			boolean leftclick) {
+	public static void receiveGrappleDetach(int id) {
 		grappleController controller = controllers.get(id);
 		if (controller != null) {
-			controller.receiveGrappleClick(leftclick);
+			controller.receiveGrappleDetach();
+		} else {
+			System.out.println("Couldn't find controller");
+		}
+	}
+	
+	public static void receiveGrappleDetachHook(int id, int hookid) {
+		grappleController controller = controllers.get(id);
+		if (controller != null) {
+			controller.receiveGrappleDetachHook(hookid);
 		} else {
 			System.out.println("Couldn't find controller");
 		}
@@ -537,4 +552,21 @@ public class grapplemod {
 			grapplemod.updateGrapplingBlocks();
 		}
 	}
+
+	public static void receiveKeypress(EntityPlayer player, Keys key, boolean isDown) {
+		if (player != null) {
+			ItemStack stack = player.getHeldItemMainhand();
+			if (stack != null) {
+				Item item = stack.getItem();
+				if (item instanceof KeypressItem) {
+					if (isDown) {
+						((KeypressItem)item).onCustomKeyDown(stack, player, key);
+					} else {
+						((KeypressItem)item).onCustomKeyUp(stack, player, key);
+					}
+				}
+			}
+		}
+	}
+
 }

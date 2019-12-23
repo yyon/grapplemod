@@ -11,7 +11,7 @@ import com.yyon.grapplinghook.blocks.TileEntityGrappleModifier;
 import com.yyon.grapplinghook.controllers.grappleController;
 import com.yyon.grapplinghook.entities.RenderGrappleArrow;
 import com.yyon.grapplinghook.entities.grappleArrow;
-import com.yyon.grapplinghook.items.clickitem;
+import com.yyon.grapplinghook.items.KeypressItem;
 import com.yyon.grapplinghook.items.grappleBow;
 import com.yyon.grapplinghook.items.launcherItem;
 import com.yyon.grapplinghook.items.repeller;
@@ -47,8 +47,10 @@ import net.minecraftforge.fml.common.gameevent.TickEvent.ClientTickEvent;
 import net.minecraftforge.fml.common.network.FMLNetworkEvent.ClientDisconnectionFromServerEvent;
 
 public class ClientProxyClass extends CommonProxyClass {
-	public boolean leftclick = false;
 	public boolean prevleftclick = false;
+	public boolean prevleftthrow = false;
+	public boolean prevrightthrow = false;
+	
 	public HashMap<Integer, Long> enderlaunchtimer = new HashMap<Integer, Long>();
 	
 	@Override
@@ -185,6 +187,8 @@ public class ClientProxyClass extends CommonProxyClass {
 	public static KeyBinding key_climbup = createkeybinding("key.climbup.desc", Keyboard.KEY_W, "key.grapplemod.category");
 	public static KeyBinding key_climbdown = createkeybinding("key.climbdown.desc", Keyboard.KEY_S, "key.grapplemod.category");
 	public static KeyBinding key_enderlaunch = createkeybinding("key.enderlaunch.desc", -100, "key.grapplemod.category");
+	public static KeyBinding key_leftthrow = createkeybinding("key.leftthrow.desc", 0, "key.grapplemod.category");
+	public static KeyBinding key_rightthrow = createkeybinding("key.rightthrow.desc", 0, "key.grapplemod.category");
 	
 	
 
@@ -237,24 +241,43 @@ public class ClientProxyClass extends CommonProxyClass {
 					System.out.println("ConcurrentModificationException caught");
 				}
 				
-				leftclick = (key_enderlaunch.isKeyDown() && Minecraft.getMinecraft().currentScreen == null);
-				if (prevleftclick != leftclick) {
-					if (player != null) {
-						ItemStack stack = player.getHeldItemMainhand();
-						if (stack != null) {
-							Item item = stack.getItem();
-							if (item instanceof clickitem) {
-								if (leftclick) {
-									((clickitem)item).onLeftClick(stack, player);
-								} else {
-									((clickitem)item).onLeftClickRelease(stack, player);
+				if (Minecraft.getMinecraft().currentScreen == null) {
+					boolean leftclick = key_enderlaunch.isKeyDown();
+					boolean leftthrow = key_leftthrow.isKeyDown();
+					boolean rightthrow = key_rightthrow.isKeyDown();
+					
+					if (prevleftclick != leftclick || prevleftthrow != leftthrow || prevrightthrow != rightthrow) {
+						if (player != null) {
+							ItemStack stack = player.getHeldItemMainhand();
+							if (stack != null) {
+								Item item = stack.getItem();
+								if (item instanceof KeypressItem) {
+									if (leftclick && !prevleftclick) {
+										((KeypressItem)item).onCustomKeyDown(stack, player, KeypressItem.Keys.LAUNCHER);
+									} else if (!leftclick && prevleftclick) {
+										((KeypressItem)item).onCustomKeyUp(stack, player, KeypressItem.Keys.LAUNCHER);
+									}
+
+									if (leftthrow && !prevleftthrow) {
+										((KeypressItem)item).onCustomKeyDown(stack, player, KeypressItem.Keys.THROWLEFT);
+									} else if (!leftthrow && prevleftthrow) {
+										((KeypressItem)item).onCustomKeyUp(stack, player, KeypressItem.Keys.THROWLEFT);
+									}
+
+									if (rightthrow && !prevrightthrow) {
+										((KeypressItem)item).onCustomKeyDown(stack, player, KeypressItem.Keys.THROWRIGHT);
+									} else if (!leftthrow && prevrightthrow) {
+										((KeypressItem)item).onCustomKeyUp(stack, player, KeypressItem.Keys.THROWRIGHT);
+									}
 								}
 							}
 						}
 					}
+					
+					prevleftclick = leftclick;
+					prevleftthrow = leftthrow;
+					prevrightthrow = rightthrow;
 				}
-				
-				prevleftclick = leftclick;
 				
 				if (player.onGround) {
 					if (enderlaunchtimer.containsKey(player.getEntityId())) {

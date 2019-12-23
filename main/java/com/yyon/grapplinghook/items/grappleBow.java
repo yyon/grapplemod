@@ -11,7 +11,9 @@ import com.yyon.grapplinghook.GrappleCustomization;
 import com.yyon.grapplinghook.grapplemod;
 import com.yyon.grapplinghook.vec;
 import com.yyon.grapplinghook.entities.grappleArrow;
-import com.yyon.grapplinghook.network.GrappleClickMessage;
+import com.yyon.grapplinghook.network.DetachSingleHookMessage;
+import com.yyon.grapplinghook.network.GrappleDetachMessage;
+import com.yyon.grapplinghook.network.KeypressMessage;
 
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.creativetab.CreativeTabs;
@@ -54,7 +56,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
     along with GrappleMod.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-public class grappleBow extends Item implements clickitem {
+public class grappleBow extends Item implements KeypressItem {
 	public static HashMap<Entity, grappleArrow> grapplearrows1 = new HashMap<Entity, grappleArrow>();
 	public static HashMap<Entity, grappleArrow> grapplearrows2 = new HashMap<Entity, grappleArrow>();
 	
@@ -78,8 +80,8 @@ public class grappleBow extends Item implements clickitem {
 	}
 	
 	public boolean hasArrow(Entity entity) {
-		grappleArrow arrow1 = getArrow1(entity);
-		grappleArrow arrow2 = getArrow2(entity);
+		grappleArrow arrow1 = getArrowLeft(entity);
+		grappleArrow arrow2 = getArrowRight(entity);
 		return (arrow1 != null) || (arrow2 != null);
 	}
 	
@@ -90,13 +92,13 @@ public class grappleBow extends Item implements clickitem {
         return super.getIsRepairable(toRepair, repair);
 	}
 
-	public void setArrow1(Entity entity, grappleArrow arrow) {
+	public void setArrowLeft(Entity entity, grappleArrow arrow) {
 		grappleBow.grapplearrows1.put(entity, arrow);
 	}
-	public void setArrow2(Entity entity, grappleArrow arrow) {
+	public void setArrowRight(Entity entity, grappleArrow arrow) {
 		grappleBow.grapplearrows2.put(entity, arrow);
 	}
-	public grappleArrow getArrow1(Entity entity) {
+	public grappleArrow getArrowLeft(Entity entity) {
 		if (grappleBow.grapplearrows1.containsKey(entity)) {
 			grappleArrow arrow = grappleBow.grapplearrows1.get(entity);
 			if (arrow != null && !arrow.isDead) {
@@ -105,7 +107,7 @@ public class grappleBow extends Item implements clickitem {
 		}
 		return null;
 	}
-	public grappleArrow getArrow2(Entity entity) {
+	public grappleArrow getArrowRight(Entity entity) {
 		if (grappleBow.grapplearrows2.containsKey(entity)) {
 			grappleArrow arrow = grappleBow.grapplearrows2.get(entity);
 			if (arrow != null && !arrow.isDead) {
@@ -117,97 +119,146 @@ public class grappleBow extends Item implements clickitem {
 	
 	public void dorightclick(ItemStack stack, World worldIn, EntityLivingBase entityLiving, boolean righthand) {
         if (!worldIn.isRemote) {
-        	boolean hasarrow = hasArrow(entityLiving);
-        	
-        	if (hasarrow) {
-        		// if there's already an arrow, delete arrow
-        		
-    			grappleArrow arrow1 = getArrow1(entityLiving);
-    			grappleArrow arrow2 = getArrow2(entityLiving);
-    			
-    			setArrow1(entityLiving, null);
-    			setArrow2(entityLiving, null);
-
-    			if (arrow1 != null) {
-    				arrow1.removeServer();
-    			}
-    			if (arrow2 != null) {
-    				arrow2.removeServer();
-    			}
-    			
-        		int id = entityLiving.getEntityId();
-        		if (grapplemod.attached.contains(id)) {
-    				// remove controller if hook is attached
-    				
-    				grapplemod.sendtocorrectclient(new GrappleClickMessage(id, false), id, entityLiving.world);
-    				grapplemod.attached.remove(new Integer(id));
-    			}
-
-    			if (arrow1 != null || arrow2 != null) {
-    				return;
-    			}
-    		}
-        	
-        	GrappleCustomization custom = this.getCustomization(stack);
-        	
-      		double angle = custom.angle;
-      		double verticalangle = custom.verticalthrowangle;
-      		if (entityLiving.isSneaking()) {
-      			angle = custom.sneakingangle;
-      			verticalangle = custom.sneakingverticalthrowangle;
-      		}
-      		
-        	if (!custom.doublehook || angle == 0) {
-    			grappleArrow entityarrow = this.createarrow(stack, worldIn, entityLiving, righthand, false);
-          		vec anglevec = new vec(0,0,1).rotate_pitch(Math.toRadians(verticalangle));
-          		anglevec = anglevec.rotate_pitch(Math.toRadians(-entityLiving.rotationPitch));
-          		anglevec = anglevec.rotate_yaw(Math.toRadians(entityLiving.rotationYaw));
-    	        float velx = -MathHelper.sin((float) anglevec.getYaw() * 0.017453292F) * MathHelper.cos((float) anglevec.getPitch() * 0.017453292F);
-    	        float vely = -MathHelper.sin((float) anglevec.getPitch() * 0.017453292F);
-    	        float velz = MathHelper.cos((float) anglevec.getYaw() * 0.017453292F) * MathHelper.cos((float) anglevec.getPitch() * 0.017453292F);
-    	        float extravelocity = (float) vec.motionvec(entityLiving).dist_along(new vec(velx, vely, velz));
-    	        if (extravelocity < 0) { extravelocity = 0; }
-    	        entityarrow.shoot((double) velx, (double) vely, (double) velz, entityarrow.getVelocity() + extravelocity, 0.0F);
-    			setArrow1(entityLiving, entityarrow);
-    			worldIn.spawnEntity(entityarrow);
-        	} else {
-          		EntityLivingBase player = entityLiving;
-          		
-          		vec anglevec = new vec(0,0,1).rotate_yaw(Math.toRadians(-angle)).rotate_pitch(Math.toRadians(verticalangle));
-          		anglevec = anglevec.rotate_pitch(Math.toRadians(-player.rotationPitch));
-          		anglevec = anglevec.rotate_yaw(Math.toRadians(player.rotationYaw));
-    	        float velx = -MathHelper.sin((float) anglevec.getYaw() * 0.017453292F) * MathHelper.cos((float) anglevec.getPitch() * 0.017453292F);
-    	        float vely = -MathHelper.sin((float) anglevec.getPitch() * 0.017453292F);
-    	        float velz = MathHelper.cos((float) anglevec.getYaw() * 0.017453292F) * MathHelper.cos((float) anglevec.getPitch() * 0.017453292F);
-    			grappleArrow entityarrow = this.createarrow(stack, worldIn, entityLiving, false, true);// new grappleArrow(worldIn, player, false);
-//                entityarrow.shoot(player, (float) anglevec.getPitch(), (float)anglevec.getYaw(), 0.0F, entityarrow.getVelocity(), 0.0F);
-    	        float extravelocity = (float) vec.motionvec(entityLiving).dist_along(new vec(velx, vely, velz));
-    	        if (extravelocity < 0) { extravelocity = 0; }
-    	        entityarrow.shoot((double) velx, (double) vely, (double) velz, entityarrow.getVelocity() + extravelocity, 0.0F);
-                
-    			worldIn.spawnEntity(entityarrow);
-    			setArrow1(entityLiving, entityarrow);    			
-    			
-          		anglevec = new vec(0,0,1).rotate_yaw(Math.toRadians(angle)).rotate_pitch(Math.toRadians(verticalangle));
-          		anglevec = anglevec.rotate_pitch(Math.toRadians(-player.rotationPitch));
-          		anglevec = anglevec.rotate_yaw(Math.toRadians(player.rotationYaw));
-    	        velx = -MathHelper.sin((float) anglevec.getYaw() * 0.017453292F) * MathHelper.cos((float) anglevec.getPitch() * 0.017453292F);
-    	        vely = -MathHelper.sin((float) anglevec.getPitch() * 0.017453292F);
-    	        velz = MathHelper.cos((float) anglevec.getYaw() * 0.017453292F) * MathHelper.cos((float) anglevec.getPitch() * 0.017453292F);
-    			entityarrow = this.createarrow(stack, worldIn, entityLiving, true, true);//new grappleArrow(worldIn, player, true);
-//                entityarrow.shoot(player, (float) anglevec.getPitch(), (float)anglevec.getYaw(), 0.0F, entityarrow.getVelocity(), 0.0F);
-    	        extravelocity = (float) vec.motionvec(entityLiving).dist_along(new vec(velx, vely, velz));
-    	        if (extravelocity < 0) { extravelocity = 0; }
-    	        entityarrow.shoot((double) velx, (double) vely, (double) velz, entityarrow.getVelocity() + extravelocity, 0.0F);
-                
-    			worldIn.spawnEntity(entityarrow);
-    			setArrow2(entityLiving, entityarrow);
-        	}
-
-			stack.damageItem(1, entityLiving);
-            worldIn.playSound((EntityPlayer)null, entityLiving.posX, entityLiving.posY, entityLiving.posZ, SoundEvents.ENTITY_ARROW_SHOOT, SoundCategory.NEUTRAL, 1.0F, 1.0F / (itemRand.nextFloat() * 0.4F + 1.2F) + 2.0F * 0.5F);
-			
+        	throwBoth(stack, worldIn, entityLiving, righthand);
     	}
+	}
+	
+	public void throwBoth(ItemStack stack, World worldIn, EntityLivingBase entityLiving, boolean righthand) {
+		grappleArrow arrow_left = getArrowLeft(entityLiving);
+		grappleArrow arrow_right = getArrowRight(entityLiving);
+
+		if (arrow_left != null || arrow_right != null) {
+    		if (arrow_left != null) detachLeft(entityLiving);
+    		if (arrow_right != null) detachRight(entityLiving);
+    		return;
+		}
+		
+		throwLeft(stack, worldIn, entityLiving, righthand);
+		throwRight(stack, worldIn, entityLiving, righthand);
+
+		stack.damageItem(1, entityLiving);
+        worldIn.playSound((EntityPlayer)null, entityLiving.posX, entityLiving.posY, entityLiving.posZ, SoundEvents.ENTITY_ARROW_SHOOT, SoundCategory.NEUTRAL, 1.0F, 1.0F / (itemRand.nextFloat() * 0.4F + 1.2F) + 2.0F * 0.5F);
+	}
+	
+	public void throwLeft(ItemStack stack, World worldIn, EntityLivingBase entityLiving, boolean righthand) {
+    	GrappleCustomization custom = this.getCustomization(stack);
+    	
+  		double angle = custom.angle;
+  		double verticalangle = custom.verticalthrowangle;
+  		
+  		if (entityLiving.isSneaking()) {
+  			angle = custom.sneakingangle;
+  			verticalangle = custom.sneakingverticalthrowangle;
+  		}
+  		
+    	if (!custom.doublehook || angle == 0) {
+    	} else {
+      		EntityLivingBase player = entityLiving;
+      		
+      		vec anglevec = new vec(0,0,1).rotate_yaw(Math.toRadians(-angle)).rotate_pitch(Math.toRadians(verticalangle));
+      		anglevec = anglevec.rotate_pitch(Math.toRadians(-player.rotationPitch));
+      		anglevec = anglevec.rotate_yaw(Math.toRadians(player.rotationYaw));
+	        float velx = -MathHelper.sin((float) anglevec.getYaw() * 0.017453292F) * MathHelper.cos((float) anglevec.getPitch() * 0.017453292F);
+	        float vely = -MathHelper.sin((float) anglevec.getPitch() * 0.017453292F);
+	        float velz = MathHelper.cos((float) anglevec.getYaw() * 0.017453292F) * MathHelper.cos((float) anglevec.getPitch() * 0.017453292F);
+			grappleArrow entityarrow = this.createarrow(stack, worldIn, entityLiving, false, true);// new grappleArrow(worldIn, player, false);
+//            entityarrow.shoot(player, (float) anglevec.getPitch(), (float)anglevec.getYaw(), 0.0F, entityarrow.getVelocity(), 0.0F);
+	        float extravelocity = (float) vec.motionvec(entityLiving).dist_along(new vec(velx, vely, velz));
+	        if (extravelocity < 0) { extravelocity = 0; }
+	        entityarrow.shoot((double) velx, (double) vely, (double) velz, entityarrow.getVelocity() + extravelocity, 0.0F);
+            
+			worldIn.spawnEntity(entityarrow);
+			setArrowLeft(entityLiving, entityarrow);    			
+    	}
+	}
+	
+	public void throwRight(ItemStack stack, World worldIn, EntityLivingBase entityLiving, boolean righthand) {
+    	GrappleCustomization custom = this.getCustomization(stack);
+    	
+  		double angle = custom.angle;
+  		double verticalangle = custom.verticalthrowangle;
+  		if (entityLiving.isSneaking()) {
+  			angle = custom.sneakingangle;
+  			verticalangle = custom.sneakingverticalthrowangle;
+  		}
+  		
+    	if (!custom.doublehook || angle == 0) {
+			grappleArrow entityarrow = this.createarrow(stack, worldIn, entityLiving, righthand, false);
+      		vec anglevec = new vec(0,0,1).rotate_pitch(Math.toRadians(verticalangle));
+      		anglevec = anglevec.rotate_pitch(Math.toRadians(-entityLiving.rotationPitch));
+      		anglevec = anglevec.rotate_yaw(Math.toRadians(entityLiving.rotationYaw));
+	        float velx = -MathHelper.sin((float) anglevec.getYaw() * 0.017453292F) * MathHelper.cos((float) anglevec.getPitch() * 0.017453292F);
+	        float vely = -MathHelper.sin((float) anglevec.getPitch() * 0.017453292F);
+	        float velz = MathHelper.cos((float) anglevec.getYaw() * 0.017453292F) * MathHelper.cos((float) anglevec.getPitch() * 0.017453292F);
+	        float extravelocity = (float) vec.motionvec(entityLiving).dist_along(new vec(velx, vely, velz));
+	        if (extravelocity < 0) { extravelocity = 0; }
+	        entityarrow.shoot((double) velx, (double) vely, (double) velz, entityarrow.getVelocity() + extravelocity, 0.0F);
+			setArrowRight(entityLiving, entityarrow);
+			worldIn.spawnEntity(entityarrow);
+    	} else {
+      		EntityLivingBase player = entityLiving;
+      		
+      		vec anglevec = new vec(0,0,1).rotate_yaw(Math.toRadians(angle)).rotate_pitch(Math.toRadians(verticalangle));
+      		anglevec = anglevec.rotate_pitch(Math.toRadians(-player.rotationPitch));
+      		anglevec = anglevec.rotate_yaw(Math.toRadians(player.rotationYaw));
+	        float velx = -MathHelper.sin((float) anglevec.getYaw() * 0.017453292F) * MathHelper.cos((float) anglevec.getPitch() * 0.017453292F);
+	        float vely = -MathHelper.sin((float) anglevec.getPitch() * 0.017453292F);
+	        float velz = MathHelper.cos((float) anglevec.getYaw() * 0.017453292F) * MathHelper.cos((float) anglevec.getPitch() * 0.017453292F);
+			grappleArrow entityarrow = this.createarrow(stack, worldIn, entityLiving, true, true);//new grappleArrow(worldIn, player, true);
+//            entityarrow.shoot(player, (float) anglevec.getPitch(), (float)anglevec.getYaw(), 0.0F, entityarrow.getVelocity(), 0.0F);
+	        float extravelocity = (float) vec.motionvec(entityLiving).dist_along(new vec(velx, vely, velz));
+	        if (extravelocity < 0) { extravelocity = 0; }
+	        entityarrow.shoot((double) velx, (double) vely, (double) velz, entityarrow.getVelocity() + extravelocity, 0.0F);
+            
+			worldIn.spawnEntity(entityarrow);
+			setArrowRight(entityLiving, entityarrow);
+		}
+	}
+	
+	public void detachLeft(EntityLivingBase entityLiving) {
+		grappleArrow arrow1 = getArrowLeft(entityLiving);
+		
+		setArrowLeft(entityLiving, null);
+		
+		if (arrow1 != null) {
+			arrow1.removeServer();
+		}
+		
+		int id = entityLiving.getEntityId();
+		
+		// remove controller if hook is attached
+		if (getArrowRight(entityLiving) == null) {
+			grapplemod.sendtocorrectclient(new GrappleDetachMessage(id), id, entityLiving.world);
+		} else {
+			grapplemod.sendtocorrectclient(new DetachSingleHookMessage(id, arrow1.getEntityId()), id, entityLiving.world);
+		}
+		
+		if (grapplemod.attached.contains(id)) {
+			grapplemod.attached.remove(new Integer(id));
+		}
+	}
+	
+	public void detachRight(EntityLivingBase entityLiving) {
+		grappleArrow arrow2 = getArrowRight(entityLiving);
+		
+		setArrowRight(entityLiving, null);
+		
+		if (arrow2 != null) {
+			arrow2.removeServer();
+		}
+		
+		int id = entityLiving.getEntityId();
+		
+		// remove controller if hook is attached
+		if (getArrowLeft(entityLiving) == null) {
+			grapplemod.sendtocorrectclient(new GrappleDetachMessage(id), id, entityLiving.world);
+		} else {
+			grapplemod.sendtocorrectclient(new DetachSingleHookMessage(id, arrow2.getEntityId()), id, entityLiving.world);
+		}
+		
+		if (grapplemod.attached.contains(id)) {
+			grapplemod.attached.remove(new Integer(id));
+		}
 	}
 	
     public double getAngle(EntityLivingBase entity, ItemStack stack) {
@@ -262,11 +313,56 @@ public class grappleBow extends Item implements clickitem {
     }
     
 	@Override
-	public void onLeftClick(ItemStack stack, EntityPlayer player) {
+	public void onCustomKeyDown(ItemStack stack, EntityPlayer player, KeypressItem.Keys key) {
 		if (player.world.isRemote) {
-			if (this.getCustomization(stack).enderstaff) {
-				grapplemod.proxy.launchplayer(player);
+			if (key == KeypressItem.Keys.LAUNCHER) {
+				if (this.getCustomization(stack).enderstaff) {
+					grapplemod.proxy.launchplayer(player);
+				}
+			} else if (key == KeypressItem.Keys.THROWLEFT || key == KeypressItem.Keys.THROWRIGHT) {
+				grapplemod.network.sendToServer(new KeypressMessage(key, true));
 			}
+		} else {
+			if (key == KeypressItem.Keys.THROWLEFT) {
+				grappleArrow arrow1 = getArrowLeft(player);
+
+	    		if (arrow1 != null) {
+	    			detachLeft(player);
+		    		return;
+				}
+				
+				throwLeft(stack, player.world, player, true);
+
+				stack.damageItem(1, player);
+		        player.world.playSound((EntityPlayer)null, player.posX, player.posY, player.posZ, SoundEvents.ENTITY_ARROW_SHOOT, SoundCategory.NEUTRAL, 1.0F, 1.0F / (itemRand.nextFloat() * 0.4F + 1.2F) + 2.0F * 0.5F);
+			} else if (key == KeypressItem.Keys.THROWRIGHT) {
+				grappleArrow arrow2 = getArrowRight(player);
+
+	    		if (arrow2 != null) {
+	    			detachRight(player);
+		    		return;
+				}
+				
+				throwRight(stack, player.world, player, true);
+
+				stack.damageItem(1, player);
+		        player.world.playSound((EntityPlayer)null, player.posX, player.posY, player.posZ, SoundEvents.ENTITY_ARROW_SHOOT, SoundCategory.NEUTRAL, 1.0F, 1.0F / (itemRand.nextFloat() * 0.4F + 1.2F) + 2.0F * 0.5F);
+			}
+
+	        System.out.println("Key down");
+			System.out.println(key.toString());
+		}
+	}
+	
+	@Override
+	public void onCustomKeyUp(ItemStack stack, EntityPlayer player, KeypressItem.Keys key) {
+		if (player.world.isRemote) {
+			if (key == KeypressItem.Keys.THROWLEFT || key == KeypressItem.Keys.THROWRIGHT) {
+				grapplemod.network.sendToServer(new KeypressMessage(key, false));
+			}
+		} else {
+			System.out.println("Key up");
+			System.out.println(key.toString());
 		}
 	}
    
@@ -368,10 +464,6 @@ public class grappleBow extends Item implements clickitem {
 
 	}
 
-	@Override
-	public void onLeftClickRelease(ItemStack stack, EntityPlayer player) {
-
-	}
 	
 	@Override
     @SideOnly(Side.CLIENT)

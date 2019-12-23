@@ -706,10 +706,8 @@ public class grappleController {
 	
 	// Vector stuff:
 	
-	public void receiveGrappleClick(boolean leftclick) {
-		if (!leftclick) {
-			this.unattach();
-		}
+	public void receiveGrappleDetach() {
+		this.unattach();
 	}
 
 	public void receiveEnderLaunch(double x, double y, double z) {
@@ -840,6 +838,28 @@ public class grappleController {
 //    	} else {
 //    		return blockcache.get(pos);
 //    	}
+	}
+
+	public void receiveGrappleDetachHook(int hookid) {
+		if (this.arrowIds.contains(hookid)) {
+			this.arrowIds.remove(hookid);
+		} else {
+			System.out.println("Error: controller received hook detach, but hook id not in arrowIds");
+		}
+		
+		grappleArrow arrowToRemove = null;
+		for (grappleArrow arrow : this.arrows) {
+			if (arrow.getEntityId() == hookid) {
+				arrowToRemove = arrow;
+				break;
+			}
+		}
+		
+		if (arrowToRemove != null) {
+			this.arrows.remove(arrowToRemove);
+		} else {
+			System.out.println("Error: controller received hook detach, but arrow not in arrows");
+		}
 	}
 
 }
