@@ -3,6 +3,7 @@ package com.yyon.grapplinghook;
 import java.awt.Color;
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.regex.Pattern;
 
 import com.yyon.grapplinghook.blocks.TileEntityGrappleModifier;
 
@@ -11,7 +12,6 @@ import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.RenderHelper;
-import net.minecraft.client.resources.I18n;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.client.config.GuiCheckBox;
@@ -37,6 +37,7 @@ public class GuiModifier extends GuiScreen {
 
 	grapplemod.upgradeCategories category = null;
 	boolean allowed = false;
+	boolean showinghelpscreen = false;
 
 	public GuiModifier(TileEntityGrappleModifier tileent) {
 		super();
@@ -60,6 +61,8 @@ public class GuiModifier extends GuiScreen {
 				50, 20, grapplemod.proxy.localize("grapplemodifier.close.desc")));
 		this.buttonList.add(new GuiButton(2, this.guiLeft + this.xSize - 50 - 10, this.guiTop + this.ySize - 20 - 10,
 				50, 20, grapplemod.proxy.localize("grapplemodifier.reset.desc")));
+		this.buttonList.add(new GuiButton(4, this.guiLeft + 10 + 75, this.guiTop + this.ySize - 20 - 10,
+				50, 20, grapplemod.proxy.localize("grapplemodifier.helpbutton.desc")));
 
 		int y = 0;
 		for (int i = 0; i < grapplemod.upgradeCategories.size(); i++) {
@@ -86,6 +89,10 @@ public class GuiModifier extends GuiScreen {
 		this.buttonList.add(new GuiButton(3, this.guiLeft + 10, this.guiTop + this.ySize - 20 - 10, 50, 20, grapplemod.proxy.localize("grapplemodifier.back.desc")));
 		this.category = category;
 		this.allowed = false;
+	}
+
+	public void helpscreen() {
+		this.buttonList.add(new GuiButton(3, this.guiLeft + 10, this.guiTop + this.ySize - 20 - 10, 50, 20, grapplemod.proxy.localize("grapplemodifier.back.desc")));
 	}
 
 	public void addCheckbox(String option) {
@@ -244,9 +251,14 @@ public class GuiModifier extends GuiScreen {
 			} else if (b.id == 2) {
 				this.customization = new GrappleCustomization();
 			} else if (b.id == 3) {
+				showinghelpscreen = false;
 				this.updateOptions();
 				clearscreen();
 				mainscreen();
+			} else if (b.id == 4) {
+				showinghelpscreen = true;
+				clearscreen();
+				helpscreen();
 			} else if (options.containsKey(b)) {
 				this.updateOption(b);
 			} else {
@@ -306,7 +318,16 @@ public class GuiModifier extends GuiScreen {
 
 			}
 		} else {
-			fontRenderer.drawString(grapplemod.proxy.localize("grapplemodifier.apply.desc"), 10, this.ySize - 20 - 10 - 10, Color.darkGray.getRGB());
+			if (showinghelpscreen) {
+				String helptext =  grapplemod.proxy.localize("grapplemodifier.help.desc");
+				int linenum = 0;
+				for (String line : helptext.split(Pattern.quote("\\n"))) {
+					fontRenderer.drawString(line, 10, 10 + 15 * linenum, Color.darkGray.getRGB());
+					linenum++;
+				}
+			} else {
+				fontRenderer.drawString(grapplemod.proxy.localize("grapplemodifier.apply.desc"), 10, this.ySize - 20 - 10 - 10, Color.darkGray.getRGB());
+			}
 		}
 		
 		GlStateManager.translate(-guiLeft, -guiTop, 0.0F);
