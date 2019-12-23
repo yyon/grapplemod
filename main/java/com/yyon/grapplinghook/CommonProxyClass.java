@@ -113,4 +113,8 @@ public class CommonProxyClass {
 
 	public void openModifierScreen(TileEntityGrappleModifier tileent) {
 	}
+	
+	public String localize(String string) {
+		return string;
+	}
 }

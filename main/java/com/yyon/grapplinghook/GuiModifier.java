@@ -11,6 +11,7 @@ import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.RenderHelper;
+import net.minecraft.client.resources.I18n;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.client.config.GuiCheckBox;
@@ -56,9 +57,9 @@ public class GuiModifier extends GuiScreen {
 
 	public void mainscreen() {
 		this.buttonList.add(new GuiButton(1, this.guiLeft + 10, this.guiTop + this.ySize - 20 - 10,
-				50, 20, "Close"));
+				50, 20, grapplemod.proxy.localize("grapplemodifier.close.desc")));
 		this.buttonList.add(new GuiButton(2, this.guiLeft + this.xSize - 50 - 10, this.guiTop + this.ySize - 20 - 10,
-				50, 20, "Reset"));
+				50, 20, grapplemod.proxy.localize("grapplemodifier.reset.desc")));
 
 		int y = 0;
 		for (int i = 0; i < grapplemod.upgradeCategories.size(); i++) {
@@ -82,14 +83,14 @@ public class GuiModifier extends GuiScreen {
 	}
 
 	public void notAllowedScreen(grapplemod.upgradeCategories category) {
-		this.buttonList.add(new GuiButton(3, this.guiLeft + 10, this.guiTop + this.ySize - 20 - 10, 50, 20, "Back"));
+		this.buttonList.add(new GuiButton(3, this.guiLeft + 10, this.guiTop + this.ySize - 20 - 10, 50, 20, grapplemod.proxy.localize("grapplemodifier.back.desc")));
 		this.category = category;
 		this.allowed = false;
 	}
 
 	public void addCheckbox(String option) {
-		String text = this.customization.getName(option);
-		String desc = this.customization.getDescription(option);
+		String text = grapplemod.proxy.localize(this.customization.getName(option));
+		String desc = grapplemod.proxy.localize(this.customization.getDescription(option));
 		GuiCheckBox checkbox = new GuiCheckBox(id++, 10 + this.guiLeft, posy + this.guiTop, text, customization.getBoolean(option));
 		posy += 20;
 		this.buttonList.add(checkbox);
@@ -104,7 +105,7 @@ public class GuiModifier extends GuiScreen {
 		double max = customization.getMax(option, this.getLimits());
 		double min = customization.getMin(option, this.getLimits());
 		
-		String text = this.customization.getName(option);
+		String text = grapplemod.proxy.localize(this.customization.getName(option));
 		GuiSlider slider = new GuiSlider(id++, 10 + this.guiLeft, posy + this.guiTop, this.xSize - 20, 20, text + ": ", "", min, max, d, true, true);
 		
 		slider.displayString = text + ": " + Double.toString(d);
@@ -114,12 +115,12 @@ public class GuiModifier extends GuiScreen {
 		this.buttonList.add(slider);
 		options.put(slider, option);
 		
-		String desc = this.customization.getDescription(option);
+		String desc = grapplemod.proxy.localize(this.customization.getDescription(option));
 		tooltips.put(slider, desc);
 	}
 
 	public void showCategoryScreen(grapplemod.upgradeCategories category) {
-		this.buttonList.add(new GuiButton(3, this.guiLeft + 10, this.guiTop + this.ySize - 20 - 10, 50, 20, "Back"));
+		this.buttonList.add(new GuiButton(3, this.guiLeft + 10, this.guiTop + this.ySize - 20 - 10, 50, 20, grapplemod.proxy.localize("grapplemodifier.back.desc")));
 		this.category = category;
 		this.allowed = true;
 
@@ -200,20 +201,20 @@ public class GuiModifier extends GuiScreen {
 			String option = this.options.get(b);
 			boolean enabled = true;
 			
-			String desc = this.customization.getDescription(option);
+			String desc = grapplemod.proxy.localize(this.customization.getDescription(option));
 			
 			if (this.customization.isoptionvalid(option)) {
 			} else {
-				desc = "Incompatability with other options\n" + desc;
+				desc = grapplemod.proxy.localize("grapplemodifier.incompatability.desc") + "\n" + desc;
 				enabled = false;
 			}
 			
 			int level = this.customization.optionEnabled(option);
 			if (this.getLimits() < level) {
 				if (level == 1) {
-					desc = "Use limits upgrade to unlock\n" + desc;
+					desc = grapplemod.proxy.localize("grapplemodifier.limits.desc") + "\n" + desc;
 				} else {
-					desc = "Option locked due to config file, complain to your modpack maker\n" + desc;
+					desc = grapplemod.proxy.localize("grapplemodifier.locked.desc") + "\n" + desc;
 				}
 				enabled = false;
 			}
@@ -294,18 +295,18 @@ public class GuiModifier extends GuiScreen {
 
 		if (this.category != null) {
 			if (!this.allowed) {
-				fontRenderer.drawString("Category not unlocked:", 10, 10, Color.darkGray.getRGB());
+				fontRenderer.drawString(grapplemod.proxy.localize("grapplemodifier.unlock1.desc"), 10, 10, Color.darkGray.getRGB());
 				fontRenderer.drawString(this.category.description, 10, 25, Color.darkGray.getRGB());
-				fontRenderer.drawString("Please right click this block", 10, 40, Color.darkGray.getRGB());
-				fontRenderer.drawString("with the item:", 10, 55, Color.darkGray.getRGB());
+				fontRenderer.drawString(grapplemod.proxy.localize("grapplemodifier.unlock2.desc"), 10, 40, Color.darkGray.getRGB());
+				fontRenderer.drawString(grapplemod.proxy.localize("grapplemodifier.unlock3.desc"), 10, 55, Color.darkGray.getRGB());
 				fontRenderer.drawString(new ItemStack(this.category.getItem()).getDisplayName(), 10, 70,
 						Color.darkGray.getRGB());
-				fontRenderer.drawString("to unlock", 10, 85, Color.darkGray.getRGB());
+				fontRenderer.drawString(grapplemod.proxy.localize("grapplemodifier.unlock4.desc"), 10, 85, Color.darkGray.getRGB());
 			} else {
 
 			}
 		} else {
-			fontRenderer.drawString("Right click with grappling hook to apply", 10, this.ySize - 20 - 10 - 10, Color.darkGray.getRGB());
+			fontRenderer.drawString(grapplemod.proxy.localize("grapplemodifier.apply.desc"), 10, this.ySize - 20 - 10 - 10, Color.darkGray.getRGB());
 		}
 		
 		GlStateManager.translate(-guiLeft, -guiTop, 0.0F);

@@ -173,69 +173,11 @@ public class GrappleCustomization {
 	}
 
 	public String getName(String option) {
-		if (option.equals("maxlen")) {return "Rope Length";}
-		else if (option.equals("phaserope")) {return "Phase Rope";}
-		else if (option.equals("hookgravity")) {return "Gravity on hook";}
-		else if (option.equals("throwspeed")) {return "Throw Speed";}
-		else if (option.equals("reelin")) {return "Crouch to Reel In";}
-		else if (option.equals("verticalthrowangle")) {return "Vertical Throw Angle";}
-		else if (option.equals("motor")) {return "Motor Enabled";}
-		else if (option.equals("motormaxspeed")) {return "Motor Maximum Speed";}
-		else if (option.equals("motoracceleration")) {return "Motor Acceleration";}
-		else if (option.equals("motorwhencrouching")) {return "Motor when On/Off button held";}
-		else if (option.equals("motorwhennotcrouching")) {return "Motor when On/Off button not held";}
-		else if (option.equals("smartmotor")) {return "Smart Motor";}
-		else if (option.equals("motordampener")) {return "Sideways Motion Dampener";}
-		else if (option.equals("pullbackwards")) {return "Pull Backwards";}
-		else if (option.equals("playermovementmult")) {return "Swing speed";}
-		else if (option.equals("enderstaff")) {return "Ender Staff";}
-		else if (option.equals("repel")) {return "Forcefield Enabled";}
-		else if (option.equals("repelforce")) {return "Repel Force";}
-		else if (option.equals("attract")) {return "Magnet Enabled";}
-		else if (option.equals("attractradius")) {return "Attraction Radius";}
-		else if (option.equals("doublehook")) {return "Double Hook";}
-		else if (option.equals("smartdoublemotor")) {return "Smart Motor";}
-		else if (option.equals("angle")) {return "Angle";}
-		else if (option.equals("sneakingangle")) {return "Angle when crouching";}
-		else if (option.equals("oneropepull")) {return "Allow pulling with one rope";}
-		else if (option.equals("sneakingverticalthrowangle")) {return "Crouching Vertical Angle ";}
-		else if (option.equals("climbkey")) {return "Dedicated Climbing Key";}
-		else if (option.equals("sticky")) {return "Sticky Rope";}
-		else if (option.equals("detachonkeyrelease")) {return "Detach Hook On Button/Key Release";}
-		return "unknown option";
+		return "grapplecustomization." + option + ".name";
 	}
 	
 	public String getDescription(String option) {
-		if (option.equals("maxlen")) {return "The length of the rope";}
-		else if (option.equals("phaserope")) {return "Allows rope to phase through blocks";}
-		else if (option.equals("hookgravity")) {return "Gravity on hook when thrown";}
-		else if (option.equals("throwspeed")) {return "Speed of hook when thrown";}
-		else if (option.equals("reelin")) {return "Before the hook is attached, crouching will stop the hook from moving farther and slowly reel it in";}
-		else if (option.equals("verticalthrowangle")) {return "Throws the grappling hook above the crosshairs by this angle";}
-		else if (option.equals("motor")) {return "Pulls player towards hook";}
-		else if (option.equals("motormaxspeed")) {return "Maximum speed of motor";}
-		else if (option.equals("motoracceleration")) {return "Acceleration of motor";}
-		else if (option.equals("motorwhencrouching")) {return "Motor is active when On/Off button (default: shift) is being held";}
-		else if (option.equals("motorwhennotcrouching")) {return "Motor is active when On/Off button (default: shift) is not being held";}
-		else if (option.equals("smartmotor")) {return "Adjusts motor speed so that player moves towards crosshairs (up/down)";}
-		else if (option.equals("motordampener")) {return "Reduces motion perpendicular to the rope so that the rope pulls straighter";}
-		else if (option.equals("pullbackwards")) {return "Motor pulls even if you are facing the other way";}
-		else if (option.equals("playermovementmult")) {return "Acceleration of player when using movement keys while swinging";}
-		else if (option.equals("enderstaff")) {return "Left click launches player forwards";}
-		else if (option.equals("repel")) {return "Player is repelled from nearby blocks when swinging";}
-		else if (option.equals("repelforce")) {return "Force nearby blocks exert on the player";}
-		else if (option.equals("attract")) {return "Hook is attracted to nearby blocks when thrown";}
-		else if (option.equals("attractradius")) {return "Radius of attraction";}
-		else if (option.equals("doublehook")) {return "Two hooks are thrown at once";}
-		else if (option.equals("smartdoublemotor")) {return "Adjusts motor speed so that player moves towards crosshairs (left/right) when used with motor";}
-		else if (option.equals("angle")) {return "Angle that each hook is thrown from center";}
-		else if (option.equals("sneakingangle")) {return "Angle that each hook is thrown from center when crouching (don't have 'crouch to reel in' enabled if you want to use this)";}
-		else if (option.equals("oneropepull")) {return "When motor is enabled and only one hook is attached, activate the motor (if disabled, wait until both hooks are attached before pulling)";}
-		else if (option.equals("sneakingverticalthrowangle")) {return "Throws the grappling hook above the crosshairs by this angle when crouching";}
-		else if (option.equals("climbkey")) {return "Ignore climb up/climb down keys unless the \"climb\" key is held";}
-		else if (option.equals("sticky")) {return "If the rope bends around a block as it is being thrown, attach at bend";}
-		else if (option.equals("detachonkeyrelease")) {return "When enabled, hook is only out while button/key is held down. Instead of clicking / pressing key again to detach the hook, release the button/key to detach the hook.";}
-		return "unknown option";
+		return "grapplecustomization." + option + ".desc";
 	}
 	
 	public boolean isoptionvalid(String option) {

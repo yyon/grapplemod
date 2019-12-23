@@ -423,58 +423,58 @@ public class grappleBow extends Item implements KeypressItem {
 
 		
 		if (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT)) {
-			list.add(grapplemod.proxy.getkeyname(CommonProxyClass.keys.keyBindUseItem) + " - Throw grappling hook");
-			list.add(grapplemod.proxy.getkeyname(CommonProxyClass.keys.keyBindUseItem) + " again - Release");
-			list.add("Double-" + grapplemod.proxy.getkeyname(CommonProxyClass.keys.keyBindUseItem) + " - Release and throw again");
+			list.add(grapplemod.proxy.getkeyname(CommonProxyClass.keys.keyBindUseItem) + " " + grapplemod.proxy.localize("grappletooltip.throw.desc"));
+			list.add(grapplemod.proxy.getkeyname(CommonProxyClass.keys.keyBindUseItem) + " " + grapplemod.proxy.localize("grappletooltip.release.desc"));
+			list.add(grapplemod.proxy.localize("grappletooltip.double.desc") + grapplemod.proxy.getkeyname(CommonProxyClass.keys.keyBindUseItem) + " " + grapplemod.proxy.localize("grappletooltip.releaseandthrow.desc"));
 			list.add(grapplemod.proxy.getkeyname(CommonProxyClass.keys.keyBindForward) + ", " +
 					grapplemod.proxy.getkeyname(CommonProxyClass.keys.keyBindLeft) + ", " +
 					grapplemod.proxy.getkeyname(CommonProxyClass.keys.keyBindBack) + ", " +
 					grapplemod.proxy.getkeyname(CommonProxyClass.keys.keyBindRight) +
-					" - Swing");
-			list.add(ClientProxyClass.key_jumpanddetach.getDisplayName() + " - Release and jump (while in midair)");
-			list.add(ClientProxyClass.key_slow.getDisplayName() + " - Stop swinging");
+					" " + grapplemod.proxy.localize("grappletooltip.swing.desc"));
+			list.add(ClientProxyClass.key_jumpanddetach.getDisplayName() + " " + grapplemod.proxy.localize("grappletooltip.jump.desc"));
+			list.add(ClientProxyClass.key_slow.getDisplayName() + " " + grapplemod.proxy.localize("grappletooltip.slow.desc"));
 			list.add((custom.climbkey ? ClientProxyClass.key_climb.getDisplayName() + " + " : "") +
 					ClientProxyClass.key_climbup.getDisplayName() + 
-					" - Climb up");
+					" " + grapplemod.proxy.localize("grappletooltip.climbup.desc"));
 			list.add((custom.climbkey ? ClientProxyClass.key_climb.getDisplayName() + " + " : "") +
 					ClientProxyClass.key_climbdown.getDisplayName() + 
-					" - Climb down");
+					" " + grapplemod.proxy.localize("grappletooltip.climbdown.desc"));
 		} else {
 			if (Keyboard.isKeyDown(Keyboard.KEY_LCONTROL)) {
 				for (String option : GrappleCustomization.booleanoptions) {
 					if (custom.isoptionvalid(option) && custom.getBoolean(option)) {
-						list.add(custom.getName(option));
+						list.add(grapplemod.proxy.localize(custom.getName(option)));
 					}
 				}
 				for (String option : GrappleCustomization.doubleoptions) {
 					if (custom.isoptionvalid(option)) {
-						list.add(custom.getName(option) + ": " + Math.floor(custom.getDouble(option) * 100) / 100);
+						list.add(grapplemod.proxy.localize(custom.getName(option)) + ": " + Math.floor(custom.getDouble(option) * 100) / 100);
 					}
 				}
 			} else {
 				if (custom.doublehook) {
-					list.add("Double Hook");
+					list.add(grapplemod.proxy.localize(custom.getName("doublehook")));
 				}
 				if (custom.motor) {
 					if (custom.smartmotor) {
-						list.add("Smart Motor");
+						list.add(grapplemod.proxy.localize(custom.getName("smartmotor")));
 					} else {
-						list.add("Motorized");
+						list.add(grapplemod.proxy.localize(custom.getName("motor")));
 					}
 				}
 				if (custom.enderstaff) {
-					list.add("Ender Staff");
+					list.add(grapplemod.proxy.localize(custom.getName("enderstaff")));
 				}
 				if (custom.attract) {
-					list.add("Magnetized");
+					list.add(grapplemod.proxy.localize(custom.getName("attract")));
 				}
 				if (custom.repel) {
-					list.add("Forcefield");
+					list.add(grapplemod.proxy.localize(custom.getName("repel")));
 				}
 				
 				list.add("");
-				list.add("(Hold Shift to see controls)");
-				list.add("(Hold Control to see full configuration)");
+				list.add(grapplemod.proxy.localize("grappletooltip.shiftcontrols.desc"));
+				list.add(grapplemod.proxy.localize("grappletooltip.controlconfiguration.desc"));
 			}
 		}
 		

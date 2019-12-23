@@ -24,6 +24,7 @@ import net.minecraft.client.renderer.block.model.ModelBakery;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.client.renderer.entity.Render;
 import net.minecraft.client.renderer.entity.RenderManager;
+import net.minecraft.client.resources.I18n;
 import net.minecraft.client.settings.GameSettings;
 import net.minecraft.client.settings.KeyBinding;
 import net.minecraft.entity.Entity;
@@ -472,4 +473,7 @@ public class ClientProxyClass extends CommonProxyClass {
 		}
 	}
 
+	public String localize(String string) {
+		return I18n.format(string);
+	}
 }
