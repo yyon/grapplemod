@@ -2,6 +2,7 @@ package com.yyon.grapplinghook.entities;
 
 import java.util.HashMap;
 
+import com.yyon.grapplinghook.GrappleConfig;
 import com.yyon.grapplinghook.GrappleCustomization;
 import com.yyon.grapplinghook.grapplemod;
 import com.yyon.grapplinghook.vec;
@@ -354,7 +355,11 @@ public class grappleArrow extends EntityThrowable implements IEntityAdditionalSp
 	protected void onImpact(RayTraceResult movingobjectposition) {
 		if (!this.world.isRemote) {
 			if (this.shootingEntityID != 0) {
-				if (movingobjectposition.typeOfHit == RayTraceResult.Type.ENTITY) {
+				if (movingobjectposition == null) {
+					return;
+				}
+				
+				if (movingobjectposition.typeOfHit == RayTraceResult.Type.ENTITY && GrappleConfig.getconf().hookaffectsentities) {
 					// hit entity
 					Entity entityhit = movingobjectposition.entityHit;
 					if (entityhit == this.shootingEntity) {
@@ -370,19 +375,13 @@ public class grappleArrow extends EntityThrowable implements IEntityAdditionalSp
 					return;
 				}
 				
-				BlockPos blockpos = null;
-				
 				if (movingobjectposition.typeOfHit == RayTraceResult.Type.BLOCK) {
-					blockpos = movingobjectposition.getBlockPos();
+					BlockPos blockpos = movingobjectposition.getBlockPos();
+					
+					vec vec3 = new vec(movingobjectposition.hitVec.x, movingobjectposition.hitVec.y, movingobjectposition.hitVec.z);
+
+					this.serverAttach(blockpos, vec3, movingobjectposition.sideHit);
 				}
-				vec vec3 = null;
-		        
-		        if (movingobjectposition != null)
-		        {
-		            vec3 = new vec(movingobjectposition.hitVec.x, movingobjectposition.hitVec.y, movingobjectposition.hitVec.z);
-		        }
-		        
-		        this.serverAttach(blockpos, vec3, movingobjectposition.sideHit);
 			}
 		}
 	}

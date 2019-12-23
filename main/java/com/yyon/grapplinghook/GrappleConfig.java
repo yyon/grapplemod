@@ -133,6 +133,8 @@ public class GrappleConfig {
 		public int enable_oneropepull = 0;
 		
 		public boolean longfallbootsrecipe = true;
+		
+		public boolean hookaffectsentities = true;
 
 		// ender staff
 		public double ender_staff_strength = 1.5;
