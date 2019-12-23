@@ -316,7 +316,7 @@ public class grappleBow extends Item implements KeypressItem {
     }
     
 	@Override
-	public void onCustomKeyDown(ItemStack stack, EntityPlayer player, KeypressItem.Keys key) {
+	public void onCustomKeyDown(ItemStack stack, EntityPlayer player, KeypressItem.Keys key, boolean ismainhand) {
 		if (player.world.isRemote) {
 			if (key == KeypressItem.Keys.LAUNCHER) {
 				if (this.getCustomization(stack).enderstaff) {
@@ -327,7 +327,7 @@ public class grappleBow extends Item implements KeypressItem {
 			}
 		} else {
 			if (key == KeypressItem.Keys.THROWBOTH) {
-	        	throwBoth(stack, player.world, player, true);
+	        	throwBoth(stack, player.world, player, ismainhand);
 			} else if (key == KeypressItem.Keys.THROWLEFT) {
 				grappleArrow arrow1 = getArrowLeft(player);
 
@@ -336,7 +336,7 @@ public class grappleBow extends Item implements KeypressItem {
 		    		return;
 				}
 				
-				boolean threw = throwLeft(stack, player.world, player, true);
+				boolean threw = throwLeft(stack, player.world, player, ismainhand);
 
 				if (threw) {
 					stack.damageItem(1, player);
@@ -350,27 +350,21 @@ public class grappleBow extends Item implements KeypressItem {
 		    		return;
 				}
 				
-				throwRight(stack, player.world, player, true);
+				throwRight(stack, player.world, player, ismainhand);
 
 				stack.damageItem(1, player);
 		        player.world.playSound((EntityPlayer)null, player.posX, player.posY, player.posZ, SoundEvents.ENTITY_ARROW_SHOOT, SoundCategory.NEUTRAL, 1.0F, 1.0F / (itemRand.nextFloat() * 0.4F + 1.2F) + 2.0F * 0.5F);
 			}
-
-	        System.out.println("Key down");
-			System.out.println(key.toString());
 		}
 	}
 	
 	@Override
-	public void onCustomKeyUp(ItemStack stack, EntityPlayer player, KeypressItem.Keys key) {
+	public void onCustomKeyUp(ItemStack stack, EntityPlayer player, KeypressItem.Keys key, boolean ismainhand) {
 		if (player.world.isRemote) {
-			if (key == KeypressItem.Keys.THROWLEFT || key == KeypressItem.Keys.THROWRIGHT) {
+			if (key == KeypressItem.Keys.THROWLEFT || key == KeypressItem.Keys.THROWRIGHT || key == KeypressItem.Keys.THROWBOTH) {
 				grapplemod.network.sendToServer(new KeypressMessage(key, false));
 			}
 		} else {
-			System.out.println("Key up");
-			System.out.println(key.toString());
-			
 	    	GrappleCustomization custom = this.getCustomization(stack);
 	    	
 	    	if (custom.detachonkeyrelease) {

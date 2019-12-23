@@ -560,9 +560,9 @@ public class grapplemod {
 				Item item = stack.getItem();
 				if (item instanceof KeypressItem) {
 					if (isDown) {
-						((KeypressItem)item).onCustomKeyDown(stack, player, key);
+						((KeypressItem)item).onCustomKeyDown(stack, player, key, true);
 					} else {
-						((KeypressItem)item).onCustomKeyUp(stack, player, key);
+						((KeypressItem)item).onCustomKeyUp(stack, player, key, true);
 					}
 					return;
 				}
@@ -573,9 +573,9 @@ public class grapplemod {
 				Item item = stack.getItem();
 				if (item instanceof KeypressItem) {
 					if (isDown) {
-						((KeypressItem)item).onCustomKeyDown(stack, player, key);
+						((KeypressItem)item).onCustomKeyDown(stack, player, key, false);
 					} else {
-						((KeypressItem)item).onCustomKeyUp(stack, player, key);
+						((KeypressItem)item).onCustomKeyUp(stack, player, key, false);
 					}
 					return;
 				}

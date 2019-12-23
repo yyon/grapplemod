@@ -16,6 +16,7 @@ import com.yyon.grapplinghook.items.grappleBow;
 import com.yyon.grapplinghook.items.launcherItem;
 import com.yyon.grapplinghook.items.repeller;
 
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.renderer.ItemMeshDefinition;
@@ -32,6 +33,8 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.RayTraceResult;
 import net.minecraftforge.client.event.ModelRegistryEvent;
 import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.event.world.BlockEvent.BreakEvent;
@@ -247,6 +250,16 @@ public class ClientProxyClass extends CommonProxyClass {
 		return null;
 	}
 	
+	public boolean isLookingAtModifierBlock(EntityPlayer player) {
+		RayTraceResult raytraceresult = Minecraft.getMinecraft().objectMouseOver;
+		if (raytraceresult.typeOfHit == RayTraceResult.Type.BLOCK) {
+			BlockPos pos = raytraceresult.getBlockPos();
+			IBlockState state = player.world.getBlockState(pos);
+			return (state.getBlock() == grapplemod.blockGrappleModifier);
+		}
+		return false;
+	}
+	
 	@SubscribeEvent
 	public void onClientTick(TickEvent.ClientTickEvent event) {
 		EntityPlayer player = Minecraft.getMinecraft().player;
@@ -272,15 +285,14 @@ public class ClientProxyClass extends CommonProxyClass {
 						if (iskeydown != prevkey) {
 							KeypressItem.Keys key = KeypressItem.Keys.values()[i];
 							
-							System.out.println("client key: ");
-							System.out.println(key.toString());
-							
 							ItemStack stack = getKeypressStack(player);
 							if (stack != null) {
-								if (iskeydown) {
-									((KeypressItem) stack.getItem()).onCustomKeyDown(stack, player, key);
-								} else {
-									((KeypressItem) stack.getItem()).onCustomKeyUp(stack, player, key);
+								if (!isLookingAtModifierBlock(player)) {
+									if (iskeydown) {
+										((KeypressItem) stack.getItem()).onCustomKeyDown(stack, player, key, true);
+									} else {
+										((KeypressItem) stack.getItem()).onCustomKeyUp(stack, player, key, true);
+									}
 								}
 							}
 						}
