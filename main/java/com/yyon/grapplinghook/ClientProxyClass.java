@@ -47,9 +47,7 @@ import net.minecraftforge.fml.common.gameevent.TickEvent.ClientTickEvent;
 import net.minecraftforge.fml.common.network.FMLNetworkEvent.ClientDisconnectionFromServerEvent;
 
 public class ClientProxyClass extends CommonProxyClass {
-	public boolean prevleftclick = false;
-	public boolean prevleftthrow = false;
-	public boolean prevrightthrow = false;
+	public boolean prevkeys[] = {false, false, false, false};
 	
 	public HashMap<Integer, Long> enderlaunchtimer = new HashMap<Integer, Long>();
 	
@@ -180,6 +178,9 @@ public class ClientProxyClass extends CommonProxyClass {
 		return k;
 	}
 	
+	public static KeyBinding key_boththrow = createkeybinding("key.boththrow.desc", -99, "key.grapplemod.category");
+	public static KeyBinding key_leftthrow = createkeybinding("key.leftthrow.desc", 0, "key.grapplemod.category");
+	public static KeyBinding key_rightthrow = createkeybinding("key.rightthrow.desc", 0, "key.grapplemod.category");
 	public static KeyBinding key_motoronoff = createkeybinding("key.motoronoff.desc", Keyboard.KEY_LSHIFT, "key.grapplemod.category");
 	public static KeyBinding key_jumpanddetach = createkeybinding("key.jumpanddetach.desc", Keyboard.KEY_SPACE, "key.grapplemod.category");
 	public static KeyBinding key_slow = createkeybinding("key.slow.desc", Keyboard.KEY_LSHIFT, "key.grapplemod.category");
@@ -187,8 +188,6 @@ public class ClientProxyClass extends CommonProxyClass {
 	public static KeyBinding key_climbup = createkeybinding("key.climbup.desc", Keyboard.KEY_W, "key.grapplemod.category");
 	public static KeyBinding key_climbdown = createkeybinding("key.climbdown.desc", Keyboard.KEY_S, "key.grapplemod.category");
 	public static KeyBinding key_enderlaunch = createkeybinding("key.enderlaunch.desc", -100, "key.grapplemod.category");
-	public static KeyBinding key_leftthrow = createkeybinding("key.leftthrow.desc", 0, "key.grapplemod.category");
-	public static KeyBinding key_rightthrow = createkeybinding("key.rightthrow.desc", 0, "key.grapplemod.category");
 	
 	
 
@@ -227,6 +226,27 @@ public class ClientProxyClass extends CommonProxyClass {
 		}
 	}
 	
+	public ItemStack getKeypressStack(EntityPlayer player) {
+		if (player != null) {
+           ItemStack stack = player.getHeldItemMainhand();
+           if (stack != null) {
+               Item item = stack.getItem();
+               if (item instanceof KeypressItem) {
+            	   return stack;
+               }
+           }
+           
+           stack = player.getHeldItemOffhand();
+           if (stack != null) {
+        	   Item item = stack.getItem();
+        	   if (item instanceof KeypressItem) {
+        		   return stack;
+        	   }
+           }
+		}
+		return null;
+	}
+	
 	@SubscribeEvent
 	public void onClientTick(TickEvent.ClientTickEvent event) {
 		EntityPlayer player = Minecraft.getMinecraft().player;
@@ -242,41 +262,31 @@ public class ClientProxyClass extends CommonProxyClass {
 				}
 				
 				if (Minecraft.getMinecraft().currentScreen == null) {
-					boolean leftclick = key_enderlaunch.isKeyDown();
-					boolean leftthrow = key_leftthrow.isKeyDown();
-					boolean rightthrow = key_rightthrow.isKeyDown();
+					// keep in same order as enum from KeypressItem
+					boolean keys[] = {key_enderlaunch.isKeyDown(), key_leftthrow.isKeyDown(), key_rightthrow.isKeyDown(), key_boththrow.isKeyDown()};
 					
-					if (prevleftclick != leftclick || prevleftthrow != leftthrow || prevrightthrow != rightthrow) {
-						if (player != null) {
-							ItemStack stack = player.getHeldItemMainhand();
+					for (int i = 0; i < keys.length; i++) {
+						boolean iskeydown = keys[i];
+						boolean prevkey = prevkeys[i];
+						
+						if (iskeydown != prevkey) {
+							KeypressItem.Keys key = KeypressItem.Keys.values()[i];
+							
+							System.out.println("client key: ");
+							System.out.println(key.toString());
+							
+							ItemStack stack = getKeypressStack(player);
 							if (stack != null) {
-								Item item = stack.getItem();
-								if (item instanceof KeypressItem) {
-									if (leftclick && !prevleftclick) {
-										((KeypressItem)item).onCustomKeyDown(stack, player, KeypressItem.Keys.LAUNCHER);
-									} else if (!leftclick && prevleftclick) {
-										((KeypressItem)item).onCustomKeyUp(stack, player, KeypressItem.Keys.LAUNCHER);
-									}
-
-									if (leftthrow && !prevleftthrow) {
-										((KeypressItem)item).onCustomKeyDown(stack, player, KeypressItem.Keys.THROWLEFT);
-									} else if (!leftthrow && prevleftthrow) {
-										((KeypressItem)item).onCustomKeyUp(stack, player, KeypressItem.Keys.THROWLEFT);
-									}
-
-									if (rightthrow && !prevrightthrow) {
-										((KeypressItem)item).onCustomKeyDown(stack, player, KeypressItem.Keys.THROWRIGHT);
-									} else if (!leftthrow && prevrightthrow) {
-										((KeypressItem)item).onCustomKeyUp(stack, player, KeypressItem.Keys.THROWRIGHT);
-									}
+								if (iskeydown) {
+									((KeypressItem) stack.getItem()).onCustomKeyDown(stack, player, key);
+								} else {
+									((KeypressItem) stack.getItem()).onCustomKeyUp(stack, player, key);
 								}
 							}
 						}
+						
+						prevkeys[i] = iskeydown;
 					}
-					
-					prevleftclick = leftclick;
-					prevleftthrow = leftthrow;
-					prevrightthrow = rightthrow;
 				}
 				
 				if (player.onGround) {

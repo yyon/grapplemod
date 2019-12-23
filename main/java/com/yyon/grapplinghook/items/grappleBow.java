@@ -119,7 +119,6 @@ public class grappleBow extends Item implements KeypressItem {
 	
 	public void dorightclick(ItemStack stack, World worldIn, EntityLivingBase entityLiving, boolean righthand) {
         if (!worldIn.isRemote) {
-        	throwBoth(stack, worldIn, entityLiving, righthand);
     	}
 	}
 	
@@ -140,7 +139,7 @@ public class grappleBow extends Item implements KeypressItem {
         worldIn.playSound((EntityPlayer)null, entityLiving.posX, entityLiving.posY, entityLiving.posZ, SoundEvents.ENTITY_ARROW_SHOOT, SoundCategory.NEUTRAL, 1.0F, 1.0F / (itemRand.nextFloat() * 0.4F + 1.2F) + 2.0F * 0.5F);
 	}
 	
-	public void throwLeft(ItemStack stack, World worldIn, EntityLivingBase entityLiving, boolean righthand) {
+	public boolean throwLeft(ItemStack stack, World worldIn, EntityLivingBase entityLiving, boolean righthand) {
     	GrappleCustomization custom = this.getCustomization(stack);
     	
   		double angle = custom.angle;
@@ -169,7 +168,11 @@ public class grappleBow extends Item implements KeypressItem {
             
 			worldIn.spawnEntity(entityarrow);
 			setArrowLeft(entityLiving, entityarrow);    			
+			
+			return true;
     	}
+    	
+    	return false;
 	}
 	
 	public void throwRight(ItemStack stack, World worldIn, EntityLivingBase entityLiving, boolean righthand) {
@@ -319,11 +322,13 @@ public class grappleBow extends Item implements KeypressItem {
 				if (this.getCustomization(stack).enderstaff) {
 					grapplemod.proxy.launchplayer(player);
 				}
-			} else if (key == KeypressItem.Keys.THROWLEFT || key == KeypressItem.Keys.THROWRIGHT) {
+			} else if (key == KeypressItem.Keys.THROWLEFT || key == KeypressItem.Keys.THROWRIGHT || key == KeypressItem.Keys.THROWBOTH) {
 				grapplemod.network.sendToServer(new KeypressMessage(key, true));
 			}
 		} else {
-			if (key == KeypressItem.Keys.THROWLEFT) {
+			if (key == KeypressItem.Keys.THROWBOTH) {
+	        	throwBoth(stack, player.world, player, true);
+			} else if (key == KeypressItem.Keys.THROWLEFT) {
 				grappleArrow arrow1 = getArrowLeft(player);
 
 	    		if (arrow1 != null) {
@@ -331,10 +336,12 @@ public class grappleBow extends Item implements KeypressItem {
 		    		return;
 				}
 				
-				throwLeft(stack, player.world, player, true);
+				boolean threw = throwLeft(stack, player.world, player, true);
 
-				stack.damageItem(1, player);
-		        player.world.playSound((EntityPlayer)null, player.posX, player.posY, player.posZ, SoundEvents.ENTITY_ARROW_SHOOT, SoundCategory.NEUTRAL, 1.0F, 1.0F / (itemRand.nextFloat() * 0.4F + 1.2F) + 2.0F * 0.5F);
+				if (threw) {
+					stack.damageItem(1, player);
+			        player.world.playSound((EntityPlayer)null, player.posX, player.posY, player.posZ, SoundEvents.ENTITY_ARROW_SHOOT, SoundCategory.NEUTRAL, 1.0F, 1.0F / (itemRand.nextFloat() * 0.4F + 1.2F) + 2.0F * 0.5F);
+				}
 			} else if (key == KeypressItem.Keys.THROWRIGHT) {
 				grappleArrow arrow2 = getArrowRight(player);
 
@@ -363,6 +370,22 @@ public class grappleBow extends Item implements KeypressItem {
 		} else {
 			System.out.println("Key up");
 			System.out.println(key.toString());
+			
+	    	GrappleCustomization custom = this.getCustomization(stack);
+	    	
+	    	if (custom.detachonkeyrelease) {
+	    		grappleArrow arrow_left = getArrowLeft(player);
+	    		grappleArrow arrow_right = getArrowRight(player);
+	    		
+				if (key == KeypressItem.Keys.THROWBOTH) {
+		    		if (arrow_left != null) detachLeft(player);
+		    		if (arrow_right != null) detachRight(player);
+				} else if (key == KeypressItem.Keys.THROWLEFT) {
+		    		if (arrow_left != null) detachLeft(player);
+				} else if (key == KeypressItem.Keys.THROWRIGHT) {
+		    		if (arrow_right != null) detachRight(player);
+				}
+	    	}
 		}
 	}
    

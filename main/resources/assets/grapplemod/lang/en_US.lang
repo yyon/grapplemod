@@ -26,4 +26,5 @@ key.climbup.desc=Climb up
 key.climbdown.desc=Climb down
 key.leftthrow.desc=Throw Left Hook
 key.rightthrow.desc=Throw Right Hook
+key.boththrow.desc=Throw Hook(s)
 key.enderlaunch.desc=Hook Ender Staff Launch

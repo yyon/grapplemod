@@ -564,6 +564,20 @@ public class grapplemod {
 					} else {
 						((KeypressItem)item).onCustomKeyUp(stack, player, key);
 					}
+					return;
+				}
+			}
+
+			stack = player.getHeldItemOffhand();
+			if (stack != null) {
+				Item item = stack.getItem();
+				if (item instanceof KeypressItem) {
+					if (isDown) {
+						((KeypressItem)item).onCustomKeyDown(stack, player, key);
+					} else {
+						((KeypressItem)item).onCustomKeyUp(stack, player, key);
+					}
+					return;
 				}
 			}
 		}

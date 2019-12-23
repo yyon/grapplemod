@@ -134,6 +134,7 @@ public class GuiModifier extends GuiScreen {
 			addCheckbox("reelin");
 			addSlider("verticalthrowangle");
 			addSlider("sneakingverticalthrowangle");
+			addCheckbox("detachonkeyrelease");
 		} else if (category == grapplemod.upgradeCategories.MOTOR) {
 			addCheckbox("motor");
 			addSlider("motormaxspeed");

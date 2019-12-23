@@ -4,7 +4,7 @@ import io.netty.buffer.ByteBuf;
 import net.minecraft.nbt.NBTTagCompound;
 
 public class GrappleCustomization {
-	public static final String[] booleanoptions = new String[] {"phaserope", "motor", "motorwhencrouching", "motorwhennotcrouching", "smartmotor", "enderstaff", "repel", "attract", "doublehook", "smartdoublemotor", "motordampener", "reelin", "pullbackwards", "oneropepull", "climbkey", "sticky"};
+	public static final String[] booleanoptions = new String[] {"phaserope", "motor", "motorwhencrouching", "motorwhennotcrouching", "smartmotor", "enderstaff", "repel", "attract", "doublehook", "smartdoublemotor", "motordampener", "reelin", "pullbackwards", "oneropepull", "climbkey", "sticky", "detachonkeyrelease"};
 	public static final String[] doubleoptions = new String[] {"maxlen", "hookgravity", "throwspeed", "motormaxspeed", "motoracceleration", "playermovementmult", "repelforce", "attractradius", "angle", "sneakingangle", "verticalthrowangle", "sneakingverticalthrowangle"};
 	
 	// rope
@@ -19,6 +19,7 @@ public class GrappleCustomization {
 	public boolean reelin = GrappleConfig.getconf().default_reelin;
 	public double verticalthrowangle = GrappleConfig.getconf().default_verticalthrowangle;
 	public double sneakingverticalthrowangle = GrappleConfig.getconf().default_sneakingverticalthrowangle;
+	public boolean detachonkeyrelease = GrappleConfig.getconf().default_detachonkeyrelease;
 
 	// motor
 	public boolean motor = GrappleConfig.getconf().default_motor;
@@ -96,6 +97,7 @@ public class GrappleCustomization {
 		else if (option.equals("oneropepull")) {this.oneropepull = bool;}
 		else if (option.equals("climbkey")) {this.climbkey = bool;}
 		else if (option.equals("sticky")) {this.sticky = bool;}
+		else if (option.equals("detachonkeyrelease")) {this.detachonkeyrelease = bool;}
 	}
 	
 	public boolean getBoolean(String option) {
@@ -115,6 +117,7 @@ public class GrappleCustomization {
 		else if (option.equals("oneropepull")) {return this.oneropepull;}
 		else if (option.equals("climbkey")) {return this.climbkey;}
 		else if (option.equals("sticky")) {return this.sticky;}
+		else if (option.equals("detachonkeyrelease")) {return this.detachonkeyrelease;}
 		System.out.println("Option doesn't exist: " + option);
 		return false;
 	}
@@ -198,6 +201,7 @@ public class GrappleCustomization {
 		else if (option.equals("sneakingverticalthrowangle")) {return "Crouching Vertical Angle ";}
 		else if (option.equals("climbkey")) {return "Dedicated Climbing Key";}
 		else if (option.equals("sticky")) {return "Sticky Rope";}
+		else if (option.equals("detachonkeyrelease")) {return "Detach Hook On Button/Key Release";}
 		return "unknown option";
 	}
 	
@@ -230,6 +234,7 @@ public class GrappleCustomization {
 		else if (option.equals("sneakingverticalthrowangle")) {return "Throws the grappling hook above the crosshairs by this angle when crouching";}
 		else if (option.equals("climbkey")) {return "Ignore climb up/climb down keys unless the \"climb\" key is held";}
 		else if (option.equals("sticky")) {return "If the rope bends around a block as it is being thrown, attach at bend";}
+		else if (option.equals("detachonkeyrelease")) {return "When enabled, hook is only out while button/key is held down. Instead of clicking / pressing key again to detach the hook, release the button/key to detach the hook.";}
 		return "unknown option";
 	}
 	
@@ -315,6 +320,9 @@ public class GrappleCustomization {
 		else if (option.equals("sneakingangle")) {return GrappleConfig.getconf().enable_sneakingangle;}
 		else if (option.equals("oneropepull")) {return GrappleConfig.getconf().enable_oneropepull;}
 		else if (option.equals("sneakingverticalthrowangle")) {return GrappleConfig.getconf().enable_sneakingverticalthrowangle;}
+		else if (option.equals("climbkey")) {return GrappleConfig.getconf().enable_climbkey;}
+		else if (option.equals("sticky")) {return GrappleConfig.getconf().enable_sticky;}
+		else if (option.equals("detachonkeyrelease")) {return GrappleConfig.getconf().enable_detachonkeyrelease;}
 		System.out.println("Unknown option");
 		return 0;
 	}

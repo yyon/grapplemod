@@ -16,6 +16,7 @@ public class GrappleConfig {
 		public boolean default_reelin = true;
 		public double default_verticalthrowangle = 0F;
 		public double default_sneakingverticalthrowangle = 0F;
+		public boolean default_detachonkeyrelease = false;
 		// motor
 		public boolean default_motor = false;
 		public double default_motormaxspeed = 4;
@@ -96,12 +97,15 @@ public class GrappleConfig {
 		// rope
 		public int enable_maxlen = 0;
 		public int enable_phaserope = 0;
+		public int enable_climbkey = 0;
+		public int enable_sticky = 0;
 		// hook thrower
 		public int enable_hookgravity = 0;
 		public int enable_throwspeed = 0;
 		public int enable_reelin = 0;
 		public int enable_verticalthrowangle = 0;
 		public int enable_sneakingverticalthrowangle = 0;
+		public int enable_detachonkeyrelease = 0;
 		// motor
 		public int enable_motor = 0;
 		public int enable_motormaxspeed = 0;
