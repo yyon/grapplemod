@@ -122,20 +122,23 @@ public class crosshairRenderer {
 //		        GlStateManager.enableBlend();
 //	            GlStateManager.tryBlendFuncSeparate(GlStateManager.SourceFactor.ONE_MINUS_DST_COLOR, GlStateManager.DestFactor.ONE_MINUS_SRC_COLOR, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
 //	            GlStateManager.enableAlpha();
-				GlStateManager.disableLighting();
+
+		        GlStateManager.disableLighting();
 				GlStateManager.disableDepth();
 				GlStateManager.disableTexture2D();
+//				GlStateManager.enableBlend();
+//				GlStateManager.enableAlpha();
 
-				GlStateManager.enableBlend();
-				GlStateManager.enableAlpha();
-//	            GlStateManager.tryBlendFuncSeparate(GlStateManager.SourceFactor.ONE_MINUS_DST_COLOR, GlStateManager.DestFactor.ONE_MINUS_SRC_COLOR, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
+				//	            GlStateManager.tryBlendFuncSeparate(GlStateManager.SourceFactor.ONE_MINUS_DST_COLOR, GlStateManager.DestFactor.ONE_MINUS_SRC_COLOR, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
 				
 	            this.drawRect(w / 2 - totalbarlength / 2, h * 3 / 4, totalbarlength, 2, 200, 100);
 	            this.drawRect(w / 2 - totalbarlength / 2, h * 3 / 4, (int) (totalbarlength * rocketFuel), 2, 100, 255);
 	            
+//				GlStateManager.disableBlend();
+//				GlStateManager.disableAlpha();
 				GlStateManager.enableTexture2D();
-				GlStateManager.enableLighting();
-				GlStateManager.enableDepth();
+//				GlStateManager.enableLighting();
+//				GlStateManager.enableDepth();
 
 		        GlStateManager.popMatrix();
 //	            GlStateManager.disableAlpha();
