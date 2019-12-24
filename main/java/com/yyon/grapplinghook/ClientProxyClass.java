@@ -286,8 +286,6 @@ public class ClientProxyClass extends CommonProxyClass {
 
 				if (this.rocketFuel > 1) {this.rocketFuel = 1;}
 				
-				System.out.println(this.rocketFuel);
-
 				if (Minecraft.getMinecraft().currentScreen == null) {
 					// keep in same order as enum from KeypressItem
 					boolean keys[] = {key_enderlaunch.isKeyDown(), key_leftthrow.isKeyDown(), key_rightthrow.isKeyDown(), key_boththrow.isKeyDown(), key_rocket.isKeyDown()};

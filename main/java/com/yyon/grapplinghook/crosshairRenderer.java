@@ -1,5 +1,7 @@
 package com.yyon.grapplinghook;
 
+import org.lwjgl.opengl.GL11;
+
 import com.yyon.grapplinghook.items.grappleBow;
 
 import net.minecraft.client.Minecraft;
@@ -97,8 +99,52 @@ public class crosshairRenderer {
 			                this.drawTexturedModalRect(w / 2 - 7 - offset, h / 2 - 7 + verticaloffset, 0, 0, 16, 16);
 		                }
 		            }
+
 		        }
 			}
+		}
+
+		if (event.getType() == RenderGameOverlayEvent.ElementType.EXPERIENCE) {
+	    	double rocketFuel = ((ClientProxyClass) grapplemod.proxy).rocketFuel;
+	
+	    	if (rocketFuel < 1) {
+	        	System.out.println("fuel");
+				ScaledResolution resolution = event.getResolution();
+				
+	            int w = resolution.getScaledWidth();
+	            int h = resolution.getScaledHeight();
+	            
+	    		int totalbarlength = w / 8;
+	    		
+		        GlStateManager.pushMatrix();
+//		        mc.entityRenderer.setupOverlayRendering();
+//		        GlStateManager.color(0.5F, 1.0F, 1.0F, 0.5F);
+	//	        mc.getTextureManager().bindTexture(Gui.ICONS);
+//		        GlStateManager.enableBlend();
+//	            GlStateManager.tryBlendFuncSeparate(GlStateManager.SourceFactor.ONE_MINUS_DST_COLOR, GlStateManager.DestFactor.ONE_MINUS_SRC_COLOR, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
+//	            GlStateManager.enableAlpha();
+				GlStateManager.disableLighting();
+				GlStateManager.disableDepth();
+				GlStateManager.disableTexture2D();
+
+				GlStateManager.enableBlend();
+				GlStateManager.enableAlpha();
+//	            GlStateManager.tryBlendFuncSeparate(GlStateManager.SourceFactor.ONE_MINUS_DST_COLOR, GlStateManager.DestFactor.ONE_MINUS_SRC_COLOR, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
+				
+	            this.drawRect(w / 2 - totalbarlength / 2, h * 3 / 4, totalbarlength, 2, 200, 100);
+	            this.drawRect(w / 2 - totalbarlength / 2, h * 3 / 4, (int) (totalbarlength * rocketFuel), 2, 100, 255);
+	            System.out.println((int) (totalbarlength * rocketFuel));
+	            System.out.print(w / 2 - totalbarlength / 2);
+	            System.out.print(h / 2 + 20);
+	            
+				GlStateManager.enableTexture2D();
+				GlStateManager.enableLighting();
+				GlStateManager.enableDepth();
+
+		        GlStateManager.popMatrix();
+//	            GlStateManager.disableAlpha();
+//	            GlStateManager.disableBlend();
+	    	}
 		}
 	}
 	
@@ -113,6 +159,17 @@ public class crosshairRenderer {
         vertexbuffer.pos((double)(x + width), (double)(y + height), (double)this.zLevel).tex((double)((float)(textureX + width) * f), (double)((float)(textureY + height) * f1)).endVertex();
         vertexbuffer.pos((double)(x + width), (double)(y + 0), (double)this.zLevel).tex((double)((float)(textureX + width) * f), (double)((float)(textureY + 0) * f1)).endVertex();
         vertexbuffer.pos((double)(x + 0), (double)(y + 0), (double)this.zLevel).tex((double)((float)(textureX + 0) * f), (double)((float)(textureY + 0) * f1)).endVertex();
+        tessellator.draw();
+    }
+    public void drawRect(int x, int y, int width, int height, int g, int a)
+    {
+        Tessellator tessellator = Tessellator.getInstance();
+        BufferBuilder vertexbuffer = tessellator.getBuffer();
+        vertexbuffer.begin(7, DefaultVertexFormats.POSITION_COLOR);
+        vertexbuffer.pos((double)(x + 0), (double)(y + height), (double)this.zLevel).color(g, g, g, a).endVertex();
+        vertexbuffer.pos((double)(x + width), (double)(y + height), (double)this.zLevel).color(g, g, g, a).endVertex();
+        vertexbuffer.pos((double)(x + width), (double)(y + 0), (double)this.zLevel).color(g, g, g, a).endVertex();
+        vertexbuffer.pos((double)(x + 0), (double)(y + 0), (double)this.zLevel).color(g, g, g, a).endVertex();
         tessellator.draw();
     }
 }
