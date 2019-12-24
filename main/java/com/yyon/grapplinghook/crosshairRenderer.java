@@ -108,8 +108,7 @@ public class crosshairRenderer {
 	    	double rocketFuel = ((ClientProxyClass) grapplemod.proxy).rocketFuel;
 	
 	    	if (rocketFuel < 1) {
-	        	System.out.println("fuel");
-				ScaledResolution resolution = event.getResolution();
+ 				ScaledResolution resolution = event.getResolution();
 				
 	            int w = resolution.getScaledWidth();
 	            int h = resolution.getScaledHeight();
@@ -133,9 +132,6 @@ public class crosshairRenderer {
 				
 	            this.drawRect(w / 2 - totalbarlength / 2, h * 3 / 4, totalbarlength, 2, 200, 100);
 	            this.drawRect(w / 2 - totalbarlength / 2, h * 3 / 4, (int) (totalbarlength * rocketFuel), 2, 100, 255);
-	            System.out.println((int) (totalbarlength * rocketFuel));
-	            System.out.print(w / 2 - totalbarlength / 2);
-	            System.out.print(h / 2 + 20);
 	            
 				GlStateManager.enableTexture2D();
 				GlStateManager.enableLighting();
