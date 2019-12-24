@@ -28,6 +28,7 @@ import com.yyon.grapplinghook.items.upgrades.ForcefieldUpgradeItem;
 import com.yyon.grapplinghook.items.upgrades.LimitsUpgradeItem;
 import com.yyon.grapplinghook.items.upgrades.MagnetUpgradeItem;
 import com.yyon.grapplinghook.items.upgrades.MotorUpgradeItem;
+import com.yyon.grapplinghook.items.upgrades.RocketUpgradeItem;
 import com.yyon.grapplinghook.items.upgrades.RopeUpgradeItem;
 import com.yyon.grapplinghook.items.upgrades.StaffUpgradeItem;
 import com.yyon.grapplinghook.items.upgrades.SwingUpgradeItem;
@@ -126,6 +127,7 @@ public class grapplemod {
     public static Item swingupgradeitem;
     public static Item throwupgradeitem;
     public static Item limitsupgradeitem;
+    public static Item rocketupgradeitem;
 
 	public static Object instance;
 	
@@ -160,7 +162,8 @@ public class grapplemod {
 		FORCEFIELD ("Forcefield"), 
 		MAGNET ("Hook Magnet"), 
 		DOUBLE ("Double Hook"),
-		LIMITS ("Limits");
+		LIMITS ("Limits"),
+		ROCKET ("Rocket");
 		
 		public String description;
 		private upgradeCategories(String desc) {
@@ -200,6 +203,8 @@ public class grapplemod {
 				return doubleupgradeitem;
 			} else if (this == upgradeCategories.LIMITS) {
 				return limitsupgradeitem;
+			} else if (this == upgradeCategories.ROCKET) {
+				return rocketupgradeitem;
 			}
 			return null;
 		}
@@ -267,7 +272,7 @@ public class grapplemod {
 	public void registerItems(RegistryEvent.Register<Item> event) {
 //		System.out.println("REGISTERING ITEMS");
 //		System.out.println(grapplebowitem);
-	    event.getRegistry().registerAll(grapplebowitem, motorhookitem, smarthookitem, doublemotorhookitem, enderhookitem, magnethookitem, launcheritem, longfallboots, repelleritem, baseupgradeitem, doubleupgradeitem, forcefieldupgradeitem, magnetupgradeitem, motorupgradeitem, ropeupgradeitem, staffupgradeitem, swingupgradeitem, throwupgradeitem, limitsupgradeitem);
+	    event.getRegistry().registerAll(grapplebowitem, motorhookitem, smarthookitem, doublemotorhookitem, enderhookitem, magnethookitem, launcheritem, longfallboots, repelleritem, baseupgradeitem, doubleupgradeitem, forcefieldupgradeitem, magnetupgradeitem, motorupgradeitem, ropeupgradeitem, staffupgradeitem, swingupgradeitem, throwupgradeitem, limitsupgradeitem, rocketupgradeitem);
 
 	}
 	
@@ -321,6 +326,9 @@ public class grapplemod {
 	    limitsupgradeitem = new LimitsUpgradeItem();
 	    limitsupgradeitem.setRegistryName("limitsupgradeitem");
 	    limitsupgradeitem.setContainerItem(limitsupgradeitem);
+	    rocketupgradeitem = new RocketUpgradeItem();
+	    rocketupgradeitem.setRegistryName("rocketupgradeitem");
+	    rocketupgradeitem.setContainerItem(rocketupgradeitem);
 	    
 //		System.out.println(grapplebowitem);
 		
@@ -467,7 +475,7 @@ public class grapplemod {
 		} else if (id == REPELID) {
 			control = new repelController(arrowid, entityid, world, pos, id);
 		} else if (id == AIRID) {
-			control = new airfrictionController(arrowid, entityid, world, pos, id);
+			control = new airfrictionController(arrowid, entityid, world, pos, id, custom);
 		}
 		if (blockpos != null && control != null) {
 			grapplemod.controllerpos.put(blockpos, control);

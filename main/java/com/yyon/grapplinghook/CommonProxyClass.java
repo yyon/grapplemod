@@ -117,4 +117,14 @@ public class CommonProxyClass {
 	public String localize(String string) {
 		return string;
 	}
+
+	public void startrocket(EntityPlayer player, GrappleCustomization custom) {
+	}
+	
+	public void updateRocketRegen(double rocket_active_time, double rocket_refuel_ratio) {
+	}
+
+	public double getRocketFunctioning() {
+		return 0;
+	}
 }

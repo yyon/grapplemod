@@ -4,8 +4,8 @@ import io.netty.buffer.ByteBuf;
 import net.minecraft.nbt.NBTTagCompound;
 
 public class GrappleCustomization {
-	public static final String[] booleanoptions = new String[] {"phaserope", "motor", "motorwhencrouching", "motorwhennotcrouching", "smartmotor", "enderstaff", "repel", "attract", "doublehook", "smartdoublemotor", "motordampener", "reelin", "pullbackwards", "oneropepull", "climbkey", "sticky", "detachonkeyrelease"};
-	public static final String[] doubleoptions = new String[] {"maxlen", "hookgravity", "throwspeed", "motormaxspeed", "motoracceleration", "playermovementmult", "repelforce", "attractradius", "angle", "sneakingangle", "verticalthrowangle", "sneakingverticalthrowangle"};
+	public static final String[] booleanoptions = new String[] {"phaserope", "motor", "motorwhencrouching", "motorwhennotcrouching", "smartmotor", "enderstaff", "repel", "attract", "doublehook", "smartdoublemotor", "motordampener", "reelin", "pullbackwards", "oneropepull", "climbkey", "sticky", "detachonkeyrelease", "rocket"};
+	public static final String[] doubleoptions = new String[] {"maxlen", "hookgravity", "throwspeed", "motormaxspeed", "motoracceleration", "playermovementmult", "repelforce", "attractradius", "angle", "sneakingangle", "verticalthrowangle", "sneakingverticalthrowangle", "rocket_active_time", "rocket_refuel_ratio"};
 	
 	// rope
 	public double maxlen = GrappleConfig.getconf().default_maxlen;
@@ -51,6 +51,12 @@ public class GrappleCustomization {
 	public double angle = GrappleConfig.getconf().default_angle;
 	public double sneakingangle = GrappleConfig.getconf().default_sneakingangle;
 	public boolean oneropepull = GrappleConfig.getconf().default_oneropepull;
+	
+	// rocket
+	public boolean rocket = GrappleConfig.getconf().default_rocketenabled;
+	public double rocket_force = GrappleConfig.getconf().default_rocket_force;
+	public double rocket_active_time = GrappleConfig.getconf().default_rocket_active_time;
+	public double rocket_refuel_ratio = GrappleConfig.getconf().default_rocket_refuel_ratio;
 	
 	public GrappleCustomization() {
 		
@@ -98,6 +104,7 @@ public class GrappleCustomization {
 		else if (option.equals("climbkey")) {this.climbkey = bool;}
 		else if (option.equals("sticky")) {this.sticky = bool;}
 		else if (option.equals("detachonkeyrelease")) {this.detachonkeyrelease = bool;}
+		else if (option.equals("rocket")) {this.rocket = bool;}
 	}
 	
 	public boolean getBoolean(String option) {
@@ -118,6 +125,7 @@ public class GrappleCustomization {
 		else if (option.equals("climbkey")) {return this.climbkey;}
 		else if (option.equals("sticky")) {return this.sticky;}
 		else if (option.equals("detachonkeyrelease")) {return this.detachonkeyrelease;}
+		else if (option.equals("rocket")) {return this.rocket;}
 		System.out.println("Option doesn't exist: " + option);
 		return false;
 	}
@@ -135,6 +143,9 @@ public class GrappleCustomization {
 		else if (option.equals("sneakingangle")) {this.sneakingangle = d;}
 		else if (option.equals("verticalthrowangle")) {this.verticalthrowangle = d;}
 		else if (option.equals("sneakingverticalthrowangle")) {this.sneakingverticalthrowangle = d;}
+		else if (option.equals("rocket_force")) {this.rocket_force = d;}
+		else if (option.equals("rocket_active_time")) {this.rocket_active_time = d;}
+		else if (option.equals("rocket_refuel_ratio")) {this.rocket_refuel_ratio = d;}
 	}
 	
 	public double getDouble(String option) {
@@ -150,6 +161,9 @@ public class GrappleCustomization {
 		else if (option.equals("sneakingangle")) {return sneakingangle;}
 		else if (option.equals("verticalthrowangle")) {return verticalthrowangle;}
 		else if (option.equals("sneakingverticalthrowangle")) {return sneakingverticalthrowangle;}
+		else if (option.equals("rocket_force")) {return this.rocket_force;}
+		else if (option.equals("rocket_active_time")) {return rocket_active_time;}
+		else if (option.equals("rocket_refuel_ratio")) {return rocket_refuel_ratio;}
 		System.out.println("Option doesn't exist: " + option);
 		return 0;
 	}
@@ -209,6 +223,10 @@ public class GrappleCustomization {
 			return this.doublehook && this.motor;
 		}
 		
+		else if (option == "rocket_active_time" || option == "rocket_refuel_ratio" || option == "rocket_force") {
+			return this.rocket;
+		}
+		
 		return true;
 	}
 	
@@ -225,12 +243,16 @@ public class GrappleCustomization {
 		else if (option.equals("sneakingangle")) {return upgrade == 1 ? GrappleConfig.getconf().max_upgrade_sneakingangle : GrappleConfig.getconf().max_sneakingangle;}
 		else if (option.equals("verticalthrowangle")) {return upgrade == 1 ? GrappleConfig.getconf().max_upgrade_verticalthrowangle : GrappleConfig.getconf().max_verticalthrowangle;}
 		else if (option.equals("sneakingverticalthrowangle")) {return upgrade == 1 ? GrappleConfig.getconf().max_upgrade_sneakingverticalthrowangle : GrappleConfig.getconf().max_sneakingverticalthrowangle;}
+		else if (option.equals("rocket_force")) {return upgrade == 1 ? GrappleConfig.getconf().max_upgrade_rocket_force: GrappleConfig.getconf().max_rocket_force;}
+		else if (option.equals("rocket_active_time")) {return upgrade == 1 ? GrappleConfig.getconf().max_upgrade_rocket_active_time : GrappleConfig.getconf().max_rocket_active_time;}
+		else if (option.equals("rocket_refuel_ratio")) {return upgrade == 1 ? GrappleConfig.getconf().max_upgrade_rocket_refuel_ratio : GrappleConfig.getconf().max_rocket_refuel_ratio;}
 		System.out.println("Option doesn't exist: " + option);
 		return 0;
 	}
 	
 	public double getMin(String option, int upgrade) {
 		if (option.equals("hookgravity")) {return upgrade == 1 ? GrappleConfig.getconf().min_upgrade_hookgravity : GrappleConfig.getconf().min_hookgravity;}
+		if (option.equals("rocket_refuel_ratio")) {return upgrade == 1 ? GrappleConfig.getconf().min_upgrade_rocket_refuel_ratio : GrappleConfig.getconf().min_rocket_refuel_ratio;}
 		
 		return 0;
 	}
@@ -265,6 +287,10 @@ public class GrappleCustomization {
 		else if (option.equals("climbkey")) {return GrappleConfig.getconf().enable_climbkey;}
 		else if (option.equals("sticky")) {return GrappleConfig.getconf().enable_sticky;}
 		else if (option.equals("detachonkeyrelease")) {return GrappleConfig.getconf().enable_detachonkeyrelease;}
+		else if (option.equals("rocket")) {return GrappleConfig.getconf().enable_rocket;}
+		else if (option.equals("rocket_force")) {return GrappleConfig.getconf().enable_rocket_force;}
+		else if (option.equals("rocket_active_time")) {return GrappleConfig.getconf().enable_rocket_active_time;}
+		else if (option.equals("rocket_refuel_ratio")) {return GrappleConfig.getconf().enable_rocket_refuel_ratio;}
 		System.out.println("Unknown option");
 		return 0;
 	}

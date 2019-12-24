@@ -51,9 +51,13 @@ import net.minecraftforge.fml.common.gameevent.TickEvent.ClientTickEvent;
 import net.minecraftforge.fml.common.network.FMLNetworkEvent.ClientDisconnectionFromServerEvent;
 
 public class ClientProxyClass extends CommonProxyClass {
-	public boolean prevkeys[] = {false, false, false, false};
+	public boolean prevkeys[] = {false, false, false, false, false};
 	
 	public HashMap<Integer, Long> enderlaunchtimer = new HashMap<Integer, Long>();
+	
+	public double rocketFuel = 1.0;
+	public double rocketIncreaseTick = 0.0;
+	public double rocketDecreaseTick = 0.0;
 	
 	@Override
 	public void preInit(FMLPreInitializationEvent event) {
@@ -113,6 +117,7 @@ public class ClientProxyClass extends CommonProxyClass {
 		registerItemModel(grapplemod.swingupgradeitem);
 		registerItemModel(grapplemod.throwupgradeitem);
 		registerItemModel(grapplemod.limitsupgradeitem);
+		registerItemModel(grapplemod.rocketupgradeitem);
 		
 		ItemMeshDefinition itemmeshdefinition = new ItemMeshDefinition() {
 			@Override
@@ -192,6 +197,7 @@ public class ClientProxyClass extends CommonProxyClass {
 	public static KeyBinding key_climbup = createkeybinding("key.climbup.desc", Keyboard.KEY_W, "key.grapplemod.category");
 	public static KeyBinding key_climbdown = createkeybinding("key.climbdown.desc", Keyboard.KEY_S, "key.grapplemod.category");
 	public static KeyBinding key_enderlaunch = createkeybinding("key.enderlaunch.desc", -100, "key.grapplemod.category");
+	public static KeyBinding key_rocket = createkeybinding("key.rocket.desc", -100, "key.grapplemod.category");
 	
 	
 
@@ -266,6 +272,9 @@ public class ClientProxyClass extends CommonProxyClass {
 		EntityPlayer player = Minecraft.getMinecraft().player;
 		if (player != null) {
 			if (!Minecraft.getMinecraft().isGamePaused() || !Minecraft.getMinecraft().isSingleplayer()) {
+				
+				this.rocketFuel += this.rocketIncreaseTick;
+				
 				try {
 					Collection<grappleController> controllers = grapplemod.controllers.values();
 					for (grappleController controller : controllers) {
@@ -274,10 +283,14 @@ public class ClientProxyClass extends CommonProxyClass {
 				} catch (ConcurrentModificationException e) {
 					System.out.println("ConcurrentModificationException caught");
 				}
+
+				if (this.rocketFuel > 1) {this.rocketFuel = 1;}
 				
+				System.out.println(this.rocketFuel);
+
 				if (Minecraft.getMinecraft().currentScreen == null) {
 					// keep in same order as enum from KeypressItem
-					boolean keys[] = {key_enderlaunch.isKeyDown(), key_leftthrow.isKeyDown(), key_rightthrow.isKeyDown(), key_boththrow.isKeyDown()};
+					boolean keys[] = {key_enderlaunch.isKeyDown(), key_leftthrow.isKeyDown(), key_rightthrow.isKeyDown(), key_boththrow.isKeyDown(), key_rocket.isKeyDown()};
 					
 					for (int i = 0; i < keys.length; i++) {
 						boolean iskeydown = keys[i];
@@ -315,6 +328,14 @@ public class ClientProxyClass extends CommonProxyClass {
 	}
 	
 	@Override
+	public void startrocket(EntityPlayer player, GrappleCustomization custom) {
+		if (!grapplemod.controllers.containsKey(player.getEntityId())) {
+			grapplemod.createControl(grapplemod.AIRID, -1, player.getEntityId(), player.world, new vec(0,0,0), null, custom);
+		}
+	}
+
+	
+	@Override
 	public void launchplayer(EntityPlayer player) {
 		long prevtime;
 		if (enderlaunchtimer.containsKey(player.getEntityId())) {
@@ -347,10 +368,18 @@ public class ClientProxyClass extends CommonProxyClass {
 					grapplemod.receiveEnderLaunch(player.getEntityId(), facing.x, facing.y, facing.z);
 				}
 				*/
+	        	
+	        	GrappleCustomization custom = null;
+	        	if (player.getHeldItemMainhand().getItem() instanceof grappleBow) {
+	        		custom = ((grappleBow) player.getHeldItemMainhand().getItem()).getCustomization(player.getHeldItemMainhand());
+	        	} else if (player.getHeldItemOffhand().getItem() instanceof grappleBow) {
+	        		custom = ((grappleBow) player.getHeldItemOffhand().getItem()).getCustomization(player.getHeldItemOffhand());
+	        	}
+	        	
 	        	System.out.println("Launch!");
 				if (!grapplemod.controllers.containsKey(player.getEntityId())) {
 					player.onGround = false;
-					grapplemod.createControl(grapplemod.AIRID, -1, player.getEntityId(), player.world, new vec(0,0,0), null, null);
+					grapplemod.createControl(grapplemod.AIRID, -1, player.getEntityId(), player.world, new vec(0,0,0), null, custom);
 				}
 				facing.mult_ip(GrappleConfig.getconf().ender_staff_strength);
 				grapplemod.receiveEnderLaunch(player.getEntityId(), facing.x, facing.y, facing.z);
@@ -473,7 +502,26 @@ public class ClientProxyClass extends CommonProxyClass {
 		}
 	}
 
+	@Override
 	public String localize(String string) {
 		return I18n.format(string);
+	}
+	
+	@Override
+	public void updateRocketRegen(double rocket_active_time, double rocket_refuel_ratio) {
+		this.rocketDecreaseTick = 0.05 / 2.0 / rocket_active_time;
+		this.rocketIncreaseTick = 0.05 / 2.0 / rocket_active_time / rocket_refuel_ratio;
+	}
+	
+	@Override
+	public double getRocketFunctioning() {
+		this.rocketFuel -= this.rocketIncreaseTick;
+		this.rocketFuel -= this.rocketDecreaseTick;
+		if (this.rocketFuel >= 0) {
+			return 1;
+		} else {
+			this.rocketFuel = 0;
+			return this.rocketIncreaseTick / this.rocketDecreaseTick / 2.0;
+		}
 	}
 }

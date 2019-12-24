@@ -6,7 +6,7 @@ import net.minecraft.item.ItemStack;
 
 public interface KeypressItem {
 	enum Keys {
-		LAUNCHER, THROWLEFT, THROWRIGHT, THROWBOTH
+		LAUNCHER, THROWLEFT, THROWRIGHT, THROWBOTH, ROCKET
 	}
 	
 	public abstract void onCustomKeyDown(ItemStack stack, EntityPlayer player, Keys key, boolean ismainhand);

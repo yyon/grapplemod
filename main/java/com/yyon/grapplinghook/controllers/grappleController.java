@@ -116,6 +116,10 @@ public class grappleController {
 				this.unattach();
 			}
 		}
+		
+		if (custom.rocket) {
+			grapplemod.proxy.updateRocketRegen(custom.rocket_active_time, custom.rocket_refuel_ratio);
+		}
 	}
 	
 	public void unattach() {
@@ -126,7 +130,7 @@ public class grappleController {
 			
 			if (this.controllerid != grapplemod.AIRID) {
 				grapplemod.network.sendToServer(new GrappleEndMessage(this.entityId, this.arrowIds));
-				grapplemod.createControl(grapplemod.AIRID, -1, this.entityId, this.entity.world, new vec(0,0,0), null, null);
+				grapplemod.createControl(grapplemod.AIRID, -1, this.entityId, this.entity.world, new vec(0,0,0), null, this.custom);
 			}
 		}
 	}
@@ -287,7 +291,6 @@ public class grappleController {
 									
 									// climb up/down rope
 									float playerforward = 0;
-									System.out.println(this.playerforward);
 									if (ClientProxyClass.key_climbup.isKeyDown()) { playerforward = 0.3f; }
 									else if (ClientProxyClass.key_climbdown.isKeyDown()) { playerforward = -0.3f; }
 									if (playerforward != 0) {
@@ -532,6 +535,11 @@ public class grappleController {
 						blockpush.mult_ip(this.custom.repelforce * 0.5);
 						blockpush = new vec(blockpush.x*0.5, blockpush.y*2, blockpush.z*0.5);
 						this.motion.add_ip(blockpush);
+					}
+					
+					// rocket
+					if (this.custom.rocket) {
+						this.motion.add_ip(this.rocket(entity));
 					}
 					
 					// WASD movement
@@ -860,6 +868,16 @@ public class grappleController {
 		} else {
 			System.out.println("Error: controller received hook detach, but arrow not in arrows");
 		}
+	}
+	
+	public vec rocket(Entity entity) {
+		if (ClientProxyClass.key_rocket.isKeyDown()) {
+        	vec force = new vec(entity.getLookVec()).normalize();
+        	force.mult_ip(this.custom.rocket_force * 0.1);
+        	force.mult_ip(grapplemod.proxy.getRocketFunctioning());
+        	return force;
+		}
+		return new vec(0,0,0);
 	}
 
 }

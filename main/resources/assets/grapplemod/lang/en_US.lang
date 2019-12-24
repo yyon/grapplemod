@@ -18,6 +18,7 @@ item.staffupgradeitem.name=Ender Staff Grappling Hook Upgrade
 item.swingupgradeitem.name=Swing Grappling Hook Upgrade
 item.throwupgradeitem.name=Hook Thrower Grappling Hook Upgrade
 item.limitsupgradeitem.name=Limits Grappling Hook Upgrade
+item.rocketupgradeitem.name=Rocket Grappling Hook Upgrade
 
 tile.block_grapple_modifier.name=Grappling Hook Modifier
 
@@ -31,6 +32,7 @@ key.leftthrow.desc=Throw Left Hook
 key.rightthrow.desc=Throw Right Hook
 key.boththrow.desc=Throw Hook(s)
 key.enderlaunch.desc=Hook Ender Staff Launch
+key.rocket.desc=Rocket
 
 grapplecustomization.maxlen.name=Rope Length
 grapplecustomization.phaserope.name=Phase Rope
@@ -61,6 +63,10 @@ grapplecustomization.sneakingverticalthrowangle.name=Crouching Vertical Angle
 grapplecustomization.climbkey.name=Dedicated Climbing Key
 grapplecustomization.sticky.name=Sticky Rope
 grapplecustomization.detachonkeyrelease.name=Detach Hook On Button/Key Release
+grapplecustomization.rocket.name=Rocket
+grapplecustomization.rocket_force.name=Rocket Force
+grapplecustomization.rocket_active_time.name=Rocket Time (s)
+grapplecustomization.rocket_refuel_ratio.name=Rocket Refuel Time Ratio
 
 grapplecustomization.maxlen.desc=The length of the rope
 grapplecustomization.phaserope.desc=Allows rope to phase through blocks
@@ -91,6 +97,10 @@ grapplecustomization.sneakingverticalthrowangle.desc=Throws the grappling hook a
 grapplecustomization.climbkey.desc=Ignore climb up/climb down keys unless the "climb" key is held
 grapplecustomization.sticky.desc=If the rope bends around a block as it is being thrown, attach at bend
 grapplecustomization.detachonkeyrelease.desc=When enabled, hook is only out while button/key is held down. Instead of clicking / pressing key again to detach the hook, release the button/key to detach hook.
+grapplecustomization.rocket.desc=Propels the player forward while a button is held
+grapplecustomization.rocket_force.desc=How fast the rocket propels the player
+grapplecustomization.rocket_active_time.desc=The time that the rocket can be used until it has to refuel (fuel auto-regenerates when it is not being used)
+grapplecustomization.rocket_refuel_ratio.desc=The ratio of the time that the rocket takes to regenerate fuel, compared to the time the rocket is used. (e.g. 2.0 means a unit of fuel that takes 1 second to use up will take 2 seconds to regenerate. Lower is better. )
 
 
 grappletooltip.throw.desc=- Throw grappling hook
@@ -104,6 +114,16 @@ grappletooltip.climbup.desc=- Climb up
 grappletooltip.climbdown.desc=- Climb down
 grappletooltip.shiftcontrols.desc=(Hold Shift to see controls)
 grappletooltip.controlconfiguration.desc=(Hold Control to see full configuration)
+grappletooltip.enderlaunch.desc=- Launch (ender staff)
+grappletooltip.rocket.desc=(hold) - Rocket
+grappletooltip.motoron.desc=- Motor On
+grappletooltip.motoroff.desc=- Motor Off
+grappletooltip.throwalt.desc=- Throw (alternative)
+grappletooltip.throwleft.desc=- Throw Left Hook
+grappletooltip.throwright.desc=- Throw Right Hook
+grappletooltip.throwhold.desc=- Throw grappling hook (hold, release to detach)
+grappletooltip.throwlefthold.desc=(hold) - Throw Left Hook
+grappletooltip.throwrighthold.desc=(hold) - Throw Right Hook
 
 grapplemodifier.close.desc=Close
 grapplemodifier.reset.desc=Reset

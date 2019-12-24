@@ -324,6 +324,11 @@ public class grappleBow extends Item implements KeypressItem {
 				}
 			} else if (key == KeypressItem.Keys.THROWLEFT || key == KeypressItem.Keys.THROWRIGHT || key == KeypressItem.Keys.THROWBOTH) {
 				grapplemod.network.sendToServer(new KeypressMessage(key, true));
+			} else if (key == KeypressItem.Keys.ROCKET) {
+				GrappleCustomization custom = this.getCustomization(stack);
+				if (custom.rocket) {
+					grapplemod.proxy.startrocket(player, custom);
+				}
 			}
 		} else {
 			if (key == KeypressItem.Keys.THROWBOTH) {
@@ -423,9 +428,13 @@ public class grappleBow extends Item implements KeypressItem {
 
 		
 		if (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT)) {
-			list.add(grapplemod.proxy.getkeyname(CommonProxyClass.keys.keyBindUseItem) + " " + grapplemod.proxy.localize("grappletooltip.throw.desc"));
-			list.add(grapplemod.proxy.getkeyname(CommonProxyClass.keys.keyBindUseItem) + " " + grapplemod.proxy.localize("grappletooltip.release.desc"));
-			list.add(grapplemod.proxy.localize("grappletooltip.double.desc") + grapplemod.proxy.getkeyname(CommonProxyClass.keys.keyBindUseItem) + " " + grapplemod.proxy.localize("grappletooltip.releaseandthrow.desc"));
+			if (!custom.detachonkeyrelease) {
+				list.add(ClientProxyClass.key_boththrow.getDisplayName() + " " + grapplemod.proxy.localize("grappletooltip.throw.desc"));
+				list.add(ClientProxyClass.key_boththrow.getDisplayName() + " " + grapplemod.proxy.localize("grappletooltip.release.desc"));
+				list.add(grapplemod.proxy.localize("grappletooltip.double.desc") + ClientProxyClass.key_boththrow.getDisplayName() + " " + grapplemod.proxy.localize("grappletooltip.releaseandthrow.desc"));
+			} else {
+				list.add(ClientProxyClass.key_boththrow.getDisplayName() + " " + grapplemod.proxy.localize("grappletooltip.throwhold.desc"));
+			}
 			list.add(grapplemod.proxy.getkeyname(CommonProxyClass.keys.keyBindForward) + ", " +
 					grapplemod.proxy.getkeyname(CommonProxyClass.keys.keyBindLeft) + ", " +
 					grapplemod.proxy.getkeyname(CommonProxyClass.keys.keyBindBack) + ", " +
@@ -439,6 +448,31 @@ public class grappleBow extends Item implements KeypressItem {
 			list.add((custom.climbkey ? ClientProxyClass.key_climb.getDisplayName() + " + " : "") +
 					ClientProxyClass.key_climbdown.getDisplayName() + 
 					" " + grapplemod.proxy.localize("grappletooltip.climbdown.desc"));
+			if (custom.enderstaff) {
+				list.add(ClientProxyClass.key_enderlaunch.getDisplayName() + " " + grapplemod.proxy.localize("grappletooltip.jump.desc"));
+			}
+			if (custom.rocket) {
+				list.add(ClientProxyClass.key_rocket.getDisplayName() + " " + grapplemod.proxy.localize("grappletooltip.rocket.desc"));
+			}
+			if (custom.motor) {
+				if (custom.motorwhencrouching && !custom.motorwhennotcrouching) {
+					list.add(ClientProxyClass.key_motoronoff.getDisplayName() + " " + grapplemod.proxy.localize("grappletooltip.motoron.desc"));
+				}
+				else if (!custom.motorwhencrouching && custom.motorwhennotcrouching) {
+					list.add(ClientProxyClass.key_motoronoff.getDisplayName() + " " + grapplemod.proxy.localize("grappletooltip.motoroff.desc"));
+				}
+			}
+			if (custom.doublehook) {
+				if (!custom.detachonkeyrelease) {
+					list.add(ClientProxyClass.key_leftthrow.getDisplayName() + " " + grapplemod.proxy.localize("grappletooltip.throwleft.desc"));
+					list.add(ClientProxyClass.key_rightthrow.getDisplayName() + " " + grapplemod.proxy.localize("grappletooltip.throwright.desc"));
+				} else {
+					list.add(ClientProxyClass.key_leftthrow.getDisplayName() + " " + grapplemod.proxy.localize("grappletooltip.throwlefthold.desc"));
+					list.add(ClientProxyClass.key_rightthrow.getDisplayName() + " " + grapplemod.proxy.localize("grappletooltip.throwrighthold.desc"));
+				}
+			} else {
+				list.add(ClientProxyClass.key_rightthrow.getDisplayName() + " " + grapplemod.proxy.localize("grappletooltip.throwalt.desc"));
+			}
 		} else {
 			if (Keyboard.isKeyDown(Keyboard.KEY_LCONTROL)) {
 				for (String option : GrappleCustomization.booleanoptions) {
@@ -464,6 +498,9 @@ public class grappleBow extends Item implements KeypressItem {
 				}
 				if (custom.enderstaff) {
 					list.add(grapplemod.proxy.localize(custom.getName("enderstaff")));
+				}
+				if (custom.rocket) {
+					list.add(grapplemod.proxy.localize(custom.getName("rocket")));
 				}
 				if (custom.attract) {
 					list.add(grapplemod.proxy.localize(custom.getName("attract")));

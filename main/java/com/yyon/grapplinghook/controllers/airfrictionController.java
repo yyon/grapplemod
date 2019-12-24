@@ -1,10 +1,11 @@
 package com.yyon.grapplinghook.controllers;
 
+import com.yyon.grapplinghook.GrappleCustomization;
+import com.yyon.grapplinghook.vec;
+
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.world.World;
-
-import com.yyon.grapplinghook.vec;
 
 /*
  * This file is part of GrappleMod.
@@ -26,8 +27,8 @@ import com.yyon.grapplinghook.vec;
 public class airfrictionController extends grappleController {
 	public final double playermovementmult = 0.5;
 	
-	public airfrictionController(int arrowId, int entityId, World world, vec pos, int id) {
-		super(arrowId, entityId, world, pos, id, null);
+	public airfrictionController(int arrowId, int entityId, World world, vec pos, int id, GrappleCustomization custom) {
+		super(arrowId, entityId, world, pos, id, custom);
 	}
 	
 	@Override
@@ -39,8 +40,15 @@ public class airfrictionController extends grappleController {
 			this.normalCollisions();
 			this.applyAirFriction();
 			
-			if (entity.collided || entity.onGround) {
-				this.unattach();
+			boolean doesrocket = false;
+			if (this.custom != null) {
+				if (this.custom.rocket) {
+					vec rocket = this.rocket(entity);
+					this.motion.add_ip(rocket);
+					if (rocket.length() > 0) {
+						doesrocket = true;
+					}
+				}
 			}
 			
 			if (entity instanceof EntityLivingBase) {
@@ -52,15 +60,29 @@ public class airfrictionController extends grappleController {
 			
 			motion.add_ip(this.playermovement.changelen(0.01));
 			
+			vec gravity = new vec(0, -0.05, 0);
+
+			
+			motion.add_ip(gravity);
+
 			vec newmotion;
 			
 			newmotion = motion;
 			
 			entity.motionX = newmotion.x;
-//			entity.motionY = newmotion.y;
+			entity.motionY = newmotion.y;
 			entity.motionZ = newmotion.z;
 			
 			this.updateServerPos();
+			
+			if (entity.collided || entity.onGround) {
+				if (!doesrocket) {
+					this.unattach();
+				} else {
+					motion = vec.motionvec(entity);
+				}
+			}
+			
 		}
 	}
 }

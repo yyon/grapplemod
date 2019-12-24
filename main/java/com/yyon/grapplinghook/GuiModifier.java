@@ -65,11 +65,16 @@ public class GuiModifier extends GuiScreen {
 				50, 20, grapplemod.proxy.localize("grapplemodifier.helpbutton.desc")));
 
 		int y = 0;
+		int x = 0;
 		for (int i = 0; i < grapplemod.upgradeCategories.size(); i++) {
 			grapplemod.upgradeCategories category = grapplemod.upgradeCategories.fromInt(i);
 			if (category != grapplemod.upgradeCategories.LIMITS) {
+				if (i == grapplemod.upgradeCategories.size()/2) {
+					y = 0;
+					x += 1;
+				}
 				this.buttonList.add(
-						new GuiButton(99 + i, this.guiLeft + 10, this.guiTop + 5 + 22 * y, 100, 20, category.description));
+						new GuiButton(99 + i, this.guiLeft + 10 + 105*x, this.guiTop + 15 + 30 * y, 95, 20, category.description));
 				y += 1;
 			}
 		}
@@ -80,7 +85,7 @@ public class GuiModifier extends GuiScreen {
 		this.category = null;
 		this.allowed = false;
 		posy = 10;
-		id = 4;
+		id = 10;
 		options = new HashMap<GuiButton, String>();
 		tooltips = new HashMap<GuiButton, String>();
 	}
@@ -168,6 +173,11 @@ public class GuiModifier extends GuiScreen {
 			addSlider("angle");
 			addSlider("sneakingangle");
 			addCheckbox("oneropepull");
+		} else if (category == grapplemod.upgradeCategories.ROCKET) {
+			addCheckbox("rocket");
+			addSlider("rocket_force");
+			addSlider("rocket_active_time");
+			addSlider("rocket_refuel_ratio");
 		}
 		
 		this.updateEnabled();

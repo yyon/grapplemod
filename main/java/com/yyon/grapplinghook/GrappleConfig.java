@@ -42,6 +42,12 @@ public class GrappleConfig {
 		public double default_angle = 20;
 		public double default_sneakingangle = 10;
 		public boolean default_oneropepull = false;
+		// rocket
+		public boolean default_rocketenabled = false;
+		public double default_rocket_force = 1;
+		public double default_rocket_active_time = 3;
+		public double default_rocket_refuel_ratio = 5;
+		
 
 		// upgraded values for alternativegrapple items
 		public double upgraded_throwspeed = 3.5;
@@ -87,6 +93,16 @@ public class GrappleConfig {
 		// double hook
 		public double max_upgrade_angle = 90;
 		public double max_upgrade_sneakingangle = 90;
+		// rocket
+		public double max_rocket_active_time = 3;
+		public double max_upgrade_rocket_active_time = 20;
+		public double max_rocket_force = 1;
+		public double max_upgrade_rocket_force = 5;
+
+		public double min_rocket_refuel_ratio = 5;
+		public double min_upgrade_rocket_refuel_ratio = 1;
+		public double max_rocket_refuel_ratio = 20;
+		public double max_upgrade_rocket_refuel_ratio = 20;
 
 		public double min_hookgravity = 1;
 		public double min_upgrade_hookgravity = 0;
@@ -131,6 +147,12 @@ public class GrappleConfig {
 		public int enable_angle = 0;
 		public int enable_sneakingangle = 0;
 		public int enable_oneropepull = 0;
+		// rocket
+		public int enable_rocket = 0;
+		public int enable_rocket_force = 0;
+		public int enable_rocket_active_time = 0;
+		public int enable_rocket_refuel_ratio = 0;
+
 		
 		public boolean longfallbootsrecipe = true;
 		
