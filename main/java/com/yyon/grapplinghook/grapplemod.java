@@ -1,6 +1,8 @@
 package com.yyon.grapplinghook;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Random;
@@ -10,6 +12,7 @@ import com.yyon.grapplinghook.blocks.TileEntityGrappleModifier;
 import com.yyon.grapplinghook.controllers.airfrictionController;
 import com.yyon.grapplinghook.controllers.grappleController;
 import com.yyon.grapplinghook.controllers.repelController;
+import com.yyon.grapplinghook.enchantments.WallrunEnchantment;
 import com.yyon.grapplinghook.entities.grappleArrow;
 import com.yyon.grapplinghook.items.KeypressItem;
 import com.yyon.grapplinghook.items.KeypressItem.Keys;
@@ -47,6 +50,8 @@ import com.yyon.grapplinghook.network.PlayerMovementMessage;
 import com.yyon.grapplinghook.network.SegmentMessage;
 
 import net.minecraft.block.Block;
+import net.minecraft.creativetab.CreativeTabs;
+import net.minecraft.enchantment.Enchantment;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -55,6 +60,7 @@ import net.minecraft.item.ItemArmor;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.NonNullList;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
@@ -134,6 +140,8 @@ public class grapplemod {
 
     public static Item longfallboots;
     public static Item wallrunboots;
+    
+    public static WallrunEnchantment wallrunenchantment;
 
 	public static Object instance;
 	
@@ -216,6 +224,36 @@ public class grapplemod {
 		}
 	};
 	
+	public static final CreativeTabs tabGrapplemod = (new CreativeTabs("tabGrapplemod") {
+		@Override
+		public void displayAllRelevantItems(NonNullList<ItemStack> items) {
+			// sort items
+			super.displayAllRelevantItems(items);
+			Item[] allitems = getAllItems();
+			Collections.sort(items, new Comparator<ItemStack>() {
+				@Override
+				public int compare(ItemStack arg0, ItemStack arg1) {
+					return getIndex(arg0.getItem()) - getIndex(arg1.getItem());
+				}
+				public int getIndex(Item item) {
+					int i = 0;
+					for (Item item2 : allitems) {
+						if (item == item2) {
+							return i;
+						}
+						i++;
+					}
+					return i;
+				}
+			});
+		}
+
+		@Override
+		public ItemStack getTabIconItem() {
+			return new ItemStack(grapplebowitem);
+		}
+	});
+	
 	@SidedProxy(clientSide="com.yyon.grapplinghook.ClientProxyClass", serverSide="com.yyon.grapplinghook.ServerProxyClass")
 	public static CommonProxyClass proxy;
 	
@@ -278,7 +316,41 @@ public class grapplemod {
 	public void registerItems(RegistryEvent.Register<Item> event) {
 //		System.out.println("REGISTERING ITEMS");
 //		System.out.println(grapplebowitem);
-	    event.getRegistry().registerAll(grapplebowitem, motorhookitem, smarthookitem, doublemotorhookitem, rocketdoublemotorhookitem, enderhookitem, magnethookitem, launcheritem, longfallboots, repelleritem, baseupgradeitem, doubleupgradeitem, forcefieldupgradeitem, magnetupgradeitem, motorupgradeitem, ropeupgradeitem, staffupgradeitem, swingupgradeitem, throwupgradeitem, limitsupgradeitem, rocketupgradeitem, wallrunboots);
+	    event.getRegistry().registerAll(getAllItems());
+
+	}
+	
+	public static Item[] getAllItems() {
+		return new Item[] {
+				grapplebowitem, 
+				itemBlockGrappleModifier,
+				motorhookitem, 
+				smarthookitem, 
+				doublemotorhookitem, 
+				rocketdoublemotorhookitem, 
+				enderhookitem, 
+				magnethookitem, 
+				launcheritem, 
+				repelleritem, 
+				longfallboots, 
+				wallrunboots, 
+				baseupgradeitem, 
+				doubleupgradeitem, 
+				forcefieldupgradeitem, 
+				magnetupgradeitem, 
+				motorupgradeitem, 
+				ropeupgradeitem, 
+				staffupgradeitem, 
+				swingupgradeitem, 
+				throwupgradeitem, 
+				limitsupgradeitem, 
+				rocketupgradeitem, 
+				};
+	}
+	
+	@SubscribeEvent
+	public void registerEnchantments(RegistryEvent.Register<Enchantment> event) {
+	    event.getRegistry().registerAll(wallrunenchantment);
 
 	}
 	
@@ -304,6 +376,7 @@ public class grapplemod {
 		longfallboots = new LongFallBoots(ItemArmor.ArmorMaterial.DIAMOND, 3);
 		longfallboots.setRegistryName("longfallboots");
 		wallrunboots = new WallrunBoots(ItemArmor.ArmorMaterial.DIAMOND, 3);
+		wallrunboots.setUnlocalizedName("bootsDiamond");
 		wallrunboots.setRegistryName("wallrunboots");
 		repelleritem = new repeller();
 		repelleritem.setRegistryName("repeller");
@@ -340,6 +413,9 @@ public class grapplemod {
 	    rocketupgradeitem.setRegistryName("rocketupgradeitem");
 	    rocketupgradeitem.setContainerItem(rocketupgradeitem);
 	    
+	    wallrunenchantment = new WallrunEnchantment();
+	    wallrunenchantment.setRegistryName("wallrunenchantment");
+	    
 //		System.out.println(grapplebowitem);
 		
 		resourceLocation = new ResourceLocation(grapplemod.MODID, "grapplemod");
@@ -366,7 +442,6 @@ public class grapplemod {
 
 	    itemBlockGrappleModifier = new ItemBlock(blockGrappleModifier);
 	    itemBlockGrappleModifier.setRegistryName(blockGrappleModifier.getRegistryName());
-	    ForgeRegistries.ITEMS.register(itemBlockGrappleModifier);
 
 	    // Each of your tile entities needs to be registered with a name that is unique to your mod.
 		GameRegistry.registerTileEntity(TileEntityGrappleModifier.class, "tile_entity_grapple_modifier");

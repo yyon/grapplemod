@@ -3,6 +3,7 @@ package com.yyon.grapplinghook.items;
 import java.util.List;
 
 import com.yyon.grapplinghook.GrappleConfig;
+import com.yyon.grapplinghook.grapplemod;
 
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.player.EntityPlayer;
@@ -40,6 +41,7 @@ public class LongFallBoots extends ItemArmor {
 	    super(material, 0, EntityEquipmentSlot.FEET);
 	    this.setUnlocalizedName("longfallboots");
 	    MinecraftForge.EVENT_BUS.register(this);
+		setCreativeTab(grapplemod.tabGrapplemod);
 	}
 	
 	@SubscribeEvent

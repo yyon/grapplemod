@@ -1,20 +1,12 @@
 package com.yyon.grapplinghook.items;
 
-import java.util.List;
+import com.yyon.grapplinghook.grapplemod;
 
-import com.yyon.grapplinghook.GrappleConfig;
-
-import net.minecraft.client.util.ITooltipFlag;
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.ItemArmor;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.DamageSource;
-import net.minecraft.world.World;
-import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.event.entity.living.LivingFallEvent;
-import net.minecraftforge.event.entity.living.LivingHurtEvent;
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraft.util.NonNullList;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
@@ -38,14 +30,35 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 public class WallrunBoots extends ItemArmor {
 	public WallrunBoots(ArmorMaterial material, int type) {
 	    super(material, 0, EntityEquipmentSlot.FEET);
-	    this.setUnlocalizedName("wallrunboots");
-	    MinecraftForge.EVENT_BUS.register(this);
+//	    this.setUnlocalizedName("wallrunboots");
+//	    MinecraftForge.EVENT_BUS.register(this);
+		setCreativeTab(grapplemod.tabGrapplemod);
 	}
 	
+//	@Override
+//    @SideOnly(Side.CLIENT)
+//	public void addInformation(ItemStack stack, World world, List<String> list, ITooltipFlag par4)
+//	{
+//		list.add("Allows running on walls");
+//	}
+
 	@Override
     @SideOnly(Side.CLIENT)
-	public void addInformation(ItemStack stack, World world, List<String> list, ITooltipFlag par4)
-	{
-		list.add("Allows running on walls");
-	}
+    public ItemStack getDefaultInstance()
+    {
+        ItemStack stack = new ItemStack(this);
+        stack.addEnchantment(grapplemod.wallrunenchantment, 1);
+        return stack;
+    }
+	
+	@Override
+    public void getSubItems(CreativeTabs tab, NonNullList<ItemStack> items)
+    {
+        if (this.isInCreativeTab(tab))
+        {
+        	ItemStack stack = new ItemStack(this);
+            stack.addEnchantment(grapplemod.wallrunenchantment, 1);
+            items.add(stack);
+        }
+    }
 }

@@ -39,7 +39,7 @@ public class BlockGrappleModifier extends Block {
 
 	public BlockGrappleModifier() {
 		super(Material.ROCK);
-		this.setCreativeTab(CreativeTabs.TRANSPORTATION); // the block will appear on the Blocks tab in creative
+		setCreativeTab(grapplemod.tabGrapplemod);
 	}
 
 	@Override

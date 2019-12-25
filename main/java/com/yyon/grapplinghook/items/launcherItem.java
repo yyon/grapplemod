@@ -48,7 +48,7 @@ public class launcherItem extends Item {
 		
 		this.setMaxDamage(500);
 		
-		setCreativeTab(CreativeTabs.TRANSPORTATION);
+		setCreativeTab(grapplemod.tabGrapplemod);
 		
 		MinecraftForge.EVENT_BUS.register(this);
 	}

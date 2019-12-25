@@ -35,6 +35,10 @@ key.boththrow.desc=Throw Hook(s)
 key.enderlaunch.desc=Hook Ender Staff Launch
 key.rocket.desc=Rocket
 
+enchantment.wallrunenchantment=Wallrunning
+
+itemGroup.tabGrapplemod=Grappling Hook Mod
+
 grapplecustomization.maxlen.name=Rope Length
 grapplecustomization.phaserope.name=Phase Rope
 grapplecustomization.hookgravity.name=Gravity on hook

@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.ConcurrentModificationException;
 import java.util.HashMap;
+import java.util.Map;
 
 import org.lwjgl.input.Keyboard;
 
@@ -12,7 +13,6 @@ import com.yyon.grapplinghook.controllers.grappleController;
 import com.yyon.grapplinghook.entities.RenderGrappleArrow;
 import com.yyon.grapplinghook.entities.grappleArrow;
 import com.yyon.grapplinghook.items.KeypressItem;
-import com.yyon.grapplinghook.items.WallrunBoots;
 import com.yyon.grapplinghook.items.grappleBow;
 import com.yyon.grapplinghook.items.launcherItem;
 import com.yyon.grapplinghook.items.repeller;
@@ -28,6 +28,8 @@ import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.client.settings.GameSettings;
 import net.minecraft.client.settings.KeyBinding;
+import net.minecraft.enchantment.Enchantment;
+import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Items;
@@ -46,10 +48,14 @@ import net.minecraftforge.fml.client.registry.RenderingRegistry;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
+import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.common.gameevent.InputEvent.KeyInputEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent.ClientTickEvent;
 import net.minecraftforge.fml.common.network.FMLNetworkEvent.ClientDisconnectionFromServerEvent;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 public class ClientProxyClass extends CommonProxyClass {
 	public boolean prevkeys[] = {false, false, false, false, false};
@@ -208,8 +214,7 @@ public class ClientProxyClass extends CommonProxyClass {
 	public static KeyBinding key_climbdown = createkeybinding("key.climbdown.desc", Keyboard.KEY_S, "key.grapplemod.category");
 	public static KeyBinding key_enderlaunch = createkeybinding("key.enderlaunch.desc", -100, "key.grapplemod.category");
 	public static KeyBinding key_rocket = createkeybinding("key.rocket.desc", -100, "key.grapplemod.category");
-	
-	
+
 
 	@Override
 	public void init(FMLInitializationEvent event, grapplemod grappleModInst) {
@@ -554,16 +559,21 @@ public class ClientProxyClass extends CommonProxyClass {
 	@Override
 	public boolean iswallrunning(Entity entity) {
 		for (ItemStack stack : entity.getArmorInventoryList()) {
-			if (stack.getItem() instanceof WallrunBoots) {
-				if (entity.collidedHorizontally && !entity.onGround) {
-					if (!key_jumpanddetach.isKeyDown() && !Minecraft.getMinecraft().gameSettings.keyBindJump.isKeyDown()) {
-						RayTraceResult raytraceresult = entity.world.rayTraceBlocks(entity.getPositionVector(), vec.positionvec(entity).add(new vec(0, -1, 0)).toVec3d(), false, true, false);
-						if (raytraceresult == null || raytraceresult.typeOfHit != RayTraceResult.Type.BLOCK) {
-							return true;
+			if (stack != null) {
+				Map<Enchantment, Integer> enchantments = EnchantmentHelper.getEnchantments(stack);
+				if (enchantments.containsKey(grapplemod.wallrunenchantment)) {
+					if (enchantments.get(grapplemod.wallrunenchantment) >= 1) {
+						if (entity.collidedHorizontally && !entity.onGround) {
+							if (!key_jumpanddetach.isKeyDown() && !Minecraft.getMinecraft().gameSettings.keyBindJump.isKeyDown()) {
+								RayTraceResult raytraceresult = entity.world.rayTraceBlocks(entity.getPositionVector(), vec.positionvec(entity).add(new vec(0, -1, 0)).toVec3d(), false, true, false);
+								if (raytraceresult == null || raytraceresult.typeOfHit != RayTraceResult.Type.BLOCK) {
+									return true;
+								}
+							}
 						}
+						break;
 					}
 				}
-				break;
 			}
 		}
 		return false;

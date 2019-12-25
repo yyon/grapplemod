@@ -17,7 +17,7 @@ public class BaseUpgradeItem extends Item {
 		setFull3D();
 		setUnlocalizedName(unlocalizedname);
 		
-		setCreativeTab(CreativeTabs.TRANSPORTATION);
+		setCreativeTab(grapplemod.tabGrapplemod);
 	}
 	
 	public void setvars() {
