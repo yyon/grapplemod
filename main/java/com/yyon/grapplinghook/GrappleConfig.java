@@ -45,8 +45,8 @@ public class GrappleConfig {
 		// rocket
 		public boolean default_rocketenabled = false;
 		public double default_rocket_force = 1;
-		public double default_rocket_active_time = 3;
-		public double default_rocket_refuel_ratio = 7;
+		public double default_rocket_active_time = 1;
+		public double default_rocket_refuel_ratio = 15;
 		
 
 		// upgraded values for alternativegrapple items
@@ -94,15 +94,15 @@ public class GrappleConfig {
 		public double max_upgrade_angle = 90;
 		public double max_upgrade_sneakingangle = 90;
 		// rocket
-		public double max_rocket_active_time = 3;
+		public double max_rocket_active_time = 1;
 		public double max_upgrade_rocket_active_time = 20;
 		public double max_rocket_force = 1;
 		public double max_upgrade_rocket_force = 5;
 
-		public double min_rocket_refuel_ratio = 7;
+		public double min_rocket_refuel_ratio = 15;
 		public double min_upgrade_rocket_refuel_ratio = 1;
-		public double max_rocket_refuel_ratio = 20;
-		public double max_upgrade_rocket_refuel_ratio = 20;
+		public double max_rocket_refuel_ratio = 30;
+		public double max_upgrade_rocket_refuel_ratio = 30;
 
 		public double min_hookgravity = 1;
 		public double min_upgrade_hookgravity = 0;

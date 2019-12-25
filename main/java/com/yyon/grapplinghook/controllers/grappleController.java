@@ -875,7 +875,7 @@ public class grappleController {
 	public vec rocket(Entity entity) {
 		if (ClientProxyClass.key_rocket.isKeyDown()) {
         	vec force = new vec(entity.getLookVec()).normalize();
-        	force.mult_ip(this.custom.rocket_force * 0.1);
+        	force.mult_ip(this.custom.rocket_force * 0.15);
         	force.mult_ip(grapplemod.proxy.getRocketFunctioning());
         	return force;
 		}
