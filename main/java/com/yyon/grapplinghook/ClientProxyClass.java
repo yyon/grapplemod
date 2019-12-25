@@ -48,14 +48,10 @@ import net.minecraftforge.fml.client.registry.RenderingRegistry;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
-import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-import net.minecraftforge.fml.common.gameevent.InputEvent.KeyInputEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent.ClientTickEvent;
 import net.minecraftforge.fml.common.network.FMLNetworkEvent.ClientDisconnectionFromServerEvent;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
 
 public class ClientProxyClass extends CommonProxyClass {
 	public boolean prevkeys[] = {false, false, false, false, false};
@@ -198,7 +194,7 @@ public class ClientProxyClass extends CommonProxyClass {
 	public static ArrayList<KeyBinding> keyBindings = new ArrayList<KeyBinding>();
 	
 	public static KeyBinding createkeybinding(String desc, int key, String category) {
-		KeyBinding k = new KeyBinding(desc, key, category);
+		KeyBinding k = new NonConflictingKeyBinding(desc, key, category);
 		keyBindings.add(k);
 		return k;
 	}
