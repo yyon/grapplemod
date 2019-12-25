@@ -99,6 +99,7 @@ import net.minecraftforge.fml.relauncher.Side;
 //TODO
 // Pull mobs
 // Attach 2 things together
+// wallrun on diagonal walls
 
 @Mod(modid = grapplemod.MODID, version = grapplemod.VERSION)
 public class grapplemod {

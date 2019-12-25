@@ -104,6 +104,16 @@ public class PlayerMovementMessage implements IMessage {
                 if (entity instanceof EntityPlayerMP) {
                 	EntityPlayerMP player = ((EntityPlayerMP) entity);
                 	player.connection.update();
+                	
+            		if (!player.onGround) {
+                    	if (message.my >= 0) {
+                    		player.fallDistance = 0;
+                    	} else {
+                    		double gravity = 0.05 * 2;
+                    		// d = v^2 / 2g
+                        	player.fallDistance = (float) (Math.pow(message.my, 2) / (2 * gravity));
+                    	}
+            		}
                 }
             }
     	}

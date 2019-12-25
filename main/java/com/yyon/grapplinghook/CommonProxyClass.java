@@ -49,14 +49,14 @@ public class CommonProxyClass {
 	public void getplayermovement(grappleController control, int playerid) {
 	}
 	
-	@SubscribeEvent
-	public void onLivingFallEvent(LivingFallEvent event)
-	{
-		if (event.getEntity() != null && grapplemod.attached.contains(event.getEntity().getEntityId()))
-		{
-			event.setCanceled(true);
-		}
-	}
+//	@SubscribeEvent
+//	public void onLivingFallEvent(LivingFallEvent event)
+//	{
+//		if (event.getEntity() != null && grapplemod.attached.contains(event.getEntity().getEntityId()))
+//		{
+//			event.setCanceled(true);
+//		}
+//	}
 	
 	
 	public void resetlaunchertime(int playerid) {
