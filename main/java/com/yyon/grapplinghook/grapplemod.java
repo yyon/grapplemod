@@ -461,7 +461,7 @@ public class grapplemod {
 			} else {
 				control = grapplemod.controllers.get(entityid);
 				boolean created = false;
-				if (control instanceof grappleController) {
+				if (control != null && control.getClass().equals(grappleController.class)) {
 					grappleController c = (grappleController) control;
 					if (control.custom.doublehook) {
 						if (arrow != null && arrow instanceof grappleArrow) {

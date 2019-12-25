@@ -373,14 +373,14 @@ public class grappleArrow extends EntityThrowable implements IEntityAdditionalSp
 					
 					this.removeServer();
 					return;
-				}
-				
-				if (movingobjectposition.typeOfHit == RayTraceResult.Type.BLOCK) {
+				} else if (movingobjectposition.typeOfHit == RayTraceResult.Type.BLOCK) {
 					BlockPos blockpos = movingobjectposition.getBlockPos();
 					
 					vec vec3 = new vec(movingobjectposition.hitVec.x, movingobjectposition.hitVec.y, movingobjectposition.hitVec.z);
 
 					this.serverAttach(blockpos, vec3, movingobjectposition.sideHit);
+				} else {
+					System.out.println("unknown impact?");
 				}
 			}
 		}
@@ -391,7 +391,7 @@ public class grappleArrow extends EntityThrowable implements IEntityAdditionalSp
 			return;
 		}
 		this.attached = true;
-		
+
 		if (blockpos != null) {
 			if (!grapplemod.anyblocks) {
 				Block block = this.world.getBlockState(blockpos).getBlock();

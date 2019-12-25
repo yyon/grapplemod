@@ -123,7 +123,6 @@ public class grappleBow extends Item implements KeypressItem {
 	}
 	
 	public void throwBoth(ItemStack stack, World worldIn, EntityLivingBase entityLiving, boolean righthand) {
-		System.out.println("throwboth");
 		grappleArrow arrow_left = getArrowLeft(entityLiving);
 		grappleArrow arrow_right = getArrowRight(entityLiving);
 
@@ -219,8 +218,6 @@ public class grappleBow extends Item implements KeypressItem {
 	}
 	
 	public void detachBoth(EntityLivingBase entityLiving) {
-		System.out.println("detachBoth");
-		
 		grappleArrow arrow1 = getArrowLeft(entityLiving);
 		grappleArrow arrow2 = getArrowRight(entityLiving);
 
