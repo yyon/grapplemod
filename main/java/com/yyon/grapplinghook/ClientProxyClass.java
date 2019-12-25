@@ -9,6 +9,7 @@ import java.util.Map;
 import org.lwjgl.input.Keyboard;
 
 import com.yyon.grapplinghook.blocks.TileEntityGrappleModifier;
+import com.yyon.grapplinghook.controllers.airfrictionController;
 import com.yyon.grapplinghook.controllers.grappleController;
 import com.yyon.grapplinghook.entities.RenderGrappleArrow;
 import com.yyon.grapplinghook.entities.grappleArrow;
@@ -112,6 +113,7 @@ public class ClientProxyClass extends CommonProxyClass {
 		registerItemModel(grapplemod.launcheritem);
 		registerItemModel(grapplemod.longfallboots);
 		registerItemModel(grapplemod.wallrunboots);
+		registerItemModel(grapplemod.doublejumpboots);
 		setgrapplebowtextures(grapplemod.repelleritem, repellerloc, repelleronloc);
 		registerItemModel(grapplemod.baseupgradeitem);
 		registerItemModel(grapplemod.doubleupgradeitem);
@@ -283,12 +285,16 @@ public class ClientProxyClass extends CommonProxyClass {
 		EntityPlayer player = Minecraft.getMinecraft().player;
 		if (player != null) {
 			if (!Minecraft.getMinecraft().isGamePaused() || !Minecraft.getMinecraft().isSingleplayer()) {
-				
-				if (!grapplemod.controllers.containsKey(player.getEntityId())) {
-					if (this.iswallrunning(player)) {
+				if (this.iswallrunning(player)) {
+					if (!grapplemod.controllers.containsKey(player.getEntityId())) {
 						grapplemod.createControl(grapplemod.AIRID, -1, player.getEntityId(), player.world, new vec(0,0,0), null, null);
 					}
+					
+					tickssincelastonground = 0;
+					alreadyuseddoublejump = false;
 				}
+
+				this.checkdoublejump();
 				
 				this.rocketFuel += this.rocketIncreaseTick;
 				
@@ -554,12 +560,12 @@ public class ClientProxyClass extends CommonProxyClass {
 	
 	@Override
 	public boolean iswallrunning(Entity entity) {
-		for (ItemStack stack : entity.getArmorInventoryList()) {
-			if (stack != null) {
-				Map<Enchantment, Integer> enchantments = EnchantmentHelper.getEnchantments(stack);
-				if (enchantments.containsKey(grapplemod.wallrunenchantment)) {
-					if (enchantments.get(grapplemod.wallrunenchantment) >= 1) {
-						if (entity.collidedHorizontally && !entity.onGround) {
+		if (entity.collidedHorizontally && !entity.onGround && !entity.isSneaking()) {
+			for (ItemStack stack : entity.getArmorInventoryList()) {
+				if (stack != null) {
+					Map<Enchantment, Integer> enchantments = EnchantmentHelper.getEnchantments(stack);
+					if (enchantments.containsKey(grapplemod.wallrunenchantment)) {
+						if (enchantments.get(grapplemod.wallrunenchantment) >= 1) {
 							if (!key_jumpanddetach.isKeyDown() && !Minecraft.getMinecraft().gameSettings.keyBindJump.isKeyDown()) {
 								RayTraceResult raytraceresult = entity.world.rayTraceBlocks(entity.getPositionVector(), vec.positionvec(entity).add(new vec(0, -1, 0)).toVec3d(), false, true, false);
 								if (raytraceresult == null || raytraceresult.typeOfHit != RayTraceResult.Type.BLOCK) {
@@ -574,4 +580,62 @@ public class ClientProxyClass extends CommonProxyClass {
 		}
 		return false;
 	}
+
+	boolean prevjumpbutton = false;
+	int tickssincelastonground = 0;
+	boolean alreadyuseddoublejump = false;
+	
+	public void checkdoublejump() {
+		EntityPlayer player = Minecraft.getMinecraft().player;
+		
+		if (player.onGround) {
+			tickssincelastonground = 0;
+			alreadyuseddoublejump = false;
+		} else {
+			tickssincelastonground++;
+		}
+		
+//		if (grapplemod.controllers.containsKey(player.getEntityId()) && !(grapplemod.controllers.get(player.getEntityId()) instanceof airfrictionController)) {
+//			tickssincelastonground = 0;
+//			alreadyuseddoublejump = false;
+//		}
+		
+		boolean isjumpbuttondown = Minecraft.getMinecraft().gameSettings.keyBindJump.isKeyDown();
+		
+		if (isjumpbuttondown && !prevjumpbutton) {
+			
+			if (tickssincelastonground > 3) {
+				if (!alreadyuseddoublejump) {
+					if (wearingdoublejumpenchant(player)) {
+						if (!grapplemod.controllers.containsKey(player.getEntityId())) {
+							grapplemod.createControl(grapplemod.AIRID, -1, player.getEntityId(), player.world, new vec(0,0,0), null, null);
+						}
+						grappleController controller = grapplemod.controllers.get(player.getEntityId());
+						if (controller instanceof airfrictionController) {
+							alreadyuseddoublejump = true;
+							controller.doublejump();
+						}
+					}
+				}
+			}
+		}
+		
+		prevjumpbutton = isjumpbuttondown;
+		
+	}
+
+	public boolean wearingdoublejumpenchant(Entity entity) {
+		for (ItemStack stack : entity.getArmorInventoryList()) {
+			if (stack != null) {
+				Map<Enchantment, Integer> enchantments = EnchantmentHelper.getEnchantments(stack);
+				if (enchantments.containsKey(grapplemod.doublejumpenchantment)) {
+					if (enchantments.get(grapplemod.doublejumpenchantment) >= 1) {
+						return true;
+					}
+				}
+			}
+		}
+		return false;
+	}
+
 }

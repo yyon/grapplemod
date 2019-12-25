@@ -988,7 +988,7 @@ public class grappleController {
 		
 		if (tickswallrunning < GrappleConfig.getconf().max_wallrun_time * 40) {
 			// continue wallrun
-			if (isonwall && !this.entity.onGround) {
+			if (isonwall && !this.entity.onGround && !this.entity.isSneaking()) {
 				if (this.entity.collidedHorizontally) {
 					return true;
 				}
@@ -1050,5 +1050,12 @@ public class grappleController {
 		}
 		
 		return wallrun;
+	}
+
+	public void doublejump() {
+		if (this.motion.y < 0) {
+			this.motion.y = 0;
+		}
+		this.motion.y += GrappleConfig.getconf().doublejumpforce;
 	}
 }

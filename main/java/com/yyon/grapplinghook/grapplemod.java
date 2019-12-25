@@ -12,8 +12,10 @@ import com.yyon.grapplinghook.blocks.TileEntityGrappleModifier;
 import com.yyon.grapplinghook.controllers.airfrictionController;
 import com.yyon.grapplinghook.controllers.grappleController;
 import com.yyon.grapplinghook.controllers.repelController;
+import com.yyon.grapplinghook.enchantments.DoublejumpEnchantment;
 import com.yyon.grapplinghook.enchantments.WallrunEnchantment;
 import com.yyon.grapplinghook.entities.grappleArrow;
+import com.yyon.grapplinghook.items.DoublejumpBoots;
 import com.yyon.grapplinghook.items.KeypressItem;
 import com.yyon.grapplinghook.items.KeypressItem.Keys;
 import com.yyon.grapplinghook.items.LongFallBoots;
@@ -140,8 +142,10 @@ public class grapplemod {
 
     public static Item longfallboots;
     public static Item wallrunboots;
+    public static Item doublejumpboots;
     
     public static WallrunEnchantment wallrunenchantment;
+    public static DoublejumpEnchantment doublejumpenchantment;
 
 	public static Object instance;
 	
@@ -333,7 +337,8 @@ public class grapplemod {
 				launcheritem, 
 				repelleritem, 
 				longfallboots, 
-				wallrunboots, 
+				wallrunboots,
+				doublejumpboots,
 				baseupgradeitem, 
 				doubleupgradeitem, 
 				forcefieldupgradeitem, 
@@ -350,7 +355,7 @@ public class grapplemod {
 	
 	@SubscribeEvent
 	public void registerEnchantments(RegistryEvent.Register<Enchantment> event) {
-	    event.getRegistry().registerAll(wallrunenchantment);
+	    event.getRegistry().registerAll(wallrunenchantment, doublejumpenchantment);
 
 	}
 	
@@ -378,6 +383,9 @@ public class grapplemod {
 		wallrunboots = new WallrunBoots(ItemArmor.ArmorMaterial.DIAMOND, 3);
 		wallrunboots.setUnlocalizedName("bootsDiamond");
 		wallrunboots.setRegistryName("wallrunboots");
+		doublejumpboots = new DoublejumpBoots(ItemArmor.ArmorMaterial.DIAMOND, 3);
+		doublejumpboots.setUnlocalizedName("bootsDiamond");
+		doublejumpboots.setRegistryName("doublejumpboots");
 		repelleritem = new repeller();
 		repelleritem.setRegistryName("repeller");
 	    baseupgradeitem = new BaseUpgradeItem();
@@ -415,6 +423,8 @@ public class grapplemod {
 	    
 	    wallrunenchantment = new WallrunEnchantment();
 	    wallrunenchantment.setRegistryName("wallrunenchantment");
+	    doublejumpenchantment = new DoublejumpEnchantment();
+	    doublejumpenchantment.setRegistryName("doublejumpenchantment");
 	    
 //		System.out.println(grapplebowitem);
 		

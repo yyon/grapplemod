@@ -35,7 +35,8 @@ key.boththrow.desc=Throw Hook(s)
 key.enderlaunch.desc=Hook Ender Staff Launch
 key.rocket.desc=Rocket
 
-enchantment.wallrunenchantment=Wallrunning
+enchantment.wallrunenchantment=Wall Running
+enchantment.doublejumpenchantment=Double Jump
 
 itemGroup.tabGrapplemod=Grappling Hook Mod
 
