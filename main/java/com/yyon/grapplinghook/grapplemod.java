@@ -14,6 +14,7 @@ import com.yyon.grapplinghook.entities.grappleArrow;
 import com.yyon.grapplinghook.items.KeypressItem;
 import com.yyon.grapplinghook.items.KeypressItem.Keys;
 import com.yyon.grapplinghook.items.LongFallBoots;
+import com.yyon.grapplinghook.items.WallrunBoots;
 import com.yyon.grapplinghook.items.grappleBow;
 import com.yyon.grapplinghook.items.launcherItem;
 import com.yyon.grapplinghook.items.repeller;
@@ -114,7 +115,6 @@ public class grapplemod {
     public static Item enderhookitem;
     public static Item magnethookitem;
     public static Item launcheritem;
-    public static Item longfallboots;
     public static Item repelleritem;
 
     public static Item baseupgradeitem;
@@ -128,6 +128,9 @@ public class grapplemod {
     public static Item throwupgradeitem;
     public static Item limitsupgradeitem;
     public static Item rocketupgradeitem;
+
+    public static Item longfallboots;
+    public static Item wallrunboots;
 
 	public static Object instance;
 	
@@ -272,7 +275,7 @@ public class grapplemod {
 	public void registerItems(RegistryEvent.Register<Item> event) {
 //		System.out.println("REGISTERING ITEMS");
 //		System.out.println(grapplebowitem);
-	    event.getRegistry().registerAll(grapplebowitem, motorhookitem, smarthookitem, doublemotorhookitem, enderhookitem, magnethookitem, launcheritem, longfallboots, repelleritem, baseupgradeitem, doubleupgradeitem, forcefieldupgradeitem, magnetupgradeitem, motorupgradeitem, ropeupgradeitem, staffupgradeitem, swingupgradeitem, throwupgradeitem, limitsupgradeitem, rocketupgradeitem);
+	    event.getRegistry().registerAll(grapplebowitem, motorhookitem, smarthookitem, doublemotorhookitem, enderhookitem, magnethookitem, launcheritem, longfallboots, repelleritem, baseupgradeitem, doubleupgradeitem, forcefieldupgradeitem, magnetupgradeitem, motorupgradeitem, ropeupgradeitem, staffupgradeitem, swingupgradeitem, throwupgradeitem, limitsupgradeitem, rocketupgradeitem, wallrunboots);
 
 	}
 	
@@ -295,6 +298,8 @@ public class grapplemod {
 		launcheritem.setRegistryName("launcheritem");
 		longfallboots = new LongFallBoots(ItemArmor.ArmorMaterial.DIAMOND, 3);
 		longfallboots.setRegistryName("longfallboots");
+		wallrunboots = new WallrunBoots(ItemArmor.ArmorMaterial.DIAMOND, 3);
+		wallrunboots.setRegistryName("wallrunboots");
 		repelleritem = new repeller();
 		repelleritem.setRegistryName("repeller");
 	    baseupgradeitem = new BaseUpgradeItem();

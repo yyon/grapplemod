@@ -123,12 +123,12 @@ public class grappleBow extends Item implements KeypressItem {
 	}
 	
 	public void throwBoth(ItemStack stack, World worldIn, EntityLivingBase entityLiving, boolean righthand) {
+		System.out.println("throwboth");
 		grappleArrow arrow_left = getArrowLeft(entityLiving);
 		grappleArrow arrow_right = getArrowRight(entityLiving);
 
 		if (arrow_left != null || arrow_right != null) {
-    		if (arrow_left != null) detachLeft(entityLiving);
-    		if (arrow_right != null) detachRight(entityLiving);
+			detachBoth(entityLiving);
     		return;
 		}
 		
@@ -215,6 +215,30 @@ public class grappleBow extends Item implements KeypressItem {
             
 			worldIn.spawnEntity(entityarrow);
 			setArrowRight(entityLiving, entityarrow);
+		}
+	}
+	
+	public void detachBoth(EntityLivingBase entityLiving) {
+		System.out.println("detachBoth");
+		
+		grappleArrow arrow1 = getArrowLeft(entityLiving);
+		grappleArrow arrow2 = getArrowRight(entityLiving);
+
+		setArrowLeft(entityLiving, null);
+		setArrowRight(entityLiving, null);
+		
+		if (arrow1 != null) {
+			arrow1.removeServer();
+		}
+		if (arrow2 != null) {
+			arrow2.removeServer();
+		}
+
+		int id = entityLiving.getEntityId();
+		grapplemod.sendtocorrectclient(new GrappleDetachMessage(id), id, entityLiving.world);
+
+		if (grapplemod.attached.contains(id)) {
+			grapplemod.attached.remove(new Integer(id));
 		}
 	}
 	
@@ -377,8 +401,7 @@ public class grappleBow extends Item implements KeypressItem {
 	    		grappleArrow arrow_right = getArrowRight(player);
 	    		
 				if (key == KeypressItem.Keys.THROWBOTH) {
-		    		if (arrow_left != null) detachLeft(player);
-		    		if (arrow_right != null) detachRight(player);
+					detachBoth(player);
 				} else if (key == KeypressItem.Keys.THROWLEFT) {
 		    		if (arrow_left != null) detachLeft(player);
 				} else if (key == KeypressItem.Keys.THROWRIGHT) {

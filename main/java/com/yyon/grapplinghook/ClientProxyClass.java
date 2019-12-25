@@ -12,6 +12,7 @@ import com.yyon.grapplinghook.controllers.grappleController;
 import com.yyon.grapplinghook.entities.RenderGrappleArrow;
 import com.yyon.grapplinghook.entities.grappleArrow;
 import com.yyon.grapplinghook.items.KeypressItem;
+import com.yyon.grapplinghook.items.WallrunBoots;
 import com.yyon.grapplinghook.items.grappleBow;
 import com.yyon.grapplinghook.items.launcherItem;
 import com.yyon.grapplinghook.items.repeller;
@@ -106,6 +107,7 @@ public class ClientProxyClass extends CommonProxyClass {
 //		setgrapplebowtextures(grapplemod.grapplebowitem, grapplinghookloc, ropeloc);
 		registerItemModel(grapplemod.launcheritem);
 		registerItemModel(grapplemod.longfallboots);
+		registerItemModel(grapplemod.wallrunboots);
 		setgrapplebowtextures(grapplemod.repelleritem, repellerloc, repelleronloc);
 		registerItemModel(grapplemod.baseupgradeitem);
 		registerItemModel(grapplemod.doubleupgradeitem);
@@ -273,6 +275,12 @@ public class ClientProxyClass extends CommonProxyClass {
 		if (player != null) {
 			if (!Minecraft.getMinecraft().isGamePaused() || !Minecraft.getMinecraft().isSingleplayer()) {
 				
+				if (!grapplemod.controllers.containsKey(player.getEntityId())) {
+					if (this.iswallrunning(player)) {
+						grapplemod.createControl(grapplemod.AIRID, -1, player.getEntityId(), player.world, new vec(0,0,0), null, null);
+					}
+				}
+				
 				this.rocketFuel += this.rocketIncreaseTick;
 				
 				try {
@@ -327,8 +335,20 @@ public class ClientProxyClass extends CommonProxyClass {
 	
 	@Override
 	public void startrocket(EntityPlayer player, GrappleCustomization custom) {
+		if (!custom.rocket) return;
+		
 		if (!grapplemod.controllers.containsKey(player.getEntityId())) {
 			grapplemod.createControl(grapplemod.AIRID, -1, player.getEntityId(), player.world, new vec(0,0,0), null, custom);
+		} else {
+			grappleController controller = grapplemod.controllers.get(player.getEntityId());
+			if (controller.custom == null || !controller.custom.rocket) {
+				if (controller.custom == null) {controller.custom = custom;}
+				controller.custom.rocket = true;
+				controller.custom.rocket_active_time = custom.rocket_active_time;
+				controller.custom.rocket_force = custom.rocket_force;
+				controller.custom.rocket_refuel_ratio = custom.rocket_refuel_ratio;
+				this.updateRocketRegen(custom.rocket_active_time, custom.rocket_refuel_ratio);
+			}
 		}
 	}
 
@@ -521,5 +541,23 @@ public class ClientProxyClass extends CommonProxyClass {
 			this.rocketFuel = 0;
 			return this.rocketIncreaseTick / this.rocketDecreaseTick / 2.0;
 		}
+	}
+	
+	@Override
+	public boolean iswallrunning(Entity entity) {
+		for (ItemStack stack : entity.getArmorInventoryList()) {
+			if (stack.getItem() instanceof WallrunBoots) {
+				if (entity.collidedHorizontally && !entity.onGround) {
+					if (!key_jumpanddetach.isKeyDown() && !Minecraft.getMinecraft().gameSettings.keyBindJump.isKeyDown()) {
+						RayTraceResult raytraceresult = entity.world.rayTraceBlocks(entity.getPositionVector(), vec.positionvec(entity).add(new vec(0, -1, 0)).toVec3d(), false, true, false);
+						if (raytraceresult == null || raytraceresult.typeOfHit != RayTraceResult.Type.BLOCK) {
+							return true;
+						}
+					}
+				}
+				break;
+			}
+		}
+		return false;
 	}
 }

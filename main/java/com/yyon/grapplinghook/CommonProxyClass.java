@@ -127,4 +127,8 @@ public class CommonProxyClass {
 	public double getRocketFunctioning() {
 		return 0;
 	}
+
+	public boolean iswallrunning(Entity entity) {
+		return false;
+	}
 }

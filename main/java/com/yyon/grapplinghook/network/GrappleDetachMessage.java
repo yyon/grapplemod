@@ -58,6 +58,7 @@ public class GrappleDetachMessage implements IMessage {
     		
             @Override
             public void run() {
+        		System.out.println("detachmessage");
             	grapplemod.receiveGrappleDetach(message.id);
             }
     	}

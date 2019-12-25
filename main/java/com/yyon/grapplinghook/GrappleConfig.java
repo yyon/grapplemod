@@ -161,6 +161,11 @@ public class GrappleConfig {
 		// ender staff
 		public double ender_staff_strength = 1.5;
 		public int ender_staff_recharge = 100;
+		
+		public double wall_jump_up = 0.7;
+		public double wall_jump_side = 0.4;
+		
+		public double max_wallrun_time = 3;
 	}
 	
 	public static Config options = new Config(); // local options

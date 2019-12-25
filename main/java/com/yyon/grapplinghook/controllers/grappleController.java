@@ -3,6 +3,7 @@ package com.yyon.grapplinghook.controllers;
 import java.util.HashSet;
 
 import com.yyon.grapplinghook.ClientProxyClass;
+import com.yyon.grapplinghook.GrappleConfig;
 import com.yyon.grapplinghook.GrappleCustomization;
 import com.yyon.grapplinghook.grapplemod;
 import com.yyon.grapplinghook.vec;
@@ -15,6 +16,7 @@ import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.world.World;
 
 /*
@@ -117,7 +119,7 @@ public class grappleController {
 			}
 		}
 		
-		if (custom.rocket) {
+		if (custom != null && custom.rocket) {
 			grapplemod.proxy.updateRocketRegen(custom.rocket_active_time, custom.rocket_refuel_ratio);
 		}
 	}
@@ -879,5 +881,174 @@ public class grappleController {
 		}
 		return new vec(0,0,0);
 	}
+	
+	boolean isonwall = false;
+	vec walldirection = null;
+//	boolean wallonleft = true;
+	
+	public vec getnearbywall(vec tryfirst, vec trysecond, double extra) {
+		float entitywidth = this.entity.width;
+		
+		for (vec direction : new vec[] {tryfirst, trysecond, tryfirst.mult(-1), trysecond.mult(-1)}) {
+			RayTraceResult raytraceresult = this.entity.world.rayTraceBlocks(this.entity.getPositionVector(), vec.positionvec(this.entity).add(direction.changelen(entitywidth/2 + extra)).toVec3d(), false, true, false);
+			if (raytraceresult != null && raytraceresult.typeOfHit == RayTraceResult.Type.BLOCK) {
+				return direction;
+			}
+		}
+		
+		return null;
+	}
+	
+	public vec getwalldirection() {
+		vec tryfirst = new vec(0, 0, 0);
+		vec trysecond = new vec(0, 0, 0);
+		
+		if (Math.abs(this.motion.x) > Math.abs(this.motion.z)) {
+			tryfirst.x = (this.motion.x > 0) ? 1 : -1;
+			trysecond.z = (this.motion.z > 0) ? 1 : -1;
+		} else {
+			tryfirst.z = (this.motion.z > 0) ? 1 : -1;
+			trysecond.x = (this.motion.x > 0) ? 1 : -1;
+		}
+		
+		return getnearbywall(tryfirst, trysecond, 0.05);
+	}
+//	
+//	public vec getclosebywall() {
+//		if (this.walldirection != null) {
+//			vec tryfirst = this.walldirection;
+//			vec trysecond = new vec(0,0,0);
+//			if (tryfirst.x == 0) {
+//				trysecond.x = 1;
+//			} else {
+//				trysecond.z = 1;
+//			}
+//			
+//			vec walldir = getnearbywall(tryfirst, trysecond, 1.05);
+//			if (walldir != null && walldir.dot(this.motion) >= 0) {
+//				return walldir;
+//			}
+//		}
+//		
+//		return null;
+//	}
+	
+	public vec getcorner(int cornernum, vec facing, vec sideways) {
+		vec corner = new vec(0,0,0);
+		if (cornernum / 2 == 0) {
+			corner.add_ip(facing);
+		} else {
+			corner.add_ip(facing.mult(-1));
+		}
+		if (cornernum % 2 == 0) {
+			corner.add_ip(sideways);
+		} else {
+			corner.add_ip(sideways.mult(-1));
+		}
+		return corner;
+	}
+	
+	public boolean wallnearby(double dist) {
+//		double boxsize = 2;
+		
+//		// facing 2d
+//		vec facing = new vec(this.entity.getLookVec());
+//		facing.y = 0;
+//		if (facing.length() <= 0.01) {
+//			facing = new vec(1, 0, 0);
+//		}
+//		facing.changelen_ip(boxsize);
+//		
+//		vec sideways = facing.cross(new vec(0,1,0));
+//		sideways.changelen_ip(boxsize);
+		
+		float entitywidth = this.entity.width;
+		vec v1 = new vec(entitywidth/2 + dist, 0, 0);
+		vec v2 = new vec(0, 0, entitywidth/2 + dist);
+		
+		for (int i = 0; i < 4; i++) {
+			vec corner1 = getcorner(i, v1, v2);
+			vec corner2 = getcorner((i + 1) % 4, v1, v2);
+			
+			RayTraceResult raytraceresult = this.entity.world.rayTraceBlocks(vec.positionvec(this.entity).add(corner1).toVec3d(), vec.positionvec(this.entity).add(corner2).toVec3d(), false, true, false);
+			if (raytraceresult != null && raytraceresult.typeOfHit == RayTraceResult.Type.BLOCK) {
+				return true;
+			}
+		}
+		
+		return false;
+	}
+	
+	public int tickswallrunning = 0;
 
+	public boolean wallrun() {
+		if (isonwall) {
+			tickswallrunning += 1;
+		}
+		
+		if (tickswallrunning < GrappleConfig.getconf().max_wallrun_time * 40) {
+			// continue wallrun
+			if (isonwall && !this.entity.onGround) {
+				if (this.entity.collidedHorizontally) {
+					return true;
+				}
+				
+//				if (wallnearby()) {
+//					return true;
+//				}
+			}
+			
+			if (grapplemod.proxy.iswallrunning(this.entity)) {
+				isonwall = true;
+				return true;
+			}
+			
+			isonwall = false;
+		}
+		
+		if (tickswallrunning > 0 && (this.entity.onGround || (!this.entity.collidedHorizontally && !wallnearby(0.2)))) {
+			tickswallrunning = 0;
+		}
+		
+		return false;
+	}
+	
+	public boolean applywallrun() {
+		boolean wallrun = this.wallrun();
+		if (wallrun) {
+			if (!playerjump) {
+				motion.y = 0;
+			}
+
+			vec wallside = this.getwalldirection();
+			if (wallside != null) {
+				walldirection = wallside;
+				motion.add_ip(wallside.changelen(0.05));
+			}
+		}
+
+		boolean isjumping = ClientProxyClass.key_jumpanddetach.isKeyDown() && isonwall;
+		isjumping = isjumping && !playerjump; // only jump once when key is first pressed
+		playerjump = ClientProxyClass.key_jumpanddetach.isKeyDown() && isonwall;
+		if (isjumping) {
+			vec jump = new vec(0, GrappleConfig.getconf().wall_jump_up, 0);
+			if (walldirection != null) {
+				jump.add_ip(walldirection.mult(-GrappleConfig.getconf().wall_jump_side));
+			}
+			motion.add_ip(jump);
+		}
+		
+		if (isonwall) {
+			double dragforce = 1 / 50F;
+			
+			double vel = this.motion.length();
+			dragforce = vel*vel * dragforce;
+			
+			vec wallfric = new vec(this.motion.x, this.motion.y, this.motion.z);
+			wallfric.changelen_ip(-dragforce);
+			this.motion.add_ip(wallfric);
+		}
+		
+		return wallrun;
+	}
 }
