@@ -1,0 +1,20 @@
+{
+	"type": "minecraft:crafting_shapeless",
+	"ingredients": [
+		{
+			"item": "grapplemod:grapplinghook"
+		}, 
+		{
+			"item": "grapplemod:grapplinghook"
+		}, 
+		{
+			"item": "grapplemod:motorupgradeitem"
+		},
+		{
+			"item": "grapplemod:rocketupgradeitem"
+		}
+	],
+	"result": {
+		"item": "grapplemod:rocketdoublemotorhook"
+	}
+}

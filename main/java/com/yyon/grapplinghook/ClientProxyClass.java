@@ -88,6 +88,8 @@ public class ClientProxyClass extends CommonProxyClass {
 	public ModelResourceLocation repelleronloc = new ModelResourceLocation("grapplemod:repelleron", "inventory");
 	public ModelResourceLocation multihookloc = new ModelResourceLocation("grapplemod:multihook", "inventory");
 	public ModelResourceLocation multihookropeloc = new ModelResourceLocation("grapplemod:multihookrope", "inventory");
+	public ModelResourceLocation odmloc = new ModelResourceLocation("grapplemod:odm", "inventory");
+	public ModelResourceLocation odmropeloc = new ModelResourceLocation("grapplemod:odmrope", "inventory");
 	
 	private void setgrapplebowtextures(Item item, final ModelResourceLocation notinusetexture, final ModelResourceLocation inusetexture) {
 		ModelLoader.setCustomMeshDefinition(item, new ItemMeshDefinition() {
@@ -129,7 +131,11 @@ public class ClientProxyClass extends CommonProxyClass {
 		    		NBTTagCompound compound = stack.getTagCompound();
 		    		if (compound.getBoolean("motor")) {
 		    			if (compound.getBoolean("doublehook")) {
-		    				return active ? multihookloc : multihookropeloc;
+		    				if (compound.getBoolean("rocket")) {
+			    				return active ? odmloc : odmropeloc;
+		    				} else {
+			    				return active ? multihookloc : multihookropeloc;
+		    				}
 		    			}
 		    			if (compound.getBoolean("smartmotor")) {
 		    				return active ? smarthookloc : smarthookropeloc;
@@ -152,13 +158,15 @@ public class ClientProxyClass extends CommonProxyClass {
 		ModelLoader.setCustomMeshDefinition(grapplemod.motorhookitem, itemmeshdefinition);
 		ModelLoader.setCustomMeshDefinition(grapplemod.smarthookitem, itemmeshdefinition);
 		ModelLoader.setCustomMeshDefinition(grapplemod.doublemotorhookitem, itemmeshdefinition);
+		ModelLoader.setCustomMeshDefinition(grapplemod.rocketdoublemotorhookitem, itemmeshdefinition);
 		ModelLoader.setCustomMeshDefinition(grapplemod.enderhookitem, itemmeshdefinition);
 		ModelLoader.setCustomMeshDefinition(grapplemod.magnethookitem, itemmeshdefinition);
-		for (ResourceLocation loc : new ResourceLocation[] {multihookloc, multihookropeloc, smarthookloc, smarthookropeloc, hookshotloc, hookshotropeloc, enderhookloc, magnetbowloc, grapplinghookloc, ropeloc}) {
+		for (ResourceLocation loc : new ResourceLocation[] {multihookloc, multihookropeloc, smarthookloc, smarthookropeloc, hookshotloc, hookshotropeloc, enderhookloc, magnetbowloc, grapplinghookloc, ropeloc, odmloc, odmropeloc}) {
 			ModelBakery.registerItemVariants(grapplemod.grapplebowitem, loc);
 			ModelBakery.registerItemVariants(grapplemod.motorhookitem, loc);
 			ModelBakery.registerItemVariants(grapplemod.smarthookitem, loc);
 			ModelBakery.registerItemVariants(grapplemod.doublemotorhookitem, loc);
+			ModelBakery.registerItemVariants(grapplemod.rocketdoublemotorhookitem, loc);
 			ModelBakery.registerItemVariants(grapplemod.enderhookitem, loc);
 			ModelBakery.registerItemVariants(grapplemod.magnethookitem, loc);
 		}
