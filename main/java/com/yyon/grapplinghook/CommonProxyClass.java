@@ -130,4 +130,8 @@ public class CommonProxyClass {
 	public boolean iswallrunning(Entity entity) {
 		return false;
 	}
+	
+	public boolean issliding(Entity entity) {
+		return false;
+	}
 }

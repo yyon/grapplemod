@@ -1,6 +1,8 @@
 package com.yyon.grapplinghook.controllers;
 
+import com.yyon.grapplinghook.GrappleConfig;
 import com.yyon.grapplinghook.GrappleCustomization;
+import com.yyon.grapplinghook.grapplemod;
 import com.yyon.grapplinghook.vec;
 
 import net.minecraft.entity.Entity;
@@ -40,6 +42,11 @@ public class airfrictionController extends grappleController {
 			this.normalCollisions();
 			this.applyAirFriction();
 			
+			if (this.entity.isInWater()) {
+				this.unattach();
+				return;
+			}
+			
 			boolean doesrocket = false;
 			if (this.custom != null) {
 				if (this.custom.rocket) {
@@ -51,62 +58,29 @@ public class airfrictionController extends grappleController {
 				}
 			}
 
-			motion.add_ip(this.playermovement.changelen(0.01));
-			
 			boolean wallrun = this.applywallrun();
 
-//			if (prev_wallrun && !wallrun && walldirection != null) {
-//				vec facing = new vec(this.entity.getLookVec());
-//				facing.y = 0;
-//				facing.changelen_ip(1);
-//
-//				float entitywidth = this.entity.width;
-//
-//				vec direction_forward = walldirection;
-//				
-//				RayTraceResult raytraceresult = entity.world.rayTraceBlocks(this.entity.getPositionVector(), vec.positionvec(entity).add(direction_forward.changelen(entitywidth/2 + 0.05)).toVec3d(), false, true, false);
-//				if (raytraceresult == null || raytraceresult.typeOfHit != RayTraceResult.Type.BLOCK) {
-//					direction_againstwall = dir;
-//					break;
-//				}
-//				
-//				vec direction_againstwall = null;
-//				
-//				for (vec dir : new vec[] {direction_forward.cross(new vec(0,1,0)), direction_forward.cross(new vec(0,-1,0))}) {
-//					RayTraceResult raytraceresult = entity.world.rayTraceBlocks(vec.positionvec(entity).add(direction_forward.changelen(entitywidth + 0.05)).toVec3d(), vec.positionvec(entity).add(direction_forward.changelen(entitywidth/2 + 0.05)).add(dir.changelen(entitywidth/2 + 0.5)).toVec3d(), false, true, false);
-//					if (raytraceresult == null || raytraceresult.typeOfHit != RayTraceResult.Type.BLOCK) {
-//						direction_againstwall = dir;
-//						break;
-//					}
-//				}
-//				
-//				if (direction_againstwall != null) {
-//					System.out.println("continue");
-//					direction_forward.print();
-//					direction_againstwall.print();
-//					
-//					motion.add_ip(direction_forward.changelen(0.2));
-//					motion.add_ip(direction_againstwall.mult(-1).changelen(0.1));
-//				} else {
-//					prev_wallrun = false;
-//					System.out.println("don't continue");
-//				}
-////				vec closebywall = getclosebywall();
-////				if (closebywall != null) {
-////					motion.add_ip(closebywall.changelen(0.3));
-////					prev_wallrun = true;
-////				} else {
-////					prev_wallrun = wallrun;
-////				}
-//			} else {
-//				prev_wallrun = wallrun;
-//			}
+			if (wallrun) {
+				if (this.walldirection != null) {
+					this.playermovement = this.playermovement.removealong(this.walldirection);
+				}
+				this.playermovement.changelen_ip(GrappleConfig.getconf().wallrunspeed);
+				motion.add_ip(this.playermovement);
+			} else {
+				motion.add_ip(this.playermovement.changelen(0.01));
+			}
 			
 			if (entity instanceof EntityLivingBase) {
 				EntityLivingBase entityliving = (EntityLivingBase) entity;
 				if (entityliving.isElytraFlying()) {
 					this.unattach();
 				}
+			}
+			
+			boolean issliding = grapplemod.proxy.issliding(this.entity);
+			
+			if (issliding) {
+				this.applySlidingFriction();
 			}
 			
 			vec gravity = new vec(0, -0.05, 0);
@@ -130,11 +104,13 @@ public class airfrictionController extends grappleController {
 			this.updateServerPos();
 			
 			if (entity.onGround) {
-				if (!wallrun) {
-					if (!doesrocket) {
-						this.unattach();
-					} else {
-						motion = vec.motionvec(entity);
+				if (!issliding) {
+					if (!wallrun) {
+						if (!doesrocket) {
+							this.unattach();
+						} else {
+							motion = vec.motionvec(entity);
+						}
 					}
 				}
 			}

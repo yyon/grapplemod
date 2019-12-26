@@ -50,6 +50,7 @@ import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.common.gameevent.InputEvent.KeyInputEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent.ClientTickEvent;
 import net.minecraftforge.fml.common.network.FMLNetworkEvent.ClientDisconnectionFromServerEvent;
@@ -210,6 +211,7 @@ public class ClientProxyClass extends CommonProxyClass {
 	public static KeyBinding key_climbdown = createkeybinding("key.climbdown.desc", Keyboard.KEY_S, "key.grapplemod.category");
 	public static KeyBinding key_enderlaunch = createkeybinding("key.enderlaunch.desc", -100, "key.grapplemod.category");
 	public static KeyBinding key_rocket = createkeybinding("key.rocket.desc", -100, "key.grapplemod.category");
+	public static KeyBinding key_slide = createkeybinding("key.slide.desc", Keyboard.KEY_LSHIFT, "key.grapplemod.category");
 
 
 	@Override
@@ -407,7 +409,6 @@ public class ClientProxyClass extends CommonProxyClass {
 	        		custom = ((grappleBow) player.getHeldItemOffhand().getItem()).getCustomization(player.getHeldItemOffhand());
 	        	}
 	        	
-	        	System.out.println("Launch!");
 				if (!grapplemod.controllers.containsKey(player.getEntityId())) {
 					player.onGround = false;
 					grapplemod.createControl(grapplemod.AIRID, -1, player.getEntityId(), player.world, new vec(0,0,0), null, custom);
@@ -598,6 +599,8 @@ public class ClientProxyClass extends CommonProxyClass {
 //			alreadyuseddoublejump = false;
 //		}
 		
+		if (player.isInWater()) {return;}
+		
 		boolean isjumpbuttondown = Minecraft.getMinecraft().gameSettings.keyBindJump.isKeyDown();
 		
 		if (isjumpbuttondown && !prevjumpbutton) {
@@ -623,6 +626,10 @@ public class ClientProxyClass extends CommonProxyClass {
 	}
 
 	public boolean wearingdoublejumpenchant(Entity entity) {
+		if (entity instanceof EntityPlayer && ((EntityPlayer) entity).isCreative()) {
+			return false;
+		}
+		
 		for (ItemStack stack : entity.getArmorInventoryList()) {
 			if (stack != null) {
 				Map<Enchantment, Integer> enchantments = EnchantmentHelper.getEnchantments(stack);
@@ -636,4 +643,40 @@ public class ClientProxyClass extends CommonProxyClass {
 		return false;
 	}
 
+	@Override
+	public boolean issliding(Entity entity) {
+		if (entity.isInWater()) {return false;}
+		
+		if (entity.onGround && key_slide.isKeyDown()) {
+			for (ItemStack stack : entity.getArmorInventoryList()) {
+				if (stack != null) {
+					Map<Enchantment, Integer> enchantments = EnchantmentHelper.getEnchantments(stack);
+					if (enchantments.containsKey(grapplemod.slidingenchantment)) {
+						if (enchantments.get(grapplemod.slidingenchantment) >= 1) {
+							return true;
+						}
+					}
+				}
+			}
+		}
+		return false;
+	}
+
+	@SubscribeEvent
+	public void onKeyInputEvent(KeyInputEvent event) {
+		EntityPlayer player = Minecraft.getMinecraft().player;
+		
+		grappleController controller = null;
+		if (grapplemod.controllers.containsKey(player.getEntityId())) {
+			controller = grapplemod.controllers.get(player.getEntityId());
+		}
+		
+		if (Minecraft.getMinecraft().gameSettings.keyBindJump.isKeyDown()) {
+			if (controller != null) {
+				if (controller instanceof airfrictionController && issliding(player)) {
+					controller.slidingJump();
+				}
+			}
+		}
+	}
 }

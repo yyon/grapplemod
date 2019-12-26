@@ -13,6 +13,7 @@ import com.yyon.grapplinghook.network.PlayerMovementMessage;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.math.BlockPos;
@@ -987,20 +988,17 @@ public class grappleController {
 		}
 		
 		if (tickswallrunning < GrappleConfig.getconf().max_wallrun_time * 40) {
-			// continue wallrun
-			if (isonwall && !this.entity.onGround && !this.entity.isSneaking()) {
-				if (this.entity.collidedHorizontally) {
+			if (!(this.entity.isSneaking())) {
+				// continue wallrun
+				if (isonwall && !this.entity.onGround && this.entity.collidedHorizontally) {
 					return true;
 				}
 				
-//				if (wallnearby()) {
-//					return true;
-//				}
-			}
-			
-			if (grapplemod.proxy.iswallrunning(this.entity)) {
-				isonwall = true;
-				return true;
+				// start wallrun
+				if (grapplemod.proxy.iswallrunning(this.entity)) {
+					isonwall = true;
+					return true;
+				}
 			}
 			
 			isonwall = false;
@@ -1015,7 +1013,7 @@ public class grappleController {
 	
 	public boolean applywallrun() {
 		boolean wallrun = this.wallrun();
-		if (wallrun) {
+		if (wallrun && !ClientProxyClass.key_jumpanddetach.isKeyDown()) {
 			if (!playerjump) {
 				motion.y = 0;
 			}
@@ -1025,8 +1023,21 @@ public class grappleController {
 				walldirection = wallside;
 				motion.add_ip(wallside.changelen(0.05));
 			}
-		}
 
+			// drag
+			double dragforce = 2;
+			
+			double vel = this.motion.length();
+			dragforce = vel*vel * dragforce;
+			
+			if (dragforce > vel) {dragforce = vel;}
+			
+			vec wallfric = new vec(this.motion.x, this.motion.y, this.motion.z);
+			wallfric.changelen_ip(-dragforce);
+			this.motion.add_ip(wallfric);
+		}
+		
+		// jump
 		boolean isjumping = ClientProxyClass.key_jumpanddetach.isKeyDown() && isonwall;
 		isjumping = isjumping && !playerjump; // only jump once when key is first pressed
 		playerjump = ClientProxyClass.key_jumpanddetach.isKeyDown() && isonwall;
@@ -1036,17 +1047,8 @@ public class grappleController {
 				jump.add_ip(walldirection.mult(-GrappleConfig.getconf().wall_jump_side));
 			}
 			motion.add_ip(jump);
-		}
-		
-		if (isonwall) {
-			double dragforce = 1 / 50F;
 			
-			double vel = this.motion.length();
-			dragforce = vel*vel * dragforce;
-			
-			vec wallfric = new vec(this.motion.x, this.motion.y, this.motion.z);
-			wallfric.changelen_ip(-dragforce);
-			this.motion.add_ip(wallfric);
+			wallrun = false;
 		}
 		
 		return wallrun;
@@ -1057,5 +1059,20 @@ public class grappleController {
 			this.motion.y = 0;
 		}
 		this.motion.y += GrappleConfig.getconf().doublejumpforce;
+	}
+	
+	public void applySlidingFriction() {
+		double dragforce = 1 / 40F;
+		
+		double vel = this.motion.length();
+		dragforce = vel*vel * dragforce;
+		
+		vec airfric = new vec(this.motion.x, this.motion.y, this.motion.z);
+		airfric.changelen_ip(-dragforce);
+		this.motion.add_ip(airfric);
+	}
+
+	public void slidingJump() {
+		this.motion.y = GrappleConfig.getconf().slidingjumpforce;
 	}
 }

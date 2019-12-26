@@ -6,11 +6,13 @@ import com.yyon.grapplinghook.GrappleConfig;
 import com.yyon.grapplinghook.grapplemod;
 
 import net.minecraft.client.util.ITooltipFlag;
+import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.ItemArmor;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.DamageSource;
+import net.minecraft.util.NonNullList;
 import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.entity.living.LivingFallEvent;
@@ -91,4 +93,20 @@ public class LongFallBoots extends ItemArmor {
 		}
 		list.add("Cancels fall damage when worn");
 	}
+
+	@Override
+    public void getSubItems(CreativeTabs tab, NonNullList<ItemStack> items)
+    {
+        if (this.isInCreativeTab(tab))
+        {
+        	ItemStack stack = new ItemStack(this);
+            items.add(stack);
+            
+        	stack = new ItemStack(this);
+        	stack.addEnchantment(grapplemod.wallrunenchantment, 1);
+        	stack.addEnchantment(grapplemod.doublejumpenchantment, 1);
+        	stack.addEnchantment(grapplemod.slidingenchantment, 1);
+            items.add(stack);
+        }
+    }
 }

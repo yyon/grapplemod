@@ -13,6 +13,7 @@ import com.yyon.grapplinghook.controllers.airfrictionController;
 import com.yyon.grapplinghook.controllers.grappleController;
 import com.yyon.grapplinghook.controllers.repelController;
 import com.yyon.grapplinghook.enchantments.DoublejumpEnchantment;
+import com.yyon.grapplinghook.enchantments.SlidingEnchantment;
 import com.yyon.grapplinghook.enchantments.WallrunEnchantment;
 import com.yyon.grapplinghook.entities.grappleArrow;
 import com.yyon.grapplinghook.items.KeypressItem;
@@ -109,6 +110,8 @@ import net.minecraftforge.fml.relauncher.Side;
 // Pull mobs
 // Attach 2 things together
 // wallrun on diagonal walls
+// smart motor acts erratically when aiming above hook
+// rocket angle up
 
 @Mod(modid = grapplemod.MODID, version = grapplemod.VERSION)
 public class grapplemod {
@@ -147,6 +150,7 @@ public class grapplemod {
     
     public static WallrunEnchantment wallrunenchantment;
     public static DoublejumpEnchantment doublejumpenchantment;
+    public static SlidingEnchantment slidingenchantment;
 
 	public static Object instance;
 	
@@ -355,7 +359,7 @@ public class grapplemod {
 	
 	@SubscribeEvent
 	public void registerEnchantments(RegistryEvent.Register<Enchantment> event) {
-	    event.getRegistry().registerAll(wallrunenchantment, doublejumpenchantment);
+	    event.getRegistry().registerAll(wallrunenchantment, doublejumpenchantment, slidingenchantment);
 
 	}
 	
@@ -419,6 +423,8 @@ public class grapplemod {
 	    wallrunenchantment.setRegistryName("wallrunenchantment");
 	    doublejumpenchantment = new DoublejumpEnchantment();
 	    doublejumpenchantment.setRegistryName("doublejumpenchantment");
+	    slidingenchantment = new SlidingEnchantment();
+	    slidingenchantment.setRegistryName("slidingenchantment");
 	    
 //		System.out.println(grapplebowitem);
 		

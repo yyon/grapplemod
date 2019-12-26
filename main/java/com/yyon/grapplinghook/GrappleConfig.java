@@ -168,6 +168,8 @@ public class GrappleConfig {
 		public double max_wallrun_time = 3;
 		
 		public double doublejumpforce = 0.8;
+		public double slidingjumpforce =  0.6;
+		public double wallrunspeed = 0.2;
 	}
 	
 	public static Config options = new Config(); // local options
