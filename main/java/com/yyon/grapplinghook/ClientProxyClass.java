@@ -112,8 +112,6 @@ public class ClientProxyClass extends CommonProxyClass {
 //		setgrapplebowtextures(grapplemod.grapplebowitem, grapplinghookloc, ropeloc);
 		registerItemModel(grapplemod.launcheritem);
 		registerItemModel(grapplemod.longfallboots);
-		registerItemModel(grapplemod.wallrunboots);
-		registerItemModel(grapplemod.doublejumpboots);
 		setgrapplebowtextures(grapplemod.repelleritem, repellerloc, repelleronloc);
 		registerItemModel(grapplemod.baseupgradeitem);
 		registerItemModel(grapplemod.doubleupgradeitem);

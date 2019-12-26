@@ -7,6 +7,8 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Random;
 
+import javax.annotation.Nullable;
+
 import com.yyon.grapplinghook.blocks.BlockGrappleModifier;
 import com.yyon.grapplinghook.blocks.TileEntityGrappleModifier;
 import com.yyon.grapplinghook.controllers.airfrictionController;
@@ -15,11 +17,9 @@ import com.yyon.grapplinghook.controllers.repelController;
 import com.yyon.grapplinghook.enchantments.DoublejumpEnchantment;
 import com.yyon.grapplinghook.enchantments.WallrunEnchantment;
 import com.yyon.grapplinghook.entities.grappleArrow;
-import com.yyon.grapplinghook.items.DoublejumpBoots;
 import com.yyon.grapplinghook.items.KeypressItem;
 import com.yyon.grapplinghook.items.KeypressItem.Keys;
 import com.yyon.grapplinghook.items.LongFallBoots;
-import com.yyon.grapplinghook.items.WallrunBoots;
 import com.yyon.grapplinghook.items.grappleBow;
 import com.yyon.grapplinghook.items.launcherItem;
 import com.yyon.grapplinghook.items.repeller;
@@ -54,9 +54,11 @@ import com.yyon.grapplinghook.network.SegmentMessage;
 import net.minecraft.block.Block;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.enchantment.Enchantment;
+import net.minecraft.enchantment.EnumEnchantmentType;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemArmor;
 import net.minecraft.item.ItemBlock;
@@ -69,6 +71,7 @@ import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.config.Config.Type;
 import net.minecraftforge.common.config.ConfigManager;
+import net.minecraftforge.common.util.EnumHelper;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.fml.client.event.ConfigChangedEvent;
 import net.minecraftforge.fml.common.Mod;
@@ -141,8 +144,8 @@ public class grapplemod {
     public static Item rocketupgradeitem;
 
     public static Item longfallboots;
-    public static Item wallrunboots;
-    public static Item doublejumpboots;
+    
+    public static final EnumEnchantmentType GRAPPLEENCHANTS_FEET = EnumHelper.addEnchantmentType("GRAPPLEENCHANTS_FEET", (item) -> item instanceof ItemArmor && ((ItemArmor)item).armorType == EntityEquipmentSlot.FEET);
     
     public static WallrunEnchantment wallrunenchantment;
     public static DoublejumpEnchantment doublejumpenchantment;
@@ -229,6 +232,7 @@ public class grapplemod {
 	};
 	
 	public static final CreativeTabs tabGrapplemod = (new CreativeTabs("tabGrapplemod") {
+		
 		@Override
 		public void displayAllRelevantItems(NonNullList<ItemStack> items) {
 			// sort items
@@ -337,8 +341,6 @@ public class grapplemod {
 				launcheritem, 
 				repelleritem, 
 				longfallboots, 
-				wallrunboots,
-				doublejumpboots,
 				baseupgradeitem, 
 				doubleupgradeitem, 
 				forcefieldupgradeitem, 
@@ -380,12 +382,6 @@ public class grapplemod {
 		launcheritem.setRegistryName("launcheritem");
 		longfallboots = new LongFallBoots(ItemArmor.ArmorMaterial.DIAMOND, 3);
 		longfallboots.setRegistryName("longfallboots");
-		wallrunboots = new WallrunBoots(ItemArmor.ArmorMaterial.DIAMOND, 3);
-		wallrunboots.setUnlocalizedName("bootsDiamond");
-		wallrunboots.setRegistryName("wallrunboots");
-		doublejumpboots = new DoublejumpBoots(ItemArmor.ArmorMaterial.DIAMOND, 3);
-		doublejumpboots.setUnlocalizedName("bootsDiamond");
-		doublejumpboots.setRegistryName("doublejumpboots");
 		repelleritem = new repeller();
 		repelleritem.setRegistryName("repeller");
 	    baseupgradeitem = new BaseUpgradeItem();
@@ -459,6 +455,8 @@ public class grapplemod {
 	    MinecraftForge.EVENT_BUS.register(this);
 	    
 		proxy.preInit(event);
+		
+		tabGrapplemod.setRelevantEnchantmentTypes(GRAPPLEENCHANTS_FEET);
 	}
 	
 	@EventHandler
