@@ -7,8 +7,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Random;
 
-import javax.annotation.Nullable;
-
 import com.yyon.grapplinghook.blocks.BlockGrappleModifier;
 import com.yyon.grapplinghook.blocks.TileEntityGrappleModifier;
 import com.yyon.grapplinghook.controllers.airfrictionController;
@@ -342,16 +340,16 @@ public class grapplemod {
 				repelleritem, 
 				longfallboots, 
 				baseupgradeitem, 
-				doubleupgradeitem, 
+				ropeupgradeitem, 
+				throwupgradeitem, 
+				motorupgradeitem, 
+				swingupgradeitem, 
+				staffupgradeitem, 
 				forcefieldupgradeitem, 
 				magnetupgradeitem, 
-				motorupgradeitem, 
-				ropeupgradeitem, 
-				staffupgradeitem, 
-				swingupgradeitem, 
-				throwupgradeitem, 
-				limitsupgradeitem, 
+				doubleupgradeitem, 
 				rocketupgradeitem, 
+				limitsupgradeitem, 
 				};
 	}
 	
