@@ -29,6 +29,8 @@ import net.minecraft.world.World;
 public class airfrictionController extends grappleController {
 	public final double playermovementmult = 0.5;
 	
+	public int ignoregroundcounter = 0;
+	
 	public airfrictionController(int arrowId, int entityId, World world, vec pos, int id, GrappleCustomization custom) {
 		super(arrowId, entityId, world, pos, id, custom);
 	}
@@ -38,8 +40,10 @@ public class airfrictionController extends grappleController {
 		Entity entity = this.entity;
 		
 		if (this.attached) {
-			this.normalGround();
-			this.normalCollisions();
+			if (this.ignoregroundcounter <= 0) {
+				this.normalGround();
+				this.normalCollisions();
+			}
 			this.applyAirFriction();
 			
 			if (this.entity.isInWater()) {
@@ -107,13 +111,21 @@ public class airfrictionController extends grappleController {
 				if (!issliding) {
 					if (!wallrun) {
 						if (!doesrocket) {
-							this.unattach();
+							if (ignoregroundcounter <= 0) {
+								this.unattach();
+							}
 						} else {
 							motion = vec.motionvec(entity);
 						}
 					}
 				}
 			}
+			if (ignoregroundcounter > 0) { ignoregroundcounter--; }
 		}
+	}
+
+	public void receiveEnderLaunch(double x, double y, double z) {
+		super.receiveEnderLaunch(x, y, z);
+		this.ignoregroundcounter = 2;
 	}
 }

@@ -875,7 +875,7 @@ public class grappleController {
 	
 	public vec rocket(Entity entity) {
 		if (ClientProxyClass.key_rocket.isKeyDown()) {
-			double rocket_force = this.custom.rocket_force * 0.15 * grapplemod.proxy.getRocketFunctioning();
+			double rocket_force = this.custom.rocket_force * 0.225 * grapplemod.proxy.getRocketFunctioning();
         	double yaw = entity.rotationYaw;
         	double pitch = -entity.rotationPitch;
         	pitch += this.custom.rocket_vertical_angle;

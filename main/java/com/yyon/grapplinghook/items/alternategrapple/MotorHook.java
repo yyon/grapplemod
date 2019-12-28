@@ -16,6 +16,8 @@ public class MotorHook extends grappleBow {
 
     	custom.maxlen = GrappleConfig.options.upgraded_maxlen;
     	custom.throwspeed = GrappleConfig.options.upgraded_throwspeed;
+
+    	custom.playermovementmult = 2;
     	
     	return custom;
     }

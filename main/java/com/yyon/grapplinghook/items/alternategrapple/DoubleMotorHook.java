@@ -14,11 +14,27 @@ public class DoubleMotorHook extends grappleBow {
     	GrappleCustomization custom = new GrappleCustomization();
     	custom.doublehook = true;
     	custom.motor = true;
+    	custom.motormaxspeed = 10;
     	custom.reelin = false;
     	custom.sticky = true;
     	
+    	custom.hookgravity = 100;
+    	custom.verticalthrowangle = 30;
+    	custom.sneakingverticalthrowangle = 25;
+    	custom.reelin = false;
+    	
+    	custom.motorwhencrouching = true;
+    	
+    	custom.smartdoublemotor = true;
+//     	custom.smartmotor = true;
+    	
+    	custom.angle = 25;
+    	custom.sneakingangle = 0;
+    	
     	custom.maxlen = GrappleConfig.options.upgraded_maxlen;
-    	custom.throwspeed = GrappleConfig.options.upgraded_throwspeed;
+    	custom.throwspeed = 20;
+    	
+    	custom.playermovementmult = 2;
     	
     	return custom;
     }

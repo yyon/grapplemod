@@ -45,7 +45,7 @@ public class GrappleConfig {
 		// rocket
 		public boolean default_rocketenabled = false;
 		public double default_rocket_force = 1;
-		public double default_rocket_active_time = 1;
+		public double default_rocket_active_time = 0.5;
 		public double default_rocket_refuel_ratio = 15;
 		public double default_rocket_vertical_angle = 0;
 		
@@ -57,7 +57,7 @@ public class GrappleConfig {
 		// rope
 		public double max_maxlen = 60;
 		// hook thrower
-		public double max_hookgravity = 20;
+		public double max_hookgravity = 100;
 		public double max_throwspeed = 5;
 		public double max_verticalthrowangle = 45;
 		public double max_sneakingverticalthrowangle = 45;
@@ -78,7 +78,7 @@ public class GrappleConfig {
 		// rope
 		public double max_upgrade_maxlen = 200;
 		// hook thrower
-		public double max_upgrade_hookgravity = 20;
+		public double max_upgrade_hookgravity = 100;
 		public double max_upgrade_throwspeed = 20;
 		public double max_upgrade_verticalthrowangle = 90;
 		public double max_upgrade_sneakingverticalthrowangle = 90;
@@ -95,7 +95,7 @@ public class GrappleConfig {
 		public double max_upgrade_angle = 90;
 		public double max_upgrade_sneakingangle = 90;
 		// rocket
-		public double max_rocket_active_time = 1;
+		public double max_rocket_active_time = 0.5;
 		public double max_upgrade_rocket_active_time = 20;
 		public double max_rocket_force = 1;
 		public double max_upgrade_rocket_force = 5;
