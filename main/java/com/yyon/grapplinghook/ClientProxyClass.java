@@ -626,9 +626,12 @@ public class ClientProxyClass extends CommonProxyClass {
 	}
 
 	public boolean wearingdoublejumpenchant(Entity entity) {
-		if (entity instanceof EntityPlayer && ((EntityPlayer) entity).isCreative()) {
+		if (entity instanceof EntityPlayer && ((EntityPlayer) entity).capabilities.isFlying) {
 			return false;
 		}
+//		if (entity instanceof EntityPlayer && ((EntityPlayer) entity).isCreative()) {
+//			return false;
+//		}
 		
 		for (ItemStack stack : entity.getArmorInventoryList()) {
 			if (stack != null) {

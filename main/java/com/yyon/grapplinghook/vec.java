@@ -20,6 +20,12 @@ public class vec {
 		this.z = vec3d.z;
 	}
 	
+	public vec(vec vec) {
+		this.x = vec.x;
+		this.y = vec.y;
+		this.z = vec.z;
+	}
+
 	public Vec3d toVec3d() {
 		return new Vec3d(this.x, this.y, this.z);
 	}

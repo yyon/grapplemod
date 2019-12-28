@@ -111,7 +111,7 @@ import net.minecraftforge.fml.relauncher.Side;
 // Attach 2 things together
 // wallrun on diagonal walls
 // smart motor acts erratically when aiming above hook
-// rocket angle up
+// key events
 
 @Mod(modid = grapplemod.MODID, version = grapplemod.VERSION)
 public class grapplemod {

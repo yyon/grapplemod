@@ -5,7 +5,7 @@ import net.minecraft.nbt.NBTTagCompound;
 
 public class GrappleCustomization {
 	public static final String[] booleanoptions = new String[] {"phaserope", "motor", "motorwhencrouching", "motorwhennotcrouching", "smartmotor", "enderstaff", "repel", "attract", "doublehook", "smartdoublemotor", "motordampener", "reelin", "pullbackwards", "oneropepull", "climbkey", "sticky", "detachonkeyrelease", "rocket"};
-	public static final String[] doubleoptions = new String[] {"maxlen", "hookgravity", "throwspeed", "motormaxspeed", "motoracceleration", "playermovementmult", "repelforce", "attractradius", "angle", "sneakingangle", "verticalthrowangle", "sneakingverticalthrowangle", "rocket_active_time", "rocket_refuel_ratio"};
+	public static final String[] doubleoptions = new String[] {"maxlen", "hookgravity", "throwspeed", "motormaxspeed", "motoracceleration", "playermovementmult", "repelforce", "attractradius", "angle", "sneakingangle", "verticalthrowangle", "sneakingverticalthrowangle", "rocket_force", "rocket_active_time", "rocket_refuel_ratio", "rocket_vertical_angle"};
 	
 	// rope
 	public double maxlen = GrappleConfig.getconf().default_maxlen;
@@ -57,6 +57,7 @@ public class GrappleCustomization {
 	public double rocket_force = GrappleConfig.getconf().default_rocket_force;
 	public double rocket_active_time = GrappleConfig.getconf().default_rocket_active_time;
 	public double rocket_refuel_ratio = GrappleConfig.getconf().default_rocket_refuel_ratio;
+	public double rocket_vertical_angle = GrappleConfig.getconf().default_rocket_vertical_angle;
 	
 	public GrappleCustomization() {
 		
@@ -105,6 +106,7 @@ public class GrappleCustomization {
 		else if (option.equals("sticky")) {this.sticky = bool;}
 		else if (option.equals("detachonkeyrelease")) {this.detachonkeyrelease = bool;}
 		else if (option.equals("rocket")) {this.rocket = bool;}
+		else {System.out.println("Option doesn't exist: " + option);}
 	}
 	
 	public boolean getBoolean(String option) {
@@ -146,6 +148,8 @@ public class GrappleCustomization {
 		else if (option.equals("rocket_force")) {this.rocket_force = d;}
 		else if (option.equals("rocket_active_time")) {this.rocket_active_time = d;}
 		else if (option.equals("rocket_refuel_ratio")) {this.rocket_refuel_ratio = d;}
+		else if (option.equals("rocket_vertical_angle")) {this.rocket_vertical_angle = d;}
+		else {System.out.println("Option doesn't exist: " + option);}
 	}
 	
 	public double getDouble(String option) {
@@ -164,6 +168,7 @@ public class GrappleCustomization {
 		else if (option.equals("rocket_force")) {return this.rocket_force;}
 		else if (option.equals("rocket_active_time")) {return rocket_active_time;}
 		else if (option.equals("rocket_refuel_ratio")) {return rocket_refuel_ratio;}
+		else if (option.equals("rocket_vertical_angle")) {return rocket_vertical_angle;}
 		System.out.println("Option doesn't exist: " + option);
 		return 0;
 	}
@@ -223,7 +228,7 @@ public class GrappleCustomization {
 			return this.doublehook && this.motor;
 		}
 		
-		else if (option == "rocket_active_time" || option == "rocket_refuel_ratio" || option == "rocket_force") {
+		else if (option == "rocket_active_time" || option == "rocket_refuel_ratio" || option == "rocket_force" || option == "rocket_vertical_angle") {
 			return this.rocket;
 		}
 		
@@ -246,6 +251,7 @@ public class GrappleCustomization {
 		else if (option.equals("rocket_force")) {return upgrade == 1 ? GrappleConfig.getconf().max_upgrade_rocket_force: GrappleConfig.getconf().max_rocket_force;}
 		else if (option.equals("rocket_active_time")) {return upgrade == 1 ? GrappleConfig.getconf().max_upgrade_rocket_active_time : GrappleConfig.getconf().max_rocket_active_time;}
 		else if (option.equals("rocket_refuel_ratio")) {return upgrade == 1 ? GrappleConfig.getconf().max_upgrade_rocket_refuel_ratio : GrappleConfig.getconf().max_rocket_refuel_ratio;}
+		else if (option.equals("rocket_vertical_angle")) {return upgrade == 1 ? GrappleConfig.getconf().max_upgrade_rocket_vertical_angle : GrappleConfig.getconf().max_rocket_vertical_angle;}
 		System.out.println("Option doesn't exist: " + option);
 		return 0;
 	}
@@ -291,6 +297,7 @@ public class GrappleCustomization {
 		else if (option.equals("rocket_force")) {return GrappleConfig.getconf().enable_rocket_force;}
 		else if (option.equals("rocket_active_time")) {return GrappleConfig.getconf().enable_rocket_active_time;}
 		else if (option.equals("rocket_refuel_ratio")) {return GrappleConfig.getconf().enable_rocket_refuel_ratio;}
+		else if (option.equals("rocket_vertical_angle")) {return GrappleConfig.getconf().enable_rocket_vertical_angle;}
 		System.out.println("Unknown option");
 		return 0;
 	}

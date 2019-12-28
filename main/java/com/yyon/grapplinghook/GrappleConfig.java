@@ -47,11 +47,12 @@ public class GrappleConfig {
 		public double default_rocket_force = 1;
 		public double default_rocket_active_time = 1;
 		public double default_rocket_refuel_ratio = 15;
+		public double default_rocket_vertical_angle = 0;
 		
 
 		// upgraded values for alternativegrapple items
 		public double upgraded_throwspeed = 3.5;
-		public double upgraded_maxlen = 40;
+		public double upgraded_maxlen = 60;
 
 		// rope
 		public double max_maxlen = 60;
@@ -107,6 +108,9 @@ public class GrappleConfig {
 		public double min_hookgravity = 1;
 		public double min_upgrade_hookgravity = 0;
 		
+		public double max_upgrade_rocket_vertical_angle = 90;
+		public double max_rocket_vertical_angle = 90;
+		
 		public String grapplingBlocks = "any";
 		public String grapplingNonBlocks = "none";
 		
@@ -152,6 +156,7 @@ public class GrappleConfig {
 		public int enable_rocket_force = 0;
 		public int enable_rocket_active_time = 0;
 		public int enable_rocket_refuel_ratio = 0;
+		public int enable_rocket_vertical_angle = 0;
 
 		
 		public boolean longfallbootsrecipe = true;

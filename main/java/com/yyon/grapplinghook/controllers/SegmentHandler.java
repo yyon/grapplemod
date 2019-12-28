@@ -28,10 +28,10 @@ public class SegmentHandler {
 	final double bendoffset = 0.05;
 	final double intoblock = 0.05;
 	
-	public SegmentHandler(World w, grappleArrow arrow) {
+	public SegmentHandler(World w, grappleArrow arrow, vec hookpos, vec playerpos) {
 		segments = new LinkedList<vec>();
-		segments.add(new vec(0, 0, 0));
-		segments.add(new vec(0, 0, 0));
+		segments.add(hookpos);
+		segments.add(playerpos);
 		segmentbottomsides = new LinkedList<EnumFacing>();
 		segmentbottomsides.add(null);
 		segmentbottomsides.add(null);
@@ -40,6 +40,19 @@ public class SegmentHandler {
 		segmenttopsides.add(null);
 		this.world = w;
 		this.arrow = arrow;
+		this.prevhookpos = new vec(hookpos);
+		this.prevplayerpos = new vec(playerpos);
+		
+//		System.out.println("segments:");
+//		hookpos.print();
+//		playerpos.print();
+	}
+	
+	public void forceSetPos(vec hookpos, vec playerpos) {
+		this.prevhookpos = new vec(hookpos);
+		this.prevplayerpos = new vec(playerpos);
+    	this.segments.set(0, new vec(hookpos));
+    	this.segments.set(this.segments.size() - 1, new vec(playerpos));
 	}
 	
 	double ropelen;
@@ -279,7 +292,7 @@ public class SegmentHandler {
                 		}
                 		break;
                 	}
-                } else {
+//                } else {
 //                	System.out.println("Warning: no corner collision");
                 }
 //            } else {

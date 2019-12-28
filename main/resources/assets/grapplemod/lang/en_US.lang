@@ -76,6 +76,7 @@ grapplecustomization.rocket.name=Rocket
 grapplecustomization.rocket_force.name=Rocket Force
 grapplecustomization.rocket_active_time.name=Rocket Time (s)
 grapplecustomization.rocket_refuel_ratio.name=Rocket Refuel Time Ratio
+grapplecustomization.rocket_vertical_angle.name=Rocket Vertical Angle
 
 grapplecustomization.maxlen.desc=The length of the rope
 grapplecustomization.phaserope.desc=Allows rope to phase through blocks
@@ -110,6 +111,7 @@ grapplecustomization.rocket.desc=Propels the player forward while a button is he
 grapplecustomization.rocket_force.desc=How fast the rocket propels the player
 grapplecustomization.rocket_active_time.desc=The time that the rocket can be used until it has to refuel (fuel auto-regenerates when it is not being used)
 grapplecustomization.rocket_refuel_ratio.desc=The ratio of the time that the rocket takes to regenerate fuel, compared to the time the rocket is used. (e.g. 2.0 means a unit of fuel that takes 1 second to use up will take 2 seconds to regenerate. Lower is better. )
+grapplecustomization.rocket_vertical_angle.desc=The angle upwards that the rocket force is applied
 
 
 grappletooltip.throw.desc=- Throw grappling hook

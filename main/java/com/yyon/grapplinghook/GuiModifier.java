@@ -178,6 +178,7 @@ public class GuiModifier extends GuiScreen {
 			addSlider("rocket_force");
 			addSlider("rocket_active_time");
 			addSlider("rocket_refuel_ratio");
+			addSlider("rocket_vertical_angle");
 		}
 		
 		this.updateEnabled();

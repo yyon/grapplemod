@@ -31,6 +31,11 @@ public class crosshairRenderer {
 	
 	@SubscribeEvent
 	public void onRenderGameOverlayPost(RenderGameOverlayEvent.Post event) {
+		GameSettings gamesettings = this.mc.gameSettings;
+        if (gamesettings.thirdPersonView != 0) return;
+        if (this.mc.playerController.isSpectator() && this.mc.pointedEntity == null) return;
+        if (gamesettings.showDebugInfo && !gamesettings.hideGUI && !this.mc.player.hasReducedDebug() && !gamesettings.reducedDebugInfo) return;
+
 		if (event.getType() == ElementType.CROSSHAIRS) {
 			EntityPlayerSP player = this.mc.player;
 			ItemStack bow = null;
@@ -53,54 +58,39 @@ public class crosshairRenderer {
             		angle = 0;
             	}
             	
-            	if (verticalangle == 0) {
-    				if (!custom.doublehook || angle == 0) {
-    					return;
-    				}
-            	}
-				
-//				float partialticks = event.getPartialTicks();
 				ScaledResolution resolution = event.getResolution();
-				
-		        mc.entityRenderer.setupOverlayRendering();
-		        GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
-	//	        mc.getTextureManager().bindTexture(Gui.ICONS);
-		        GlStateManager.enableBlend();
-		        
-				GameSettings gamesettings = this.mc.gameSettings;
-	
-		        if (gamesettings.thirdPersonView == 0)
-		        {
-		            if (this.mc.playerController.isSpectator() && this.mc.pointedEntity == null)
-		            {
-		            	return;
-		            }
-	
-		            int w = resolution.getScaledWidth();
-		            int h = resolution.getScaledHeight();
-	
-		            if (gamesettings.showDebugInfo && !gamesettings.hideGUI && !this.mc.player.hasReducedDebug() && !gamesettings.reducedDebugInfo)
-		            {
-		            }
-		            else
-		            {
-		            	double fov = Math.toRadians(gamesettings.fovSetting);
-		            	fov *= player.getFovModifier();
-		            	
-		            	double l = ((double) h/2) / Math.tan(fov/2);
-		            	
-		            	int offset = (int) (Math.tan(angle) * l);
-		            	int verticaloffset = (int) (-Math.tan(verticalangle) * l);
-		            	
-		                GlStateManager.tryBlendFuncSeparate(GlStateManager.SourceFactor.ONE_MINUS_DST_COLOR, GlStateManager.DestFactor.ONE_MINUS_SRC_COLOR, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
-		                GlStateManager.enableAlpha();
-		                this.drawTexturedModalRect(w / 2 - 7 + offset, h / 2 - 7 + verticaloffset, 0, 0, 16, 16);
-		                if (angle != 0) {
-			                this.drawTexturedModalRect(w / 2 - 7 - offset, h / 2 - 7 + verticaloffset, 0, 0, 16, 16);
-		                }
-		            }
+	            int w = resolution.getScaledWidth();
+	            int h = resolution.getScaledHeight();
 
+            	double fov = Math.toRadians(gamesettings.fovSetting);
+            	fov *= player.getFovModifier();
+            	double l = ((double) h/2) / Math.tan(fov/2);
+            	            	
+            	if (!((verticalangle == 0) && (!custom.doublehook || angle == 0))) {
+	//				float partialticks = event.getPartialTicks();
+					
+			        mc.entityRenderer.setupOverlayRendering();
+			        GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
+		//	        mc.getTextureManager().bindTexture(Gui.ICONS);
+			        GlStateManager.enableBlend();
+			        
+	            	int offset = (int) (Math.tan(angle) * l);
+	            	int verticaloffset = (int) (-Math.tan(verticalangle) * l);
+	            	
+	                GlStateManager.tryBlendFuncSeparate(GlStateManager.SourceFactor.ONE_MINUS_DST_COLOR, GlStateManager.DestFactor.ONE_MINUS_SRC_COLOR, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
+	                GlStateManager.enableAlpha();
+	                this.drawTexturedModalRect(w / 2 - 7 + offset, h / 2 - 7 + verticaloffset, 0, 0, 16, 16);
+	                if (angle != 0) {
+		                this.drawTexturedModalRect(w / 2 - 7 - offset, h / 2 - 7 + verticaloffset, 0, 0, 16, 16);
+	                }
 		        }
+            	
+            	if (custom.rocket && custom.rocket_vertical_angle != 0) {
+	            	int verticaloffset = (int) (-Math.tan(Math.toRadians(custom.rocket_vertical_angle)) * l);
+	                GlStateManager.tryBlendFuncSeparate(GlStateManager.SourceFactor.ONE_MINUS_DST_COLOR, GlStateManager.DestFactor.ONE_MINUS_SRC_COLOR, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
+	                GlStateManager.enableAlpha();
+	                this.drawTexturedModalRect(w / 2 - 7, h / 2 - 7 + verticaloffset, 0, 0, 16, 16);
+            	}
 			}
 		}
 
@@ -131,8 +121,8 @@ public class crosshairRenderer {
 
 				//	            GlStateManager.tryBlendFuncSeparate(GlStateManager.SourceFactor.ONE_MINUS_DST_COLOR, GlStateManager.DestFactor.ONE_MINUS_SRC_COLOR, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
 				
-	            this.drawRect(w / 2 - totalbarlength / 2, h * 3 / 4, totalbarlength, 2, 200, 100);
-	            this.drawRect(w / 2 - totalbarlength / 2, h * 3 / 4, (int) (totalbarlength * rocketFuel), 2, 100, 255);
+	            this.drawRect(w / 2 - totalbarlength / 2, h * 3 / 4, totalbarlength, 2, 50, 100);
+	            this.drawRect(w / 2 - totalbarlength / 2, h * 3 / 4, (int) (totalbarlength * rocketFuel), 2, 200, 255);
 	            
 //				GlStateManager.disableBlend();
 //				GlStateManager.disableAlpha();

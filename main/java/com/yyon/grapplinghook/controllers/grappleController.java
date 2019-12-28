@@ -875,9 +875,14 @@ public class grappleController {
 	
 	public vec rocket(Entity entity) {
 		if (ClientProxyClass.key_rocket.isKeyDown()) {
-        	vec force = new vec(entity.getLookVec()).normalize();
-        	force.mult_ip(this.custom.rocket_force * 0.15);
-        	force.mult_ip(grapplemod.proxy.getRocketFunctioning());
+			double rocket_force = this.custom.rocket_force * 0.15 * grapplemod.proxy.getRocketFunctioning();
+        	double yaw = entity.rotationYaw;
+        	double pitch = -entity.rotationPitch;
+        	pitch += this.custom.rocket_vertical_angle;
+        	vec force = new vec(0, 0, rocket_force);
+        	force = force.rotate_pitch(Math.toRadians(pitch));
+        	force = force.rotate_yaw(Math.toRadians(yaw));
+        	
         	return force;
 		}
 		return new vec(0,0,0);

@@ -86,7 +86,7 @@ public class grappleArrow extends EntityThrowable implements IEntityAdditionalSp
 	public grappleArrow(World worldIn) {
 		super(worldIn);
 		
-		this.segmenthandler = new SegmentHandler(this.world, this);
+		this.segmenthandler = new SegmentHandler(this.world, this, vec.positionvec(this), vec.positionvec(this));
 		this.customization = new GrappleCustomization();
 	}
 	
@@ -106,9 +106,11 @@ public class grappleArrow extends EntityThrowable implements IEntityAdditionalSp
         pos.add_ip(new vec(x, -0.175, 0.45).rotate_yaw(Math.toRadians(shooter.rotationYaw)));
         this.setPosition(pos.x, pos.y, pos.z);
         */
-
-		this.segmenthandler = new SegmentHandler(this.world, this);
 		
+		vec pos = vec.positionvec(this.shootingEntity).add(new vec(0, this.shootingEntity.getEyeHeight(), 0));
+
+		this.segmenthandler = new SegmentHandler(this.world, this, new vec(pos), new vec(pos));
+
 		this.customization = customization;
 		this.r = customization.maxlen;
 		

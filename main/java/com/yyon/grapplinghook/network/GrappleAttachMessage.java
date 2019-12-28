@@ -147,9 +147,11 @@ public class GrappleAttachMessage implements IMessage {
 	            	segmenthandler.segmentbottomsides = message.segmentbottomsides;
 	            	segmenthandler.segmenttopsides = message.segmenttopsides;
 	            	
+	            	Entity player = world.getEntityByID(message.entityid);
+	            	segmenthandler.forceSetPos(new vec(message.x, message.y, message.z), vec.positionvec(player));
             	} else {
             	}
-            	
+            	            	
             	grapplemod.createControl(message.controlid, message.id, message.entityid, world, new vec(message.x, message.y, message.z), message.blockpos, message.custom);
             }
     	}
