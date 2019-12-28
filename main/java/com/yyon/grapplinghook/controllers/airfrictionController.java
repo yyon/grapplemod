@@ -40,9 +40,11 @@ public class airfrictionController extends grappleController {
 		Entity entity = this.entity;
 		
 		if (this.attached) {
+			boolean issliding = grapplemod.proxy.issliding(this.entity);
+			
 			if (this.ignoregroundcounter <= 0) {
-				this.normalGround();
-				this.normalCollisions();
+				this.normalGround(!issliding);					
+				this.normalCollisions(!issliding);
 			}
 			this.applyAirFriction();
 			
@@ -62,16 +64,26 @@ public class airfrictionController extends grappleController {
 				}
 			}
 
+			if (issliding) {
+				this.applySlidingFriction();
+			}
+
 			boolean wallrun = this.applywallrun();
 
-			if (wallrun) {
-				if (this.walldirection != null) {
-					this.playermovement = this.playermovement.removealong(this.walldirection);
+			if (!issliding) {
+				if (wallrun) {
+					if (this.walldirection != null) {
+						this.playermovement = this.playermovement.removealong(this.walldirection);
+					}
+					this.playermovement.changelen_ip(GrappleConfig.getconf().wallrun_speed);
+					motion.add_ip(this.playermovement);
+					if (this.motion.length() > GrappleConfig.getconf().wallrun_max_speed) {
+						this.motion.changelen_ip(GrappleConfig.getconf().wallrun_max_speed);
+					}
+					this.wallrun_press_against_wall();
+				} else {
+					motion.add_ip(this.playermovement.changelen(0.01));
 				}
-				this.playermovement.changelen_ip(GrappleConfig.getconf().wallrunspeed);
-				motion.add_ip(this.playermovement);
-			} else {
-				motion.add_ip(this.playermovement.changelen(0.01));
 			}
 			
 			if (entity instanceof EntityLivingBase) {
@@ -81,18 +93,13 @@ public class airfrictionController extends grappleController {
 				}
 			}
 			
-			boolean issliding = grapplemod.proxy.issliding(this.entity);
-			
-			if (issliding) {
-				this.applySlidingFriction();
-			}
 			
 			vec gravity = new vec(0, -0.05, 0);
 
 			if (!wallrun) {
 				motion.add_ip(gravity);
 			}
-
+			
 			vec newmotion;
 			
 			newmotion = motion;
@@ -126,6 +133,11 @@ public class airfrictionController extends grappleController {
 
 	public void receiveEnderLaunch(double x, double y, double z) {
 		super.receiveEnderLaunch(x, y, z);
+		this.ignoregroundcounter = 2;
+	}
+	
+	public void slidingJump() {
+		super.slidingJump();
 		this.ignoregroundcounter = 2;
 	}
 }

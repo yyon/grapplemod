@@ -296,6 +296,8 @@ public class ClientProxyClass extends CommonProxyClass {
 
 				this.checkdoublejump();
 				
+				this.checkslide(player);
+				
 				this.rocketFuel += this.rocketIncreaseTick;
 				
 				try {
@@ -348,6 +350,12 @@ public class ClientProxyClass extends CommonProxyClass {
 		}
 	}
 	
+	private void checkslide(EntityPlayer player) {
+		if (key_slide.isKeyDown() && !grapplemod.controllers.containsKey(player.getEntityId()) && this.issliding(player)) {
+			grapplemod.createControl(grapplemod.AIRID, -1, player.getEntityId(), player.world, new vec(0,0,0), null, null);
+		}
+	}
+
 	@Override
 	public void startrocket(EntityPlayer player, GrappleCustomization custom) {
 		if (!custom.rocket) return;
@@ -681,5 +689,6 @@ public class ClientProxyClass extends CommonProxyClass {
 				}
 			}
 		}
+		
 	}
 }

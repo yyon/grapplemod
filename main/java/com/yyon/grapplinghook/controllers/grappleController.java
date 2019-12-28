@@ -181,8 +181,8 @@ public class grappleController {
 		if (this.attached) {
 			if(entity != null) {
 				if (true) {
-					this.normalGround();
-					this.normalCollisions();
+					this.normalGround(true);
+					this.normalCollisions(true);
 					this.applyAirFriction();
 					
 					vec playerpos = vec.positionvec(entity);
@@ -610,15 +610,27 @@ public class grappleController {
     		}
     	}
 	}
+	
+	boolean prevcollision = false;
+	vec prevcollisionpos = new vec(0,0,0);
 
-	public void normalCollisions() {
+	public void normalCollisions(boolean refreshmotion) {
 		// stop if collided with object
+		vec pos = vec.positionvec(this.entity);
 		if (entity.collidedHorizontally) {
-			if (entity.motionX == 0) {
-				this.motion.x = 0;
+			if (refreshmotion || prevcollision) {
+				if (entity.motionX == 0 && (refreshmotion || pos.x == prevcollisionpos.x)) {
+					this.motion.x = 0;
+				}
+				if (entity.motionZ == 0 && (refreshmotion || pos.z == prevcollisionpos.z)) {
+					this.motion.z = 0;
+				}
 			}
-			if (entity.motionZ == 0) {
-				this.motion.z = 0;
+		}
+		prevcollision = entity.collidedHorizontally;
+		if (prevcollision) {
+			if (entity.motionX == 0 || entity.motionZ == 0) {
+				prevcollisionpos = pos;
 			}
 		}
 		if (entity.collidedVertically) {
@@ -636,7 +648,7 @@ public class grappleController {
 		}
 	}
 
-	public void normalGround() {
+	public void normalGround(boolean refreshmotion) {
 		if (entity.onGround) {
 			ongroundtimer = maxongroundtimer;
 			if (this.motion.y < 0) {
@@ -647,8 +659,8 @@ public class grappleController {
 				ongroundtimer--;
 			}
 		}
-		if (this.ongroundtimer > 0) {
-			if (!grapplemod.proxy.isSneaking(entity)) {
+		if (entity.onGround) {
+			if (refreshmotion) {
 				this.motion = vec.motionvec(entity);
 			}
 		}
@@ -1025,21 +1037,25 @@ public class grappleController {
 
 			vec wallside = this.getwalldirection();
 			if (wallside != null) {
-				walldirection = wallside;
-				motion.add_ip(wallside.changelen(0.05));
+				this.walldirection = wallside;
 			}
 
 			// drag
-			double dragforce = 2;
+			double dragforce = GrappleConfig.getconf().wallrun_drag;
 			
 			double vel = this.motion.length();
-			dragforce = vel*vel * dragforce;
+//			dragforce = vel*vel * dragforce;
 			
 			if (dragforce > vel) {dragforce = vel;}
 			
-			vec wallfric = new vec(this.motion.x, this.motion.y, this.motion.z);
+			vec wallfric = new vec(this.motion);
+			if (wallside != null) {
+				wallfric.removealong(wallside);
+			}
 			wallfric.changelen_ip(-dragforce);
 			this.motion.add_ip(wallfric);
+			
+			
 		}
 		
 		// jump
@@ -1058,6 +1074,13 @@ public class grappleController {
 		
 		return wallrun;
 	}
+	
+	public void wallrun_press_against_wall() {
+		// press against wall
+		if (this.walldirection != null) {
+			motion.add_ip(this.walldirection.changelen(0.05));
+		}
+	}
 
 	public void doublejump() {
 		if (this.motion.y < 0) {
@@ -1067,10 +1090,12 @@ public class grappleController {
 	}
 	
 	public void applySlidingFriction() {
-		double dragforce = 1 / 40F;
+		double dragforce = GrappleConfig.getconf().sliding_friction;
 		
-		double vel = this.motion.length();
-		dragforce = vel*vel * dragforce;
+//		double vel = this.motion.length();
+//		dragforce = vel*vel * dragforce;
+		
+		if (dragforce > this.motion.length()) {dragforce = this.motion.length(); };
 		
 		vec airfric = new vec(this.motion.x, this.motion.y, this.motion.z);
 		airfric.changelen_ip(-dragforce);

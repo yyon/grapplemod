@@ -174,7 +174,10 @@ public class GrappleConfig {
 		
 		public double doublejumpforce = 0.8;
 		public double slidingjumpforce =  0.6;
-		public double wallrunspeed = 0.2;
+		public double wallrun_speed = 0.1;
+		public double wallrun_max_speed = 0.7;
+		public double wallrun_drag = 0.05;
+		public double sliding_friction = 1 / 150F;
 	}
 	
 	public static Config options = new Config(); // local options
