@@ -1,7 +1,7 @@
 package com.yyon.grapplinghook.controllers;
 
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.world.World;
 
 import com.yyon.grapplinghook.grapplemod;
@@ -28,7 +28,7 @@ public class repelController extends grappleController {
 					
 //					double dist = oldspherevec.length();
 					
-					if (entity instanceof EntityPlayer) {
+					if (entity instanceof PlayerEntity) {
 //						EntityPlayer player = (EntityPlayer) entity;
 						if (grapplemod.proxy.isSneaking(entity)) {
 							motion.mult_ip(0.95);

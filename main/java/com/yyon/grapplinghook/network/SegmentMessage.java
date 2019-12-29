@@ -7,7 +7,7 @@ import com.yyon.grapplinghook.entities.grappleArrow;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
-import net.minecraft.util.EnumFacing;
+import net.minecraft.util.Direction;
 import net.minecraft.util.IThreadListener;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
@@ -37,13 +37,13 @@ public class SegmentMessage implements IMessage {
 	public boolean add;
 	public int index;
 	public vec pos;
-	public EnumFacing topfacing;
-	public EnumFacing bottomfacing;
+	public Direction topfacing;
+	public Direction bottomfacing;
 
 
     public SegmentMessage() { }
 
-    public SegmentMessage(int id, boolean add, int index, vec pos, EnumFacing topfacing, EnumFacing bottomfacing) {
+    public SegmentMessage(int id, boolean add, int index, vec pos, Direction topfacing, Direction bottomfacing) {
     	this.id = id;
     	this.add = add;
     	this.index = index;
@@ -58,8 +58,8 @@ public class SegmentMessage implements IMessage {
     	this.add = buf.readBoolean();
     	this.index = buf.readInt();
     	this.pos = new vec(buf.readDouble(), buf.readDouble(), buf.readDouble());
-    	this.topfacing = EnumFacing.getFront(buf.readInt());
-    	this.bottomfacing = EnumFacing.getFront(buf.readInt());
+    	this.topfacing = Direction.getFront(buf.readInt());
+    	this.bottomfacing = Direction.getFront(buf.readInt());
     }
 
     @Override

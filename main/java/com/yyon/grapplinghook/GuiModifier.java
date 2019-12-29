@@ -8,8 +8,8 @@ import java.util.regex.Pattern;
 import com.yyon.grapplinghook.blocks.TileEntityGrappleModifier;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiButton;
-import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.gui.widget.button.Button;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.item.ItemStack;
@@ -17,7 +17,7 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.client.config.GuiCheckBox;
 import net.minecraftforge.fml.client.config.GuiSlider;
 
-public class GuiModifier extends GuiScreen {
+public class GuiModifier extends Screen {
 	private static final ResourceLocation texture = new ResourceLocation("grapplemod",
 			"textures/gui/guimodifier_bg.png");
 
@@ -29,8 +29,8 @@ public class GuiModifier extends GuiScreen {
 
 	int posy;
 	int id;
-	HashMap<GuiButton, String> options;
-	HashMap<GuiButton, String> tooltips;
+	HashMap<Button, String> options;
+	HashMap<Button, String> tooltips;
 
 	TileEntityGrappleModifier tileent;
 	GrappleCustomization customization;
@@ -57,11 +57,11 @@ public class GuiModifier extends GuiScreen {
 	}
 
 	public void mainscreen() {
-		this.buttonList.add(new GuiButton(1, this.guiLeft + 10, this.guiTop + this.ySize - 20 - 10,
+		this.buttonList.add(new Button(1, this.guiLeft + 10, this.guiTop + this.ySize - 20 - 10,
 				50, 20, grapplemod.proxy.localize("grapplemodifier.close.desc")));
-		this.buttonList.add(new GuiButton(2, this.guiLeft + this.xSize - 50 - 10, this.guiTop + this.ySize - 20 - 10,
+		this.buttonList.add(new Button(2, this.guiLeft + this.xSize - 50 - 10, this.guiTop + this.ySize - 20 - 10,
 				50, 20, grapplemod.proxy.localize("grapplemodifier.reset.desc")));
-		this.buttonList.add(new GuiButton(4, this.guiLeft + 10 + 75, this.guiTop + this.ySize - 20 - 10,
+		this.buttonList.add(new Button(4, this.guiLeft + 10 + 75, this.guiTop + this.ySize - 20 - 10,
 				50, 20, grapplemod.proxy.localize("grapplemodifier.helpbutton.desc")));
 
 		int y = 0;
@@ -74,7 +74,7 @@ public class GuiModifier extends GuiScreen {
 					x += 1;
 				}
 				this.buttonList.add(
-						new GuiButton(99 + i, this.guiLeft + 10 + 105*x, this.guiTop + 15 + 30 * y, 95, 20, category.description));
+						new Button(99 + i, this.guiLeft + 10 + 105*x, this.guiTop + 15 + 30 * y, 95, 20, category.description));
 				y += 1;
 			}
 		}
@@ -86,18 +86,18 @@ public class GuiModifier extends GuiScreen {
 		this.allowed = false;
 		posy = 10;
 		id = 10;
-		options = new HashMap<GuiButton, String>();
-		tooltips = new HashMap<GuiButton, String>();
+		options = new HashMap<Button, String>();
+		tooltips = new HashMap<Button, String>();
 	}
 
 	public void notAllowedScreen(grapplemod.upgradeCategories category) {
-		this.buttonList.add(new GuiButton(3, this.guiLeft + 10, this.guiTop + this.ySize - 20 - 10, 50, 20, grapplemod.proxy.localize("grapplemodifier.back.desc")));
+		this.buttonList.add(new Button(3, this.guiLeft + 10, this.guiTop + this.ySize - 20 - 10, 50, 20, grapplemod.proxy.localize("grapplemodifier.back.desc")));
 		this.category = category;
 		this.allowed = false;
 	}
 
 	public void helpscreen() {
-		this.buttonList.add(new GuiButton(3, this.guiLeft + 10, this.guiTop + this.ySize - 20 - 10, 50, 20, grapplemod.proxy.localize("grapplemodifier.back.desc")));
+		this.buttonList.add(new Button(3, this.guiLeft + 10, this.guiTop + this.ySize - 20 - 10, 50, 20, grapplemod.proxy.localize("grapplemodifier.back.desc")));
 	}
 
 	public void addCheckbox(String option) {
@@ -132,7 +132,7 @@ public class GuiModifier extends GuiScreen {
 	}
 
 	public void showCategoryScreen(grapplemod.upgradeCategories category) {
-		this.buttonList.add(new GuiButton(3, this.guiLeft + 10, this.guiTop + this.ySize - 20 - 10, 50, 20, grapplemod.proxy.localize("grapplemodifier.back.desc")));
+		this.buttonList.add(new Button(3, this.guiLeft + 10, this.guiTop + this.ySize - 20 - 10, 50, 20, grapplemod.proxy.localize("grapplemodifier.back.desc")));
 		this.category = category;
 		this.allowed = true;
 
@@ -184,7 +184,7 @@ public class GuiModifier extends GuiScreen {
 		this.updateEnabled();
 	}
 	
-	GuiButton buttonpressed = null;
+	Button buttonpressed = null;
 	
 	@Override
 	public void onGuiClosed() {
@@ -195,12 +195,12 @@ public class GuiModifier extends GuiScreen {
 	}
 	
 	public void updateOptions() {
-		for (GuiButton b : this.options.keySet()) {
+		for (Button b : this.options.keySet()) {
 			this.updateOption(b);
 		}
 	}
 	
-	public void updateOption(GuiButton b) {
+	public void updateOption(Button b) {
 		if (b instanceof GuiCheckBox) {
 			boolean checked = ((GuiCheckBox) b).isChecked();
 			String option = options.get(b);
@@ -215,7 +215,7 @@ public class GuiModifier extends GuiScreen {
 	}
 	
 	public void updateEnabled() {
-		for (GuiButton b : this.options.keySet()) {
+		for (Button b : this.options.keySet()) {
 			String option = this.options.get(b);
 			boolean enabled = true;
 			
@@ -253,7 +253,7 @@ public class GuiModifier extends GuiScreen {
 	@Override
     public void updateScreen() {
 		if (buttonpressed != null) {
-			GuiButton b = buttonpressed;
+			Button b = buttonpressed;
 			buttonpressed = null;
 			
 			if (b.id == 1) {
@@ -292,7 +292,7 @@ public class GuiModifier extends GuiScreen {
     }
 
 	@Override
-	protected void actionPerformed(GuiButton b) {
+	protected void actionPerformed(Button b) {
 		buttonpressed = b;
 		
 		try {
@@ -355,7 +355,7 @@ public class GuiModifier extends GuiScreen {
 		GlStateManager.enableRescaleNormal();
 		RenderHelper.enableStandardItemLighting();
 		
-		for (GuiButton b : this.tooltips.keySet()) {
+		for (Button b : this.tooltips.keySet()) {
 			if (mouseX >= b.x && mouseY >= b.y && mouseX <= b.x + b.width && mouseY <= b.y + b.height) {
 				this.drawHoveringText(this.tooltips.get(b), mouseX, mouseY);
 			}

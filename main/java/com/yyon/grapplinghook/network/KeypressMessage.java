@@ -1,7 +1,5 @@
 package com.yyon.grapplinghook.network;
 
-import java.util.HashSet;
-
 import com.yyon.grapplinghook.grapplemod;
 //* // 1.8 Compatability
 import com.yyon.grapplinghook.items.KeypressItem;
@@ -9,7 +7,7 @@ import com.yyon.grapplinghook.items.KeypressItem;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.util.IThreadListener;
 import net.minecraft.world.World;
-import net.minecraft.world.WorldServer;
+import net.minecraft.world.ServerWorld;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
@@ -76,7 +74,7 @@ public class KeypressMessage implements IMessage {
         @Override
         public IMessage onMessage(KeypressMessage message, MessageContext ctx) {
 
-        	IThreadListener mainThread = (WorldServer) ctx.getServerHandler().player.world; // or Minecraft.getMinecraft() on the client
+        	IThreadListener mainThread = (ServerWorld) ctx.getServerHandler().player.world; // or Minecraft.getMinecraft() on the client
             mainThread.addScheduledTask(new runner(message, ctx));
 
             return null; // no response in this case

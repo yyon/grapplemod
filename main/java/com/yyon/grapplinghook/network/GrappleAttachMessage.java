@@ -11,7 +11,7 @@ import com.yyon.grapplinghook.entities.grappleArrow;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
-import net.minecraft.util.EnumFacing;
+import net.minecraft.util.Direction;
 import net.minecraft.util.IThreadListener;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
@@ -46,13 +46,13 @@ public class GrappleAttachMessage implements IMessage {
 	public int entityid;
 	public BlockPos blockpos;
 	public LinkedList<vec> segments;
-	public LinkedList<EnumFacing> segmenttopsides;
-	public LinkedList<EnumFacing> segmentbottomsides;
+	public LinkedList<Direction> segmenttopsides;
+	public LinkedList<Direction> segmentbottomsides;
 	public GrappleCustomization custom;
 
     public GrappleAttachMessage() { }
 
-    public GrappleAttachMessage(int id, double x, double y, double z, int controlid, int entityid, BlockPos blockpos, LinkedList<vec> segments, LinkedList<EnumFacing> segmenttopsides, LinkedList<EnumFacing> segmentbottomsides, GrappleCustomization custom) {
+    public GrappleAttachMessage(int id, double x, double y, double z, int controlid, int entityid, BlockPos blockpos, LinkedList<vec> segments, LinkedList<Direction> segmenttopsides, LinkedList<Direction> segmentbottomsides, GrappleCustomization custom) {
     	this.id = id;
         this.x = x;
         this.y = y;
@@ -84,8 +84,8 @@ public class GrappleAttachMessage implements IMessage {
         
         int size = buf.readInt();
         this.segments = new LinkedList<vec>();
-        this.segmentbottomsides = new LinkedList<EnumFacing>();
-        this.segmenttopsides = new LinkedList<EnumFacing>();
+        this.segmentbottomsides = new LinkedList<Direction>();
+        this.segmenttopsides = new LinkedList<Direction>();
 
 		segments.add(new vec(0, 0, 0));
 		segmentbottomsides.add(null);
@@ -93,8 +93,8 @@ public class GrappleAttachMessage implements IMessage {
 		
 		for (int i = 1; i < size-1; i++) {
         	this.segments.add(new vec(buf.readDouble(), buf.readDouble(), buf.readDouble()));
-        	this.segmentbottomsides.add(EnumFacing.getFront(buf.readInt()));
-        	this.segmenttopsides.add(EnumFacing.getFront(buf.readInt()));
+        	this.segmentbottomsides.add(Direction.getFront(buf.readInt()));
+        	this.segmenttopsides.add(Direction.getFront(buf.readInt()));
         }
 		
 		segments.add(new vec(0, 0, 0));

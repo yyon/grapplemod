@@ -7,7 +7,7 @@ import com.yyon.grapplinghook.vec;
 import com.yyon.grapplinghook.entities.grappleArrow;
 import com.yyon.grapplinghook.network.SegmentMessage;
 
-import net.minecraft.util.EnumFacing;
+import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.math.Vec3i;
@@ -17,8 +17,8 @@ import net.minecraftforge.fml.common.network.NetworkRegistry.TargetPoint;
 public class SegmentHandler {
 
 	public LinkedList<vec> segments;
-	public LinkedList<EnumFacing> segmentbottomsides;
-	public LinkedList<EnumFacing> segmenttopsides;
+	public LinkedList<Direction> segmentbottomsides;
+	public LinkedList<Direction> segmenttopsides;
 	public World world;
 	public grappleArrow arrow;
 	
@@ -32,10 +32,10 @@ public class SegmentHandler {
 		segments = new LinkedList<vec>();
 		segments.add(hookpos);
 		segments.add(playerpos);
-		segmentbottomsides = new LinkedList<EnumFacing>();
+		segmentbottomsides = new LinkedList<Direction>();
 		segmentbottomsides.add(null);
 		segmentbottomsides.add(null);
-		segmenttopsides = new LinkedList<EnumFacing>();
+		segmenttopsides = new LinkedList<Direction>();
 		segmenttopsides.add(null);
 		segmenttopsides.add(null);
 		this.world = w;
@@ -83,8 +83,8 @@ public class SegmentHandler {
 			
 			int index = segments.size()-2;
 			closest = segments.get(index);
-			EnumFacing bottomside = segmentbottomsides.get(index);
-			EnumFacing topside = segmenttopsides.get(index);
+			Direction bottomside = segmentbottomsides.get(index);
+			Direction topside = segmenttopsides.get(index);
 			vec ropevec = playerpos.sub(closest);
 			
 			vec beforepoint = segments.get(index-1);
@@ -112,8 +112,8 @@ public class SegmentHandler {
 				
 				int index = 1;
 				farthest = segments.get(index);
-				EnumFacing bottomside = segmentbottomsides.get(index);
-				EnumFacing topside = segmenttopsides.get(index);
+				Direction bottomside = segmentbottomsides.get(index);
+				Direction topside = segmenttopsides.get(index);
 				vec ropevec = farthest.sub(hookpos);
 				
 				vec beforepoint = segments.get(index+1);
@@ -169,7 +169,7 @@ public class SegmentHandler {
 		segmenttopsides.remove(index);
 
 		if (!this.world.isRemote) {
-			SegmentMessage addmessage = new SegmentMessage(this.arrow.getEntityId(), false, index, new vec(0, 0, 0), EnumFacing.DOWN, EnumFacing.DOWN);
+			SegmentMessage addmessage = new SegmentMessage(this.arrow.getEntityId(), false, index, new vec(0, 0, 0), Direction.DOWN, Direction.DOWN);
 			vec playerpoint = vec.positionvec(this.arrow.shootingEntity);
 			grapplemod.network.sendToAllAround(addmessage, new TargetPoint(this.world.provider.getDimension(), playerpoint.x, playerpoint.y, playerpoint.z, 100));
 		}
@@ -191,7 +191,7 @@ public class SegmentHandler {
 /*            this.arrow.debugpos = bottomhitvec;
             this.arrow.debugpos2 = bottom;
             this.arrow.debugpos3 = top;*/
-            EnumFacing bottomside = bottomraytraceresult.sideHit;
+            Direction bottomside = bottomraytraceresult.sideHit;
             vec bottomnormal = this.getnormal(bottomside);
             
             // calculate where bottomhitvec was along the rope in the previous tick
@@ -242,7 +242,7 @@ public class SegmentHandler {
                 RayTraceResult cornerraytraceresult = this.world.rayTraceBlocks(cornerbound2.toVec3d(), cornerbound1.toVec3d());
                 if (cornerraytraceresult != null) {
                 	vec cornerhitpos = new vec(cornerraytraceresult.hitVec.x, cornerraytraceresult.hitVec.y, cornerraytraceresult.hitVec.z);
-                	EnumFacing cornerside = cornerraytraceresult.sideHit;
+                	Direction cornerside = cornerraytraceresult.sideHit;
                 	
                 	if (cornerside == bottomside || 
                 			cornerside.getOpposite() == bottomside) {
@@ -358,7 +358,7 @@ public class SegmentHandler {
 		return linepoint1.add(linevec.mult(d));
 	}
 	
-	public vec getnormal(EnumFacing facing) {
+	public vec getnormal(Direction facing) {
 		Vec3i facingvec = facing.getDirectionVec();
 		return new vec(facingvec.getX(), facingvec.getY(), facingvec.getZ());
 	}
@@ -420,7 +420,7 @@ public class SegmentHandler {
 		}
 	}*/
 	
-	public void actuallyaddsegment(int index, vec bendpoint, EnumFacing bottomside, EnumFacing topside) {
+	public void actuallyaddsegment(int index, vec bendpoint, Direction bottomside, Direction topside) {
         segments.add(index, bendpoint);
         segmentbottomsides.add(index, bottomside);
         segmenttopsides.add(index, topside);

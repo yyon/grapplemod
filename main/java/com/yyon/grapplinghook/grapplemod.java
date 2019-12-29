@@ -52,18 +52,14 @@ import com.yyon.grapplinghook.network.PlayerMovementMessage;
 import com.yyon.grapplinghook.network.SegmentMessage;
 
 import net.minecraft.block.Block;
-import net.minecraft.creativetab.CreativeTabs;
+import net.minecraft.entity.player.ServerPlayerEntity;
+import net.minecraft.inventory.EquipmentSlotType;
+import net.minecraft.item.*;
 import net.minecraft.enchantment.Enchantment;
-import net.minecraft.enchantment.EnumEnchantmentType;
+import net.minecraft.enchantment.EnchantmentType;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.inventory.EntityEquipmentSlot;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemArmor;
-import net.minecraft.item.ItemBlock;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
@@ -73,6 +69,7 @@ import net.minecraftforge.common.config.Config.Type;
 import net.minecraftforge.common.config.ConfigManager;
 import net.minecraftforge.common.util.EnumHelper;
 import net.minecraftforge.event.RegistryEvent;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.client.event.ConfigChangedEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventHandler;
@@ -80,15 +77,14 @@ import net.minecraftforge.fml.common.SidedProxy;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
-import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-import net.minecraftforge.fml.common.network.NetworkRegistry;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 import net.minecraftforge.fml.common.network.simpleimpl.SimpleNetworkWrapper;
 import net.minecraftforge.fml.common.registry.EntityRegistry;
-import net.minecraftforge.fml.common.registry.ForgeRegistries;
 import net.minecraftforge.fml.common.registry.GameRegistry;
+import net.minecraftforge.fml.event.server.FMLServerStartingEvent;
+import net.minecraftforge.fml.network.NetworkRegistry;
 import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.registries.ForgeRegistries;
 
 /*
  * This file is part of GrappleMod.
@@ -114,7 +110,7 @@ import net.minecraftforge.fml.relauncher.Side;
 // smart motor acts erratically when aiming above hook
 // key events
 
-@Mod(modid = grapplemod.MODID, version = grapplemod.VERSION)
+@Mod(value="grapplemod")
 public class grapplemod {
 
 	public grapplemod(){}
@@ -148,7 +144,7 @@ public class grapplemod {
 
     public static Item longfallboots;
     
-    public static final EnumEnchantmentType GRAPPLEENCHANTS_FEET = EnumHelper.addEnchantmentType("GRAPPLEENCHANTS_FEET", (item) -> item instanceof ItemArmor && ((ItemArmor)item).armorType == EntityEquipmentSlot.FEET);
+    public static final EnchantmentType GRAPPLEENCHANTS_FEET = EnumHelper.addEnchantmentType("GRAPPLEENCHANTS_FEET", (item) -> item instanceof ArmorItem && ((ArmorItem)item).armorType == EquipmentSlotType.FEET);
     
     public static WallrunEnchantment wallrunenchantment;
     public static DoublejumpEnchantment doublejumpenchantment;
@@ -174,7 +170,7 @@ public class grapplemod {
 	public static boolean removeblocks = false;
 	
 	public static Block blockGrappleModifier;
-	public static ItemBlock itemBlockGrappleModifier;
+	public static BlockItem itemBlockGrappleModifier;
 	
 	public ResourceLocation resourceLocation;
 	
@@ -235,7 +231,7 @@ public class grapplemod {
 		}
 	};
 	
-	public static final CreativeTabs tabGrapplemod = (new CreativeTabs("tabGrapplemod") {
+	public static final ItemGroup tabGrapplemod = (new ItemGroup("tabGrapplemod") {
 		
 		@Override
 		public void displayAllRelevantItems(NonNullList<ItemStack> items) {
@@ -261,7 +257,7 @@ public class grapplemod {
 		}
 
 		@Override
-		public ItemStack getTabIconItem() {
+		public ItemStack createIcon() {
 			return new ItemStack(grapplebowitem);
 		}
 	});
@@ -387,7 +383,7 @@ public class grapplemod {
 		rockethookitem.setRegistryName("rockethook");
 		launcheritem = new launcherItem();
 		launcheritem.setRegistryName("launcheritem");
-		longfallboots = new LongFallBoots(ItemArmor.ArmorMaterial.DIAMOND, 3);
+		longfallboots = new LongFallBoots(ArmorItem.ArmorMaterial.DIAMOND, 3);
 		longfallboots.setRegistryName("longfallboots");
 		repelleritem = new repeller();
 		repelleritem.setRegistryName("repeller");
@@ -455,7 +451,7 @@ public class grapplemod {
 		blockGrappleModifier.setRegistryName("block_grapple_modifier");
 	    ForgeRegistries.BLOCKS.register(blockGrappleModifier);
 
-	    itemBlockGrappleModifier = new ItemBlock(blockGrappleModifier);
+	    itemBlockGrappleModifier = new BlockItem(blockGrappleModifier);
 	    itemBlockGrappleModifier.setRegistryName(blockGrappleModifier.getRegistryName());
 
 	    // Each of your tile entities needs to be registered with a name that is unique to your mod.
@@ -527,8 +523,8 @@ public class grapplemod {
 	
 	public static void sendtocorrectclient(IMessage message, int playerid, World w) {
 		Entity entity = w.getEntityByID(playerid);
-		if (entity instanceof EntityPlayerMP) {
-			grapplemod.network.sendTo(message, (EntityPlayerMP) entity);
+		if (entity instanceof ServerPlayerEntity) {
+			grapplemod.network.sendTo(message, (ServerPlayerEntity) entity);
 		} else {
 			System.out.println("ERROR! couldn't find player");
 		}
@@ -635,18 +631,18 @@ public class grapplemod {
 	}
 	
 
-	public static NBTTagCompound getstackcompound(ItemStack stack, String key) {
+	public static CompoundNBT getstackcompound(ItemStack stack, String key) {
 		if (!stack.hasTagCompound()) {
-			stack.setTagCompound(new NBTTagCompound());
+			stack.setTagCompound(new CompoundNBT());
 		}
-		NBTTagCompound basecompound = stack.getTagCompound();
+		CompoundNBT basecompound = stack.getTagCompound();
         if (basecompound.hasKey(key, 10))
         {
             return basecompound.getCompoundTag(key);
         }
         else
         {
-            NBTTagCompound nbttagcompound = new NBTTagCompound();
+            CompoundNBT nbttagcompound = new CompoundNBT();
             stack.setTagInfo(key, nbttagcompound);
             return nbttagcompound;
         }
@@ -663,7 +659,7 @@ public class grapplemod {
 		}
 	}
 
-	public static void receiveKeypress(EntityPlayer player, Keys key, boolean isDown) {
+	public static void receiveKeypress(PlayerEntity player, Keys key, boolean isDown) {
 		if (player != null) {
 			ItemStack stack = player.getHeldItemMainhand();
 			if (stack != null) {

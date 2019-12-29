@@ -3,15 +3,14 @@ package com.yyon.grapplinghook.items;
 import java.util.List;
 
 import net.minecraft.client.util.ITooltipFlag;
-import net.minecraft.creativetab.CreativeTabs;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.EnumAction;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.UseAction;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.ActionResult;
-import net.minecraft.util.EnumActionResult;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.EnumHand;
+import net.minecraft.util.*;
+import net.minecraft.util.ActionResultType;
+import net.minecraft.util.Direction;
+import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
@@ -59,34 +58,34 @@ public class launcherItem extends Item {
 		return 72000;
 	}
 
-	public void dorightclick(ItemStack stack, World worldIn, EntityPlayer player) {
+	public void dorightclick(ItemStack stack, World worldIn, PlayerEntity player) {
 		if (worldIn.isRemote) {
 			grapplemod.proxy.launchplayer(player);
 		}
 	}
 	
     @Override
-    public EnumActionResult onItemUse(EntityPlayer playerIn, World worldIn, BlockPos blockpos, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ)
+    public ActionResultType onItemUse(PlayerEntity playerIn, World worldIn, BlockPos blockpos, Hand hand, Direction facing, float hitX, float hitY, float hitZ)
     {
     	ItemStack stack = playerIn.getHeldItem(hand);
         this.dorightclick(stack, worldIn, playerIn);
         
-    	return EnumActionResult.SUCCESS;
+    	return ActionResultType.SUCCESS;
 	}
     
     @Override
-	public ActionResult<ItemStack> onItemRightClick(World worldIn, EntityPlayer entityLiving, EnumHand hand)
+	public ActionResult<ItemStack> onItemRightClick(World worldIn, PlayerEntity entityLiving, Hand hand)
 	{
     	ItemStack stack = entityLiving.getHeldItem(hand);
     	this.dorightclick(stack, worldIn, entityLiving);
         
-        return new ActionResult<ItemStack>(EnumActionResult.SUCCESS, stack);
+        return new ActionResult<ItemStack>(ActionResultType.SUCCESS, stack);
     }
 
     @Override
-    public EnumAction getItemUseAction(ItemStack par1ItemStack)
+    public UseAction getItemUseAction(ItemStack par1ItemStack)
 	{
-		return EnumAction.NONE;
+		return UseAction.NONE;
 	}
     
 	@Override

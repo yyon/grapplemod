@@ -3,14 +3,13 @@ package com.yyon.grapplinghook.items;
 import java.util.List;
 
 import net.minecraft.client.util.ITooltipFlag;
-import net.minecraft.creativetab.CreativeTabs;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.EnumAction;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.UseAction;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ActionResult;
-import net.minecraft.util.EnumActionResult;
-import net.minecraft.util.EnumHand;
+import net.minecraft.util.ActionResultType;
+import net.minecraft.util.Hand;
 import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.relauncher.Side;
@@ -41,7 +40,7 @@ public class repeller extends Item {
 		return 72000;
 	}
 
-	public void dorightclick(ItemStack stack, World worldIn, EntityPlayer player) {
+	public void dorightclick(ItemStack stack, World worldIn, PlayerEntity player) {
 		if (worldIn.isRemote) {
 			int playerid = player.getEntityId();
 			if (grapplemod.controllers.containsKey(playerid) && grapplemod.controllers.get(playerid).controllerid != grapplemod.AIRID) {
@@ -54,18 +53,18 @@ public class repeller extends Item {
 	}
 
     @Override
-	public ActionResult<ItemStack> onItemRightClick(World worldIn, EntityPlayer playerIn, EnumHand hand)
+	public ActionResult<ItemStack> onItemRightClick(World worldIn, PlayerEntity playerIn, Hand hand)
     {
     	ItemStack itemStackIn = playerIn.getHeldItem(hand);
         this.dorightclick(itemStackIn, worldIn, playerIn);
         
-        return new ActionResult<ItemStack>(EnumActionResult.SUCCESS, itemStackIn);
+        return new ActionResult<ItemStack>(ActionResultType.SUCCESS, itemStackIn);
     }
 
     @Override
-    public EnumAction getItemUseAction(ItemStack par1ItemStack)
+    public UseAction getItemUseAction(ItemStack par1ItemStack)
 	{
-		return EnumAction.NONE;
+		return UseAction.NONE;
 	}
     
 	@Override

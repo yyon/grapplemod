@@ -6,7 +6,7 @@ import com.yyon.grapplinghook.entities.grappleArrow;
 import com.yyon.grapplinghook.items.grappleBow;
 
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.DamageSource;
@@ -61,7 +61,7 @@ public class CommonProxyClass {
 	public void resetlaunchertime(int playerid) {
 	}
 
-	public void launchplayer(EntityPlayer player) {
+	public void launchplayer(PlayerEntity player) {
 	}
 	
 	public boolean isSneaking(Entity entity) {
@@ -70,7 +70,7 @@ public class CommonProxyClass {
 	
     @SubscribeEvent
     public void onBlockBreak(BreakEvent event){
-    	EntityPlayer player = event.getPlayer();
+    	PlayerEntity player = event.getPlayer();
     	if (player != null) {
 	    	ItemStack stack = player.getHeldItemMainhand();
 	    	if (stack != null) {
@@ -117,7 +117,7 @@ public class CommonProxyClass {
 		return string;
 	}
 
-	public void startrocket(EntityPlayer player, GrappleCustomization custom) {
+	public void startrocket(PlayerEntity player, GrappleCustomization custom) {
 	}
 	
 	public void updateRocketRegen(double rocket_active_time, double rocket_refuel_ratio) {

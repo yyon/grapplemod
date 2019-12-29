@@ -1,18 +1,16 @@
 package com.yyon.grapplinghook;
 
-import org.lwjgl.opengl.GL11;
-
 import com.yyon.grapplinghook.items.grappleBow;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.entity.EntityPlayerSP;
+import net.minecraft.client.entity.player.ClientPlayerEntity;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
-import net.minecraft.client.settings.GameSettings;
-import net.minecraft.inventory.EntityEquipmentSlot;
+import net.minecraft.client.GameSettings;
+import net.minecraft.inventory.EquipmentSlotType;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.client.event.RenderGameOverlayEvent.ElementType;
@@ -37,12 +35,12 @@ public class crosshairRenderer {
         if (gamesettings.showDebugInfo && !gamesettings.hideGUI && !this.mc.player.hasReducedDebug() && !gamesettings.reducedDebugInfo) return;
 
 		if (event.getType() == ElementType.CROSSHAIRS) {
-			EntityPlayerSP player = this.mc.player;
+			ClientPlayerEntity player = this.mc.player;
 			ItemStack bow = null;
-			if ((player.getItemStackFromSlot(EntityEquipmentSlot.MAINHAND) != null && player.getItemStackFromSlot(EntityEquipmentSlot.MAINHAND).getItem() instanceof grappleBow)) {
-				bow = player.getItemStackFromSlot(EntityEquipmentSlot.MAINHAND);
-			} else if ((player.getItemStackFromSlot(EntityEquipmentSlot.OFFHAND) != null && player.getItemStackFromSlot(EntityEquipmentSlot.OFFHAND).getItem() instanceof grappleBow)) {
-				bow = player.getItemStackFromSlot(EntityEquipmentSlot.OFFHAND);
+			if ((player.getItemStackFromSlot(EquipmentSlotType.MAINHAND) != null && player.getItemStackFromSlot(EquipmentSlotType.MAINHAND).getItem() instanceof grappleBow)) {
+				bow = player.getItemStackFromSlot(EquipmentSlotType.MAINHAND);
+			} else if ((player.getItemStackFromSlot(EquipmentSlotType.OFFHAND) != null && player.getItemStackFromSlot(EquipmentSlotType.OFFHAND).getItem() instanceof grappleBow)) {
+				bow = player.getItemStackFromSlot(EquipmentSlotType.OFFHAND);
 			}
 			
 			if (bow != null) {

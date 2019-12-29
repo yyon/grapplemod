@@ -6,6 +6,13 @@ import java.util.ConcurrentModificationException;
 import java.util.HashMap;
 import java.util.Map;
 
+import net.minecraft.block.BlockState;
+import net.minecraft.client.entity.player.ClientPlayerEntity;
+import net.minecraft.client.renderer.entity.EntityRendererManager;
+import net.minecraft.client.renderer.model.ModelBakery;
+import net.minecraft.client.renderer.model.ModelResourceLocation;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.Items;
 import org.lwjgl.input.Keyboard;
 
 import com.yyon.grapplinghook.blocks.TileEntityGrappleModifier;
@@ -18,25 +25,18 @@ import com.yyon.grapplinghook.items.grappleBow;
 import com.yyon.grapplinghook.items.launcherItem;
 import com.yyon.grapplinghook.items.repeller;
 
-import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.renderer.ItemMeshDefinition;
-import net.minecraft.client.renderer.block.model.ModelBakery;
-import net.minecraft.client.renderer.block.model.ModelResourceLocation;
-import net.minecraft.client.renderer.entity.Render;
-import net.minecraft.client.renderer.entity.RenderManager;
+import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.resources.I18n;
-import net.minecraft.client.settings.GameSettings;
+import net.minecraft.client.GameSettings;
 import net.minecraft.client.settings.KeyBinding;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RayTraceResult;
@@ -69,8 +69,8 @@ public class ClientProxyClass extends CommonProxyClass {
 		super.preInit(event);
 		RenderingRegistry.registerEntityRenderingHandler(grappleArrow.class, new IRenderFactory<grappleArrow>() {
 			@Override
-			public Render<? super grappleArrow> createRenderFor(
-					RenderManager manager) {
+			public EntityRenderer<? super grappleArrow> createRenderFor(
+					EntityRendererManager manager) {
 				return new RenderGrappleArrow<grappleArrow>(manager, Items.IRON_PICKAXE, Minecraft.getMinecraft().getRenderItem());
 			}
 		});
@@ -133,7 +133,7 @@ public class ClientProxyClass extends CommonProxyClass {
 			public ModelResourceLocation getModelLocation(ItemStack stack) {
 				boolean active = !ClientProxyClass.isactive(stack);
 		    	if (stack.hasTagCompound()) {
-		    		NBTTagCompound compound = stack.getTagCompound();
+		    		CompoundNBT compound = stack.getTagCompound();
 		    		if (compound.getBoolean("rocket")) {
 		    			if (compound.getBoolean("doublehook")) {
 		    				return active ? odmloc : odmropeloc;
@@ -250,13 +250,13 @@ public class ClientProxyClass extends CommonProxyClass {
 	@Override
 	public void getplayermovement(grappleController control, int playerid) {
 		Entity entity = control.entity;
-		if (entity instanceof EntityPlayerSP) {
-			EntityPlayerSP player = (EntityPlayerSP) entity;
+		if (entity instanceof ClientPlayerEntity) {
+			ClientPlayerEntity player = (ClientPlayerEntity) entity;
 			control.receivePlayerMovementMessage(player.moveStrafing, player.moveForward, player.movementInput.jump);
 		}
 	}
 	
-	public ItemStack getKeypressStack(EntityPlayer player) {
+	public ItemStack getKeypressStack(PlayerEntity player) {
 		if (player != null) {
            ItemStack stack = player.getHeldItemMainhand();
            if (stack != null) {
@@ -277,11 +277,11 @@ public class ClientProxyClass extends CommonProxyClass {
 		return null;
 	}
 	
-	public boolean isLookingAtModifierBlock(EntityPlayer player) {
+	public boolean isLookingAtModifierBlock(PlayerEntity player) {
 		RayTraceResult raytraceresult = Minecraft.getMinecraft().objectMouseOver;
 		if (raytraceresult.typeOfHit == RayTraceResult.Type.BLOCK) {
 			BlockPos pos = raytraceresult.getBlockPos();
-			IBlockState state = player.world.getBlockState(pos);
+			BlockState state = player.world.getBlockState(pos);
 			return (state.getBlock() == grapplemod.blockGrappleModifier);
 		}
 		return false;
@@ -289,7 +289,7 @@ public class ClientProxyClass extends CommonProxyClass {
 	
 	@SubscribeEvent
 	public void onClientTick(TickEvent.ClientTickEvent event) {
-		EntityPlayer player = Minecraft.getMinecraft().player;
+		PlayerEntity player = Minecraft.getMinecraft().player;
 		if (player != null) {
 			if (!Minecraft.getMinecraft().isGamePaused() || !Minecraft.getMinecraft().isSingleplayer()) {
 				if (this.iswallrunning(player)) {
@@ -362,14 +362,14 @@ public class ClientProxyClass extends CommonProxyClass {
 		}
 	}
 	
-	private void checkslide(EntityPlayer player) {
+	private void checkslide(PlayerEntity player) {
 		if (key_slide.isKeyDown() && !grapplemod.controllers.containsKey(player.getEntityId()) && this.issliding(player)) {
 			grapplemod.createControl(grapplemod.AIRID, -1, player.getEntityId(), player.world, new vec(0,0,0), null, null);
 		}
 	}
 
 	@Override
-	public void startrocket(EntityPlayer player, GrappleCustomization custom) {
+	public void startrocket(PlayerEntity player, GrappleCustomization custom) {
 		if (!custom.rocket) return;
 		
 		if (!grapplemod.controllers.containsKey(player.getEntityId())) {
@@ -389,7 +389,7 @@ public class ClientProxyClass extends CommonProxyClass {
 
 	
 	@Override
-	public void launchplayer(EntityPlayer player) {
+	public void launchplayer(PlayerEntity player) {
 		long prevtime;
 		if (enderlaunchtimer.containsKey(player.getEntityId())) {
 			prevtime = enderlaunchtimer.get(player.getEntityId());
@@ -516,7 +516,7 @@ public class ClientProxyClass extends CommonProxyClass {
 	}
 
 	public static boolean isactive(ItemStack stack) {
-		EntityPlayer p = Minecraft.getMinecraft().player;
+		PlayerEntity p = Minecraft.getMinecraft().player;
 //		if (p.getItemStackFromSlot(EntityEquipmentSlot.MAINHAND) == stack || p.getItemStackFromSlot(EntityEquipmentSlot.OFFHAND) == stack) {
 			int entityid = p.getEntityId();
 			if (grapplemod.controllers.containsKey(entityid)) {
@@ -605,7 +605,7 @@ public class ClientProxyClass extends CommonProxyClass {
 	boolean alreadyuseddoublejump = false;
 	
 	public void checkdoublejump() {
-		EntityPlayer player = Minecraft.getMinecraft().player;
+		PlayerEntity player = Minecraft.getMinecraft().player;
 		
 		if (player.onGround) {
 			tickssincelastonground = 0;
@@ -646,7 +646,7 @@ public class ClientProxyClass extends CommonProxyClass {
 	}
 
 	public boolean wearingdoublejumpenchant(Entity entity) {
-		if (entity instanceof EntityPlayer && ((EntityPlayer) entity).capabilities.isFlying) {
+		if (entity instanceof PlayerEntity && ((PlayerEntity) entity).capabilities.isFlying) {
 			return false;
 		}
 //		if (entity instanceof EntityPlayer && ((EntityPlayer) entity).isCreative()) {
@@ -694,7 +694,7 @@ public class ClientProxyClass extends CommonProxyClass {
 
 	@SubscribeEvent
 	public void onKeyInputEvent(KeyInputEvent event) {
-		EntityPlayer player = Minecraft.getMinecraft().player;
+		PlayerEntity player = Minecraft.getMinecraft().player;
 		
 		grappleController controller = null;
 		if (grapplemod.controllers.containsKey(player.getEntityId())) {

@@ -12,14 +12,14 @@ import com.yyon.grapplinghook.network.GrappleAttachPosMessage;
 
 import io.netty.buffer.ByteBuf;
 import net.minecraft.block.Block;
-import net.minecraft.block.state.IBlockState;
+import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.entity.projectile.EntityThrowable;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.player.ServerPlayerEntity;
+import net.minecraft.entity.projectile.ThrowableEntity;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.util.EnumFacing;
+import net.minecraft.util.Direction;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
@@ -46,7 +46,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
     along with GrappleMod.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-public class grappleArrow extends EntityThrowable implements IEntityAdditionalSpawnData
+public class grappleArrow extends ThrowableEntity implements IEntityAdditionalSpawnData
 {
 	public Entity shootingEntity = null;
 	public int shootingEntityID;
@@ -90,7 +90,7 @@ public class grappleArrow extends EntityThrowable implements IEntityAdditionalSp
 		this.customization = new GrappleCustomization();
 	}
 	
-	public grappleArrow(World worldIn, EntityLivingBase shooter,
+	public grappleArrow(World worldIn, LivingEntity shooter,
 			boolean righthand, GrappleCustomization customization, boolean isdouble) {
 		super(worldIn, shooter);
 		
@@ -236,7 +236,7 @@ public class grappleArrow extends EntityThrowable implements IEntityAdditionalSp
 	    			}
 	    			
 	    			if (magnetblock != null) {
-				    	IBlockState blockstate = this.world.getBlockState(magnetblock);
+				    	BlockState blockstate = this.world.getBlockState(magnetblock);
 				    	AxisAlignedBB BB = blockstate.getCollisionBoundingBox(this.world, magnetblock);
 
 						vec blockvec = new vec(magnetblock.getX() + (BB.maxX + BB.minX) / 2, magnetblock.getY() + (BB.maxY + BB.minY) / 2, magnetblock.getZ() + (BB.maxZ + BB.minZ) / 2);
@@ -251,7 +251,7 @@ public class grappleArrow extends EntityThrowable implements IEntityAdditionalSp
 						this.motionZ = newvel.z;
 						
 						if (l < 0.2) {
-							this.serverAttach(magnetblock, blockvec, EnumFacing.UP);
+							this.serverAttach(magnetblock, blockvec, Direction.UP);
 						}
 	    			}
 	    			
@@ -388,7 +388,7 @@ public class grappleArrow extends EntityThrowable implements IEntityAdditionalSp
 		}
 	}
 	
-	public void serverAttach(BlockPos blockpos, vec pos, EnumFacing sideHit) {
+	public void serverAttach(BlockPos blockpos, vec pos, Direction sideHit) {
 		if (this.attached) {
 			return;
 		}
@@ -416,17 +416,17 @@ public class grappleArrow extends EntityThrowable implements IEntityAdditionalSp
 		
 		//west -x
 		//north -z
-		if (sideHit == EnumFacing.DOWN) {
+		if (sideHit == Direction.DOWN) {
 			this.posY -= 0.3;
-		} else if (sideHit == EnumFacing.WEST) {
+		} else if (sideHit == Direction.WEST) {
 			this.posX -= 0.05;
-		} else if (sideHit == EnumFacing.NORTH) {
+		} else if (sideHit == Direction.NORTH) {
 			this.posZ -= 0.05;
-		} else if (sideHit == EnumFacing.SOUTH) {
+		} else if (sideHit == Direction.SOUTH) {
 			this.posZ += 0.05;
-		} else if (sideHit == EnumFacing.EAST) {
+		} else if (sideHit == Direction.EAST) {
 			this.posX += 0.05;
-		} else if (sideHit == EnumFacing.UP) {
+		} else if (sideHit == Direction.UP) {
 			this.posY += 0.05;
 		}
 		
@@ -439,11 +439,11 @@ public class grappleArrow extends EntityThrowable implements IEntityAdditionalSp
 		grapplemod.attached.add(this.shootingEntityID);
 		
 		grapplemod.sendtocorrectclient(new GrappleAttachMessage(this.getEntityId(), this.posX, this.posY, this.posZ, this.getControlId(), this.shootingEntityID, blockpos, this.segmenthandler.segments, this.segmenthandler.segmenttopsides, this.segmenthandler.segmentbottomsides, this.customization), this.shootingEntityID, this.world);
-		if (this.shootingEntity instanceof EntityPlayerMP) { // fixes strange bug in LAN
-			EntityPlayerMP sender = (EntityPlayerMP) this.shootingEntity;
+		if (this.shootingEntity instanceof ServerPlayerEntity) { // fixes strange bug in LAN
+			ServerPlayerEntity sender = (ServerPlayerEntity) this.shootingEntity;
 			int dimension = sender.dimension;
 			MinecraftServer minecraftServer = sender.mcServer;
-			for (EntityPlayerMP player : minecraftServer.getPlayerList().getPlayers()) {
+			for (ServerPlayerEntity player : minecraftServer.getPlayerList().getPlayers()) {
 				GrappleAttachPosMessage msg = new GrappleAttachPosMessage(this.getEntityId(), this.posX, this.posY, this.posZ);   // must generate a fresh message for every player!
 				if (dimension == player.dimension) {
 					grapplemod.sendtocorrectclient(msg, player.getEntityId(), player.world);
@@ -455,7 +455,7 @@ public class grappleArrow extends EntityThrowable implements IEntityAdditionalSp
 	public void clientAttach(double x, double y, double z) {
 		this.setAttachPos(x, y, z);
 		
-		if (this.shootingEntity instanceof EntityPlayer) {
+		if (this.shootingEntity instanceof PlayerEntity) {
 			grapplemod.proxy.resetlaunchertime(this.shootingEntityID);
 		}
 	}
@@ -523,7 +523,7 @@ public class grappleArrow extends EntityThrowable implements IEntityAdditionalSp
 	public boolean hasblock(BlockPos pos, HashMap<BlockPos, Boolean> checkedset) {
     	if (!checkedset.containsKey(pos)) {
     		boolean isblock = false;
-	    	IBlockState blockstate = this.world.getBlockState(pos);
+	    	BlockState blockstate = this.world.getBlockState(pos);
 	    	Block b = blockstate.getBlock();
 			if (!grapplemod.anyblocks && ((!grapplemod.removeblocks && !grapplemod.grapplingblocks.contains(b))
 						|| (grapplemod.removeblocks && grapplemod.grapplingblocks.contains(b)))) {

@@ -11,25 +11,23 @@ import com.yyon.grapplinghook.items.grappleBow;
 import com.yyon.grapplinghook.items.upgrades.BaseUpgradeItem;
 
 import net.minecraft.block.Block;
+import net.minecraft.block.BlockState;
 import net.minecraft.block.material.Material;
-import net.minecraft.block.state.IBlockState;
-import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.init.Enchantments;
-import net.minecraft.init.Items;
+import net.minecraft.enchantment.Enchantments;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.BlockRenderLayer;
-import net.minecraft.util.EnumBlockRenderType;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.EnumHand;
-import net.minecraft.util.NonNullList;
+import net.minecraft.util.*;
+import net.minecraft.block.BlockRenderType;
+import net.minecraft.util.Direction;
+import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.text.TextComponentString;
+import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
@@ -43,7 +41,7 @@ public class BlockGrappleModifier extends Block {
 	}
 
 	@Override
-	public boolean hasTileEntity(IBlockState state) {
+	public boolean hasTileEntity(BlockState state) {
 		return true;
 	}
 
@@ -51,7 +49,7 @@ public class BlockGrappleModifier extends Block {
 	// for the block
 	// Should return a new instance of the tile entity for the block
 	@Override
-	public TileEntity createTileEntity(World world, IBlockState state) {
+	public TileEntity createTileEntity(World world, BlockState state) {
 		return new TileEntityGrappleModifier();
 	}
 
@@ -64,24 +62,24 @@ public class BlockGrappleModifier extends Block {
 	}
 
 	@Override
-	public boolean isOpaqueCube(IBlockState state) {
+	public boolean isOpaqueCube(BlockState state) {
 		return true;
 	}
 
 	@Override
-	public boolean isFullCube(IBlockState state) {
+	public boolean isFullCube(BlockState state) {
 		return true;
 	}
 
 	// render using a BakedModel
 	// not required because the default (super method) is MODEL
 	@Override
-	public EnumBlockRenderType getRenderType(IBlockState iBlockState) {
-		return EnumBlockRenderType.MODEL;
+	public BlockRenderType getRenderType(BlockState iBlockState) {
+		return BlockRenderType.MODEL;
 	}
 	
 	@Override
-	public void getDrops(NonNullList<ItemStack> drops, IBlockAccess world, BlockPos pos, IBlockState state, int fortune) {
+	public void getDrops(NonNullList<ItemStack> drops, IBlockAccess world, BlockPos pos, BlockState state, int fortune) {
 		super.getDrops(drops, world, pos, state, fortune);
 		
 		TileEntity ent = world.getTileEntity(pos);
@@ -95,7 +93,7 @@ public class BlockGrappleModifier extends Block {
 	}
 	
     @Override
-    public boolean removedByPlayer(IBlockState state, World world, BlockPos pos, EntityPlayer player, boolean willHarvest)
+    public boolean removedByPlayer(BlockState state, World world, BlockPos pos, PlayerEntity player, boolean willHarvest)
     {
         if (willHarvest) return true; //If it will harvest, delay deletion of the block until after getDrops
         return super.removedByPlayer(state, world, pos, player, willHarvest);
@@ -105,15 +103,15 @@ public class BlockGrappleModifier extends Block {
      * Block.removedByPlayer
      */
     @Override
-    public void harvestBlock(World world, EntityPlayer player, BlockPos pos, IBlockState state, @Nullable TileEntity te, ItemStack tool)
+    public void harvestBlock(World world, PlayerEntity player, BlockPos pos, BlockState state, @Nullable TileEntity te, ItemStack tool)
     {
         super.harvestBlock(world, player, pos, state, te, tool);
         world.setBlockToAir(pos);
     }
 	
 	@Override
-	public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn,
-			EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
+	public boolean onBlockActivated(World worldIn, BlockPos pos, BlockState state, PlayerEntity playerIn,
+									Hand hand, Direction facing, float hitX, float hitY, float hitZ) {
 		ItemStack helditemstack = playerIn.getHeldItemMainhand();
 		Item helditem = helditemstack.getItem();
 
@@ -125,15 +123,15 @@ public class BlockGrappleModifier extends Block {
 				grapplemod.upgradeCategories category = ((BaseUpgradeItem) helditem).category;
 				
 				if (tileent.isUnlocked(category)) {
-					playerIn.sendMessage(new TextComponentString("Already has upgrade: " + category.description));
+					playerIn.sendMessage(new StringTextComponent("Already has upgrade: " + category.description));
 				} else {
 					if (!playerIn.capabilities.isCreativeMode) {
-						playerIn.setHeldItem(EnumHand.MAIN_HAND, ItemStack.EMPTY);
+						playerIn.setHeldItem(Hand.MAIN_HAND, ItemStack.EMPTY);
 					}
 					
 					tileent.unlockCategory(category);
 					
-					playerIn.sendMessage(new TextComponentString("Applied upgrade: " + category.description));
+					playerIn.sendMessage(new StringTextComponent("Applied upgrade: " + category.description));
 				}
 			}
 		} else if (helditem instanceof grappleBow) {
@@ -142,11 +140,11 @@ public class BlockGrappleModifier extends Block {
 				TileEntityGrappleModifier tileent = (TileEntityGrappleModifier) ent;
 				
 				GrappleCustomization custom = tileent.customization;
-				NBTTagCompound nbt = custom.writeNBT();
+				CompoundNBT nbt = custom.writeNBT();
 				
 				helditemstack.setTagCompound(nbt);
 				
-				playerIn.sendMessage(new TextComponentString("Applied configuration"));
+				playerIn.sendMessage(new StringTextComponent("Applied configuration"));
 			}
 		} else if (helditem == Items.DIAMOND_BOOTS) {
 			if (!worldIn.isRemote) {
@@ -158,16 +156,16 @@ public class BlockGrappleModifier extends Block {
 							if (enchantments.get(Enchantments.FEATHER_FALLING) >= 4) {
 								ItemStack newitemstack = new ItemStack(grapplemod.longfallboots);
 								EnchantmentHelper.setEnchantments(enchantments, newitemstack);
-								playerIn.setHeldItem(EnumHand.MAIN_HAND, newitemstack);
+								playerIn.setHeldItem(Hand.MAIN_HAND, newitemstack);
 								gaveitem = true;
 							}
 						}
 					}
 					if (!gaveitem) {
-						playerIn.sendMessage(new TextComponentString("Right click with diamond boots enchanted with feather falling IV to get long fall boots"));
+						playerIn.sendMessage(new StringTextComponent("Right click with diamond boots enchanted with feather falling IV to get long fall boots"));
 					}
 				} else {
-					playerIn.sendMessage(new TextComponentString("Making long fall boots this way was disabled in the config. It probably has been replaced by a crafting recipe."));
+					playerIn.sendMessage(new StringTextComponent("Making long fall boots this way was disabled in the config. It probably has been replaced by a crafting recipe."));
 				}
 			}
 		} else {

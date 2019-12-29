@@ -3,7 +3,7 @@ package com.yyon.grapplinghook;
 import com.yyon.grapplinghook.network.LoggedInMessage;
 
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
@@ -41,8 +41,8 @@ public class ServerProxyClass extends CommonProxyClass {
 	@SubscribeEvent
 	public void onPlayerLoggedInEvent(PlayerLoggedInEvent e) {
 		System.out.println("Player logged in event");
-		if (e.player instanceof EntityPlayerMP) {
-			grapplemod.network.sendTo(new LoggedInMessage(GrappleConfig.options), (EntityPlayerMP) e.player);
+		if (e.player instanceof ServerPlayerEntity) {
+			grapplemod.network.sendTo(new LoggedInMessage(GrappleConfig.options), (ServerPlayerEntity) e.player);
 		} else {
 			System.out.println("Not an EntityPlayerMP");
 		}

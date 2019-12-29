@@ -6,19 +6,19 @@ import com.yyon.grapplinghook.controllers.SegmentHandler;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.client.renderer.RenderItem;
+import net.minecraft.client.renderer.ItemRenderer;
 import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.client.renderer.block.model.ItemCameraTransforms;
+import net.minecraft.client.renderer.model.ItemCameraTransforms;
 import net.minecraft.client.renderer.culling.ICamera;
-import net.minecraft.client.renderer.entity.Render;
-import net.minecraft.client.renderer.entity.RenderManager;
-import net.minecraft.client.renderer.texture.TextureMap;
+import net.minecraft.client.renderer.entity.EntityRenderer;
+import net.minecraft.client.renderer.entity.EntityRendererManager;
+import net.minecraft.client.renderer.texture.AtlasTexture;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.EnumHandSide;
+import net.minecraft.util.HandSide;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
@@ -44,13 +44,13 @@ import net.minecraftforge.fml.relauncher.SideOnly;
  */
 
 @SideOnly(Side.CLIENT)
-public class RenderGrappleArrow<T extends Entity> extends Render<T>
+public class RenderGrappleArrow<T extends Entity> extends EntityRenderer<T>
 {
     protected final Item item;
-    private final RenderItem itemRenderer;
+    private final ItemRenderer itemRenderer;
     private static final ResourceLocation LEASH_KNOT_TEXTURES = new ResourceLocation("textures/entity/lead_knot.png");
     
-    public RenderGrappleArrow(RenderManager renderManagerIn, Item itemIn, RenderItem itemRendererIn)
+    public RenderGrappleArrow(EntityRendererManager renderManagerIn, Item itemIn, ItemRenderer itemRendererIn)
     {
         super(renderManagerIn);
         this.item = itemIn;
@@ -73,13 +73,13 @@ public class RenderGrappleArrow<T extends Entity> extends Render<T>
         
         SegmentHandler segmenthandler = arrow.segmenthandler;
         
-        EntityLivingBase e = (EntityLivingBase) arrow.shootingEntity;
+        LivingEntity e = (LivingEntity) arrow.shootingEntity;
         
         if (e == null || e.isDead) {
         	return;
         }
 
-        int primaryhand = e.getPrimaryHand() == EnumHandSide.RIGHT ? 1 : -1;
+        int primaryhand = e.getPrimaryHand() == HandSide.RIGHT ? 1 : -1;
         
         
     	Vec3d offset = new Vec3d(0,0,0);
@@ -115,7 +115,7 @@ public class RenderGrappleArrow<T extends Entity> extends Render<T>
         GlStateManager.rotate(-this.renderManager.playerViewY, 0.0F, 1.0F, 0.0F);
         GlStateManager.rotate((float)(this.renderManager.options.thirdPersonView == 2 ? -1 : 1) * this.renderManager.playerViewX, 1.0F, 0.0F, 0.0F);
         GlStateManager.rotate(180.0F, 0.0F, 1.0F, 0.0F);
-        this.bindTexture(TextureMap.LOCATION_BLOCKS_TEXTURE);
+        this.bindTexture(AtlasTexture.LOCATION_BLOCKS_TEXTURE);
 
         if (this.renderOutlines)
         {
@@ -166,7 +166,7 @@ public class RenderGrappleArrow<T extends Entity> extends Render<T>
         GlStateManager.disableRescaleNormal();
         GlStateManager.popMatrix();
 
-        int k = e.getPrimaryHand() == EnumHandSide.RIGHT ? 1 : -1;
+        int k = e.getPrimaryHand() == HandSide.RIGHT ? 1 : -1;
         float f7 = e.getSwingProgress(partialTicks);
         float f8 = MathHelper.sin(MathHelper.sqrt(f7) * (float)Math.PI);
         float f9 = (e.prevRenderYawOffset + (e.renderYawOffset - e.prevRenderYawOffset) * partialTicks) * 0.017453292F;

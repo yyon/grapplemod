@@ -6,10 +6,10 @@ import com.yyon.grapplinghook.GrappleConfig;
 import com.yyon.grapplinghook.grapplemod;
 
 import net.minecraft.client.util.ITooltipFlag;
-import net.minecraft.creativetab.CreativeTabs;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.inventory.EntityEquipmentSlot;
-import net.minecraft.item.ItemArmor;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.inventory.EquipmentSlotType;
+import net.minecraft.item.ArmorItem;
+import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.NonNullList;
@@ -38,9 +38,9 @@ import net.minecraftforge.fml.relauncher.SideOnly;
     along with GrappleMod.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-public class LongFallBoots extends ItemArmor {
+public class LongFallBoots extends ArmorItem {
 	public LongFallBoots(ArmorMaterial material, int type) {
-	    super(material, 0, EntityEquipmentSlot.FEET);
+	    super(material, 0, EquipmentSlotType.FEET);
 	    this.setUnlocalizedName("longfallboots");
 	    MinecraftForge.EVENT_BUS.register(this);
 		setCreativeTab(grapplemod.tabGrapplemod);
@@ -48,9 +48,9 @@ public class LongFallBoots extends ItemArmor {
 	
 	@SubscribeEvent
 	public void onLivingHurtEvent(LivingHurtEvent event) {
-		if (event.getEntity() != null && event.getEntity() instanceof EntityPlayer)
+		if (event.getEntity() != null && event.getEntity() instanceof PlayerEntity)
 		{
-			EntityPlayer player = (EntityPlayer)event.getEntity();
+			PlayerEntity player = (PlayerEntity)event.getEntity();
 			
 			for (ItemStack armor : player.getArmorInventoryList()) {
 			    if (armor != null && armor.getItem() instanceof LongFallBoots)
@@ -68,9 +68,9 @@ public class LongFallBoots extends ItemArmor {
 	@SubscribeEvent
 	public void onLivingFallEvent(LivingFallEvent event)
 	{
-		if (event.getEntity() != null && event.getEntity() instanceof EntityPlayer)
+		if (event.getEntity() != null && event.getEntity() instanceof PlayerEntity)
 		{
-			EntityPlayer player = (EntityPlayer)event.getEntity();
+			PlayerEntity player = (PlayerEntity)event.getEntity();
 			
 			for (ItemStack armor : player.getArmorInventoryList()) {
 			    if (armor != null && armor.getItem() instanceof LongFallBoots)
@@ -95,7 +95,7 @@ public class LongFallBoots extends ItemArmor {
 	}
 
 	@Override
-    public void getSubItems(CreativeTabs tab, NonNullList<ItemStack> items)
+    public void getSubItems(ItemGroup tab, NonNullList<ItemStack> items)
     {
         if (this.isInCreativeTab(tab))
         {

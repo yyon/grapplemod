@@ -3,6 +3,11 @@ package com.yyon.grapplinghook.items;
 import java.util.HashMap;
 import java.util.List;
 
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.ItemGroup;
+import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.util.*;
 import org.lwjgl.input.Keyboard;
 
 import com.yyon.grapplinghook.ClientProxyClass;
@@ -16,21 +21,14 @@ import com.yyon.grapplinghook.network.GrappleDetachMessage;
 import com.yyon.grapplinghook.network.KeypressMessage;
 
 import net.minecraft.client.util.ITooltipFlag;
-import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.init.Items;
-import net.minecraft.init.SoundEvents;
-import net.minecraft.item.EnumAction;
+import net.minecraft.item.Items;
+import net.minecraft.util.SoundEvents;
+import net.minecraft.item.UseAction;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.ActionResult;
-import net.minecraft.util.EnumActionResult;
-import net.minecraft.util.EnumHand;
-import net.minecraft.util.NonNullList;
-import net.minecraft.util.SoundCategory;
+import net.minecraft.util.ActionResultType;
+import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
@@ -117,12 +115,12 @@ public class grappleBow extends Item implements KeypressItem {
 		return null;
 	}	
 	
-	public void dorightclick(ItemStack stack, World worldIn, EntityLivingBase entityLiving, boolean righthand) {
+	public void dorightclick(ItemStack stack, World worldIn, LivingEntity entityLiving, boolean righthand) {
         if (!worldIn.isRemote) {
     	}
 	}
 	
-	public void throwBoth(ItemStack stack, World worldIn, EntityLivingBase entityLiving, boolean righthand) {
+	public void throwBoth(ItemStack stack, World worldIn, LivingEntity entityLiving, boolean righthand) {
 		grappleArrow arrow_left = getArrowLeft(entityLiving);
 		grappleArrow arrow_right = getArrowRight(entityLiving);
 
@@ -145,10 +143,10 @@ public class grappleBow extends Item implements KeypressItem {
 		throwRight(stack, worldIn, entityLiving, righthand);
 
 		stack.damageItem(1, entityLiving);
-        worldIn.playSound((EntityPlayer)null, entityLiving.posX, entityLiving.posY, entityLiving.posZ, SoundEvents.ENTITY_ARROW_SHOOT, SoundCategory.NEUTRAL, 1.0F, 1.0F / (itemRand.nextFloat() * 0.4F + 1.2F) + 2.0F * 0.5F);
+        worldIn.playSound((PlayerEntity)null, entityLiving.posX, entityLiving.posY, entityLiving.posZ, SoundEvents.ENTITY_ARROW_SHOOT, SoundCategory.NEUTRAL, 1.0F, 1.0F / (itemRand.nextFloat() * 0.4F + 1.2F) + 2.0F * 0.5F);
 	}
 	
-	public boolean throwLeft(ItemStack stack, World worldIn, EntityLivingBase entityLiving, boolean righthand) {
+	public boolean throwLeft(ItemStack stack, World worldIn, LivingEntity entityLiving, boolean righthand) {
     	GrappleCustomization custom = this.getCustomization(stack);
     	
   		double angle = custom.angle;
@@ -159,7 +157,7 @@ public class grappleBow extends Item implements KeypressItem {
   			verticalangle = custom.sneakingverticalthrowangle;
   		}
   		
-  		EntityLivingBase player = entityLiving;
+  		LivingEntity player = entityLiving;
   		
   		vec anglevec = new vec(0,0,1).rotate_yaw(Math.toRadians(-angle)).rotate_pitch(Math.toRadians(verticalangle));
   		anglevec = anglevec.rotate_pitch(Math.toRadians(-player.rotationPitch));
@@ -178,7 +176,7 @@ public class grappleBow extends Item implements KeypressItem {
 		return true;
 	}
 	
-	public void throwRight(ItemStack stack, World worldIn, EntityLivingBase entityLiving, boolean righthand) {
+	public void throwRight(ItemStack stack, World worldIn, LivingEntity entityLiving, boolean righthand) {
     	GrappleCustomization custom = this.getCustomization(stack);
     	
   		double angle = custom.angle;
@@ -202,7 +200,7 @@ public class grappleBow extends Item implements KeypressItem {
 			setArrowRight(entityLiving, entityarrow);
 			worldIn.spawnEntity(entityarrow);
     	} else {
-      		EntityLivingBase player = entityLiving;
+      		LivingEntity player = entityLiving;
       		
       		vec anglevec = new vec(0,0,1).rotate_yaw(Math.toRadians(angle)).rotate_pitch(Math.toRadians(verticalangle));
       		anglevec = anglevec.rotate_pitch(Math.toRadians(-player.rotationPitch));
@@ -221,7 +219,7 @@ public class grappleBow extends Item implements KeypressItem {
 		}
 	}
 	
-	public void detachBoth(EntityLivingBase entityLiving) {
+	public void detachBoth(LivingEntity entityLiving) {
 		grappleArrow arrow1 = getArrowLeft(entityLiving);
 		grappleArrow arrow2 = getArrowRight(entityLiving);
 
@@ -243,7 +241,7 @@ public class grappleBow extends Item implements KeypressItem {
 		}
 	}
 	
-	public void detachLeft(EntityLivingBase entityLiving) {
+	public void detachLeft(LivingEntity entityLiving) {
 		grappleArrow arrow1 = getArrowLeft(entityLiving);
 		
 		setArrowLeft(entityLiving, null);
@@ -266,7 +264,7 @@ public class grappleBow extends Item implements KeypressItem {
 		}
 	}
 	
-	public void detachRight(EntityLivingBase entityLiving) {
+	public void detachRight(LivingEntity entityLiving) {
 		grappleArrow arrow2 = getArrowRight(entityLiving);
 		
 		setArrowRight(entityLiving, null);
@@ -289,7 +287,7 @@ public class grappleBow extends Item implements KeypressItem {
 		}
 	}
 	
-    public double getAngle(EntityLivingBase entity, ItemStack stack) {
+    public double getAngle(LivingEntity entity, ItemStack stack) {
     	GrappleCustomization custom = this.getCustomization(stack);
     	if (entity.isSneaking()) {
     		return custom.sneakingangle;
@@ -298,27 +296,27 @@ public class grappleBow extends Item implements KeypressItem {
     	}
     }
 	
-	public grappleArrow createarrow(ItemStack stack, World worldIn, EntityLivingBase entityLiving, boolean righthand, boolean isdouble) {
+	public grappleArrow createarrow(ItemStack stack, World worldIn, LivingEntity entityLiving, boolean righthand, boolean isdouble) {
 		grappleArrow arrow = new grappleArrow(worldIn, entityLiving, righthand, this.getCustomization(stack), isdouble);
 		grapplemod.addarrow(entityLiving.getEntityId(), arrow);
 		return arrow;
 	}
     
     @Override
-    public ActionResult<ItemStack> onItemRightClick(World worldIn, EntityPlayer entityLiving, EnumHand hand)
+    public ActionResult<ItemStack> onItemRightClick(World worldIn, PlayerEntity entityLiving, Hand hand)
     {
     	ItemStack stack = entityLiving.getHeldItem(hand);
         if (!worldIn.isRemote) {
-	        this.dorightclick(stack, worldIn, entityLiving, hand == EnumHand.MAIN_HAND);
+	        this.dorightclick(stack, worldIn, entityLiving, hand == Hand.MAIN_HAND);
         }
         entityLiving.setActiveHand(hand);
-        return new ActionResult<ItemStack>(EnumActionResult.SUCCESS, stack);
+        return new ActionResult<ItemStack>(ActionResultType.SUCCESS, stack);
     }
 	
 
 	@Override
 	public void onPlayerStoppedUsing(ItemStack stack, World worldIn,
-			EntityLivingBase entityLiving, int timeLeft) {
+									 LivingEntity entityLiving, int timeLeft) {
 		if (!worldIn.isRemote) {
 //			stack.getSubCompound("grapplemod", true).setBoolean("extended", (this.getArrow(entityLiving, worldIn) != null));
 		}
@@ -329,19 +327,19 @@ public class grappleBow extends Item implements KeypressItem {
 	 * returns the action that specifies what animation to play when the items is being used
 	 */
     @Override
-	public EnumAction getItemUseAction(ItemStack par1ItemStack)
+	public UseAction getItemUseAction(ItemStack par1ItemStack)
 	{
-		return EnumAction.NONE;
+		return UseAction.NONE;
 	}
 
     @Override
-    public boolean onLeftClickEntity(ItemStack stack, EntityPlayer player, Entity entity)
+    public boolean onLeftClickEntity(ItemStack stack, PlayerEntity player, Entity entity)
     {
     	return true;
     }
     
 	@Override
-	public void onCustomKeyDown(ItemStack stack, EntityPlayer player, KeypressItem.Keys key, boolean ismainhand) {
+	public void onCustomKeyDown(ItemStack stack, PlayerEntity player, KeypressItem.Keys key, boolean ismainhand) {
 		if (player.world.isRemote) {
 			if (key == KeypressItem.Keys.LAUNCHER) {
 				if (this.getCustomization(stack).enderstaff) {
@@ -370,7 +368,7 @@ public class grappleBow extends Item implements KeypressItem {
 
 				if (threw) {
 					stack.damageItem(1, player);
-			        player.world.playSound((EntityPlayer)null, player.posX, player.posY, player.posZ, SoundEvents.ENTITY_ARROW_SHOOT, SoundCategory.NEUTRAL, 1.0F, 1.0F / (itemRand.nextFloat() * 0.4F + 1.2F) + 2.0F * 0.5F);
+			        player.world.playSound((PlayerEntity)null, player.posX, player.posY, player.posZ, SoundEvents.ENTITY_ARROW_SHOOT, SoundCategory.NEUTRAL, 1.0F, 1.0F / (itemRand.nextFloat() * 0.4F + 1.2F) + 2.0F * 0.5F);
 				}
 			} else if (key == KeypressItem.Keys.THROWRIGHT) {
 				grappleArrow arrow2 = getArrowRight(player);
@@ -383,13 +381,13 @@ public class grappleBow extends Item implements KeypressItem {
 				throwRight(stack, player.world, player, ismainhand);
 
 				stack.damageItem(1, player);
-		        player.world.playSound((EntityPlayer)null, player.posX, player.posY, player.posZ, SoundEvents.ENTITY_ARROW_SHOOT, SoundCategory.NEUTRAL, 1.0F, 1.0F / (itemRand.nextFloat() * 0.4F + 1.2F) + 2.0F * 0.5F);
+		        player.world.playSound((PlayerEntity)null, player.posX, player.posY, player.posZ, SoundEvents.ENTITY_ARROW_SHOOT, SoundCategory.NEUTRAL, 1.0F, 1.0F / (itemRand.nextFloat() * 0.4F + 1.2F) + 2.0F * 0.5F);
 			}
 		}
 	}
 	
 	@Override
-	public void onCustomKeyUp(ItemStack stack, EntityPlayer player, KeypressItem.Keys key, boolean ismainhand) {
+	public void onCustomKeyUp(ItemStack stack, PlayerEntity player, KeypressItem.Keys key, boolean ismainhand) {
 		if (player.world.isRemote) {
 			if (key == KeypressItem.Keys.THROWLEFT || key == KeypressItem.Keys.THROWRIGHT || key == KeypressItem.Keys.THROWBOTH) {
 				grapplemod.network.sendToServer(new KeypressMessage(key, false));
@@ -413,13 +411,13 @@ public class grappleBow extends Item implements KeypressItem {
 	}
    
     @Override
-    public boolean hitEntity(ItemStack stack, EntityLivingBase target, EntityLivingBase attacker)
+    public boolean hitEntity(ItemStack stack, LivingEntity target, LivingEntity attacker)
     {
     	return true;
     }
    
     @Override
-    public boolean onBlockStartBreak(ItemStack itemstack, BlockPos k, EntityPlayer player)
+    public boolean onBlockStartBreak(ItemStack itemstack, BlockPos k, PlayerEntity player)
     {
       return true;
     }
@@ -432,7 +430,7 @@ public class grappleBow extends Item implements KeypressItem {
     	} else {
     		GrappleCustomization custom = this.getDefaultCustomization();
 
-			NBTTagCompound nbt = custom.writeNBT();
+			CompoundNBT nbt = custom.writeNBT();
 			
 			itemstack.setTagCompound(nbt);
     		
@@ -553,7 +551,7 @@ public class grappleBow extends Item implements KeypressItem {
     }
 	
 	@Override
-    public void getSubItems(CreativeTabs tab, NonNullList<ItemStack> items)
+    public void getSubItems(ItemGroup tab, NonNullList<ItemStack> items)
     {
         if (this.isInCreativeTab(tab))
         {

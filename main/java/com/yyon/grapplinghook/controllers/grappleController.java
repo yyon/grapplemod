@@ -12,10 +12,9 @@ import com.yyon.grapplinghook.network.GrappleEndMessage;
 import com.yyon.grapplinghook.network.PlayerMovementMessage;
 
 import net.minecraft.block.Block;
-import net.minecraft.block.state.IBlockState;
-import net.minecraft.client.Minecraft;
+import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.world.World;
@@ -259,8 +258,8 @@ public class grappleController {
 						this.calctaut(dist, arrow);
 
 						// handle keyboard input (jumping and climbing)
-						if (entity instanceof EntityPlayer) {
-							EntityPlayer player = (EntityPlayer) entity;
+						if (entity instanceof PlayerEntity) {
+							PlayerEntity player = (PlayerEntity) entity;
 							boolean isjumping = ClientProxyClass.key_jumpanddetach.isKeyDown();
 							isjumping = isjumping && !playerjump; // only jump once when key is first pressed
 							playerjump = ClientProxyClass.key_jumpanddetach.isKeyDown();
@@ -877,7 +876,7 @@ public class grappleController {
 	public boolean hasblock(BlockPos pos, World w) {
 //    	if (!blockcache.containsKey(pos)) {
     		boolean isblock = false;
-	    	IBlockState blockstate = w.getBlockState(pos);
+	    	BlockState blockstate = w.getBlockState(pos);
 	    	Block b = blockstate.getBlock();
 	    	if (!(b.isAir(blockstate, w, pos))) {
 	    		isblock = true;

@@ -7,7 +7,7 @@ import com.yyon.grapplinghook.grapplemod;
 import com.yyon.grapplinghook.vec;
 
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.world.World;
 
 /*
@@ -92,8 +92,8 @@ public class airfrictionController extends grappleController {
 				}
 			}
 			
-			if (entity instanceof EntityLivingBase) {
-				EntityLivingBase entityliving = (EntityLivingBase) entity;
+			if (entity instanceof LivingEntity) {
+				LivingEntity entityliving = (LivingEntity) entity;
 				if (entityliving.isElytraFlying()) {
 					this.unattach();
 				}

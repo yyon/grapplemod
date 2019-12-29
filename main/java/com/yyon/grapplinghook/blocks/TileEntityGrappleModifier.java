@@ -9,9 +9,9 @@ import com.yyon.grapplinghook.grapplemod;
 import com.yyon.grapplinghook.grapplemod.upgradeCategories;
 import com.yyon.grapplinghook.network.GrappleModifierMessage;
 
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.NetworkManager;
-import net.minecraft.network.play.server.SPacketUpdateTileEntity;
+import net.minecraft.network.play.server.SUpdateTileEntityPacket;
 import net.minecraft.tileentity.TileEntity;
 
 public class TileEntityGrappleModifier extends TileEntity {
@@ -61,15 +61,15 @@ public class TileEntityGrappleModifier extends TileEntity {
 	// into a single chunk update packet
 	@Override
 	@Nullable
-	public SPacketUpdateTileEntity getUpdatePacket() {
-		NBTTagCompound nbtTagCompound = new NBTTagCompound();
+	public SUpdateTileEntityPacket getUpdatePacket() {
+		CompoundNBT nbtTagCompound = new CompoundNBT();
 		writeToNBT(nbtTagCompound);
 		int metadata = getBlockMetadata();
-		return new SPacketUpdateTileEntity(this.pos, metadata, nbtTagCompound);
+		return new SUpdateTileEntityPacket(this.pos, metadata, nbtTagCompound);
 	}
 
 	@Override
-	public void onDataPacket(NetworkManager net, SPacketUpdateTileEntity pkt) {
+	public void onDataPacket(NetworkManager net, SUpdateTileEntityPacket pkt) {
 		readFromNBT(pkt.getNbtCompound());
 	}
 
@@ -78,8 +78,8 @@ public class TileEntityGrappleModifier extends TileEntity {
 	 * transmit from server to client
 	 */
 	@Override
-	public NBTTagCompound getUpdateTag() {
-		NBTTagCompound nbtTagCompound = new NBTTagCompound();
+	public CompoundNBT getUpdateTag() {
+		CompoundNBT nbtTagCompound = new CompoundNBT();
 		writeToNBT(nbtTagCompound);
 		return nbtTagCompound;
 	}
@@ -89,7 +89,7 @@ public class TileEntityGrappleModifier extends TileEntity {
 	 * transmit from server to client
 	 */
 	@Override
-	public void handleUpdateTag(NBTTagCompound tag) {
+	public void handleUpdateTag(CompoundNBT tag) {
 		this.readFromNBT(tag);
 	}
 
@@ -102,10 +102,10 @@ public class TileEntityGrappleModifier extends TileEntity {
 	// data and make sure it's correct:
 	// http://www.minecraftforum.net/forums/mapping-and-modding/minecraft-tools/1262665-nbtexplorer-nbt-editor-for-windows-and-mac
 	@Override
-	public NBTTagCompound writeToNBT(NBTTagCompound parentNBTTagCompound) {
+	public CompoundNBT writeToNBT(CompoundNBT parentNBTTagCompound) {
 		super.writeToNBT(parentNBTTagCompound); // The super call is required to save the tiles location
 		
-		NBTTagCompound unlockedNBT = parentNBTTagCompound.getCompoundTag("unlocked");
+		CompoundNBT unlockedNBT = parentNBTTagCompound.getCompoundTag("unlocked");
 		
 		for (grapplemod.upgradeCategories category : grapplemod.upgradeCategories.values()) {
 			String num = String.valueOf(category.toInt());
@@ -124,10 +124,10 @@ public class TileEntityGrappleModifier extends TileEntity {
 
 	// This is where you load the data that you saved in writeToNBT
 	@Override
-	public void readFromNBT(NBTTagCompound parentNBTTagCompound) {
+	public void readFromNBT(CompoundNBT parentNBTTagCompound) {
 		super.readFromNBT(parentNBTTagCompound); // The super call is required to load the tiles location
 		
-		NBTTagCompound unlockedNBT = parentNBTTagCompound.getCompoundTag("unlocked");
+		CompoundNBT unlockedNBT = parentNBTTagCompound.getCompoundTag("unlocked");
 		
 		for (grapplemod.upgradeCategories category : grapplemod.upgradeCategories.values()) {
 			String num = String.valueOf(category.toInt());
@@ -136,7 +136,7 @@ public class TileEntityGrappleModifier extends TileEntity {
 			this.unlockedCategories.put(category, unlocked);
 		}
 		
-		NBTTagCompound custom = parentNBTTagCompound.getCompoundTag("customization");
+		CompoundNBT custom = parentNBTTagCompound.getCompoundTag("customization");
 		this.customization.loadNBT(custom);
 	}
 }

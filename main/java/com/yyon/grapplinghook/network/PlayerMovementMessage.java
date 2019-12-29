@@ -2,10 +2,10 @@ package com.yyon.grapplinghook.network;
 
 import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.util.IThreadListener;
 import net.minecraft.world.World;
-import net.minecraft.world.WorldServer;
+import net.minecraft.world.ServerWorld;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
@@ -101,8 +101,8 @@ public class PlayerMovementMessage implements IMessage {
                 entity.motionX = message.mx;
                 entity.motionY = message.my;
                 entity.motionZ = message.mz;
-                if (entity instanceof EntityPlayerMP) {
-                	EntityPlayerMP player = ((EntityPlayerMP) entity);
+                if (entity instanceof ServerPlayerEntity) {
+                	ServerPlayerEntity player = ((ServerPlayerEntity) entity);
                 	player.connection.update();
                 	
             		if (!player.onGround) {
@@ -120,7 +120,7 @@ public class PlayerMovementMessage implements IMessage {
     	
         @Override
         public IMessage onMessage(PlayerMovementMessage message, MessageContext ctx) {
-        	IThreadListener mainThread = (WorldServer) ctx.getServerHandler().player.world; // or Minecraft.getMinecraft() on the client
+        	IThreadListener mainThread = (ServerWorld) ctx.getServerHandler().player.world; // or Minecraft.getMinecraft() on the client
             mainThread.addScheduledTask(new runner(message, ctx));
             
             return null; // no response in this case
