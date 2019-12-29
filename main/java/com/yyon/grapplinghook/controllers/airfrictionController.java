@@ -1,5 +1,6 @@
 package com.yyon.grapplinghook.controllers;
 
+import com.yyon.grapplinghook.ClientProxyClass;
 import com.yyon.grapplinghook.GrappleConfig;
 import com.yyon.grapplinghook.GrappleCustomization;
 import com.yyon.grapplinghook.grapplemod;
@@ -40,14 +41,16 @@ public class airfrictionController extends grappleController {
 		Entity entity = this.entity;
 		
 		if (this.attached) {
-			boolean issliding = grapplemod.proxy.issliding(this.entity);
+			boolean issliding = ClientProxyClass.isWearingSlidingEnchant(this.entity) && ClientProxyClass.key_slide.isKeyDown();
 			
 			if (this.ignoregroundcounter <= 0) {
 				this.normalGround(!issliding);					
 				this.normalCollisions(!issliding);
 			}
 			this.applyAirFriction();
-			
+
+			issliding = grapplemod.proxy.issliding(this.entity);
+
 			if (this.entity.isInWater()) {
 				this.unattach();
 				return;

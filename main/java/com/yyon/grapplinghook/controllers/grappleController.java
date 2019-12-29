@@ -611,28 +611,32 @@ public class grappleController {
     	}
 	}
 	
-	boolean prevcollision = false;
-	vec prevcollisionpos = new vec(0,0,0);
+//	boolean prevcollision = false;
+//	vec prevcollisionpos = new vec(0,0,0);
 
 	public void normalCollisions(boolean refreshmotion) {
 		// stop if collided with object
 		vec pos = vec.positionvec(this.entity);
 		if (entity.collidedHorizontally) {
-			if (refreshmotion || prevcollision) {
-				if (entity.motionX == 0 && (refreshmotion || pos.x == prevcollisionpos.x)) {
-					this.motion.x = 0;
+//			if (refreshmotion || prevcollision) {
+				if (entity.motionX == 0) {
+					if (refreshmotion || this.tryStepUp(new vec(this.motion.x, 0, 0))) {
+						this.motion.x = 0;
+					}
 				}
-				if (entity.motionZ == 0 && (refreshmotion || pos.z == prevcollisionpos.z)) {
-					this.motion.z = 0;
+				if (entity.motionZ == 0) {
+					if (refreshmotion || this.tryStepUp(new vec(0, 0, this.motion.z))) {
+						this.motion.z = 0;
+					}
 				}
-			}
+//			}
 		}
-		prevcollision = entity.collidedHorizontally;
-		if (prevcollision) {
-			if (entity.motionX == 0 || entity.motionZ == 0) {
-				prevcollisionpos = pos;
-			}
-		}
+//		prevcollision = entity.collidedHorizontally;
+//		if (prevcollision) {
+//			if (entity.motionX == 0 || entity.motionZ == 0) {
+//				prevcollisionpos = pos;
+//			}
+//		}
 		if (entity.collidedVertically) {
 			if (entity.onGround) {
 				if (this.motion.y < 0) {
@@ -646,6 +650,29 @@ public class grappleController {
 				}
 			}
 		}
+	}
+	
+	public boolean tryStepUp(vec collisionmotion) {
+		if (collisionmotion.length() == 0) {return false;}
+		vec moveoffset = collisionmotion.changelen(0.05).add(0, entity.stepHeight+0.01, 0);
+		if (this.world.getCollisionBoxes(this.entity, this.entity.getEntityBoundingBox().offset(moveoffset.x, moveoffset.y, moveoffset.z)).isEmpty()) {
+			if (!this.entity.onGround) {
+				System.out.println("Can step up");
+				System.out.println(moveoffset.y);
+				System.out.println(entity.posY);
+				entity.posX += moveoffset.x;
+				entity.posY += moveoffset.y;
+				entity.posZ += moveoffset.z;
+				this.entity.setPosition(entity.posX, entity.posY, entity.posZ);
+				entity.prevPosX = entity.posX;
+				entity.prevPosY = entity.posY;
+				entity.prevPosZ = entity.posZ;
+				System.out.println(entity.posY);
+			}
+			entity.collidedHorizontally = false;
+			return false;
+		}
+		return true;
 	}
 
 	public void normalGround(boolean refreshmotion) {
@@ -1031,13 +1058,18 @@ public class grappleController {
 	public boolean applywallrun() {
 		boolean wallrun = this.wallrun();
 		if (wallrun && !ClientProxyClass.key_jumpanddetach.isKeyDown()) {
-			if (!playerjump) {
-				motion.y = 0;
-			}
 
 			vec wallside = this.getwalldirection();
 			if (wallside != null) {
 				this.walldirection = wallside;
+			}
+			
+			if (this.walldirection == null) {
+				return false;
+			}
+
+			if (!playerjump) {
+				motion.y = 0;
 			}
 
 			// drag

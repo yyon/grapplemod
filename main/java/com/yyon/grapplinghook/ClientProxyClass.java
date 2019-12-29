@@ -287,11 +287,16 @@ public class ClientProxyClass extends CommonProxyClass {
 			if (!Minecraft.getMinecraft().isGamePaused() || !Minecraft.getMinecraft().isSingleplayer()) {
 				if (this.iswallrunning(player)) {
 					if (!grapplemod.controllers.containsKey(player.getEntityId())) {
-						grapplemod.createControl(grapplemod.AIRID, -1, player.getEntityId(), player.world, new vec(0,0,0), null, null);
+						grappleController controller = grapplemod.createControl(grapplemod.AIRID, -1, player.getEntityId(), player.world, new vec(0,0,0), null, null);
+						if (controller.getwalldirection() == null) {
+							controller.unattach();
+						}
 					}
 					
-					tickssincelastonground = 0;
-					alreadyuseddoublejump = false;
+					if (grapplemod.controllers.containsKey(player.getEntityId())) {
+						tickssincelastonground = 0;
+						alreadyuseddoublejump = false;
+					}
 				}
 
 				this.checkdoublejump();
@@ -653,21 +658,28 @@ public class ClientProxyClass extends CommonProxyClass {
 		}
 		return false;
 	}
+	
+	public static boolean isWearingSlidingEnchant(Entity entity) {
+		for (ItemStack stack : entity.getArmorInventoryList()) {
+			if (stack != null) {
+				Map<Enchantment, Integer> enchantments = EnchantmentHelper.getEnchantments(stack);
+				if (enchantments.containsKey(grapplemod.slidingenchantment)) {
+					if (enchantments.get(grapplemod.slidingenchantment) >= 1) {
+						return true;
+					}
+				}
+			}
+		}
+		return false;
+	}
 
 	@Override
 	public boolean issliding(Entity entity) {
 		if (entity.isInWater()) {return false;}
 		
 		if (entity.onGround && key_slide.isKeyDown()) {
-			for (ItemStack stack : entity.getArmorInventoryList()) {
-				if (stack != null) {
-					Map<Enchantment, Integer> enchantments = EnchantmentHelper.getEnchantments(stack);
-					if (enchantments.containsKey(grapplemod.slidingenchantment)) {
-						if (enchantments.get(grapplemod.slidingenchantment) >= 1) {
-							return true;
-						}
-					}
-				}
+			if (this.isWearingSlidingEnchant(entity)) {
+				return true;
 			}
 		}
 		return false;
