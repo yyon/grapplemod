@@ -4,6 +4,7 @@ import com.yyon.grapplinghook.network.LoggedInMessage;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
@@ -26,6 +27,10 @@ public class ServerProxyClass extends CommonProxyClass {
 	@Override
 	public void postInit(FMLPostInitializationEvent event) {
 		super.postInit(event);
+		
+		if (GrappleConfig.getconf().override_allowflight) {
+			FMLCommonHandler.instance().getMinecraftServerInstance().setAllowFlight(true);
+		}
 	}
 	
 	@Override
