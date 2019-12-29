@@ -75,10 +75,13 @@ public class airfrictionController extends grappleController {
 
 			if (!issliding) {
 				if (wallrun) {
+					this.playermovement.changelen_ip(GrappleConfig.getconf().wallrun_speed*1.5);
 					if (this.walldirection != null) {
 						this.playermovement = this.playermovement.removealong(this.walldirection);
 					}
-					this.playermovement.changelen_ip(GrappleConfig.getconf().wallrun_speed);
+					if (this.playermovement.length() > GrappleConfig.getconf().wallrun_speed) {
+						this.playermovement.changelen_ip(GrappleConfig.getconf().wallrun_speed);
+					}
 					motion.add_ip(this.playermovement);
 					if (this.motion.length() > GrappleConfig.getconf().wallrun_max_speed) {
 						this.motion.changelen_ip(GrappleConfig.getconf().wallrun_max_speed);

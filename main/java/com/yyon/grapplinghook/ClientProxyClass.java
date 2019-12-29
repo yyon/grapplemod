@@ -94,6 +94,8 @@ public class ClientProxyClass extends CommonProxyClass {
 	public ModelResourceLocation multihookropeloc = new ModelResourceLocation("grapplemod:multihookrope", "inventory");
 	public ModelResourceLocation odmloc = new ModelResourceLocation("grapplemod:odm", "inventory");
 	public ModelResourceLocation odmropeloc = new ModelResourceLocation("grapplemod:odmrope", "inventory");
+	public ModelResourceLocation rocketloc = new ModelResourceLocation("grapplemod:rocket", "inventory");
+	public ModelResourceLocation rocketropeloc = new ModelResourceLocation("grapplemod:rocketrope", "inventory");
 	
 	private void setgrapplebowtextures(Item item, final ModelResourceLocation notinusetexture, final ModelResourceLocation inusetexture) {
 		ModelLoader.setCustomMeshDefinition(item, new ItemMeshDefinition() {
@@ -132,13 +134,16 @@ public class ClientProxyClass extends CommonProxyClass {
 				boolean active = !ClientProxyClass.isactive(stack);
 		    	if (stack.hasTagCompound()) {
 		    		NBTTagCompound compound = stack.getTagCompound();
+		    		if (compound.getBoolean("rocket")) {
+		    			if (compound.getBoolean("doublehook")) {
+		    				return active ? odmloc : odmropeloc;
+		    			} else {
+		    				return active ? rocketloc : rocketropeloc;
+		    			}
+		    		}
 		    		if (compound.getBoolean("motor")) {
 		    			if (compound.getBoolean("doublehook")) {
-		    				if (compound.getBoolean("rocket")) {
-			    				return active ? odmloc : odmropeloc;
-		    				} else {
-			    				return active ? multihookloc : multihookropeloc;
-		    				}
+		    				return active ? multihookloc : multihookropeloc;
 		    			}
 		    			if (compound.getBoolean("smartmotor")) {
 		    				return active ? smarthookloc : smarthookropeloc;
@@ -164,7 +169,8 @@ public class ClientProxyClass extends CommonProxyClass {
 		ModelLoader.setCustomMeshDefinition(grapplemod.rocketdoublemotorhookitem, itemmeshdefinition);
 		ModelLoader.setCustomMeshDefinition(grapplemod.enderhookitem, itemmeshdefinition);
 		ModelLoader.setCustomMeshDefinition(grapplemod.magnethookitem, itemmeshdefinition);
-		for (ResourceLocation loc : new ResourceLocation[] {multihookloc, multihookropeloc, smarthookloc, smarthookropeloc, hookshotloc, hookshotropeloc, enderhookloc, magnetbowloc, grapplinghookloc, ropeloc, odmloc, odmropeloc}) {
+		ModelLoader.setCustomMeshDefinition(grapplemod.rockethookitem, itemmeshdefinition);
+		for (ResourceLocation loc : new ResourceLocation[] {multihookloc, multihookropeloc, smarthookloc, smarthookropeloc, hookshotloc, hookshotropeloc, enderhookloc, magnetbowloc, grapplinghookloc, ropeloc, odmloc, odmropeloc, rocketloc, rocketropeloc}) {
 			ModelBakery.registerItemVariants(grapplemod.grapplebowitem, loc);
 			ModelBakery.registerItemVariants(grapplemod.motorhookitem, loc);
 			ModelBakery.registerItemVariants(grapplemod.smarthookitem, loc);
@@ -172,6 +178,7 @@ public class ClientProxyClass extends CommonProxyClass {
 			ModelBakery.registerItemVariants(grapplemod.rocketdoublemotorhookitem, loc);
 			ModelBakery.registerItemVariants(grapplemod.enderhookitem, loc);
 			ModelBakery.registerItemVariants(grapplemod.magnethookitem, loc);
+			ModelBakery.registerItemVariants(grapplemod.rockethookitem, loc);
 		}
 	}
 

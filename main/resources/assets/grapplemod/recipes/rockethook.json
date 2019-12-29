@@ -1,0 +1,14 @@
+{
+	"type": "minecraft:crafting_shapeless",
+	"ingredients": [
+		{
+			"item": "grapplemod:grapplinghook"
+		}, 
+		{
+			"item": "grapplemod:rocketupgradeitem"
+		}
+	],
+	"result": {
+		"item": "grapplemod:rockethook"
+	}
+}

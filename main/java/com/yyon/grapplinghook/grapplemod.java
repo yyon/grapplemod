@@ -27,6 +27,7 @@ import com.yyon.grapplinghook.items.alternategrapple.EnderHook;
 import com.yyon.grapplinghook.items.alternategrapple.MagnetHook;
 import com.yyon.grapplinghook.items.alternategrapple.MotorHook;
 import com.yyon.grapplinghook.items.alternategrapple.RocketDoubleMotorHook;
+import com.yyon.grapplinghook.items.alternategrapple.RocketHook;
 import com.yyon.grapplinghook.items.alternategrapple.SmartHook;
 import com.yyon.grapplinghook.items.upgrades.BaseUpgradeItem;
 import com.yyon.grapplinghook.items.upgrades.DoubleUpgradeItem;
@@ -129,6 +130,7 @@ public class grapplemod {
     public static Item rocketdoublemotorhookitem;
     public static Item enderhookitem;
     public static Item magnethookitem;
+    public static Item rockethookitem;
     public static Item launcheritem;
     public static Item repelleritem;
 
@@ -334,12 +336,13 @@ public class grapplemod {
 		return new Item[] {
 				grapplebowitem, 
 				itemBlockGrappleModifier,
+				enderhookitem, 
+				magnethookitem,
+				rockethookitem,
 				motorhookitem, 
 				smarthookitem, 
 				doublemotorhookitem, 
 				rocketdoublemotorhookitem, 
-				enderhookitem, 
-				magnethookitem, 
 				launcheritem, 
 				repelleritem, 
 				longfallboots, 
@@ -380,6 +383,8 @@ public class grapplemod {
 		enderhookitem.setRegistryName("enderhook");
 		magnethookitem = new MagnetHook();
 		magnethookitem.setRegistryName("magnethook");
+		rockethookitem = new RocketHook();
+		rockethookitem.setRegistryName("rockethook");
 		launcheritem = new launcherItem();
 		launcheritem.setRegistryName("launcheritem");
 		longfallboots = new LongFallBoots(ItemArmor.ArmorMaterial.DIAMOND, 3);
