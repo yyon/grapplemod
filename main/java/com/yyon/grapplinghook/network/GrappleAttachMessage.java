@@ -1,6 +1,7 @@
 package com.yyon.grapplinghook.network;
 
 import java.util.LinkedList;
+import java.util.function.Supplier;
 
 import com.yyon.grapplinghook.GrappleCustomization;
 import com.yyon.grapplinghook.grapplemod;
@@ -8,16 +9,13 @@ import com.yyon.grapplinghook.vec;
 import com.yyon.grapplinghook.controllers.SegmentHandler;
 import com.yyon.grapplinghook.entities.grappleArrow;
 
-import io.netty.buffer.ByteBuf;
-import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.player.ServerPlayerEntity;
+import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.Direction;
-import net.minecraft.util.IThreadListener;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
-import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
-import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
+import net.minecraftforge.fml.network.NetworkEvent;
 
 /*
  * This file is part of GrappleMod.
@@ -36,7 +34,7 @@ import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
     along with GrappleMod.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-public class GrappleAttachMessage implements IMessage {
+public class GrappleAttachMessage {
    
 	public int id;
 	public double x;
@@ -50,7 +48,7 @@ public class GrappleAttachMessage implements IMessage {
 	public LinkedList<Direction> segmentbottomsides;
 	public GrappleCustomization custom;
 
-    public GrappleAttachMessage() { }
+    public GrappleAttachMessage() {}
 
     public GrappleAttachMessage(int id, double x, double y, double z, int controlid, int entityid, BlockPos blockpos, LinkedList<vec> segments, LinkedList<Direction> segmenttopsides, LinkedList<Direction> segmentbottomsides, GrappleCustomization custom) {
     	this.id = id;
@@ -66,104 +64,83 @@ public class GrappleAttachMessage implements IMessage {
         this.custom = custom;
     }
 
-    @Override
-    public void fromBytes(ByteBuf buf) {
-    	this.id = buf.readInt();
-        this.x = buf.readDouble();
-        this.y = buf.readDouble();
-        this.z = buf.readDouble();
-        this.controlid = buf.readInt();
-        this.entityid = buf.readInt();
+    public static GrappleAttachMessage fromBytes(PacketBuffer buf) {
+    	GrappleAttachMessage msg = new GrappleAttachMessage();
+    	msg.id = buf.readInt();
+        msg.x = buf.readDouble();
+        msg.y = buf.readDouble();
+        msg.z = buf.readDouble();
+        msg.controlid = buf.readInt();
+        msg.entityid = buf.readInt();
         int blockx = buf.readInt();
         int blocky = buf.readInt();
         int blockz = buf.readInt();
-        this.blockpos = new BlockPos(blockx, blocky, blockz);
+        msg.blockpos = new BlockPos(blockx, blocky, blockz);
         
-        this.custom = new GrappleCustomization();
-        this.custom.readFromBuf(buf);
+        msg.custom = new GrappleCustomization();
+        msg.custom.readFromBuf(buf);
         
         int size = buf.readInt();
-        this.segments = new LinkedList<vec>();
-        this.segmentbottomsides = new LinkedList<Direction>();
-        this.segmenttopsides = new LinkedList<Direction>();
+        msg.segments = new LinkedList<vec>();
+        msg.segmentbottomsides = new LinkedList<Direction>();
+        msg.segmenttopsides = new LinkedList<Direction>();
 
-		segments.add(new vec(0, 0, 0));
-		segmentbottomsides.add(null);
-		segmenttopsides.add(null);
+		msg.segments.add(new vec(0, 0, 0));
+		msg.segmentbottomsides.add(null);
+		msg.segmenttopsides.add(null);
 		
 		for (int i = 1; i < size-1; i++) {
-        	this.segments.add(new vec(buf.readDouble(), buf.readDouble(), buf.readDouble()));
-        	this.segmentbottomsides.add(Direction.getFront(buf.readInt()));
-        	this.segmenttopsides.add(Direction.getFront(buf.readInt()));
+        	msg.segments.add(new vec(buf.readDouble(), buf.readDouble(), buf.readDouble()));
+        	msg.segmentbottomsides.add(Direction.byIndex(buf.readInt()));
+        	msg.segmenttopsides.add(Direction.byIndex(buf.readInt()));
         }
 		
-		segments.add(new vec(0, 0, 0));
-		segmentbottomsides.add(null);
-		segmenttopsides.add(null);
+		msg.segments.add(new vec(0, 0, 0));
+		msg.segmentbottomsides.add(null);
+		msg.segmenttopsides.add(null);
+		
+		return msg;
     }
 
-    @Override
-    public void toBytes(ByteBuf buf) {
-    	buf.writeInt(this.id);
-        buf.writeDouble(this.x);
-        buf.writeDouble(this.y);
-        buf.writeDouble(this.z);
-        buf.writeInt(this.controlid);
-        buf.writeInt(this.entityid);
-        buf.writeInt(this.blockpos.getX());
-        buf.writeInt(this.blockpos.getY());
-        buf.writeInt(this.blockpos.getZ());
+    public static void toBytes(GrappleAttachMessage pkt, PacketBuffer buf) {
+    	buf.writeInt(pkt.id);
+        buf.writeDouble(pkt.x);
+        buf.writeDouble(pkt.y);
+        buf.writeDouble(pkt.z);
+        buf.writeInt(pkt.controlid);
+        buf.writeInt(pkt.entityid);
+        buf.writeInt(pkt.blockpos.getX());
+        buf.writeInt(pkt.blockpos.getY());
+        buf.writeInt(pkt.blockpos.getZ());
         
-        this.custom.writeToBuf(buf);
+        pkt.custom.writeToBuf(buf);
         
-        buf.writeInt(this.segments.size());
-        for (int i = 1; i < this.segments.size()-1; i++) {
-        	buf.writeDouble(this.segments.get(i).x);
-        	buf.writeDouble(this.segments.get(i).y);
-        	buf.writeDouble(this.segments.get(i).z);
-        	buf.writeInt(this.segmentbottomsides.get(i).getIndex());
-        	buf.writeInt(this.segmenttopsides.get(i).getIndex());
+        buf.writeInt(pkt.segments.size());
+        for (int i = 1; i < pkt.segments.size()-1; i++) {
+        	buf.writeDouble(pkt.segments.get(i).x);
+        	buf.writeDouble(pkt.segments.get(i).y);
+        	buf.writeDouble(pkt.segments.get(i).z);
+        	buf.writeInt(pkt.segmentbottomsides.get(i).getIndex());
+        	buf.writeInt(pkt.segmenttopsides.get(i).getIndex());
         }
     }
 
-    public static class Handler implements IMessageHandler<GrappleAttachMessage, IMessage> {
-    	public class runner implements Runnable {
-    		GrappleAttachMessage message;
-    		MessageContext ctx;
-    		public runner(GrappleAttachMessage message, MessageContext ctx) {
-    			super();
-    			this.message = message;
-    			this.ctx = ctx;
-    		}
-    		
-            @Override
-            public void run() {
-            	World world = Minecraft.getMinecraft().world;
-            	Entity grapple = world.getEntityByID(message.id);
-            	if (grapple instanceof grappleArrow) {
-	            	((grappleArrow) grapple).clientAttach(message.x, message.y, message.z);
-	            	SegmentHandler segmenthandler = ((grappleArrow) grapple).segmenthandler;
-	            	segmenthandler.segments = message.segments;
-	            	segmenthandler.segmentbottomsides = message.segmentbottomsides;
-	            	segmenthandler.segmenttopsides = message.segmenttopsides;
-	            	
-	            	Entity player = world.getEntityByID(message.entityid);
-	            	segmenthandler.forceSetPos(new vec(message.x, message.y, message.z), vec.positionvec(player));
-            	} else {
-            	}
-            	            	
-            	grapplemod.createControl(message.controlid, message.id, message.entityid, world, new vec(message.x, message.y, message.z), message.blockpos, message.custom);
-            }
-    	}
-    	
-       
-        @Override
-        public IMessage onMessage(GrappleAttachMessage message, MessageContext ctx) {
-
-        	IThreadListener mainThread = Minecraft.getMinecraft();
-            mainThread.addScheduledTask(new runner(message, ctx));
-
-            return null; 
-        }
-    }
+    public static void handle(final GrappleAttachMessage message, Supplier<NetworkEvent.Context> ctx) {
+    	ServerPlayerEntity pl = ctx.get().getSender();
+        World world = pl.world;
+		Entity grapple = world.getEntityByID(message.id);
+		if (grapple instanceof grappleArrow) {
+	    	((grappleArrow) grapple).clientAttach(message.x, message.y, message.z);
+	    	SegmentHandler segmenthandler = ((grappleArrow) grapple).segmenthandler;
+	    	segmenthandler.segments = message.segments;
+	    	segmenthandler.segmentbottomsides = message.segmentbottomsides;
+	    	segmenthandler.segmenttopsides = message.segmenttopsides;
+	    	
+	    	Entity player = world.getEntityByID(message.entityid);
+	    	segmenthandler.forceSetPos(new vec(message.x, message.y, message.z), vec.positionvec(player));
+		} else {
+		}
+		            	
+		grapplemod.createControl(message.controlid, message.id, message.entityid, world, new vec(message.x, message.y, message.z), message.blockpos, message.custom);
+	}
 }

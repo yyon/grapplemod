@@ -6,6 +6,9 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Random;
+import java.util.function.BiConsumer;
+import java.util.function.Function;
+import java.util.function.Supplier;
 
 import com.yyon.grapplinghook.blocks.BlockGrappleModifier;
 import com.yyon.grapplinghook.blocks.TileEntityGrappleModifier;
@@ -52,38 +55,38 @@ import com.yyon.grapplinghook.network.PlayerMovementMessage;
 import com.yyon.grapplinghook.network.SegmentMessage;
 
 import net.minecraft.block.Block;
-import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.inventory.EquipmentSlotType;
-import net.minecraft.item.*;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentType;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.player.ServerPlayerEntity;
+import net.minecraft.inventory.EquipmentSlotType;
+import net.minecraft.item.ArmorItem;
+import net.minecraft.item.ArmorMaterial;
+import net.minecraft.item.BlockItem;
+import net.minecraft.item.Item;
+import net.minecraft.item.Item.Properties;
+import net.minecraft.item.ItemGroup;
+import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.RayTraceResult.Type;
 import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.common.config.Config.Type;
-import net.minecraftforge.common.config.ConfigManager;
-import net.minecraftforge.common.util.EnumHelper;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.fml.client.event.ConfigChangedEvent;
 import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.common.Mod.EventHandler;
-import net.minecraftforge.fml.common.SidedProxy;
-import net.minecraftforge.fml.common.event.FMLInitializationEvent;
-import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
-import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
-import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
-import net.minecraftforge.fml.common.network.simpleimpl.SimpleNetworkWrapper;
-import net.minecraftforge.fml.common.registry.EntityRegistry;
 import net.minecraftforge.fml.common.registry.GameRegistry;
+import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.event.server.FMLServerStartingEvent;
+import net.minecraftforge.fml.network.NetworkEvent.Context;
 import net.minecraftforge.fml.network.NetworkRegistry;
-import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.network.simple.SimpleChannel;
 import net.minecraftforge.registries.ForgeRegistries;
 
 /*
@@ -117,7 +120,7 @@ public class grapplemod {
 
     public static final String MODID = "grapplemod";
     
-    public static final String VERSION = "1.12.2-v12";
+    public static final String VERSION = "1.14.4-v12";
 
     public static Item grapplebowitem;
     public static Item motorhookitem;
@@ -144,7 +147,7 @@ public class grapplemod {
 
     public static Item longfallboots;
     
-    public static final EnchantmentType GRAPPLEENCHANTS_FEET = EnumHelper.addEnchantmentType("GRAPPLEENCHANTS_FEET", (item) -> item instanceof ArmorItem && ((ArmorItem)item).armorType == EquipmentSlotType.FEET);
+    public static final EnchantmentType GRAPPLEENCHANTS_FEET = EnchantmentType.create("GRAPPLEENCHANTS_FEET", (item) -> item instanceof ArmorItem && ((ArmorItem)item).getEquipmentSlot() == EquipmentSlotType.FEET);
     
     public static WallrunEnchantment wallrunenchantment;
     public static DoublejumpEnchantment doublejumpenchantment;
@@ -152,7 +155,12 @@ public class grapplemod {
 
 	public static Object instance;
 	
-	public static SimpleNetworkWrapper network;
+	public static SimpleChannel network = NetworkRegistry.ChannelBuilder
+			.named(new ResourceLocation(MODID, "main_channel"))
+			.clientAcceptedVersions(VERSION::equals)
+			.serverAcceptedVersions(VERSION::equals)
+			.networkProtocolVersion(() -> VERSION)
+			.simpleChannel();
 	
 	public static HashMap<Integer, grappleController> controllers = new HashMap<Integer, grappleController>(); // client side
 	public static HashMap<BlockPos, grappleController> controllerpos = new HashMap<BlockPos, grappleController>();
@@ -234,9 +242,9 @@ public class grapplemod {
 	public static final ItemGroup tabGrapplemod = (new ItemGroup("tabGrapplemod") {
 		
 		@Override
-		public void displayAllRelevantItems(NonNullList<ItemStack> items) {
+		public void fill(NonNullList<ItemStack> items) {
 			// sort items
-			super.displayAllRelevantItems(items);
+			super.fill(items);
 			Item[] allitems = getAllItems();
 			Collections.sort(items, new Comparator<ItemStack>() {
 				@Override
@@ -262,13 +270,10 @@ public class grapplemod {
 		}
 	});
 	
-	@SidedProxy(clientSide="com.yyon.grapplinghook.ClientProxyClass", serverSide="com.yyon.grapplinghook.ServerProxyClass")
-	public static CommonProxyClass proxy;
+//	@SidedProxy(clientSide="com.yyon.grapplinghook.ClientProxyClass", serverSide="com.yyon.grapplinghook.ServerProxyClass")
+//	public static CommonProxyClass proxy;
+	public static CommonProxyClass proxy = DistExecutor.runForDist(() -> ClientProxyClass::new, () -> ServerProxyClass::new);
 	
-	@EventHandler
-	public void load(FMLInitializationEvent event){
-	}
-
 	public void registerRenderers(){
 	}
 	public void generateNether(World world, Random random, int chunkX, int chunkZ){}
@@ -312,7 +317,7 @@ public class grapplemod {
 		    		modid = "minecraft";
 		    		name = str;
 		    	}
-		    	
+
 		    	Block b = Block.REGISTRY.getObject(new ResourceLocation(modid, name));
 		    	
 		        grapplingblocks.add(b);
@@ -362,8 +367,8 @@ public class grapplemod {
 
 	}
 	
-	@EventHandler
-	public void preInit(FMLPreInitializationEvent event){
+	@SubscribeEvent
+	public void preInit(FMLCommonSetupEvent event){
 //		System.out.println("PREINIT!!!");
 		grapplebowitem = new grappleBow();
 		grapplebowitem.setRegistryName("grapplinghook");
@@ -383,42 +388,32 @@ public class grapplemod {
 		rockethookitem.setRegistryName("rockethook");
 		launcheritem = new launcherItem();
 		launcheritem.setRegistryName("launcheritem");
-		longfallboots = new LongFallBoots(ArmorItem.ArmorMaterial.DIAMOND, 3);
+		longfallboots = new LongFallBoots(ArmorMaterial.DIAMOND, 3);
 		longfallboots.setRegistryName("longfallboots");
 		repelleritem = new repeller();
 		repelleritem.setRegistryName("repeller");
-	    baseupgradeitem = new BaseUpgradeItem();
+	    baseupgradeitem = new BaseUpgradeItem(BaseUpgradeItem.getproperties(true));
 	    baseupgradeitem.setRegistryName("baseupgradeitem");
 	    doubleupgradeitem = new DoubleUpgradeItem();
 	    doubleupgradeitem.setRegistryName("doubleupgradeitem");
-	    doubleupgradeitem.setContainerItem(doubleupgradeitem);
 	    forcefieldupgradeitem = new ForcefieldUpgradeItem();
 	    forcefieldupgradeitem.setRegistryName("forcefieldupgradeitem");
-	    forcefieldupgradeitem.setContainerItem(forcefieldupgradeitem);
 	    magnetupgradeitem = new MagnetUpgradeItem();
 	    magnetupgradeitem.setRegistryName("magnetupgradeitem");
-	    magnetupgradeitem.setContainerItem(magnetupgradeitem);
 	    motorupgradeitem = new MotorUpgradeItem();
 	    motorupgradeitem.setRegistryName("motorupgradeitem");
-	    motorupgradeitem.setContainerItem(motorupgradeitem);
 	    ropeupgradeitem = new RopeUpgradeItem();
 	    ropeupgradeitem.setRegistryName("ropeupgradeitem");
-	    ropeupgradeitem.setContainerItem(ropeupgradeitem);
 	    staffupgradeitem = new StaffUpgradeItem();
 	    staffupgradeitem.setRegistryName("staffupgradeitem");
-	    staffupgradeitem.setContainerItem(staffupgradeitem);
 	    swingupgradeitem = new SwingUpgradeItem();
 	    swingupgradeitem.setRegistryName("swingupgradeitem");
-	    swingupgradeitem.setContainerItem(swingupgradeitem);
 	    throwupgradeitem = new ThrowUpgradeItem();
 	    throwupgradeitem.setRegistryName("throwupgradeitem");
-	    throwupgradeitem.setContainerItem(throwupgradeitem);
 	    limitsupgradeitem = new LimitsUpgradeItem();
 	    limitsupgradeitem.setRegistryName("limitsupgradeitem");
-	    limitsupgradeitem.setContainerItem(limitsupgradeitem);
 	    rocketupgradeitem = new RocketUpgradeItem();
 	    rocketupgradeitem.setRegistryName("rocketupgradeitem");
-	    rocketupgradeitem.setContainerItem(rocketupgradeitem);
 	    
 	    wallrunenchantment = new WallrunEnchantment();
 	    wallrunenchantment.setRegistryName("wallrunenchantment");
@@ -433,25 +428,24 @@ public class grapplemod {
 		
 		registerEntity(grappleArrow.class, "grappleArrow");
 		
-		network = NetworkRegistry.INSTANCE.newSimpleChannel("grapplemodchannel");
-		byte id = 0;
-		network.registerMessage(PlayerMovementMessage.Handler.class, PlayerMovementMessage.class, id++, Side.SERVER);
-		network.registerMessage(GrappleAttachMessage.Handler.class, GrappleAttachMessage.class, id++, Side.CLIENT);
-		network.registerMessage(GrappleEndMessage.Handler.class, GrappleEndMessage.class, id++, Side.SERVER);
-		network.registerMessage(GrappleDetachMessage.Handler.class, GrappleDetachMessage.class, id++, Side.CLIENT);
-		network.registerMessage(DetachSingleHookMessage.Handler.class, DetachSingleHookMessage.class, id++, Side.CLIENT);
-		network.registerMessage(GrappleAttachPosMessage.Handler.class, GrappleAttachPosMessage.class, id++, Side.CLIENT);
-		network.registerMessage(SegmentMessage.Handler.class, SegmentMessage.class, id++, Side.CLIENT);
-		network.registerMessage(GrappleModifierMessage.Handler.class, GrappleModifierMessage.class, id++, Side.SERVER);
-		network.registerMessage(LoggedInMessage.Handler.class, LoggedInMessage.class, id++, Side.CLIENT);
-		network.registerMessage(KeypressMessage.Handler.class, KeypressMessage.class, id++, Side.SERVER);
+		registerMessage(PlayerMovementMessage.class, PlayerMovementMessage::toBytes, PlayerMovementMessage::fromBytes, PlayerMovementMessage::handle);
+		registerMessage(GrappleAttachMessage.class, GrappleAttachMessage::toBytes, GrappleAttachMessage::fromBytes, GrappleAttachMessage::handle);
+		registerMessage(GrappleEndMessage.class, GrappleEndMessage::toBytes, GrappleEndMessage::fromBytes, GrappleEndMessage::handle);
+		registerMessage(GrappleDetachMessage.class, GrappleDetachMessage::toBytes, GrappleDetachMessage::fromBytes, GrappleDetachMessage::handle);
+		registerMessage(DetachSingleHookMessage.class, DetachSingleHookMessage::toBytes, DetachSingleHookMessage::fromBytes, DetachSingleHookMessage::handle);
+		registerMessage(GrappleAttachPosMessage.class, GrappleAttachPosMessage::toBytes, GrappleAttachPosMessage::fromBytes, GrappleAttachPosMessage::handle);
+		registerMessage(SegmentMessage.class, SegmentMessage::toBytes, SegmentMessage::fromBytes, SegmentMessage::handle);
+		registerMessage(GrappleModifierMessage.class, GrappleModifierMessage::toBytes, GrappleModifierMessage::fromBytes, GrappleModifierMessage::handle);
+		registerMessage(LoggedInMessage.class, LoggedInMessage::toBytes, LoggedInMessage::fromBytes, LoggedInMessage::handle);
+		registerMessage(KeypressMessage.class, KeypressMessage::toBytes, KeypressMessage::fromBytes, KeypressMessage::handle);
 		
-		blockGrappleModifier = (BlockGrappleModifier)(new BlockGrappleModifier().setUnlocalizedName("block_grapple_modifier"));
-		blockGrappleModifier.setHardness(10F);
+		blockGrappleModifier = (BlockGrappleModifier)(new BlockGrappleModifier(BlockGrappleModifier.getproperties()));
 		blockGrappleModifier.setRegistryName("block_grapple_modifier");
 	    ForgeRegistries.BLOCKS.register(blockGrappleModifier);
 
-	    itemBlockGrappleModifier = new BlockItem(blockGrappleModifier);
+		Item.Properties properties = new Properties();
+		properties.group(tabGrapplemod);
+	    itemBlockGrappleModifier = new BlockItem(blockGrappleModifier, properties);
 	    itemBlockGrappleModifier.setRegistryName(blockGrappleModifier.getRegistryName());
 
 	    // Each of your tile entities needs to be registered with a name that is unique to your mod.
@@ -462,18 +456,15 @@ public class grapplemod {
 		proxy.preInit(event);
 		
 		tabGrapplemod.setRelevantEnchantmentTypes(GRAPPLEENCHANTS_FEET);
-	}
-	
-	@EventHandler
-	public void Init(FMLInitializationEvent event) {
-		proxy.init(event, this);
-	}
-	
-	@EventHandler
-	public void postInit(FMLPostInitializationEvent event) {
-		proxy.postInit(event);
-		
+
 		grapplemod.updateGrapplingBlocks();
+	}
+	
+
+	static byte message_id = 0;
+	private static <MSG> void registerMessage(Class<MSG> type, BiConsumer<MSG, PacketBuffer> encoder, Function<PacketBuffer, MSG> decoder,
+			BiConsumer<MSG, Supplier<Context>> consumer) {
+		network.registerMessage(message_id++, type, encoder, decoder, consumer);
 	}
 	
 	int entityID = 0;
@@ -521,7 +512,7 @@ public class grapplemod {
 		}
 	}
 	
-	public static void sendtocorrectclient(IMessage message, int playerid, World w) {
+	public static <MSG> void sendtocorrectclient(MSG message, int playerid, World w) {
 		Entity entity = w.getEntityByID(playerid);
 		if (entity instanceof ServerPlayerEntity) {
 			grapplemod.network.sendTo(message, (ServerPlayerEntity) entity);
@@ -623,7 +614,7 @@ public class grapplemod {
 			allarrows.put(id, new HashSet<grappleArrow>());
 		}
 		for (grappleArrow arrow : allarrows.get(id)) {
-			if (arrow != null && !arrow.isDead) {
+			if (arrow != null && arrow.isAlive()) {
 				arrow.removeServer();
 			}
 		}
@@ -632,13 +623,13 @@ public class grapplemod {
 	
 
 	public static CompoundNBT getstackcompound(ItemStack stack, String key) {
-		if (!stack.hasTagCompound()) {
-			stack.setTagCompound(new CompoundNBT());
+		if (!stack.hasTag()) {
+			stack.setTag(new CompoundNBT());
 		}
-		CompoundNBT basecompound = stack.getTagCompound();
-        if (basecompound.hasKey(key, 10))
+		CompoundNBT basecompound = stack.getTag();
+        if (basecompound.contains(key, 10))
         {
-            return basecompound.getCompoundTag(key);
+            return basecompound.getCompound(key);
         }
         else
         {
@@ -653,7 +644,7 @@ public class grapplemod {
 	public void onConfigChanged(ConfigChangedEvent.OnConfigChangedEvent eventArgs) {
 	    if(eventArgs.getModID().equals("grapplemod")){
 			System.out.println("grapplemod config updated");
-			ConfigManager.sync("grapplemod", Type.INSTANCE);;
+			ConfigManager.sync("grapplemod", Type.INSTANCE);
 			
 			grapplemod.updateGrapplingBlocks();
 		}

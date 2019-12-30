@@ -1,16 +1,15 @@
 package com.yyon.grapplinghook.network;
 
-import io.netty.buffer.ByteBuf;
-import net.minecraft.client.Minecraft;
-import net.minecraft.entity.Entity;
-import net.minecraft.util.IThreadListener;
-import net.minecraft.world.World;
-import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
-import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
-import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
+import java.util.function.Supplier;
 
 import com.yyon.grapplinghook.entities.grappleArrow;
 //* // 1.8 Compatability
+
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.player.ServerPlayerEntity;
+import net.minecraft.network.PacketBuffer;
+import net.minecraft.world.World;
+import net.minecraftforge.fml.network.NetworkEvent;
 
 
 /*
@@ -30,7 +29,7 @@ import com.yyon.grapplinghook.entities.grappleArrow;
     along with GrappleMod.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-public class GrappleAttachPosMessage implements IMessage {
+public class GrappleAttachPosMessage {
    
 	public int id;
 	public double x;
@@ -46,50 +45,28 @@ public class GrappleAttachPosMessage implements IMessage {
         this.z = z;
     }
 
-    @Override
-    public void fromBytes(ByteBuf buf) {
-    	this.id = buf.readInt();
-        this.x = buf.readDouble();
-        this.y = buf.readDouble();
-        this.z = buf.readDouble();
+    public static GrappleAttachPosMessage fromBytes(PacketBuffer buf) {
+    	GrappleAttachPosMessage pkt = new GrappleAttachPosMessage();
+    	pkt.id = buf.readInt();
+        pkt.x = buf.readDouble();
+        pkt.y = buf.readDouble();
+        pkt.z = buf.readDouble();
+        return pkt;
     }
 
-    @Override
-    public void toBytes(ByteBuf buf) {
-    	buf.writeInt(this.id);
-        buf.writeDouble(this.x);
-        buf.writeDouble(this.y);
-        buf.writeDouble(this.z);
+    public static void toBytes(GrappleAttachPosMessage pkt, PacketBuffer buf) {
+    	buf.writeInt(pkt.id);
+        buf.writeDouble(pkt.x);
+        buf.writeDouble(pkt.y);
+        buf.writeDouble(pkt.z);
     }
 
-    public static class Handler implements IMessageHandler<GrappleAttachPosMessage, IMessage> {
-    	public class runner implements Runnable {
-    		GrappleAttachPosMessage message;
-    		MessageContext ctx;
-    		public runner(GrappleAttachPosMessage message, MessageContext ctx) {
-    			super();
-    			this.message = message;
-    			this.ctx = ctx;
-    		}
-    		
-            @Override
-            public void run() {
-            	World world = Minecraft.getMinecraft().world;
-            	Entity grapple = world.getEntityByID(message.id);
-            	if (grapple instanceof grappleArrow) {
-	            	((grappleArrow) grapple).setAttachPos(message.x, message.y, message.z);
-            	}
-            }
+    public static void handle(final GrappleAttachPosMessage message, Supplier<NetworkEvent.Context> ctx) {
+    	ServerPlayerEntity pl = ctx.get().getSender();
+        World world = pl.world;
+    	Entity grapple = world.getEntityByID(message.id);
+    	if (grapple instanceof grappleArrow) {
+        	((grappleArrow) grapple).setAttachPos(message.x, message.y, message.z);
     	}
-    	
-       
-        @Override
-        public IMessage onMessage(GrappleAttachPosMessage message, MessageContext ctx) {
-
-        	IThreadListener mainThread = Minecraft.getMinecraft(); // or Minecraft.getMinecraft() on the client
-            mainThread.addScheduledTask(new runner(message, ctx));
-
-            return null; // no response in this case
-        }
     }
 }

@@ -66,22 +66,22 @@ public class GrappleCustomization {
 	public CompoundNBT writeNBT() {
 		CompoundNBT compound = new CompoundNBT();
 		for (String option : booleanoptions) {
-			compound.setBoolean(option, this.getBoolean(option));
+			compound.putBoolean(option, this.getBoolean(option));
 		}
 		for (String option : doubleoptions) {
-			compound.setDouble(option, this.getDouble(option));
+			compound.putDouble(option, this.getDouble(option));
 		}
 		return compound;
 	}
 	
 	public void loadNBT(CompoundNBT compound) {
 		for (String option : booleanoptions) {
-			if (compound.hasKey(option)) {
+			if (compound.contains(option)) {
 				this.setBoolean(option, compound.getBoolean(option));
 			}
 		}
 		for (String option : doubleoptions) {
-			if (compound.hasKey(option)) {
+			if (compound.contains(option)) {
 				this.setDouble(option, compound.getDouble(option));
 			}
 		}

@@ -11,21 +11,22 @@ import com.yyon.grapplinghook.items.grappleBow;
 import com.yyon.grapplinghook.items.upgrades.BaseUpgradeItem;
 
 import net.minecraft.block.Block;
+import net.minecraft.block.BlockRenderType;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.material.Material;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.enchantment.Enchantments;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.*;
-import net.minecraft.block.BlockRenderType;
+import net.minecraft.util.BlockRenderLayer;
 import net.minecraft.util.Direction;
 import net.minecraft.util.Hand;
+import net.minecraft.util.NonNullList;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.world.IBlockAccess;
@@ -35,9 +36,15 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 
 public class BlockGrappleModifier extends Block {
 
-	public BlockGrappleModifier() {
-		super(Material.ROCK);
+	public BlockGrappleModifier(Block.Properties properties) {
+		super(properties);
 		setCreativeTab(grapplemod.tabGrapplemod);
+	}
+	
+	public static Block.Properties getproperties() {
+		Block.Properties prop = Block.Properties.create(Material.ROCK);
+		prop.hardnessAndResistance(10);
+		return prop;
 	}
 
 	@Override
@@ -142,7 +149,7 @@ public class BlockGrappleModifier extends Block {
 				GrappleCustomization custom = tileent.customization;
 				CompoundNBT nbt = custom.writeNBT();
 				
-				helditemstack.setTagCompound(nbt);
+				helditemstack.setTag(nbt);
 				
 				playerIn.sendMessage(new StringTextComponent("Applied configuration"));
 			}
@@ -150,7 +157,7 @@ public class BlockGrappleModifier extends Block {
 			if (!worldIn.isRemote) {
 				if (GrappleConfig.getconf().longfallbootsrecipe) {
 					boolean gaveitem = false;
-					if (helditemstack.isItemEnchanted()) {
+					if (helditemstack.isEnchanted()) {
 						Map<Enchantment, Integer> enchantments = EnchantmentHelper.getEnchantments(helditemstack);
 						if (enchantments.containsKey(Enchantments.FEATHER_FALLING)) {
 							if (enchantments.get(Enchantments.FEATHER_FALLING) >= 4) {

@@ -5,15 +5,12 @@ import java.lang.reflect.Type;
 import java.nio.charset.Charset;
 import java.util.Arrays;
 import java.util.Comparator;
+import java.util.function.Supplier;
 
 import com.yyon.grapplinghook.GrappleConfig;
 
-import io.netty.buffer.ByteBuf;
-import net.minecraft.client.Minecraft;
-import net.minecraft.util.IThreadListener;
-import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
-import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
-import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
+import net.minecraft.network.PacketBuffer;
+import net.minecraftforge.fml.network.NetworkEvent;
 
 /*
  * This file is part of GrappleMod.
@@ -32,7 +29,7 @@ import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
     along with GrappleMod.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-public class LoggedInMessage implements IMessage {
+public class LoggedInMessage {
     GrappleConfig.Config conf = null;
 
     public LoggedInMessage() { }
@@ -41,8 +38,9 @@ public class LoggedInMessage implements IMessage {
     	this.conf = serverconf;
     }
 
-    @Override
-    public void fromBytes(ByteBuf buf) {
+    public static LoggedInMessage fromBytes(PacketBuffer buf) {
+    	LoggedInMessage pkt = new LoggedInMessage();
+    	
     	Class<GrappleConfig.Config> confclass = GrappleConfig.Config.class;
     	Field[] fields = confclass.getDeclaredFields();
     	Arrays.sort(fields, new Comparator<Field>() {
@@ -52,21 +50,21 @@ public class LoggedInMessage implements IMessage {
     	    }
     	});
     	
-    	this.conf = new GrappleConfig.Config();
+    	pkt.conf = new GrappleConfig.Config();
     	
     	for (Field field : fields) {
     		Type fieldtype = field.getGenericType();
     		try {
         		if (fieldtype.getTypeName().equals("int")) {
-        			field.setInt(this.conf, buf.readInt());
+        			field.setInt(pkt.conf, buf.readInt());
         		} else if (fieldtype.getTypeName().equals("double")) {
-        			field.setDouble(this.conf, buf.readDouble());
+        			field.setDouble(pkt.conf, buf.readDouble());
         		} else if (fieldtype.getTypeName().equals("boolean")) {
-        			field.setBoolean(this.conf, buf.readBoolean());
+        			field.setBoolean(pkt.conf, buf.readBoolean());
         		} else if (fieldtype.getTypeName().equals("java.lang.String")) {
         			int len = buf.readInt();
         			CharSequence charseq = buf.readCharSequence(len, Charset.defaultCharset());
-        			field.set(this.conf, charseq.toString());
+        			field.set(pkt.conf, charseq.toString());
         		} else {
         			System.out.println("Unknown Type");
         			System.out.println(fieldtype.getTypeName());
@@ -75,10 +73,11 @@ public class LoggedInMessage implements IMessage {
     			System.out.println(e);
     		}
     	}
+    	
+    	return pkt;
     }
 
-    @Override
-    public void toBytes(ByteBuf buf) {
+    public static void toBytes(LoggedInMessage pkt, PacketBuffer buf) {
     	Class<GrappleConfig.Config> confclass = GrappleConfig.Config.class;
     	Field[] fields = confclass.getDeclaredFields();
     	Arrays.sort(fields, new Comparator<Field>() {
@@ -92,13 +91,13 @@ public class LoggedInMessage implements IMessage {
     		Type fieldtype = field.getGenericType();
     		try {
         		if (fieldtype.getTypeName().equals("int")) {
-        			buf.writeInt(field.getInt(this.conf));
+        			buf.writeInt(field.getInt(pkt.conf));
         		} else if (fieldtype.getTypeName().equals("double")) {
-        			buf.writeDouble(field.getDouble(this.conf));
+        			buf.writeDouble(field.getDouble(pkt.conf));
         		} else if (fieldtype.getTypeName().equals("boolean")) {
-        			buf.writeBoolean(field.getBoolean(this.conf));
+        			buf.writeBoolean(field.getBoolean(pkt.conf));
         		} else if (fieldtype.getTypeName().equals("java.lang.String")) {
-        			String str = (String) field.get(this.conf);
+        			String str = (String) field.get(pkt.conf);
         			buf.writeInt(str.length());
         			buf.writeCharSequence(str.subSequence(0, str.length()), Charset.defaultCharset());
         		} else {
@@ -111,30 +110,8 @@ public class LoggedInMessage implements IMessage {
     	}
     }
 
-    public static class Handler implements IMessageHandler<LoggedInMessage, IMessage> {
-    	public class runner implements Runnable {
-    		LoggedInMessage message;
-    		MessageContext ctx;
-    		public runner(LoggedInMessage message, MessageContext ctx) {
-    			super();
-    			this.message = message;
-    			this.ctx = ctx;
-    		}
-    		
-            @Override
-            public void run() {
-            	GrappleConfig.setserveroptions(this.message.conf);
-            }
-    	}
+    public static void handle(final LoggedInMessage message, Supplier<NetworkEvent.Context> ctx) {
+    	GrappleConfig.setserveroptions(message.conf);
+	}
     	
-       
-        @Override
-        public IMessage onMessage(LoggedInMessage message, MessageContext ctx) {
-
-        	IThreadListener mainThread = Minecraft.getMinecraft();
-            mainThread.addScheduledTask(new runner(message, ctx));
-
-            return null; 
-        }
-    }
 }

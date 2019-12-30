@@ -1,14 +1,12 @@
 package com.yyon.grapplinghook.network;
 
-import io.netty.buffer.ByteBuf;
+import java.util.function.Supplier;
+
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.util.IThreadListener;
+import net.minecraft.network.PacketBuffer;
 import net.minecraft.world.World;
-import net.minecraft.world.ServerWorld;
-import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
-import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
-import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
+import net.minecraftforge.fml.network.NetworkEvent;
 
 /*
  * This file is part of GrappleMod.
@@ -27,7 +25,7 @@ import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
     along with GrappleMod.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-public class PlayerMovementMessage implements IMessage {
+public class PlayerMovementMessage {
    
 	public int entityId;
 	public double x;
@@ -36,9 +34,6 @@ public class PlayerMovementMessage implements IMessage {
 	public double mx;
 	public double my;
 	public double mz;
-	
-	public PlayerMovementMessage() {
-	}
 	
     public PlayerMovementMessage(int entityId, double x, double y, double z, double mx, double my, double mz) {
     	this.entityId = entityId;
@@ -50,80 +45,51 @@ public class PlayerMovementMessage implements IMessage {
     	this.mz = mz;
     }
 
-    @Override
-    public void fromBytes(ByteBuf buf) {
-    	try {
-	    	this.entityId = buf.readInt();
-	    	this.x = buf.readDouble();
-	    	this.y = buf.readDouble();
-	    	this.z = buf.readDouble();
-	    	this.mx = buf.readDouble();
-	    	this.my = buf.readDouble();
-	    	this.mz = buf.readDouble();
-    	} catch (Exception e) {
-    		System.out.print("Playermovement error: ");
-    		System.out.println(buf);
-    	}
+    public static PlayerMovementMessage fromBytes(PacketBuffer buf) {
+		return new PlayerMovementMessage(
+			buf.readInt(), 
+			buf.readDouble(), 
+			buf.readDouble(), 
+			buf.readDouble(), 
+			buf.readDouble(), 
+			buf.readDouble(), 
+			buf.readDouble()
+		);
     }
 
-    @Override
-    public void toBytes(ByteBuf buf) {
-        buf.writeInt(entityId);
-        buf.writeDouble(x);
-        buf.writeDouble(y);
-        buf.writeDouble(z);
-        buf.writeDouble(mx);
-        buf.writeDouble(my);
-        buf.writeDouble(mz);
+    public static void toBytes(PlayerMovementMessage pkt, PacketBuffer buf) {
+        buf.writeInt(pkt.entityId);
+        buf.writeDouble(pkt.x);
+        buf.writeDouble(pkt.y);
+        buf.writeDouble(pkt.z);
+        buf.writeDouble(pkt.mx);
+        buf.writeDouble(pkt.my);
+        buf.writeDouble(pkt.mz);
         
     }
 
-    public static class Handler implements IMessageHandler<PlayerMovementMessage, IMessage> {
-       
-    	public class runner implements Runnable {
-    		PlayerMovementMessage message;
-    		MessageContext ctx;
-    		
-    		public runner(PlayerMovementMessage message, MessageContext ctx) {
-    			super();
-    			this.message = message;
-    			this.ctx = ctx;
+    public static void handle(final PlayerMovementMessage message, Supplier<NetworkEvent.Context> ctx) {
+    	ServerPlayerEntity pl = ctx.get().getSender();
+        World world = pl.world;
+        Entity entity = world.getEntityByID(message.entityId);
+        if (entity == null) {return;}
+        entity.posX = message.x;
+        entity.posY = message.y;
+        entity.posZ = message.z;
+        entity.setMotion(message.x, message.y, message.z);
+        if (entity instanceof ServerPlayerEntity) {
+        	ServerPlayerEntity player = ((ServerPlayerEntity) entity);
+        	player.connection.captureCurrentPosition();
+        	
+    		if (!player.onGround) {
+            	if (message.my >= 0) {
+            		player.fallDistance = 0;
+            	} else {
+            		double gravity = 0.05 * 2;
+            		// d = v^2 / 2g
+                	player.fallDistance = (float) (Math.pow(message.my, 2) / (2 * gravity));
+            	}
     		}
-    		
-            @Override
-            public void run() {
-                World world = ctx.getServerHandler().player.world;
-                Entity entity = world.getEntityByID(message.entityId);
-                if (entity == null) {return;}
-                entity.posX = message.x;
-                entity.posY = message.y;
-                entity.posZ = message.z;
-                entity.motionX = message.mx;
-                entity.motionY = message.my;
-                entity.motionZ = message.mz;
-                if (entity instanceof ServerPlayerEntity) {
-                	ServerPlayerEntity player = ((ServerPlayerEntity) entity);
-                	player.connection.update();
-                	
-            		if (!player.onGround) {
-                    	if (message.my >= 0) {
-                    		player.fallDistance = 0;
-                    	} else {
-                    		double gravity = 0.05 * 2;
-                    		// d = v^2 / 2g
-                        	player.fallDistance = (float) (Math.pow(message.my, 2) / (2 * gravity));
-                    	}
-            		}
-                }
-            }
-    	}
-    	
-        @Override
-        public IMessage onMessage(PlayerMovementMessage message, MessageContext ctx) {
-        	IThreadListener mainThread = (ServerWorld) ctx.getServerHandler().player.world; // or Minecraft.getMinecraft() on the client
-            mainThread.addScheduledTask(new runner(message, ctx));
-            
-            return null; // no response in this case
         }
     }
 }

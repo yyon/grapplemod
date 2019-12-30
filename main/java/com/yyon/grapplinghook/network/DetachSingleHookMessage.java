@@ -1,14 +1,11 @@
 package com.yyon.grapplinghook.network;
 
-import javax.xml.ws.handler.MessageContext;
+import java.util.function.Supplier;
 
 import com.yyon.grapplinghook.grapplemod;
 
-import io.netty.buffer.ByteBuf;
-import net.minecraft.client.Minecraft;
-import net.minecraft.util.IThreadListener;
-import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
-import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
+import net.minecraft.network.PacketBuffer;
+import net.minecraftforge.fml.network.NetworkEvent;
 
 /*
  * This file is part of GrappleMod.
@@ -27,54 +24,29 @@ import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
     along with GrappleMod.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-public class DetachSingleHookMessage implements IMessage {
+public class DetachSingleHookMessage {
    
 	public int id;
 	public int hookid;
-
-    public DetachSingleHookMessage() { }
 
     public DetachSingleHookMessage(int id, int hookid) {
     	this.id = id;
     	this.hookid = hookid;
     }
 
-    @Override
-    public void fromBytes(ByteBuf buf) {
-    	this.id = buf.readInt();
-    	this.hookid = buf.readInt();
+    public static DetachSingleHookMessage fromBytes(PacketBuffer buf) {
+    	return new DetachSingleHookMessage(
+			buf.readInt(),
+			buf.readInt()
+    	);
     }
 
-    @Override
-    public void toBytes(ByteBuf buf) {
-    	buf.writeInt(this.id);
-    	buf.writeInt(this.hookid);
+    public static void toBytes(DetachSingleHookMessage pkt, PacketBuffer buf) {
+    	buf.writeInt(pkt.id);
+    	buf.writeInt(pkt.hookid);
     }
 
-    public static class Handler implements IMessageHandler<DetachSingleHookMessage, IMessage> {
-    	public class runner implements Runnable {
-    		DetachSingleHookMessage message;
-    		MessageContext ctx;
-    		public runner(DetachSingleHookMessage message, MessageContext ctx) {
-    			super();
-    			this.message = message;
-    			this.ctx = ctx;
-    		}
-    		
-            @Override
-            public void run() {
-            	grapplemod.receiveGrappleDetachHook(message.id, message.hookid);
-            }
-    	}
-    	
-       
-        @Override
-        public IMessage onMessage(DetachSingleHookMessage message, MessageContext ctx) {
-
-        	IThreadListener mainThread = Minecraft.getMinecraft(); // or Minecraft.getMinecraft() on the client
-            mainThread.addScheduledTask(new runner(message, ctx));
-
-            return null; // no response in this case
-        }
+    public static void handle(final DetachSingleHookMessage message, Supplier<NetworkEvent.Context> ctx) {
+    	grapplemod.receiveGrappleDetachHook(message.id, message.hookid);
     }
 }

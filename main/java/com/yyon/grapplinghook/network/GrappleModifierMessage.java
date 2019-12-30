@@ -1,17 +1,16 @@
 package com.yyon.grapplinghook.network;
 
+import java.util.function.Supplier;
+
 import com.yyon.grapplinghook.GrappleCustomization;
 import com.yyon.grapplinghook.blocks.TileEntityGrappleModifier;
 
-import io.netty.buffer.ByteBuf;
+import net.minecraft.entity.player.ServerPlayerEntity;
+import net.minecraft.network.PacketBuffer;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.IThreadListener;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-import net.minecraft.world.ServerWorld;
-import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
-import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
-import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
+import net.minecraftforge.fml.network.NetworkEvent;
 
 
 /*
@@ -31,7 +30,7 @@ import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
     along with GrappleMod.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-public class GrappleModifierMessage implements IMessage {
+public class GrappleModifierMessage {
    
 	public BlockPos pos;
 	public GrappleCustomization custom;
@@ -43,51 +42,29 @@ public class GrappleModifierMessage implements IMessage {
     	this.custom = custom;
     }
 
-    @Override
-    public void fromBytes(ByteBuf buf) {
-    	this.pos = new BlockPos(buf.readInt(), buf.readInt(), buf.readInt());
-    	this.custom = new GrappleCustomization();
-    	this.custom.readFromBuf(buf);
+    public static GrappleModifierMessage fromBytes(PacketBuffer buf) {
+    	GrappleModifierMessage pkt = new GrappleModifierMessage();
+    	pkt.pos = new BlockPos(buf.readInt(), buf.readInt(), buf.readInt());
+    	pkt.custom = new GrappleCustomization();
+    	pkt.custom.readFromBuf(buf);
+    	return pkt;
     }
 
-    @Override
-    public void toBytes(ByteBuf buf) {
-    	buf.writeInt(this.pos.getX());
-    	buf.writeInt(this.pos.getY());
-    	buf.writeInt(this.pos.getZ());
-    	this.custom.writeToBuf(buf);
+    public static void toBytes(GrappleModifierMessage pkt, PacketBuffer buf) {
+    	buf.writeInt(pkt.pos.getX());
+    	buf.writeInt(pkt.pos.getY());
+    	buf.writeInt(pkt.pos.getZ());
+    	pkt.custom.writeToBuf(buf);
     }
 
-    public static class Handler implements IMessageHandler<GrappleModifierMessage, IMessage> {
-    	public class runner implements Runnable {
-    		GrappleModifierMessage message;
-    		MessageContext ctx;
-    		public runner(GrappleModifierMessage message, MessageContext ctx) {
-    			super();
-    			this.message = message;
-    			this.ctx = ctx;
-    		}
-    		
-            @Override
-            public void run() {
-				World w = ctx.getServerHandler().player.world;
-				
-				TileEntity ent = w.getTileEntity(message.pos);
-				
-				if (ent instanceof TileEntityGrappleModifier) {
-					((TileEntityGrappleModifier) ent).setCustomizationServer(message.custom);
-				}
-            }
-    	}
-    	
-       
-        @Override
-        public IMessage onMessage(GrappleModifierMessage message, MessageContext ctx) {
-
-        	IThreadListener mainThread = (ServerWorld) ctx.getServerHandler().player.world; // or Minecraft.getMinecraft() on the client
-            mainThread.addScheduledTask(new runner(message, ctx));
-
-            return null; // no response in this case
-        }
-    }
+    public static void handle(final GrappleModifierMessage message, Supplier<NetworkEvent.Context> ctx) {
+    	ServerPlayerEntity pl = ctx.get().getSender();
+        World world = pl.world;
+		
+		TileEntity ent = world.getTileEntity(message.pos);
+		
+		if (ent instanceof TileEntityGrappleModifier) {
+			((TileEntityGrappleModifier) ent).setCustomizationServer(message.custom);
+		}
+	}
 }
