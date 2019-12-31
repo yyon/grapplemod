@@ -14,10 +14,8 @@ import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.event.entity.living.LivingHurtEvent;
 import net.minecraftforge.event.world.BlockEvent.BreakEvent;
-import net.minecraftforge.fml.common.event.FMLInitializationEvent;
-import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
-import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 
 public class CommonProxyClass {
 	public enum keys {
@@ -31,15 +29,9 @@ public class CommonProxyClass {
 		keyBindAttack
 	}
 	
-	public void preInit(FMLPreInitializationEvent event) {
+	public void init(FMLCommonSetupEvent event) {
 	    MinecraftForge.EVENT_BUS.register(this);
-	}
-
-	public void init(FMLInitializationEvent event, grapplemod grapplemod) {
 		
-	}
-	
-	public void postInit(FMLPostInitializationEvent event) {
 	}
 	
 	public void sendplayermovementmessage(grappleArrow grappleArrow, int playerid, int arrowid) {

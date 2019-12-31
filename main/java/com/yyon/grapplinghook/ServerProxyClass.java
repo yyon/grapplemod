@@ -3,33 +3,22 @@ package com.yyon.grapplinghook;
 import com.yyon.grapplinghook.network.LoggedInMessage;
 
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraftforge.fml.common.FMLCommonHandler;
-import net.minecraftforge.fml.common.event.FMLInitializationEvent;
-import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
-import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-import net.minecraftforge.fml.common.gameevent.PlayerEvent.PlayerLoggedInEvent;
+import net.minecraftforge.event.entity.player.PlayerEvent.PlayerLoggedInEvent;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
+import net.minecraftforge.fml.network.PacketDistributor;
+import net.minecraftforge.fml.server.ServerLifecycleHooks;
 
 
 
 public class ServerProxyClass extends CommonProxyClass {
 	@Override
-	public void preInit(FMLPreInitializationEvent event) {
-		super.preInit(event);
-	}
-
-	@Override
-	public void init(FMLInitializationEvent event, grapplemod grapplemod) {
-		super.init(event, grapplemod);
-	}
-	
-	@Override
-	public void postInit(FMLPostInitializationEvent event) {
-		super.postInit(event);
-		
+	public void init(FMLCommonSetupEvent event) {
+		super.init(event);
 		if (GrappleConfig.getconf().override_allowflight) {
-			FMLCommonHandler.instance().getMinecraftServerInstance().setAllowFlight(true);
+			ServerLifecycleHooks.getCurrentServer().setAllowFlight(true);
 		}
 	}
 	
@@ -41,8 +30,9 @@ public class ServerProxyClass extends CommonProxyClass {
 	@SubscribeEvent
 	public void onPlayerLoggedInEvent(PlayerLoggedInEvent e) {
 		System.out.println("Player logged in event");
-		if (e.player instanceof ServerPlayerEntity) {
-			grapplemod.network.sendTo(new LoggedInMessage(GrappleConfig.options), (ServerPlayerEntity) e.player);
+		PlayerEntity player = e.getPlayer();
+		if (player instanceof ServerPlayerEntity) {
+			grapplemod.network.send(PacketDistributor.PLAYER.with(() -> (ServerPlayerEntity) player), new LoggedInMessage(GrappleConfig.options));
 		} else {
 			System.out.println("Not an EntityPlayerMP");
 		}

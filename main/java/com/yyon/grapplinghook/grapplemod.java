@@ -58,6 +58,8 @@ import net.minecraft.block.Block;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentType;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityClassification;
+import net.minecraft.entity.EntityType;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.inventory.EquipmentSlotType;
@@ -70,10 +72,10 @@ import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.PacketBuffer;
+import net.minecraft.tileentity.TileEntityType;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.RayTraceResult.Type;
 import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.RegistryEvent;
@@ -81,11 +83,11 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.fml.client.event.ConfigChangedEvent;
 import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.event.server.FMLServerStartingEvent;
 import net.minecraftforge.fml.network.NetworkEvent.Context;
 import net.minecraftforge.fml.network.NetworkRegistry;
+import net.minecraftforge.fml.network.PacketDistributor;
 import net.minecraftforge.fml.network.simple.SimpleChannel;
 import net.minecraftforge.registries.ForgeRegistries;
 
@@ -317,10 +319,13 @@ public class grapplemod {
 		    		modid = "minecraft";
 		    		name = str;
 		    	}
-
-		    	Block b = Block.REGISTRY.getObject(new ResourceLocation(modid, name));
 		    	
-		        grapplingblocks.add(b);
+		    	ResourceLocation loc = new ResourceLocation(modid, name);
+		    	
+		    	if (ForgeRegistries.BLOCKS.containsKey(loc)) {
+		    		Block b = ForgeRegistries.BLOCKS.getValue(loc);
+			        grapplingblocks.add(b);
+		    	}		    	
 		    }
 		}
 	}
@@ -426,8 +431,6 @@ public class grapplemod {
 		
 		resourceLocation = new ResourceLocation(grapplemod.MODID, "grapplemod");
 		
-		registerEntity(grappleArrow.class, "grappleArrow");
-		
 		registerMessage(PlayerMovementMessage.class, PlayerMovementMessage::toBytes, PlayerMovementMessage::fromBytes, PlayerMovementMessage::handle);
 		registerMessage(GrappleAttachMessage.class, GrappleAttachMessage::toBytes, GrappleAttachMessage::fromBytes, GrappleAttachMessage::handle);
 		registerMessage(GrappleEndMessage.class, GrappleEndMessage::toBytes, GrappleEndMessage::fromBytes, GrappleEndMessage::handle);
@@ -448,16 +451,24 @@ public class grapplemod {
 	    itemBlockGrappleModifier = new BlockItem(blockGrappleModifier, properties);
 	    itemBlockGrappleModifier.setRegistryName(blockGrappleModifier.getRegistryName());
 
-	    // Each of your tile entities needs to be registered with a name that is unique to your mod.
-		GameRegistry.registerTileEntity(TileEntityGrappleModifier.class, "tile_entity_grapple_modifier");
+//	    // Each of your tile entities needs to be registered with a name that is unique to your mod.
+//	    ForgeRegistries.TILE_ENTITIES;
+//		GameRegistry.registerTileEntity(TileEntityGrappleModifier.class, "tile_entity_grapple_modifier");
 	
 	    MinecraftForge.EVENT_BUS.register(this);
 	    
-		proxy.preInit(event);
+		proxy.init(event);
 		
 		tabGrapplemod.setRelevantEnchantmentTypes(GRAPPLEENCHANTS_FEET);
 
 		grapplemod.updateGrapplingBlocks();
+	}
+	
+	@SubscribeEvent
+	public static void registerTE(RegistryEvent.Register<TileEntityType<?>> evt) {
+	  TileEntityType<TileEntityGrappleModifier> type = TileEntityType.Builder.create(TileEntityGrappleModifier::new, new Block[] {blockGrappleModifier}).build(null);
+	  type.setRegistryName(MODID, "tile_entity_grapple_modifier");
+	  evt.getRegistry().register(type);
 	}
 	
 
@@ -467,10 +478,13 @@ public class grapplemod {
 		network.registerMessage(message_id++, type, encoder, decoder, consumer);
 	}
 	
-	int entityID = 0;
-	public void registerEntity(Class<? extends Entity> entityClass, String name)
-	{
-		EntityRegistry.registerModEntity(resourceLocation, entityClass, name, entityID++, this, 900, 1, true);
+	@SubscribeEvent
+	public static void onEntitiesRegistry(final RegistryEvent.Register<EntityType<?>> entityRegistryEvent) {
+		entityRegistryEvent.getRegistry().registerAll(
+				EntityType.Builder.create((EntityType.IFactory<grappleArrow>) grappleArrow::new, EntityClassification.MISC)
+				.setShouldReceiveVelocityUpdates(true).setTrackingRange(24).setUpdateInterval(60)
+				.build("grappleArrow").setRegistryName(MODID, "grappleArrow")
+			);
 	}
 	
 	public static void registerController(int entityId, grappleController controller) {
@@ -515,7 +529,7 @@ public class grapplemod {
 	public static <MSG> void sendtocorrectclient(MSG message, int playerid, World w) {
 		Entity entity = w.getEntityByID(playerid);
 		if (entity instanceof ServerPlayerEntity) {
-			grapplemod.network.sendTo(message, (ServerPlayerEntity) entity);
+			grapplemod.network.send(PacketDistributor.PLAYER.with(() -> (ServerPlayerEntity) entity), message);
 		} else {
 			System.out.println("ERROR! couldn't find player");
 		}
@@ -644,7 +658,7 @@ public class grapplemod {
 	public void onConfigChanged(ConfigChangedEvent.OnConfigChangedEvent eventArgs) {
 	    if(eventArgs.getModID().equals("grapplemod")){
 			System.out.println("grapplemod config updated");
-			ConfigManager.sync("grapplemod", Type.INSTANCE);
+//			ConfigManager.sync("grapplemod", Type.INSTANCE);
 			
 			grapplemod.updateGrapplingBlocks();
 		}

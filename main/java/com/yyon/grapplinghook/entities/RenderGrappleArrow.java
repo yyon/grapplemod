@@ -1,17 +1,17 @@
 package com.yyon.grapplinghook.entities;
 
+import com.mojang.blaze3d.platform.GlStateManager;
 import com.yyon.grapplinghook.vec;
 import com.yyon.grapplinghook.controllers.SegmentHandler;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.BufferBuilder;
-import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.ItemRenderer;
 import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.client.renderer.model.ItemCameraTransforms;
 import net.minecraft.client.renderer.culling.ICamera;
 import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.EntityRendererManager;
+import net.minecraft.client.renderer.model.ItemCameraTransforms;
 import net.minecraft.client.renderer.texture.AtlasTexture;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.entity.Entity;
@@ -22,8 +22,8 @@ import net.minecraft.util.HandSide;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 
 
 /*
@@ -43,7 +43,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
     along with GrappleMod.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-@SideOnly(Side.CLIENT)
+@OnlyIn(Dist.CLIENT)
 public class RenderGrappleArrow<T extends Entity> extends EntityRenderer<T>
 {
     protected final Item item;
@@ -67,7 +67,7 @@ public class RenderGrappleArrow<T extends Entity> extends EntityRenderer<T>
     public void doRender(T entity, double x, double y, double z, float entityYaw, float partialTicks)
     {
         grappleArrow arrow = (grappleArrow) entity;
-        if (arrow == null || arrow.isDead) {
+        if (arrow == null || !arrow.isAlive()) {
         	return;
         }
         
@@ -75,7 +75,7 @@ public class RenderGrappleArrow<T extends Entity> extends EntityRenderer<T>
         
         LivingEntity e = (LivingEntity) arrow.shootingEntity;
         
-        if (e == null || e.isDead) {
+        if (e == null || !e.isAlive()) {
         	return;
         }
 
