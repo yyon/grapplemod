@@ -14,6 +14,7 @@ import com.yyon.grapplinghook.network.PlayerMovementMessage;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.settings.GameSettings;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.math.BlockPos;
@@ -639,13 +640,18 @@ public class grappleController {
 //		}
 		if (entity.collidedVertically) {
 			if (entity.onGround) {
-				if (this.motion.y < 0) {
-					this.motion.y = 0;
+				if (refreshmotion && GameSettings.isKeyDown(Minecraft.getMinecraft().gameSettings.keyBindJump)) {
+					this.motion.y = entity.motionY;
+				} else {
+					if (this.motion.y < 0) {
+						this.motion.y = 0;
+					}
 				}
 			} else {
 				if (this.motion.y > 0) {
 					if (entity.lastTickPosY == entity.posY) {
 						this.motion.y = 0;
+						System.out.println("reset 2");
 					}
 				}
 			}
@@ -674,23 +680,26 @@ public class grappleController {
 		}
 		return true;
 	}
+	
+	boolean prevonground = false;
 
 	public void normalGround(boolean refreshmotion) {
 		if (entity.onGround) {
 			ongroundtimer = maxongroundtimer;
-			if (this.motion.y < 0) {
-				this.motion.y = 0;
-			}
+//			if (this.motion.y < 0) {
+//				this.motion.y = 0;
+//			}
 		} else {
 			if (this.ongroundtimer > 0) {
 				ongroundtimer--;
 			}
 		}
-		if (entity.onGround) {
+		if (entity.onGround || prevonground) {
 			if (refreshmotion) {
 				this.motion = vec.motionvec(entity);
 			}
 		}
+		prevonground = entity.onGround;
 	}
 
 	public double getJumpPower(Entity player, double jumppower) {

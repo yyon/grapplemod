@@ -473,7 +473,7 @@ public class grappleBow extends Item implements KeypressItem {
 					ClientProxyClass.key_climbdown.getDisplayName() + 
 					" " + grapplemod.proxy.localize("grappletooltip.climbdown.desc"));
 			if (custom.enderstaff) {
-				list.add(ClientProxyClass.key_enderlaunch.getDisplayName() + " " + grapplemod.proxy.localize("grappletooltip.jump.desc"));
+				list.add(ClientProxyClass.key_enderlaunch.getDisplayName() + " " + grapplemod.proxy.localize("grappletooltip.enderlaunch.desc"));
 			}
 			if (custom.rocket) {
 				list.add(ClientProxyClass.key_rocket.getDisplayName() + " " + grapplemod.proxy.localize("grappletooltip.rocket.desc"));

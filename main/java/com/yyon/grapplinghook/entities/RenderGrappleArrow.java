@@ -1,5 +1,7 @@
 package com.yyon.grapplinghook.entities;
 
+import org.lwjgl.opengl.GL11;
+
 import com.yyon.grapplinghook.vec;
 import com.yyon.grapplinghook.controllers.SegmentHandler;
 
@@ -105,50 +107,15 @@ public class RenderGrappleArrow<T extends Entity> extends Render<T>
 	        }
     	}
     	
-        GlStateManager.pushMatrix();
-        GlStateManager.translate((float)x, (float)y, (float)z);
-        GlStateManager.enableRescaleNormal();
-        
-//        GL11.glDisable(GL11.GL_LIGHTING);
-//        OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, 240f, 240f);
-        
-        GlStateManager.rotate(-this.renderManager.playerViewY, 0.0F, 1.0F, 0.0F);
-        GlStateManager.rotate((float)(this.renderManager.options.thirdPersonView == 2 ? -1 : 1) * this.renderManager.playerViewX, 1.0F, 0.0F, 0.0F);
-        GlStateManager.rotate(180.0F, 0.0F, 1.0F, 0.0F);
-        this.bindTexture(TextureMap.LOCATION_BLOCKS_TEXTURE);
-
-        if (this.renderOutlines)
-        {
-            GlStateManager.enableColorMaterial();
-            GlStateManager.enableOutlineMode(this.getTeamColor(entity));
-        }
-
-        this.itemRenderer.renderItem(this.getStackToRender(entity), ItemCameraTransforms.TransformType.GROUND);
-
-        if (this.renderOutlines)
-        {
-            GlStateManager.disableOutlineMode();
-            GlStateManager.disableColorMaterial();
-        }
-
-        GlStateManager.disableRescaleNormal();
-        GlStateManager.popMatrix();
     	
+        /*
         GlStateManager.pushMatrix();
         GlStateManager.translate((float)x, (float)y, (float)z);
         GlStateManager.enableRescaleNormal();
         GlStateManager.scale(0.5F, 0.5F, 0.5F);
         this.bindEntityTexture(entity);
-        Tessellator tessellator = Tessellator.getInstance();
-        BufferBuilder vertexbuffer = tessellator.getBuffer();
         GlStateManager.rotate(180.0F - this.renderManager.playerViewY, 0.0F, 1.0F, 0.0F);
         GlStateManager.rotate((float)(this.renderManager.options.thirdPersonView == 2 ? -1 : 1) * -this.renderManager.playerViewX, 1.0F, 0.0F, 0.0F);
-
-        if (this.renderOutlines)
-        {
-            GlStateManager.enableColorMaterial();
-            GlStateManager.enableOutlineMode(this.getTeamColor(entity));
-        }
 
         vertexbuffer.begin(7, DefaultVertexFormats.POSITION_TEX_NORMAL);
         vertexbuffer.pos(-0.5D, -0.5D, 0.0D).tex(0.0625D, 0.1875D).normal(0.0F, 1.0F, 0.0F).endVertex();
@@ -157,15 +124,11 @@ public class RenderGrappleArrow<T extends Entity> extends Render<T>
         vertexbuffer.pos(-0.5D, 0.5D, 0.0D).tex(0.0625D, 0.125D).normal(0.0F, 1.0F, 0.0F).endVertex();
         tessellator.draw();
 
-        if (this.renderOutlines)
-        {
-            GlStateManager.disableOutlineMode();
-            GlStateManager.disableColorMaterial();
-        }
-
         GlStateManager.disableRescaleNormal();
         GlStateManager.popMatrix();
+        */
 
+        
         int k = e.getPrimaryHand() == EnumHandSide.RIGHT ? 1 : -1;
         float f7 = e.getSwingProgress(partialTicks);
         float f8 = MathHelper.sin(MathHelper.sqrt(f7) * (float)Math.PI);
@@ -211,18 +174,22 @@ public class RenderGrappleArrow<T extends Entity> extends Render<T>
         double d10 = (double)((float)(d4 - d13)) - offset.x;
         double d11 = (double)((float)(d5 - d8)) + d7 - offset.y;
         double d12 = (double)((float)(d6 - d9)) - offset.z;
+        
+//        double X;
+//        double Y;
+//        double Z;
+//        
+        vec thispos = new vec(x, y, z);
+        vec handpos = new vec(d10+x, d11+y, d12+z);
+        vec somethingpos = new vec(d13, d8, d9).sub(thispos);
+
         GlStateManager.disableTexture2D();
         GlStateManager.disableLighting();
         GlStateManager.disableCull();
         
-        double X;
-        double Y;
-        double Z;
-        
-        vec thispos = new vec(x, y, z);
-        vec handpos = new vec(d10+x, d11+y, d12+z);
-        vec somethingpos = new vec(d13, d8, d9).sub(thispos);
-        
+        Tessellator tessellator = Tessellator.getInstance();
+        BufferBuilder vertexbuffer = tessellator.getBuffer();
+
         if (segmenthandler == null) {
             this.drawSegment(thispos, handpos, arrow.taut, tessellator, vertexbuffer); 
         } else {
@@ -245,36 +212,25 @@ public class RenderGrappleArrow<T extends Entity> extends Render<T>
                 this.drawSegment(from, to, taut, tessellator, vertexbuffer); 
         	}
         }
-        
-/*        if (arrow.debugpos != null) {
-        	vec debugpos = arrow.debugpos.sub(somethingpos);
-        	this.drawDebug(debugpos, tessellator, vertexbuffer, 1, 0, 0);
-        }
-        if (arrow.debugpos2 != null) {
-        	vec debugpos = arrow.debugpos.sub(somethingpos);
-        	this.drawDebug(debugpos, tessellator, vertexbuffer, 0, 1, 0);
-        }
-        if (arrow.debugpos3 != null) {
-        	vec debugpos = arrow.debugpos.sub(somethingpos);
-        	this.drawDebug(debugpos, tessellator, vertexbuffer, 0, 0, 1);
-        }*/
-        
-        
-        vertexbuffer.begin(5, DefaultVertexFormats.POSITION_COLOR);
-    	X = x + d10;
-    	Y = y + d11;
-    	Z = z + d12;
-        vertexbuffer.pos(X, Y - 0.025D, Z).color(0.5F * 0.7F, 0.4F * 0.7F, 0.3F * 0.7F, 1.0F).endVertex();
-        vertexbuffer.pos(X - 0.025D, Y, Z - 0.025D).color(0.5F * 0.7F, 0.4F * 0.7F, 0.3F * 0.7F, 1.0F).endVertex();
-        vertexbuffer.pos(X, Y + 0.025D, Z).color(0.5F * 0.7F, 0.4F * 0.7F, 0.3F * 0.7F, 1.0F).endVertex();
-        vertexbuffer.pos(X + 0.025D, Y, Z - 0.025D).color(0.5F * 0.7F, 0.4F * 0.7F, 0.3F * 0.7F, 1.0F).endVertex();
-        vertexbuffer.pos(X, Y - 0.025D, Z).color(0.5F * 0.7F, 0.4F * 0.7F, 0.3F * 0.7F, 1.0F).endVertex();
-        tessellator.draw();
 
         GlStateManager.enableLighting();
         GlStateManager.enableTexture2D();
         GlStateManager.enableCull();
-//            GL11.glEnable(GL11.GL_LIGHTING);
+        
+        GlStateManager.pushMatrix();
+        GlStateManager.translate((float)x, (float)y, (float)z);
+        GlStateManager.enableRescaleNormal();
+        
+        GlStateManager.rotate(-this.renderManager.playerViewY, 0.0F, 1.0F, 0.0F);
+        GlStateManager.rotate((float)(this.renderManager.options.thirdPersonView == 2 ? -1 : 1) * this.renderManager.playerViewX, 1.0F, 0.0F, 0.0F);
+        GlStateManager.rotate(180.0F, 0.0F, 1.0F, 0.0F);
+        this.bindTexture(TextureMap.LOCATION_BLOCKS_TEXTURE);
+
+        this.itemRenderer.renderItem(this.getStackToRender(entity), ItemCameraTransforms.TransformType.GROUND);
+
+        GlStateManager.disableRescaleNormal();
+        GlStateManager.popMatrix();
+
             
         super.doRender(entity, x, y, z, entityYaw, partialTicks);
         
@@ -336,123 +292,48 @@ public class RenderGrappleArrow<T extends Entity> extends Render<T>
         double d11 = finish.y - y;
         double d12 = finish.z - z;
         
-        vertexbuffer.begin(5, DefaultVertexFormats.POSITION_COLOR);
+        vec forward = finish.sub(start).changelen(1);
+        vec up = forward.cross(new vec(1, 0, 0));
+        if (up.length() == 0) {
+        	up = new vec(1, 0, 0);
+        }
+        up.changelen_ip(0.025);
+        vec side = forward.cross(up);
+        side.changelen_ip(0.025);
+        
+        vec[] corners = new vec[] {up.mult(-1).add(side.mult(-1)), up.add(side.mult(-1)), up.add(side), up.mult(-1).add(side)};
+        
+        for (int corner = 0; corner < 4; corner++) {
+            vertexbuffer.begin(5, DefaultVertexFormats.POSITION_COLOR);
+            
+            vec corner1 = corners[corner];
+            vec corner2 = corners[(corner + 1) % 4];
 
-        for (int i1 = 0; i1 <= 16; ++i1)
-        {
-            float R = 0.5F;
-            float G = 0.4F;
-            float B = 0.3F;
-
-            if (i1 % 2 == 0)
+            for (int i1 = 0; i1 <= 16; ++i1)
             {
-                R *= 0.7F;
-                G *= 0.7F;
-                B *= 0.7F;
+                float R = 0.5F;
+                float G = 0.4F;
+                float B = 0.3F;
+
+                if (i1 % 2 == 0)
+                {
+                    R *= 0.7F;
+                    G *= 0.7F;
+                    B *= 0.7F;
+                }
+                
+                float f10 = (float)i1 / 16.0F;
+            	X = x + d10 * (double)f10;
+            	Z = z + d12 * (double)f10;
+            	Y = y + d11 * (double)f10 - (1 - taut) * (0.25 - Math.pow((f10 - 0.5), 2)) * 1.5;
+                
+                vertexbuffer.pos(X + corner1.x, Y + corner1.y, Z + corner1.z).color(R, G, B, 1.0F).endVertex();
+                vertexbuffer.pos(X + corner2.x, Y + corner2.y, Z + corner2.z).color(R, G, B, 1.0F).endVertex();
             }
             
-            float f10 = (float)i1 / 16.0F;
-        	X = x + d10 * (double)f10;
-        	Z = z + d12 * (double)f10;
-/*            if (reverse) {
-            	Y = y + (d11 * (double) f10) * taut + (1-taut) * (d11 * (double)(f10*f10 + f10) * 0.5D);
-            } else {
-            	Y = y + (d11 * (double) f10) * taut + (1-taut) * (d11 * (double)(Math.sqrt(f10)));
-            }*/
-        	Y = y + d11 * (double)f10 - (1 - taut) * (0.25 - Math.pow((f10 - 0.5), 2)) * 1.5;
-            
-            vertexbuffer.pos(X, Y + 0.025D, Z).color(R, G, B, 1.0F).endVertex();
-            vertexbuffer.pos(X - 0.025D, Y, Z - 0.025D).color(R, G, B, 1.0F).endVertex();
+            tessellator.draw();
         }
         
-        tessellator.draw();
-        vertexbuffer.begin(5, DefaultVertexFormats.POSITION_COLOR);
-
-        for (int i1 = 0; i1 <= 16; ++i1)
-        {
-            float R = 0.5F;
-            float G = 0.4F;
-            float B = 0.3F;
-
-            if (i1 % 2 == 0)
-            {
-                R *= 0.7F;
-                G *= 0.7F;
-                B *= 0.7F;
-            }
-            
-            float f10 = (float)i1 / 16.0F;
-        	X = x + d10 * (double)f10;
-        	Z = z + d12 * (double)f10;
-/*            if (reverse) {
-            	Y = y + (d11 * (double) f10) * taut + (1-taut) * (d11 * (double)(f10*f10 + f10) * 0.5D);
-            } else {
-            	Y = y + (d11 * (double) f10) * taut + (1-taut) * (d11 * (double)(Math.sqrt(f10)));
-            }*/
-        	Y = y + d11 * (double)f10 - (1 - taut) * (0.25 - Math.pow((f10 - 0.5), 2)) * 1.5;
-            vertexbuffer.pos(X + 0.025D, Y, Z - 0.025D).color(R, G, B, 1.0F).endVertex();
-            vertexbuffer.pos(X, Y + 0.025D, Z).color(R, G, B, 1.0F).endVertex();
-        }
-        
-        tessellator.draw();
-        vertexbuffer.begin(5, DefaultVertexFormats.POSITION_COLOR);
-
-        for (int i1 = 0; i1 <= 16; ++i1)
-        {
-            float R = 0.5F;
-            float G = 0.4F;
-            float B = 0.3F;
-
-            if (i1 % 2 == 0)
-            {
-                R *= 0.7F;
-                G *= 0.7F;
-                B *= 0.7F;
-            }
-            
-            float f10 = (float)i1 / 16.0F;
-        	X = x + d10 * (double)f10;
-        	Z = z + d12 * (double)f10;
-/*            if (reverse) {
-            	Y = y + (d11 * (double) f10) * taut + (1-taut) * (d11 * (double)(f10*f10 + f10) * 0.5D);
-            } else {
-            	Y = y + (d11 * (double) f10) * taut + (1-taut) * (d11 * (double)(Math.sqrt(f10)));
-            }*/
-        	Y = y + d11 * (double)f10 - (1 - taut) * (0.25 - Math.pow((f10 - 0.5), 2)) * 1.5;
-            vertexbuffer.pos(X, Y - 0.025D, Z).color(R, G, B, 1.0F).endVertex();
-            vertexbuffer.pos(X + 0.025D, Y, Z - 0.025D).color(R, G, B, 1.0F).endVertex();
-        }
-        
-        tessellator.draw();
-        vertexbuffer.begin(5, DefaultVertexFormats.POSITION_COLOR);
-
-        for (int i1 = 0; i1 <= 16; ++i1)
-        {
-            float R = 0.5F;
-            float G = 0.4F;
-            float B = 0.3F;
-
-            if (i1 % 2 == 0)
-            {
-                R *= 0.7F;
-                G *= 0.7F;
-                B *= 0.7F;
-            }
-            
-            float f10 = (float)i1 / 16.0F;
-        	X = x + d10 * (double)f10;
-        	Z = z + d12 * (double)f10;
-/*            if (reverse) {
-            	Y = y + (d11 * (double) f10) * taut + (1-taut) * (d11 * (double)(f10*f10 + f10) * 0.5D);
-            } else {
-            	Y = y + (d11 * (double) f10) * taut + (1-taut) * (d11 * (double)(Math.sqrt(f10)));
-            }*/
-        	Y = y + d11 * (double)f10 - (1 - taut) * (0.25 - Math.pow((f10 - 0.5), 2)) * 1.5;
-            vertexbuffer.pos(X - 0.025D, Y, Z - 0.025D).color(R, G, B, 1.0F).endVertex();
-            vertexbuffer.pos(X, Y - 0.025D, Z).color(R, G, B, 1.0F).endVertex();
-         }
-        
-        tessellator.draw();
     }
 
     @Override
