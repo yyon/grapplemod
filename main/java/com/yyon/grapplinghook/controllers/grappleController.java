@@ -651,7 +651,6 @@ public class grappleController {
 				if (this.motion.y > 0) {
 					if (entity.lastTickPosY == entity.posY) {
 						this.motion.y = 0;
-						System.out.println("reset 2");
 					}
 				}
 			}
@@ -663,9 +662,6 @@ public class grappleController {
 		vec moveoffset = collisionmotion.changelen(0.05).add(0, entity.stepHeight+0.01, 0);
 		if (this.world.getCollisionBoxes(this.entity, this.entity.getEntityBoundingBox().offset(moveoffset.x, moveoffset.y, moveoffset.z)).isEmpty()) {
 			if (!this.entity.onGround) {
-				System.out.println("Can step up");
-				System.out.println(moveoffset.y);
-				System.out.println(entity.posY);
 				entity.posX += moveoffset.x;
 				entity.posY += moveoffset.y;
 				entity.posZ += moveoffset.z;
@@ -673,7 +669,6 @@ public class grappleController {
 				entity.prevPosX = entity.posX;
 				entity.prevPosY = entity.posY;
 				entity.prevPosZ = entity.posZ;
-				System.out.println(entity.posY);
 			}
 			entity.collidedHorizontally = false;
 			return false;
@@ -694,9 +689,12 @@ public class grappleController {
 				ongroundtimer--;
 			}
 		}
-		if (entity.onGround || prevonground) {
+		if (entity.onGround || ongroundtimer > 0) {
 			if (refreshmotion) {
 				this.motion = vec.motionvec(entity);
+				if (Minecraft.getMinecraft().gameSettings.keyBindJump.isKeyDown()) {
+					this.motion.y += 0.05;
+				}
 			}
 		}
 		prevonground = entity.onGround;

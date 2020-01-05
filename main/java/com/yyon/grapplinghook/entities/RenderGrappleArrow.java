@@ -1,7 +1,5 @@
 package com.yyon.grapplinghook.entities;
 
-import org.lwjgl.opengl.GL11;
-
 import com.yyon.grapplinghook.vec;
 import com.yyon.grapplinghook.controllers.SegmentHandler;
 
@@ -50,7 +48,7 @@ public class RenderGrappleArrow<T extends Entity> extends Render<T>
 {
     protected final Item item;
     private final RenderItem itemRenderer;
-    private static final ResourceLocation LEASH_KNOT_TEXTURES = new ResourceLocation("textures/entity/lead_knot.png");
+    private static final ResourceLocation LEASH_KNOT_TEXTURES = new ResourceLocation("grapplemod", "textures/entity/rope.png");
     
     public RenderGrappleArrow(RenderManager renderManagerIn, Item itemIn, RenderItem itemRendererIn)
     {
@@ -183,9 +181,10 @@ public class RenderGrappleArrow<T extends Entity> extends Render<T>
         vec handpos = new vec(d10+x, d11+y, d12+z);
         vec somethingpos = new vec(d13, d8, d9).sub(thispos);
 
-        GlStateManager.disableTexture2D();
+//        GlStateManager.disableTexture2D();
         GlStateManager.disableLighting();
         GlStateManager.disableCull();
+        this.bindTexture(this.getEntityTexture(entity));
         
         Tessellator tessellator = Tessellator.getInstance();
         BufferBuilder vertexbuffer = tessellator.getBuffer();
@@ -214,7 +213,7 @@ public class RenderGrappleArrow<T extends Entity> extends Render<T>
         }
 
         GlStateManager.enableLighting();
-        GlStateManager.enableTexture2D();
+//        GlStateManager.enableTexture2D();
         GlStateManager.enableCull();
         
         GlStateManager.pushMatrix();
@@ -304,31 +303,31 @@ public class RenderGrappleArrow<T extends Entity> extends Render<T>
         vec[] corners = new vec[] {up.mult(-1).add(side.mult(-1)), up.add(side.mult(-1)), up.add(side), up.mult(-1).add(side)};
         
         for (int corner = 0; corner < 4; corner++) {
-            vertexbuffer.begin(5, DefaultVertexFormats.POSITION_COLOR);
+            vertexbuffer.begin(5, DefaultVertexFormats.POSITION_TEX);
             
             vec corner1 = corners[corner];
             vec corner2 = corners[(corner + 1) % 4];
 
             for (int i1 = 0; i1 <= 16; ++i1)
             {
-                float R = 0.5F;
-                float G = 0.4F;
-                float B = 0.3F;
-
-                if (i1 % 2 == 0)
-                {
-                    R *= 0.7F;
-                    G *= 0.7F;
-                    B *= 0.7F;
-                }
+//                float R = 0.5F;
+//                float G = 0.4F;
+//                float B = 0.3F;
+//
+//                if (i1 % 2 == 0)
+//                {
+//                    R *= 0.7F;
+//                    G *= 0.7F;
+//                    B *= 0.7F;
+//                }
                 
                 float f10 = (float)i1 / 16.0F;
             	X = x + d10 * (double)f10;
             	Z = z + d12 * (double)f10;
             	Y = y + d11 * (double)f10 - (1 - taut) * (0.25 - Math.pow((f10 - 0.5), 2)) * 1.5;
                 
-                vertexbuffer.pos(X + corner1.x, Y + corner1.y, Z + corner1.z).color(R, G, B, 1.0F).endVertex();
-                vertexbuffer.pos(X + corner2.x, Y + corner2.y, Z + corner2.z).color(R, G, B, 1.0F).endVertex();
+                vertexbuffer.pos(X + corner1.x, Y + corner1.y, Z + corner1.z).tex(0, i1/15.0F).endVertex();
+                vertexbuffer.pos(X + corner2.x, Y + corner2.y, Z + corner2.z).tex(1, i1/15.0F).endVertex();
             }
             
             tessellator.draw();
