@@ -279,7 +279,7 @@ public class ClientProxyClass extends CommonProxyClass {
 	
 	public boolean isLookingAtModifierBlock(EntityPlayer player) {
 		RayTraceResult raytraceresult = Minecraft.getMinecraft().objectMouseOver;
-		if (raytraceresult.typeOfHit == RayTraceResult.Type.BLOCK) {
+		if (raytraceresult != null && raytraceresult.typeOfHit == RayTraceResult.Type.BLOCK) {
 			BlockPos pos = raytraceresult.getBlockPos();
 			IBlockState state = player.world.getBlockState(pos);
 			return (state.getBlock() == grapplemod.blockGrappleModifier);
