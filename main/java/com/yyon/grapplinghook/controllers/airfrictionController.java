@@ -88,7 +88,10 @@ public class airfrictionController extends grappleController {
 					}
 					this.wallrun_press_against_wall();
 				} else {
-					motion.add_ip(this.playermovement.changelen(0.01));
+					vec movementmotion = motion.add(this.playermovement.changelen(0.01));
+					if (movementmotion.dist_along(motion) <= GrappleConfig.getconf().airstrafe_max_speed) {
+						motion = movementmotion;
+					}
 				}
 			}
 			

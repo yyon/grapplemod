@@ -24,6 +24,7 @@ import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.RayTraceResult;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.registry.IEntityAdditionalSpawnData;
 import net.minecraftforge.fml.relauncher.Side;
@@ -292,10 +293,23 @@ public class grappleArrow extends EntityThrowable implements IEntityAdditionalSp
 	@Override
 	@SideOnly(Side.CLIENT)
 	public AxisAlignedBB getRenderBoundingBox() {
-		return new AxisAlignedBB(-RenderBoundingBoxSize, -RenderBoundingBoxSize, -RenderBoundingBoxSize, 
-				RenderBoundingBoxSize, RenderBoundingBoxSize, RenderBoundingBoxSize);
+		AxisAlignedBB bb = this.segmenthandler.getBoundingBox(vec.positionvec(this), vec.positionvec(this.shootingEntity).add(new vec(0, this.shootingEntity.getEyeHeight(), 0)));
+//		bb = bb.union(this.shootingEntity.getEntityBoundingBox());
+//		AxisAlignedBB shooting_bb = this.shootingEntity.getRenderBoundingBox();
+//		bb = bb.expand(shooting_bb.minX, shooting_bb.minY, shooting_bb.minZ);
+//		bb = bb.expand(shooting_bb.maxX, shooting_bb.maxY, shooting_bb.maxZ);
+//		System.out.println(bb);
+//		bb.grow(1);
+		return bb;
+//		return new AxisAlignedBB(this.posX - RenderBoundingBoxSize, this.posY - RenderBoundingBoxSize, this.posZ - RenderBoundingBoxSize, 
+//				this.posX + RenderBoundingBoxSize, this.posY + RenderBoundingBoxSize, this.posZ + RenderBoundingBoxSize);
 	}
 
+//	@Override
+//	public AxisAlignedBB getEntityBoundingBox() {
+//		return this.segmenthandler.getBoundingBox(vec.positionvec(this), vec.positionvec(this.shootingEntity).add(new vec(0, this.shootingEntity.getEyeHeight(), 0)));
+//	}
+	
 /*	public boolean toofaraway() {
     	if (this.shootingEntity == null) {return false;}
 		if (!this.world.isRemote) {
@@ -357,11 +371,17 @@ public class grappleArrow extends EntityThrowable implements IEntityAdditionalSp
 	protected void onImpact(RayTraceResult movingobjectposition) {
 		if (!this.world.isRemote) {
 			if (this.shootingEntityID != 0) {
+				if (movingobjectposition.typeOfHit == RayTraceResult.Type.ENTITY && !GrappleConfig.getconf().hookaffectsentities) {
+					Vec3d vec3d = new Vec3d(this.posX, this.posY, this.posZ);
+			        Vec3d vec3d1 = new Vec3d(this.posX + this.motionX, this.posY + this.motionY, this.posZ + this.motionZ);
+			        movingobjectposition = this.world.rayTraceBlocks(vec3d, vec3d1);
+				}
+				
 				if (movingobjectposition == null) {
 					return;
 				}
 				
-				if (movingobjectposition.typeOfHit == RayTraceResult.Type.ENTITY && GrappleConfig.getconf().hookaffectsentities) {
+				if (movingobjectposition.typeOfHit == RayTraceResult.Type.ENTITY) {
 					// hit entity
 					Entity entityhit = movingobjectposition.entityHit;
 					if (entityhit == this.shootingEntity) {

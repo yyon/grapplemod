@@ -158,6 +158,10 @@ public class vec {
 		System.out.print(this.z);
 		System.out.print(">\n");
 	}
+	
+	public String toString() {
+		return "<" + Double.toString(this.x) + "," + Double.toString(this.y) + "," + Double.toString(this.z) + ">";
+	}
 
 	public vec add(double x, double y, double z) {
 		return new vec(this.x + x, this.y + y, this.z + z);

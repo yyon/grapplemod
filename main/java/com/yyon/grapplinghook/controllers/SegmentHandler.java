@@ -8,6 +8,7 @@ import com.yyon.grapplinghook.entities.grappleArrow;
 import com.yyon.grapplinghook.network.SegmentMessage;
 
 import net.minecraft.util.EnumFacing;
+import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.math.Vec3i;
@@ -484,5 +485,34 @@ public class SegmentHandler {
 		}
 		
 		return dist;
+	}
+	
+	public AxisAlignedBB getBoundingBox(vec hookpos, vec playerpos) {
+		this.updatepos(hookpos, playerpos, this.ropelen);
+		vec minvec = new vec(hookpos);
+		vec maxvec = new vec(hookpos);
+		for (int i = 1; i < segments.size(); i++) {
+			vec segpos = segments.get(i);
+			if (segpos.x < minvec.x) {
+				minvec.x = segpos.x;
+			} else if (segpos.x > maxvec.x) {
+				maxvec.x = segpos.x;
+			}
+			if (segpos.y < minvec.y) {
+				minvec.y = segpos.y;
+			} else if (segpos.y > maxvec.y) {
+				maxvec.y = segpos.y;
+			}
+			if (segpos.z < minvec.z) {
+				minvec.z = segpos.z;
+			} else if (segpos.z > maxvec.z) {
+				maxvec.z = segpos.z;
+			}
+		}
+		AxisAlignedBB bb = new AxisAlignedBB(minvec.x, minvec.y, minvec.z, maxvec.x, maxvec.y, maxvec.z);
+//		System.out.print(bb.minX);
+//		System.out.print(" ");
+//		System.out.println(bb.maxX);
+		return bb;
 	}
 }

@@ -619,11 +619,9 @@ public class ClientProxyClass extends CommonProxyClass {
 //			alreadyuseddoublejump = false;
 //		}
 		
-		if (player.isInWater()) {return;}
-		
 		boolean isjumpbuttondown = Minecraft.getMinecraft().gameSettings.keyBindJump.isKeyDown();
 		
-		if (isjumpbuttondown && !prevjumpbutton) {
+		if (isjumpbuttondown && !prevjumpbutton && !player.isInWater()) {
 			
 			if (tickssincelastonground > 3) {
 				if (!alreadyuseddoublejump) {

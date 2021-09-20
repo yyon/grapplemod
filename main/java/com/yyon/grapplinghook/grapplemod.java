@@ -459,7 +459,7 @@ public class grapplemod {
 	    itemBlockGrappleModifier.setRegistryName(blockGrappleModifier.getRegistryName());
 
 	    // Each of your tile entities needs to be registered with a name that is unique to your mod.
-		GameRegistry.registerTileEntity(TileEntityGrappleModifier.class, "tile_entity_grapple_modifier");
+		GameRegistry.registerTileEntity(TileEntityGrappleModifier.class, new ResourceLocation(grapplemod.MODID, "tile_entity_grapple_modifier"));
 	
 	    MinecraftForge.EVENT_BUS.register(this);
 	    

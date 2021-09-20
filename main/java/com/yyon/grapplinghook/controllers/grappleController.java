@@ -1034,6 +1034,12 @@ public class grappleController {
 	public int tickswallrunning = 0;
 
 	public boolean wallrun() {
+		double current_speed = Math.sqrt(Math.pow(this.motion.x, 2) + Math.pow(this.motion.z,  2));
+		if (current_speed < GrappleConfig.getconf().wallrun_min_speed) {
+			isonwall = false;
+			return false;
+		}
+		
 		if (isonwall) {
 			tickswallrunning += 1;
 		}
