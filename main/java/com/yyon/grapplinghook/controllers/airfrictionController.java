@@ -39,16 +39,19 @@ public class airfrictionController extends grappleController {
 	@Override
 	public void updatePlayerPos() {
 		Entity entity = this.entity;
-		
+
+		vec additionalmotion = new vec(0,0,0);
+
 		if (this.attached) {
 			boolean issliding = ClientProxyClass.isWearingSlidingEnchant(this.entity) && ClientProxyClass.key_slide.isKeyDown();
-			
+
 			if (this.ignoregroundcounter <= 0) {
 				this.normalGround(!issliding);					
 				this.normalCollisions(!issliding);
 			}
-			this.applyAirFriction();
 
+			this.applyAirFriction();
+			
 			issliding = grapplemod.proxy.issliding(this.entity);
 
 			if (this.entity.isInWater()) {
@@ -72,7 +75,7 @@ public class airfrictionController extends grappleController {
 			}
 
 			boolean wallrun = this.applywallrun();
-
+			
 			if (!issliding) {
 				if (wallrun) {
 					this.playermovement.changelen_ip(GrappleConfig.getconf().wallrun_speed*1.5);
@@ -86,7 +89,7 @@ public class airfrictionController extends grappleController {
 					if (this.motion.length() > GrappleConfig.getconf().wallrun_max_speed) {
 						this.motion.changelen_ip(GrappleConfig.getconf().wallrun_max_speed);
 					}
-					this.wallrun_press_against_wall();
+					additionalmotion.add_ip(wallrun_press_against_wall());
 				} else {
 					vec movementmotion = motion.add(this.playermovement.changelen(0.01));
 					if (movementmotion.dist_along(motion) <= GrappleConfig.getconf().airstrafe_max_speed) {
@@ -102,16 +105,15 @@ public class airfrictionController extends grappleController {
 				}
 			}
 			
-			
 			vec gravity = new vec(0, -0.05, 0);
 
 			if (!wallrun) {
 				motion.add_ip(gravity);
 			}
-			
+
 			vec newmotion;
 			
-			newmotion = motion;
+			newmotion = motion.add(additionalmotion);
 			
 //			if (wallrun) {
 //				newmotion.add_ip(this.walldirection);

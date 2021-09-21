@@ -684,9 +684,12 @@ public class ClientProxyClass extends CommonProxyClass {
 		
 		if (entity.onGround && key_slide.isKeyDown()) {
 			if (this.isWearingSlidingEnchant(entity)) {
-				return true;
+				if (vec.motionvec(entity).length() > GrappleConfig.getconf().sliding_min_speed) {
+					return true;
+				}
 			}
 		}
+		
 		return false;
 	}
 

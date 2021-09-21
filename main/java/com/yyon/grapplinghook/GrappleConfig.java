@@ -182,6 +182,13 @@ public class GrappleConfig {
 		public boolean override_allowflight = true;
 		
 		public double airstrafe_max_speed = 0.7;
+		
+		public double rope_snap_buffer = 5;
+		public int default_durability = 500;
+		public double rope_jump_power = 1;
+		public boolean rope_jump_at_angle = false;
+		public double sliding_min_speed = 0.15;
+		public boolean doublejump_relative_to_falling = false;
 	}
 	
 	public static Config options = new Config(); // local options

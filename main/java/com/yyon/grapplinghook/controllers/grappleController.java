@@ -192,7 +192,7 @@ public class grappleController {
 
 //					Vec3 playermotion = new Vec3(entity.motionX, entity.motionY, entity.motionZ);
 					
-					vec additionalmotion = new vec(0,0,0);;
+					vec additionalmotion = new vec(0,0,0);
 					
 					vec gravity = new vec(0, -0.05, 0);
 
@@ -217,7 +217,8 @@ public class grappleController {
 					
 //					double curspeed = 0;
 					boolean close = false;
-//					vec averagemotiontowards = new vec(0, 0, 0);
+					
+					vec averagemotiontowards = new vec(0, 0, 0);
 					
 					for (grappleArrow arrow : this.arrows) {
 						vec arrowpos = vec.positionvec(arrow);//this.getPositionVector();
@@ -239,6 +240,8 @@ public class grappleController {
 						vec spherechange = spherevec.sub(oldspherevec);
 //						Vec3 spherepos = spherevec.add(arrowpos);
 						
+						averagemotiontowards.add_ip(spherevec.changelen(-1));
+						
 						if (motor) {
 							arrow.r = distToAnchor + oldspherevec.length();
 						}
@@ -251,7 +254,16 @@ public class grappleController {
 						if (oldspherevec.length() < remaininglength) {
 						} else {
 							if (!motor) {
-								additionalmotion = spherechange;
+								if (oldspherevec.length() - remaininglength > GrappleConfig.getconf().rope_snap_buffer) {
+									// if rope is too long, the rope snaps
+									
+									this.unattach();
+									
+									this.updateServerPos();
+									return;
+								} else {
+									additionalmotion = spherechange;
+								}
 							}
 						}
 						
@@ -298,7 +310,7 @@ public class grappleController {
 									if (ClientProxyClass.key_climbup.isKeyDown()) { playerforward = 0.3f; }
 									else if (ClientProxyClass.key_climbdown.isKeyDown()) { playerforward = -0.3f; }
 									if (playerforward != 0) {
-											if (dist < maxlen || this.playerforward > 0 || maxlen == 0) {
+											if (dist + distToAnchor < maxlen || this.playerforward > 0 || maxlen == 0) {
 //												double motionup = this.playerforward;
 												additionalmotion = new vec(0, playerforward, 0);
 //												this.r = dist;
@@ -321,6 +333,7 @@ public class grappleController {
 							motion = motion.removealong(spherevec);
 						}
 					}
+					averagemotiontowards.changelen_ip(1);
 					
 //					curspeed = curspeed / this.arrows.size();
 //					averagemotiontowards.mult_ip(1 / this.arrows.size());
@@ -556,10 +569,10 @@ public class grappleController {
 						if (jumpSpeed <= 0) {
 							jumpSpeed = 0;
 						}
-						if (jumpSpeed > 1) {
-							jumpSpeed = 1;
+						if (jumpSpeed > GrappleConfig.getconf().rope_jump_power) {
+							jumpSpeed = GrappleConfig.getconf().rope_jump_power;
 						}
-						this.doJump(entity, jumpSpeed);
+						this.doJump(entity, jumpSpeed, averagemotiontowards);
 						return;
 					}
 					
@@ -700,8 +713,8 @@ public class grappleController {
 		prevonground = entity.onGround;
 	}
 
-	public double getJumpPower(Entity player, double jumppower) {
-		double maxjump = 1;
+	private double getJumpPower(Entity player, double jumppower) {
+		double maxjump = GrappleConfig.getconf().rope_jump_power;
 		if (ongroundtimer > 0) { // on ground: jump normally
 			ongroundtimer = 20;
 			return 0;
@@ -719,12 +732,19 @@ public class grappleController {
 		return jumppower;
 	}
 	
-	public void doJump(Entity player, double jumppower) {
+	public void doJump(Entity player, double jumppower, vec averagemotiontowards) {
 		if (jumppower > 0) {
-			if (jumppower > player.motionY + jumppower) {
-				player.motionY = jumppower;
+			if (GrappleConfig.getconf().rope_jump_at_angle) {
+				motion.add_ip(averagemotiontowards.changelen(jumppower));
+				player.motionX = motion.x;
+				player.motionY = motion.y;
+				player.motionZ = motion.z;
 			} else {
-				player.motionY += jumppower;
+				if (jumppower > player.motionY + jumppower) {
+					player.motionY = jumppower;
+				} else {
+					player.motionY += jumppower;
+				}
 			}
 		}
 		
@@ -734,9 +754,9 @@ public class grappleController {
 	}
 	
 	public double getJumpPower(Entity player, vec spherevec, grappleArrow arrow) {
-		double maxjump = 1;
+		double maxjump = GrappleConfig.getconf().rope_jump_power;
 		vec jump = new vec(0, maxjump, 0);
-		if (spherevec != null) {
+		if (spherevec != null && !GrappleConfig.getconf().rope_jump_at_angle) {
 			jump = jump.proj(spherevec);
 		}
 		double jumppower = jump.y;
@@ -747,8 +767,17 @@ public class grappleController {
 		if ((arrow != null) && arrow.r < 1 && (player.posY < arrow.posY)) {
 			jumppower = maxjump;
 		}
+
+		jumppower = this.getJumpPower(player, jumppower);
 		
-		return this.getJumpPower(player, jumppower);
+		double current_speed = GrappleConfig.getconf().rope_jump_at_angle ? -motion.dist_along(spherevec) : motion.y;
+		if (current_speed > 0) {
+			jumppower = jumppower - current_speed;
+		}
+
+		if (jumppower < 0) {jumppower = 0;}
+
+		return jumppower;
 	}
 
 	public vec dampenmotion(vec motion, vec forward) {
@@ -782,7 +811,7 @@ public class grappleController {
 		}
 		
 		double vel = this.motion.length();
-		dragforce = vel*vel * dragforce;
+		dragforce = vel * dragforce;
 		
 		vec airfric = new vec(this.motion.x, this.motion.y, this.motion.z);
 		airfric.changelen_ip(-dragforce);
@@ -1033,7 +1062,7 @@ public class grappleController {
 	
 	public int tickswallrunning = 0;
 
-	public boolean wallrun() {
+	public boolean iswallrunning() {
 		double current_speed = Math.sqrt(Math.pow(this.motion.x, 2) + Math.pow(this.motion.z,  2));
 		if (current_speed < GrappleConfig.getconf().wallrun_min_speed) {
 			isonwall = false;
@@ -1069,7 +1098,16 @@ public class grappleController {
 	}
 	
 	public boolean applywallrun() {
-		boolean wallrun = this.wallrun();
+		boolean wallrun = this.iswallrunning();
+		
+		if (playerjump) {
+			if (wallrun) {
+				return false;
+			} else {
+				playerjump = false;
+			}
+		}
+		
 		if (wallrun && !ClientProxyClass.key_jumpanddetach.isKeyDown()) {
 
 			vec wallside = this.getwalldirection();
@@ -1120,15 +1158,16 @@ public class grappleController {
 		return wallrun;
 	}
 	
-	public void wallrun_press_against_wall() {
+	public vec wallrun_press_against_wall() {
 		// press against wall
 		if (this.walldirection != null) {
-			motion.add_ip(this.walldirection.changelen(0.05));
+			return this.walldirection.changelen(0.05);
 		}
+		return new vec(0,0,0);
 	}
 
 	public void doublejump() {
-		if (this.motion.y < 0) {
+		if (this.motion.y < 0 && !GrappleConfig.getconf().doublejump_relative_to_falling) {
 			this.motion.y = 0;
 		}
 		this.motion.y += GrappleConfig.getconf().doublejumpforce;

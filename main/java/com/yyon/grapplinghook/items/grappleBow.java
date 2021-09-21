@@ -7,6 +7,7 @@ import org.lwjgl.input.Keyboard;
 
 import com.yyon.grapplinghook.ClientProxyClass;
 import com.yyon.grapplinghook.CommonProxyClass;
+import com.yyon.grapplinghook.GrappleConfig;
 import com.yyon.grapplinghook.GrappleCustomization;
 import com.yyon.grapplinghook.grapplemod;
 import com.yyon.grapplinghook.vec;
@@ -66,7 +67,7 @@ public class grappleBow extends Item implements KeypressItem {
 		setFull3D();
 		setUnlocalizedName("grapplinghook");
 		
-		this.setMaxDamage(500);
+		this.setMaxDamage(GrappleConfig.getconf().default_durability);
 		
 		setCreativeTab(grapplemod.tabGrapplemod);
 		
