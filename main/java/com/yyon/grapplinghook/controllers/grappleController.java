@@ -282,8 +282,11 @@ public class grappleController {
 								if (ongroundtimer > 0) { // on ground: jump normally
 									
 								} else {
-									doJump = true;
-									jumpSpeed = this.getJumpPower(player, spherevec, arrow);
+									double timer = this.entity.world.getTotalWorldTime() - ClientProxyClass.prev_rope_jump_time;
+									if (timer > GrappleConfig.getconf().rope_jump_cooldown_s * 20.0) {
+										doJump = true;
+										jumpSpeed = this.getJumpPower(player, spherevec, arrow);
+									}
 								}
 							}
 							if (ClientProxyClass.key_slow.isKeyDown()) {
@@ -573,6 +576,7 @@ public class grappleController {
 							jumpSpeed = GrappleConfig.getconf().rope_jump_power;
 						}
 						this.doJump(entity, jumpSpeed, averagemotiontowards);
+						ClientProxyClass.prev_rope_jump_time = this.entity.world.getTotalWorldTime();
 						return;
 					}
 					
@@ -1167,10 +1171,16 @@ public class grappleController {
 	}
 
 	public void doublejump() {
+		if (-this.motion.y > GrappleConfig.getconf().dont_doublejump_if_falling_faster_than) {
+			return;
+		}
 		if (this.motion.y < 0 && !GrappleConfig.getconf().doublejump_relative_to_falling) {
 			this.motion.y = 0;
 		}
 		this.motion.y += GrappleConfig.getconf().doublejumpforce;
+		entity.motionX = motion.x;
+		entity.motionY = motion.y;
+		entity.motionZ = motion.z;
 	}
 	
 	public void applySlidingFriction() {

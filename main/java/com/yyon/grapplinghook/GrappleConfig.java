@@ -189,6 +189,11 @@ public class GrappleConfig {
 		public boolean rope_jump_at_angle = false;
 		public double sliding_min_speed = 0.15;
 		public boolean doublejump_relative_to_falling = false;
+		
+		public boolean dont_override_movement_in_air = false;
+		
+		public double dont_doublejump_if_falling_faster_than = 999999999.0;
+		public double rope_jump_cooldown_s = 0;
 	}
 	
 	public static Config options = new Config(); // local options

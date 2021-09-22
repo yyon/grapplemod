@@ -47,4 +47,5 @@ public class ServerProxyClass extends CommonProxyClass {
 			System.out.println("Not an EntityPlayerMP");
 		}
 	}
+	
 }

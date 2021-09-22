@@ -1,5 +1,10 @@
 package com.yyon.grapplinghook.network;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+
+import com.yyon.grapplinghook.grapplemod;
+
 import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -95,25 +100,42 @@ public class PlayerMovementMessage implements IMessage {
                 World world = ctx.getServerHandler().player.world;
                 Entity entity = world.getEntityByID(message.entityId);
                 if (entity == null) {return;}
-                entity.posX = message.x;
-                entity.posY = message.y;
-                entity.posZ = message.z;
-                entity.motionX = message.mx;
-                entity.motionY = message.my;
-                entity.motionZ = message.mz;
-                if (entity instanceof EntityPlayerMP) {
-                	EntityPlayerMP player = ((EntityPlayerMP) entity);
-                	player.connection.update();
-                	
-            		if (!player.onGround) {
-                    	if (message.my >= 0) {
-                    		player.fallDistance = 0;
-                    	} else {
-                    		double gravity = 0.05 * 2;
-                    		// d = v^2 / 2g
-                        	player.fallDistance = (float) (Math.pow(message.my, 2) / (2 * gravity));
-                    	}
-            		}
+                if(entity instanceof EntityPlayerMP) {
+					EntityPlayerMP referencedPlayer = (EntityPlayerMP)entity;
+					if(ctx.getServerHandler().player.getGameProfile().equals(referencedPlayer.getGameProfile())) {
+						entity.posX = message.x;
+						entity.posY = message.y;
+						entity.posZ = message.z;
+						entity.motionX = message.mx;
+						entity.motionY = message.my;
+						entity.motionZ = message.mz;
+						EntityPlayerMP player = ((EntityPlayerMP) entity);
+						//                	player.connection.update();
+						Method capturePositionMethod = grapplemod.proxy.getCapturePositionMethod();
+						if (capturePositionMethod != null) {
+							try {
+								capturePositionMethod.invoke(player.connection);
+							} catch (IllegalAccessException e) {
+								e.printStackTrace();
+							} catch (IllegalArgumentException e) {
+								e.printStackTrace();
+							} catch (InvocationTargetException e) {
+								e.printStackTrace();
+							}
+						} else {
+							System.out.println("Error capturePositionMethod is null");
+						}
+						
+						if (!player.onGround) {
+							if (message.my >= 0) {
+								player.fallDistance = 0;
+							} else {
+								double gravity = 0.05 * 2;
+								// d = v^2 / 2g
+						    	player.fallDistance = (float) (Math.pow(message.my, 2) / (2 * gravity));
+							}
+						}
+					}
                 }
             }
     	}

@@ -64,6 +64,8 @@ public class ClientProxyClass extends CommonProxyClass {
 	public double rocketIncreaseTick = 0.0;
 	public double rocketDecreaseTick = 0.0;
 	
+	public static long prev_rope_jump_time = 0;
+	
 	@Override
 	public void preInit(FMLPreInitializationEvent event) {
 		super.preInit(event);
@@ -684,7 +686,7 @@ public class ClientProxyClass extends CommonProxyClass {
 		
 		if (entity.onGround && key_slide.isKeyDown()) {
 			if (this.isWearingSlidingEnchant(entity)) {
-				if (vec.motionvec(entity).length() > GrappleConfig.getconf().sliding_min_speed) {
+				if (vec.motionvec(entity).removealong(new vec (0,1,0)).length() > GrappleConfig.getconf().sliding_min_speed) {
 					return true;
 				}
 			}

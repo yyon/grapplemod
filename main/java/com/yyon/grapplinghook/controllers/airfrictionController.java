@@ -31,6 +31,10 @@ public class airfrictionController extends grappleController {
 	public final double playermovementmult = 0.5;
 	
 	public int ignoregroundcounter = 0;
+	boolean was_sliding = false;
+	boolean was_wallrunning = false;
+	boolean was_rocket = false;
+	boolean first_tick_since_created = true;
 	
 	public airfrictionController(int arrowId, int entityId, World world, vec pos, int id, GrappleCustomization custom) {
 		super(arrowId, entityId, world, pos, id, custom);
@@ -41,6 +45,12 @@ public class airfrictionController extends grappleController {
 		Entity entity = this.entity;
 
 		vec additionalmotion = new vec(0,0,0);
+		
+		if (GrappleConfig.getconf().dont_override_movement_in_air && !entity.onGround && !was_sliding && !was_wallrunning && !was_rocket && !first_tick_since_created) {
+			motion = vec.motionvec(entity);
+			this.unattach();
+			return;
+		}
 
 		if (this.attached) {
 			boolean issliding = ClientProxyClass.isWearingSlidingEnchant(this.entity) && ClientProxyClass.key_slide.isKeyDown();
@@ -139,6 +149,11 @@ public class airfrictionController extends grappleController {
 				}
 			}
 			if (ignoregroundcounter > 0) { ignoregroundcounter--; }
+			
+			was_sliding = issliding;
+			was_wallrunning = wallrun;
+			was_rocket = doesrocket;
+			first_tick_since_created = false;
 		}
 	}
 

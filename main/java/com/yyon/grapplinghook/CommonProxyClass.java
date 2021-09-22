@@ -1,5 +1,7 @@
 package com.yyon.grapplinghook;
 
+import java.lang.reflect.Method;
+
 import com.yyon.grapplinghook.blocks.TileEntityGrappleModifier;
 import com.yyon.grapplinghook.controllers.grappleController;
 import com.yyon.grapplinghook.entities.grappleArrow;
@@ -9,11 +11,13 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.network.NetHandlerPlayServer;
 import net.minecraft.util.DamageSource;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.event.entity.living.LivingHurtEvent;
 import net.minecraftforge.event.world.BlockEvent.BreakEvent;
+import net.minecraftforge.fml.common.ObfuscationReflectionHelper;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
@@ -30,10 +34,17 @@ public class CommonProxyClass {
 		keyBindSneak,
 		keyBindAttack
 	}
+
+	Method capturePosition = null;
 	
 	public void preInit(FMLPreInitializationEvent event) {
 	    MinecraftForge.EVENT_BUS.register(this);
-	}
+
+		capturePosition = ObfuscationReflectionHelper.findMethod(NetHandlerPlayServer.class, "func_184342_d", Void.class);
+    	if (capturePosition == null) {
+    		System.out.println("Error: could not access capturePosition function");
+    	}
+}
 
 	public void init(FMLInitializationEvent event, grapplemod grapplemod) {
 		
@@ -133,5 +144,9 @@ public class CommonProxyClass {
 	
 	public boolean issliding(Entity entity) {
 		return false;
+	}
+	
+	public Method getCapturePositionMethod() {
+		return capturePosition;
 	}
 }
