@@ -310,17 +310,23 @@ public class grappleController {
 									
 									// climb up/down rope
 									float playerforward = 0;
-									if (ClientProxyClass.key_climbup.isKeyDown()) { playerforward = 0.3f; }
-									else if (ClientProxyClass.key_climbdown.isKeyDown()) { playerforward = -0.3f; }
+									if (ClientProxyClass.key_climbup.isKeyDown()) { playerforward = 1.0f; }
+									else if (ClientProxyClass.key_climbdown.isKeyDown()) { playerforward = -1.0f; }
 									if (playerforward != 0) {
 											if (dist + distToAnchor < maxlen || this.playerforward > 0 || maxlen == 0) {
 //												double motionup = this.playerforward;
-												additionalmotion = new vec(0, playerforward, 0);
+//												additionalmotion = new vec(0, playerforward, 0);
+//												additionalmotion.add_ip(spherevec.changelen_ip(playerforward));
 //												this.r = dist;
 												arrow.r = dist + distToAnchor;
-												arrow.r -= playerforward*0.3;
+												arrow.r -= playerforward*GrappleConfig.getconf().climb_speed;
 												if (arrow.r < distToAnchor) {
 													arrow.r = dist + distToAnchor;
+												}
+												
+												vec additionalmovementdown = spherevec.changelen(-playerforward * GrappleConfig.getconf().climb_speed).proj(new vec(0,1,0));
+												if (additionalmovementdown.y < 0) {
+													additionalmotion.add_ip(additionalmovementdown);
 												}
 											}
 									}

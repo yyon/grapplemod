@@ -194,6 +194,7 @@ public class GrappleConfig {
 		
 		public double dont_doublejump_if_falling_faster_than = 999999999.0;
 		public double rope_jump_cooldown_s = 0;
+		public double climb_speed = 0.3;
 	}
 	
 	public static Config options = new Config(); // local options
