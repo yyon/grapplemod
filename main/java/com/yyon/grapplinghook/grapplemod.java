@@ -52,6 +52,7 @@ import com.yyon.grapplinghook.network.PlayerMovementMessage;
 import com.yyon.grapplinghook.network.SegmentMessage;
 
 import net.minecraft.block.Block;
+import net.minecraft.client.Minecraft;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.Enchantment.Rarity;
@@ -69,6 +70,7 @@ import net.minecraft.util.NonNullList;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import net.minecraftforge.client.event.EntityViewRenderEvent.CameraSetup;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.config.Config.Type;
 import net.minecraftforge.common.config.ConfigManager;
@@ -700,5 +702,45 @@ public class grapplemod {
 		if (rarity_int >= rarities.length) {rarity_int = rarities.length-1;}
 		return rarities[rarity_int];
 	}
+	
+	public float currentCameraTilt = 0;
 
+	@SubscribeEvent
+	public void CameraSetup(CameraSetup event)
+	{
+		EntityPlayer player = Minecraft.getMinecraft().player;
+		int id = player.getEntityId();
+		int targetCameraTilt = 0;
+		if (controllers.containsKey(id)) {
+			grappleController controller = controllers.get(id);
+			if (controller instanceof airfrictionController) {
+				airfrictionController afcontroller = (airfrictionController) controller;
+				if (afcontroller.was_wallrunning) {
+					vec walldirection = afcontroller.getwalldirection();
+					if (walldirection != null) {
+						vec lookdirection = new vec(player.getLookVec());
+						int dir = lookdirection.cross(walldirection).y > 0 ? 1 : -1;
+						targetCameraTilt = dir;
+					}
+				}
+			}
+		}
+		
+		if (currentCameraTilt != targetCameraTilt) {
+			float cameraDiff = targetCameraTilt - currentCameraTilt;
+			if (cameraDiff != 0) {
+				float anim_s = GrappleConfig.getconf().wallrun_camera_animation_s;
+				float speed = (anim_s == 0) ? 9999 :  1.0f / (anim_s * 20.0f);
+				if (speed > Math.abs(cameraDiff)) {
+					currentCameraTilt = targetCameraTilt;
+				} else {
+					currentCameraTilt += speed * (cameraDiff > 0 ? 1 : -1);
+				}
+			}
+		}
+		
+		if (currentCameraTilt != 0) {
+		    event.setRoll(event.getRoll() + currentCameraTilt*GrappleConfig.getconf().wallrun_camera_tilt_degrees);
+		}
+	}
 }

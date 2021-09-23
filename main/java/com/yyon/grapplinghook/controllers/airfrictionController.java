@@ -8,6 +8,7 @@ import com.yyon.grapplinghook.vec;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.world.World;
 
 /*
@@ -31,10 +32,10 @@ public class airfrictionController extends grappleController {
 	public final double playermovementmult = 0.5;
 	
 	public int ignoregroundcounter = 0;
-	boolean was_sliding = false;
-	boolean was_wallrunning = false;
-	boolean was_rocket = false;
-	boolean first_tick_since_created = true;
+	public boolean was_sliding = false;
+	public boolean was_wallrunning = false;
+	public boolean was_rocket = false;
+	public boolean first_tick_since_created = true;
 	
 	public airfrictionController(int arrowId, int entityId, World world, vec pos, int id, GrappleCustomization custom) {
 		super(arrowId, entityId, world, pos, id, custom);

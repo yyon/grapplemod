@@ -177,7 +177,7 @@ public class GrappleConfig {
 		public double wallrun_speed = 0.1;
 		public double wallrun_max_speed = 0.7;
 		public double wallrun_drag = 0.05;
-		public double wallrun_min_speed = 0.15;
+		public double wallrun_min_speed = 0;
 		public double sliding_friction = 1 / 150F;
 		public boolean override_allowflight = true;
 		
@@ -199,6 +199,8 @@ public class GrappleConfig {
 		public int enchant_rarity_double_jump = 0;
 		public int enchant_rarity_sliding = 0;
 		public int enchant_rarity_wallrun = 0;
+		public float wallrun_camera_tilt_degrees = 5;
+		public float wallrun_camera_animation_s = 0.5f;
 	}
 	
 	public static Config options = new Config(); // local options
