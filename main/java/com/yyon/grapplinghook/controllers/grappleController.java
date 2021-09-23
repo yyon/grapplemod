@@ -182,6 +182,12 @@ public class grappleController {
 		if (this.attached) {
 			if(entity != null) {
 				if (true) {
+					if (entity.isRiding()) {
+						this.unattach();						
+						this.updateServerPos();
+						return;
+					}
+					
 					this.normalGround(true);
 					this.normalCollisions(true);
 					this.applyAirFriction();
@@ -220,6 +226,8 @@ public class grappleController {
 					
 					vec averagemotiontowards = new vec(0, 0, 0);
 					
+					double min_spherevec_dist = 99999;
+					
 					for (grappleArrow arrow : this.arrows) {
 						vec arrowpos = vec.positionvec(arrow);//this.getPositionVector();
 						
@@ -239,6 +247,8 @@ public class grappleController {
 						vec spherevec = oldspherevec.changelen(remaininglength);
 						vec spherechange = spherevec.sub(oldspherevec);
 //						Vec3 spherepos = spherevec.add(arrowpos);
+						
+						if (spherevec.length() < min_spherevec_dist) {min_spherevec_dist = spherevec.length();}
 						
 						averagemotiontowards.add_ip(spherevec.changelen(-1));
 						
@@ -581,7 +591,7 @@ public class grappleController {
 						if (jumpSpeed > GrappleConfig.getconf().rope_jump_power) {
 							jumpSpeed = GrappleConfig.getconf().rope_jump_power;
 						}
-						this.doJump(entity, jumpSpeed, averagemotiontowards);
+						this.doJump(entity, jumpSpeed, averagemotiontowards, min_spherevec_dist);
 						ClientProxyClass.prev_rope_jump_time = this.entity.world.getTotalWorldTime();
 						return;
 					}
@@ -742,9 +752,9 @@ public class grappleController {
 		return jumppower;
 	}
 	
-	public void doJump(Entity player, double jumppower, vec averagemotiontowards) {
+	public void doJump(Entity player, double jumppower, vec averagemotiontowards, double min_spherevec_dist) {
 		if (jumppower > 0) {
-			if (GrappleConfig.getconf().rope_jump_at_angle) {
+			if (GrappleConfig.getconf().rope_jump_at_angle && min_spherevec_dist > 1) {
 				motion.add_ip(averagemotiontowards.changelen(jumppower));
 				player.motionX = motion.x;
 				player.motionY = motion.y;

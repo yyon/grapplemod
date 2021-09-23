@@ -563,4 +563,16 @@ public class grappleBow extends Item implements KeypressItem {
             items.add(stack);
         }
     }
+	
+	@Override
+	public boolean onDroppedByPlayer(ItemStack item, EntityPlayer player) {
+		int id = player.getEntityId();
+		grapplemod.sendtocorrectclient(new GrappleDetachMessage(id), id, player.world);
+		
+		if (grapplemod.attached.contains(id)) {
+			grapplemod.attached.remove(id);
+		}		
+		
+		return super.onDroppedByPlayer(item, player);
+	}
 }

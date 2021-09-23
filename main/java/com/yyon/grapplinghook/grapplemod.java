@@ -54,6 +54,7 @@ import com.yyon.grapplinghook.network.SegmentMessage;
 import net.minecraft.block.Block;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.enchantment.Enchantment;
+import net.minecraft.enchantment.Enchantment.Rarity;
 import net.minecraft.enchantment.EnumEnchantmentType;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
@@ -691,6 +692,13 @@ public class grapplemod {
 				}
 			}
 		}
+	}
+
+	public static Rarity getRarityFromInt(int rarity_int) {
+		Rarity[] rarities = (new Rarity[] {Rarity.VERY_RARE, Rarity.RARE, Rarity.UNCOMMON, Rarity.COMMON});
+		if (rarity_int < 0) {rarity_int = 0;}
+		if (rarity_int >= rarities.length) {rarity_int = rarities.length-1;}
+		return rarities[rarity_int];
 	}
 
 }

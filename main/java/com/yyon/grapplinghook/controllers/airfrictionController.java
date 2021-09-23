@@ -43,6 +43,14 @@ public class airfrictionController extends grappleController {
 	@Override
 	public void updatePlayerPos() {
 		Entity entity = this.entity;
+		
+		if (entity == null) {return;}
+		
+		if (entity.isRiding()) {
+			this.unattach();
+			this.updateServerPos();
+			return;
+		}
 
 		vec additionalmotion = new vec(0,0,0);
 		
@@ -86,7 +94,7 @@ public class airfrictionController extends grappleController {
 
 			boolean wallrun = this.applywallrun();
 			
-			if (!issliding) {
+			if (!issliding && !was_sliding) {
 				if (wallrun) {
 					this.playermovement.changelen_ip(GrappleConfig.getconf().wallrun_speed*1.5);
 					if (this.walldirection != null) {
