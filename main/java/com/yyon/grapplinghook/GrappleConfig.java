@@ -199,14 +199,20 @@ public class GrappleConfig {
 		public int enchant_rarity_double_jump = 0;
 		public int enchant_rarity_sliding = 0;
 		public int enchant_rarity_wallrun = 0;
-		public float wallrun_camera_tilt_degrees = 5;
-		public float wallrun_camera_animation_s = 0.5f;
 		public double airstrafe_acceleration = 0.015;
 	}
 	
 	public static Config options = new Config(); // local options
 	
 	private static Config server_options = null;
+	
+	public static class ClientConfig {
+		public double wallrun_sound_effect_time_s = 0.5;
+		public float wallrun_camera_tilt_degrees = 5;
+		public float wallrun_camera_animation_s = 0.5f;
+	}
+	
+	public static ClientConfig client_options = new ClientConfig(); // client-only options, don't need to sync with server
 
 	public static Config getconf() {
 		if (server_options == null) {

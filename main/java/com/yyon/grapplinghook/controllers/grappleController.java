@@ -12,12 +12,14 @@ import com.yyon.grapplinghook.network.GrappleEndMessage;
 import com.yyon.grapplinghook.network.PlayerMovementMessage;
 
 import net.minecraft.block.Block;
+import net.minecraft.block.SoundType;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.settings.GameSettings;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.Blocks;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.world.World;
@@ -1000,6 +1002,7 @@ public class grappleController {
 	
 	boolean isonwall = false;
 	vec walldirection = null;
+	RayTraceResult wallrun_raytrace_result = null;
 //	boolean wallonleft = true;
 	
 	public vec getnearbywall(vec tryfirst, vec trysecond, double extra) {
@@ -1008,6 +1011,7 @@ public class grappleController {
 		for (vec direction : new vec[] {tryfirst, trysecond, tryfirst.mult(-1), trysecond.mult(-1)}) {
 			RayTraceResult raytraceresult = this.entity.world.rayTraceBlocks(this.entity.getPositionVector(), vec.positionvec(this.entity).add(direction.changelen(entitywidth/2 + extra)).toVec3d(), false, true, false);
 			if (raytraceresult != null && raytraceresult.typeOfHit == RayTraceResult.Type.BLOCK) {
+				wallrun_raytrace_result = raytraceresult;
 				return direction;
 			}
 		}
@@ -1096,7 +1100,8 @@ public class grappleController {
 	}
 	
 	public int tickswallrunning = 0;
-
+	int ticks_since_last_wallrun_sound_effect = 0;
+	
 	public boolean iswallrunning() {
 		double current_speed = Math.sqrt(Math.pow(this.motion.x, 2) + Math.pow(this.motion.z,  2));
 		if (current_speed < GrappleConfig.getconf().wallrun_min_speed) {
@@ -1127,6 +1132,7 @@ public class grappleController {
 		
 		if (tickswallrunning > 0 && (this.entity.onGround || (!this.entity.collidedHorizontally && !wallnearby(0.2)))) {
 			tickswallrunning = 0;
+			ticks_since_last_wallrun_sound_effect = 0;
 		}
 		
 		return false;
@@ -1173,7 +1179,23 @@ public class grappleController {
 			wallfric.changelen_ip(-dragforce);
 			this.motion.add_ip(wallfric);
 			
-			
+			ticks_since_last_wallrun_sound_effect++;
+			if (ticks_since_last_wallrun_sound_effect > GrappleConfig.client_options.wallrun_sound_effect_time_s * 20 * GrappleConfig.getconf().wallrun_max_speed / (vel + 0.00000001)) {
+				if (wallrun_raytrace_result != null && wallrun_raytrace_result.typeOfHit == RayTraceResult.Type.BLOCK) {
+					BlockPos blockpos = wallrun_raytrace_result.getBlockPos();
+					
+					IBlockState blockState = this.entity.world.getBlockState(blockpos);
+					Block blockIn = blockState.getBlock();
+					
+			        SoundType soundtype = blockIn.getSoundType(blockState, world, blockpos, this.entity);
+
+			        if (!blockIn.getDefaultState().getMaterial().isLiquid())
+			        {
+			            this.entity.playSound(soundtype.getStepSound(), soundtype.getVolume() * 0.15F, soundtype.getPitch());
+						ticks_since_last_wallrun_sound_effect = 0;
+			        }
+				}
+			}
 		}
 		
 		// jump

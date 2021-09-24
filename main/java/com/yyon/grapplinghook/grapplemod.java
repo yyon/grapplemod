@@ -729,7 +729,7 @@ public class grapplemod {
 		if (currentCameraTilt != targetCameraTilt) {
 			float cameraDiff = targetCameraTilt - currentCameraTilt;
 			if (cameraDiff != 0) {
-				float anim_s = GrappleConfig.getconf().wallrun_camera_animation_s;
+				float anim_s = GrappleConfig.client_options.wallrun_camera_animation_s;
 				float speed = (anim_s == 0) ? 9999 :  1.0f / (anim_s * 20.0f);
 				if (speed > Math.abs(cameraDiff)) {
 					currentCameraTilt = targetCameraTilt;
@@ -740,7 +740,7 @@ public class grapplemod {
 		}
 		
 		if (currentCameraTilt != 0) {
-		    event.setRoll(event.getRoll() + currentCameraTilt*GrappleConfig.getconf().wallrun_camera_tilt_degrees);
+		    event.setRoll(event.getRoll() + currentCameraTilt*GrappleConfig.client_options.wallrun_camera_tilt_degrees);
 		}
 	}
 }
