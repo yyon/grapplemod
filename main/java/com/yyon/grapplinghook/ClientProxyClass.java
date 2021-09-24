@@ -20,7 +20,6 @@ import com.yyon.grapplinghook.items.repeller;
 
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.renderer.ItemMeshDefinition;
 import net.minecraft.client.renderer.block.model.ModelBakery;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
@@ -43,6 +42,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraftforge.client.event.InputUpdateEvent;
 import net.minecraftforge.client.event.ModelRegistryEvent;
+import net.minecraftforge.client.event.EntityViewRenderEvent.CameraSetup;
 import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.event.world.BlockEvent.BreakEvent;
 import net.minecraftforge.fml.client.registry.ClientRegistry;
@@ -250,15 +250,6 @@ public class ClientProxyClass extends CommonProxyClass {
 		
 		crosshairrenderer = new crosshairRenderer();
 	}
-	
-//	@Override
-//	public void getplayermovement(grappleController control, int playerid) {
-//		Entity entity = control.entity;
-//		if (entity instanceof EntityPlayerSP) {
-//			EntityPlayerSP player = (EntityPlayerSP) entity;
-//			control.receivePlayerMovementMessage(player.moveStrafing, player.moveForward, player.movementInput.jump);
-//		}
-//	}
 	
 	public ItemStack getKeypressStack(EntityPlayer player) {
 		if (player != null) {
@@ -746,4 +737,46 @@ public class ClientProxyClass extends CommonProxyClass {
 //			input.sneak = false; // fix alternate throw angles
 		}
 	}
+	
+	public float currentCameraTilt = 0;
+
+	@SubscribeEvent
+	public void CameraSetup(CameraSetup event)
+	{
+		EntityPlayer player = Minecraft.getMinecraft().player;
+		int id = player.getEntityId();
+		int targetCameraTilt = 0;
+		if (grapplemod.controllers.containsKey(id)) {
+			grappleController controller = grapplemod.controllers.get(id);
+			if (controller instanceof airfrictionController) {
+				airfrictionController afcontroller = (airfrictionController) controller;
+				if (afcontroller.was_wallrunning) {
+					vec walldirection = afcontroller.getwalldirection();
+					if (walldirection != null) {
+						vec lookdirection = new vec(player.getLookVec());
+						int dir = lookdirection.cross(walldirection).y > 0 ? 1 : -1;
+						targetCameraTilt = dir;
+					}
+				}
+			}
+		}
+		
+		if (currentCameraTilt != targetCameraTilt) {
+			float cameraDiff = targetCameraTilt - currentCameraTilt;
+			if (cameraDiff != 0) {
+				float anim_s = GrappleConfig.client_options.wallrun_camera_animation_s;
+				float speed = (anim_s == 0) ? 9999 :  1.0f / (anim_s * 20.0f);
+				if (speed > Math.abs(cameraDiff)) {
+					currentCameraTilt = targetCameraTilt;
+				} else {
+					currentCameraTilt += speed * (cameraDiff > 0 ? 1 : -1);
+				}
+			}
+		}
+		
+		if (currentCameraTilt != 0) {
+		    event.setRoll(event.getRoll() + currentCameraTilt*GrappleConfig.client_options.wallrun_camera_tilt_degrees);
+		}
+	}
+
 }

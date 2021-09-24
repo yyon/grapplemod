@@ -207,7 +207,7 @@ public class GrappleConfig {
 	private static Config server_options = null;
 	
 	public static class ClientConfig {
-		public double wallrun_sound_effect_time_s = 0.5;
+		public double wallrun_sound_effect_time_s = 0.35;
 		public float wallrun_camera_tilt_degrees = 5;
 		public float wallrun_camera_animation_s = 0.5f;
 	}

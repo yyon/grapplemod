@@ -1,7 +1,5 @@
 package com.yyon.grapplinghook;
 
-import org.lwjgl.opengl.GL11;
-
 import com.yyon.grapplinghook.items.grappleBow;
 
 import net.minecraft.client.Minecraft;
