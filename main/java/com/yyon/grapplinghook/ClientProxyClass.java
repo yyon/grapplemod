@@ -37,9 +37,11 @@ import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.MovementInput;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RayTraceResult;
+import net.minecraftforge.client.event.InputUpdateEvent;
 import net.minecraftforge.client.event.ModelRegistryEvent;
 import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.event.world.BlockEvent.BreakEvent;
@@ -249,14 +251,14 @@ public class ClientProxyClass extends CommonProxyClass {
 		crosshairrenderer = new crosshairRenderer();
 	}
 	
-	@Override
-	public void getplayermovement(grappleController control, int playerid) {
-		Entity entity = control.entity;
-		if (entity instanceof EntityPlayerSP) {
-			EntityPlayerSP player = (EntityPlayerSP) entity;
-			control.receivePlayerMovementMessage(player.moveStrafing, player.moveForward, player.movementInput.jump);
-		}
-	}
+//	@Override
+//	public void getplayermovement(grappleController control, int playerid) {
+//		Entity entity = control.entity;
+//		if (entity instanceof EntityPlayerSP) {
+//			EntityPlayerSP player = (EntityPlayerSP) entity;
+//			control.receivePlayerMovementMessage(player.moveStrafing, player.moveForward, player.movementInput.jump);
+//		}
+//	}
 	
 	public ItemStack getKeypressStack(EntityPlayer player) {
 		if (player != null) {
@@ -307,7 +309,7 @@ public class ClientProxyClass extends CommonProxyClass {
 						alreadyuseddoublejump = false;
 					}
 				}
-
+				
 				this.checkdoublejump();
 				
 				this.checkslide(player);
@@ -685,8 +687,20 @@ public class ClientProxyClass extends CommonProxyClass {
 		if (entity.isInWater()) {return false;}
 		
 		if (entity.onGround && key_slide.isKeyDown()) {
-			if (this.isWearingSlidingEnchant(entity)) {
-				if (vec.motionvec(entity).removealong(new vec (0,1,0)).length() > GrappleConfig.getconf().sliding_min_speed) {
+			if (ClientProxyClass.isWearingSlidingEnchant(entity)) {
+//				System.out.println("check sliding: " + Double.toString(vec.motionvec(entity).removealong(new vec (0,1,0)).length()));
+				boolean was_sliding = false;
+				int id = entity.getEntityId();
+				if (grapplemod.controllers.containsKey(id)) {
+					grappleController controller = grapplemod.controllers.get(id);
+					if (controller instanceof airfrictionController) {
+						airfrictionController afc = (airfrictionController) controller;
+						if (afc.was_sliding) {
+							was_sliding = true;
+						}
+					}
+				}
+				if (was_sliding || vec.motionvec(entity).removealong(new vec (0,1,0)).length() > GrappleConfig.getconf().sliding_min_speed) {
 					return true;
 				}
 			}
@@ -710,7 +724,26 @@ public class ClientProxyClass extends CommonProxyClass {
 					controller.slidingJump();
 				}
 			}
+		}	
+
+		this.checkslide(Minecraft.getMinecraft().player);
+	}
+	
+	@SubscribeEvent
+    public void onInputUpdate(InputUpdateEvent event) {
+		int id = Minecraft.getMinecraft().player.getEntityId();
+		if (grapplemod.controllers.containsKey(id)) {
+			MovementInput input = event.getMovementInput();
+			grappleController control = grapplemod.controllers.get(id);
+			control.receivePlayerMovementMessage(input.moveStrafe, input.moveForward, input.jump, input.sneak);
+			input.jump = false;
+			input.backKeyDown = false;
+			input.forwardKeyDown = false;
+			input.leftKeyDown = false;
+			input.rightKeyDown = false;
+			input.moveForward = 0;
+			input.moveStrafe = 0;
+//			input.sneak = false; // fix alternate throw angles
 		}
-		
 	}
 }

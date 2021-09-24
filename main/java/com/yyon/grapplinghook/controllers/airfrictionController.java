@@ -62,8 +62,11 @@ public class airfrictionController extends grappleController {
 		}
 
 		if (this.attached) {
-			boolean issliding = ClientProxyClass.isWearingSlidingEnchant(this.entity) && ClientProxyClass.key_slide.isKeyDown();
-
+	        entity.motionX = motion.x;
+	        entity.motionY = motion.y;
+	        entity.motionZ = motion.z;
+			boolean issliding = grapplemod.proxy.issliding(entity);
+			
 			if (this.ignoregroundcounter <= 0) {
 				this.normalGround(!issliding);					
 				this.normalCollisions(!issliding);
@@ -110,7 +113,7 @@ public class airfrictionController extends grappleController {
 					}
 					additionalmotion.add_ip(wallrun_press_against_wall());
 				} else {
-					vec movementmotion = motion.add(this.playermovement.changelen(0.01));
+					vec movementmotion = motion.add(this.playermovement.changelen(GrappleConfig.getconf().airstrafe_acceleration));
 					if (movementmotion.dist_along(motion) <= GrappleConfig.getconf().airstrafe_max_speed) {
 						motion = movementmotion;
 					}

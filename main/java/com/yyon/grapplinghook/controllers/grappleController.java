@@ -16,6 +16,7 @@ import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.settings.GameSettings;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RayTraceResult;
@@ -58,6 +59,7 @@ public class grappleController {
 	public double playerforward = 0;
 	public double playerstrafe = 0;
 	public boolean playerjump = false;
+	public boolean playersneak = false;
 //	public boolean waitingonplayerjump = false;
 	public vec playermovement_unrotated = new vec(0,0,0);
 	public vec playermovement = new vec(0,0,0);
@@ -104,6 +106,18 @@ public class grappleController {
 //		this.r = this.pos.sub(vec.positionvec(entity)).length();
 		this.motion = vec.motionvec(entity);
 		
+		// undo friction
+		double f6 = 0.91F;
+        if (entity.onGround)
+        {
+            BlockPos.PooledMutableBlockPos blockpos$pooledmutableblockpos = BlockPos.PooledMutableBlockPos.retain(entity.posX, entity.getEntityBoundingBox().minY - 1.0D, entity.posZ);
+            IBlockState underState = this.world.getBlockState(blockpos$pooledmutableblockpos.setPos(entity.posX, entity.getEntityBoundingBox().minY - 1.0D, entity.posZ));
+            f6 = underState.getBlock().getSlipperiness(underState, entity.world, blockpos$pooledmutableblockpos, entity) * 0.91F;
+        }
+        motion.y /= 0.9800000190734863D;
+        motion.x /= (double)f6;
+        motion.z /= (double)f6;
+
 		this.ongroundtimer = 0;
 		
 		grapplemod.registerController(this.entityId, this);
@@ -148,16 +162,17 @@ public class grappleController {
 			if (this.entity == null || this.entity.isDead) {
 				this.unattach();
 			} else {
-				grapplemod.proxy.getplayermovement(this, this.entityId);
+//				grapplemod.proxy.getplayermovement(this, this.entityId);
 				this.updatePlayerPos();
 			}
 		}
 	}
 		
 	public void receivePlayerMovementMessage(float strafe,
-			float forward, boolean jump) {
+			float forward, boolean jump, boolean sneak) {
 		playerforward = forward;
 		playerstrafe = strafe;
+		playersneak = sneak;
 //		if (!jump) {
 //			playerjump = false;
 //		} else if (jump && !playerjump) {
@@ -1094,7 +1109,7 @@ public class grappleController {
 		}
 		
 		if (tickswallrunning < GrappleConfig.getconf().max_wallrun_time * 40) {
-			if (!(this.entity.isSneaking())) {
+			if (!(playersneak)) {
 				// continue wallrun
 				if (isonwall && !this.entity.onGround && this.entity.collidedHorizontally) {
 					return true;

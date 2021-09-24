@@ -30,7 +30,7 @@ public class repelController extends grappleController {
 					
 					if (entity instanceof EntityPlayer) {
 //						EntityPlayer player = (EntityPlayer) entity;
-						if (grapplemod.proxy.isSneaking(entity)) {
+						if (playersneak) {
 							motion.mult_ip(0.95);
 						}
 						applyPlayerMovement();

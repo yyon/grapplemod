@@ -201,6 +201,7 @@ public class GrappleConfig {
 		public int enchant_rarity_wallrun = 0;
 		public float wallrun_camera_tilt_degrees = 5;
 		public float wallrun_camera_animation_s = 0.5f;
+		public double airstrafe_acceleration = 0.015;
 	}
 	
 	public static Config options = new Config(); // local options
