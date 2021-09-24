@@ -1180,7 +1180,7 @@ public class grappleController {
 		boolean isjumping = ClientProxyClass.key_jumpanddetach.isKeyDown() && isonwall;
 		isjumping = isjumping && !playerjump; // only jump once when key is first pressed
 		playerjump = ClientProxyClass.key_jumpanddetach.isKeyDown() && isonwall;
-		if (isjumping) {
+		if (isjumping && wallrun) {
 			vec jump = new vec(0, GrappleConfig.getconf().wall_jump_up, 0);
 			if (walldirection != null) {
 				jump.add_ip(walldirection.mult(-GrappleConfig.getconf().wall_jump_side));
