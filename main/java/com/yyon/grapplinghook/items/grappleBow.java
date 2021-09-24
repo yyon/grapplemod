@@ -571,7 +571,23 @@ public class grappleBow extends Item implements KeypressItem {
 		
 		if (grapplemod.attached.contains(id)) {
 			grapplemod.attached.remove(id);
-		}		
+		}
+		
+		if (grapplearrows1.containsKey(player)) {
+			grappleArrow arrow1 = grapplearrows1.get(player);
+			setArrowLeft(player, null);
+			if (arrow1 != null) {
+				arrow1.removeServer();
+			}
+		}
+		
+		if (grapplearrows2.containsKey(player)) {
+			grappleArrow arrow2 = grapplearrows2.get(player);
+			setArrowLeft(player, null);
+			if (arrow2 != null) {
+				arrow2.removeServer();
+			}
+		}
 		
 		return super.onDroppedByPlayer(item, player);
 	}
