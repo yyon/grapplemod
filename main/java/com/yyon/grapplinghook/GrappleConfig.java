@@ -188,6 +188,7 @@ public class GrappleConfig {
 		public double rope_jump_power = 1;
 		public boolean rope_jump_at_angle = false;
 		public double sliding_min_speed = 0.15;
+		public double sliding_end_min_speed = 0.01;
 		public boolean doublejump_relative_to_falling = false;
 		
 		public boolean dont_override_movement_in_air = false;

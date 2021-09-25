@@ -180,4 +180,11 @@ public class vec {
 	public vec cross(vec b) {
 		return new vec(this.y * b.z - this.z * b.y, this.z * b.x - this.x * b.z, this.x * b.y - this.y * b.x);
 	}
+	
+	public double angle(vec b) {
+		double la = this.length();
+		double lb = b.length();
+		if (la == 0 || lb == 0) { return 0; }
+		return Math.acos(this.dot(b) / (la*lb));
+	}
 }

@@ -152,7 +152,7 @@ public class GrappleAttachMessage implements IMessage {
             	} else {
             	}
             	            	
-            	grapplemod.createControl(message.controlid, message.id, message.entityid, world, new vec(message.x, message.y, message.z), message.blockpos, message.custom);
+            	grapplemod.proxy.createControl(message.controlid, message.id, message.entityid, world, new vec(message.x, message.y, message.z), message.blockpos, message.custom);
             }
     	}
     	

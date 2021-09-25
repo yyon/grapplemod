@@ -62,10 +62,7 @@ public class airfrictionController extends grappleController {
 		}
 
 		if (this.attached) {
-	        entity.motionX = motion.x;
-	        entity.motionY = motion.y;
-	        entity.motionZ = motion.z;
-			boolean issliding = grapplemod.proxy.issliding(entity);
+			boolean issliding = grapplemod.proxy.issliding(entity, motion);
 			
 			if (this.ignoregroundcounter <= 0) {
 				this.normalGround(!issliding);					
@@ -74,8 +71,6 @@ public class airfrictionController extends grappleController {
 
 			this.applyAirFriction();
 			
-			issliding = grapplemod.proxy.issliding(this.entity);
-
 			if (this.entity.isInWater()) {
 				this.unattach();
 				return;
@@ -97,26 +92,47 @@ public class airfrictionController extends grappleController {
 			}
 
 			boolean wallrun = this.applywallrun();
-			
+
 			if (!issliding && !was_sliding) {
 				if (wallrun) {
-					this.playermovement.changelen_ip(GrappleConfig.getconf().wallrun_speed*1.5);
+					motion = motion.removealong(new vec(0,1,0));
 					if (this.walldirection != null) {
-						this.playermovement = this.playermovement.removealong(this.walldirection);
+						motion = motion.removealong(this.walldirection);
 					}
-					if (this.playermovement.length() > GrappleConfig.getconf().wallrun_speed) {
-						this.playermovement.changelen_ip(GrappleConfig.getconf().wallrun_speed);
+
+					vec new_movement = this.playermovement.changelen(GrappleConfig.getconf().wallrun_speed*1.5);
+					if (this.walldirection != null) {
+						new_movement = new_movement.removealong(this.walldirection);
 					}
-					motion.add_ip(this.playermovement);
-					if (this.motion.length() > GrappleConfig.getconf().wallrun_max_speed) {
+					if (new_movement.length() > GrappleConfig.getconf().wallrun_speed) {
+						new_movement.changelen_ip(GrappleConfig.getconf().wallrun_speed);
+					}
+					motion.add_ip(new_movement);
+					vec current_motion_along = this.motion.removealong(new vec(0,1,0));
+					if (this.walldirection != null) {
+						current_motion_along = current_motion_along.removealong(this.walldirection);
+					}
+					if (current_motion_along.length() > GrappleConfig.getconf().wallrun_max_speed) {
 						this.motion.changelen_ip(GrappleConfig.getconf().wallrun_max_speed);
 					}
 					additionalmotion.add_ip(wallrun_press_against_wall());
 				} else {
-					vec movementmotion = motion.add(this.playermovement.changelen(GrappleConfig.getconf().airstrafe_acceleration));
-					if (movementmotion.dist_along(motion) <= GrappleConfig.getconf().airstrafe_max_speed) {
-						motion = movementmotion;
+					double max_motion = GrappleConfig.getconf().airstrafe_max_speed;
+					double accel = GrappleConfig.getconf().airstrafe_acceleration;
+					vec motion_horizontal = motion.removealong(new vec(0,1,0));
+					double prev_motion = motion_horizontal.length();
+					vec new_motion_horizontal = motion_horizontal.add(this.playermovement.changelen(accel));
+					double angle = motion_horizontal.angle(new_motion_horizontal);
+					if (new_motion_horizontal.length() > max_motion && new_motion_horizontal.length() > prev_motion) {
+						double ninety_deg = Math.PI / 2;
+						double new_max_motion = max_motion;
+						if (angle < ninety_deg && prev_motion > max_motion) {
+							new_max_motion = prev_motion + ((max_motion - prev_motion) * (angle / (Math.PI / 2)));
+						}
+						new_motion_horizontal.changelen_ip(new_max_motion);
 					}
+					motion.x = new_motion_horizontal.x;
+					motion.z = new_motion_horizontal.z;
 				}
 			}
 			
@@ -140,7 +156,7 @@ public class airfrictionController extends grappleController {
 //			if (wallrun) {
 //				newmotion.add_ip(this.walldirection);
 //			}
-			
+
 			entity.motionX = newmotion.x;
 			entity.motionY = newmotion.y;
 			entity.motionZ = newmotion.z;

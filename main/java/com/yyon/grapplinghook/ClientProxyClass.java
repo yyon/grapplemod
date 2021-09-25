@@ -11,6 +11,7 @@ import org.lwjgl.input.Keyboard;
 import com.yyon.grapplinghook.blocks.TileEntityGrappleModifier;
 import com.yyon.grapplinghook.controllers.airfrictionController;
 import com.yyon.grapplinghook.controllers.grappleController;
+import com.yyon.grapplinghook.controllers.repelController;
 import com.yyon.grapplinghook.entities.RenderGrappleArrow;
 import com.yyon.grapplinghook.entities.grappleArrow;
 import com.yyon.grapplinghook.items.KeypressItem;
@@ -20,6 +21,7 @@ import com.yyon.grapplinghook.items.repeller;
 
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.renderer.ItemMeshDefinition;
 import net.minecraft.client.renderer.block.model.ModelBakery;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
@@ -40,9 +42,10 @@ import net.minecraft.util.MovementInput;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RayTraceResult;
+import net.minecraft.world.World;
+import net.minecraftforge.client.event.EntityViewRenderEvent.CameraSetup;
 import net.minecraftforge.client.event.InputUpdateEvent;
 import net.minecraftforge.client.event.ModelRegistryEvent;
-import net.minecraftforge.client.event.EntityViewRenderEvent.CameraSetup;
 import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.event.world.BlockEvent.BreakEvent;
 import net.minecraftforge.fml.client.registry.ClientRegistry;
@@ -287,9 +290,11 @@ public class ClientProxyClass extends CommonProxyClass {
 		EntityPlayer player = Minecraft.getMinecraft().player;
 		if (player != null) {
 			if (!Minecraft.getMinecraft().isGamePaused() || !Minecraft.getMinecraft().isSingleplayer()) {
-				if (this.iswallrunning(player)) {
+//				System.out.println(vec.motionvec(player).removealong(new vec(0,1,0)).length() + " " + grapplemod.controllers.containsKey(player.getEntityId()));
+				
+				if (this.iswallrunning(player, vec.motionvec(player))) {
 					if (!grapplemod.controllers.containsKey(player.getEntityId())) {
-						grappleController controller = grapplemod.createControl(grapplemod.AIRID, -1, player.getEntityId(), player.world, new vec(0,0,0), null, null);
+						grappleController controller = this.createControl(grapplemod.AIRID, -1, player.getEntityId(), player.world, new vec(0,0,0), null, null);
 						if (controller.getwalldirection() == null) {
 							controller.unattach();
 						}
@@ -358,8 +363,8 @@ public class ClientProxyClass extends CommonProxyClass {
 	}
 	
 	private void checkslide(EntityPlayer player) {
-		if (key_slide.isKeyDown() && !grapplemod.controllers.containsKey(player.getEntityId()) && this.issliding(player)) {
-			grapplemod.createControl(grapplemod.AIRID, -1, player.getEntityId(), player.world, new vec(0,0,0), null, null);
+		if (key_slide.isKeyDown() && !grapplemod.controllers.containsKey(player.getEntityId()) && this.issliding(player, vec.motionvec(player))) {
+			this.createControl(grapplemod.AIRID, -1, player.getEntityId(), player.world, new vec(0,0,0), null, null);
 		}
 	}
 
@@ -368,7 +373,7 @@ public class ClientProxyClass extends CommonProxyClass {
 		if (!custom.rocket) return;
 		
 		if (!grapplemod.controllers.containsKey(player.getEntityId())) {
-			grapplemod.createControl(grapplemod.AIRID, -1, player.getEntityId(), player.world, new vec(0,0,0), null, custom);
+			this.createControl(grapplemod.AIRID, -1, player.getEntityId(), player.world, new vec(0,0,0), null, custom);
 		} else {
 			grappleController controller = grapplemod.controllers.get(player.getEntityId());
 			if (controller.custom == null || !controller.custom.rocket) {
@@ -426,7 +431,7 @@ public class ClientProxyClass extends CommonProxyClass {
 	        	
 				if (!grapplemod.controllers.containsKey(player.getEntityId())) {
 					player.onGround = false;
-					grapplemod.createControl(grapplemod.AIRID, -1, player.getEntityId(), player.world, new vec(0,0,0), null, custom);
+					this.createControl(grapplemod.AIRID, -1, player.getEntityId(), player.world, new vec(0,0,0), null, custom);
 				}
 				facing.mult_ip(GrappleConfig.getconf().ender_staff_strength);
 				grapplemod.receiveEnderLaunch(player.getEntityId(), facing.x, facing.y, facing.z);
@@ -573,7 +578,7 @@ public class ClientProxyClass extends CommonProxyClass {
 	}
 	
 	@Override
-	public boolean iswallrunning(Entity entity) {
+	public boolean iswallrunning(Entity entity, vec motion) {
 		if (entity.collidedHorizontally && !entity.onGround && !entity.isSneaking()) {
 			for (ItemStack stack : entity.getArmorInventoryList()) {
 				if (stack != null) {
@@ -583,7 +588,10 @@ public class ClientProxyClass extends CommonProxyClass {
 							if (!key_jumpanddetach.isKeyDown() && !Minecraft.getMinecraft().gameSettings.keyBindJump.isKeyDown()) {
 								RayTraceResult raytraceresult = entity.world.rayTraceBlocks(entity.getPositionVector(), vec.positionvec(entity).add(new vec(0, -1, 0)).toVec3d(), false, true, false);
 								if (raytraceresult == null || raytraceresult.typeOfHit != RayTraceResult.Type.BLOCK) {
-									return true;
+									double current_speed = Math.sqrt(Math.pow(motion.x, 2) + Math.pow(motion.z,  2));
+									if (current_speed >= GrappleConfig.getconf().wallrun_min_speed) {
+										return true;
+									}
 								}
 							}
 						}
@@ -622,7 +630,7 @@ public class ClientProxyClass extends CommonProxyClass {
 				if (!alreadyuseddoublejump) {
 					if (wearingdoublejumpenchant(player)) {
 						if (!grapplemod.controllers.containsKey(player.getEntityId())) {
-							grapplemod.createControl(grapplemod.AIRID, -1, player.getEntityId(), player.world, new vec(0,0,0), null, null);
+							this.createControl(grapplemod.AIRID, -1, player.getEntityId(), player.world, new vec(0,0,0), null, null);
 						}
 						grappleController controller = grapplemod.controllers.get(player.getEntityId());
 						if (controller instanceof airfrictionController) {
@@ -674,7 +682,7 @@ public class ClientProxyClass extends CommonProxyClass {
 	}
 
 	@Override
-	public boolean issliding(Entity entity) {
+	public boolean issliding(Entity entity, vec motion) {
 		if (entity.isInWater()) {return false;}
 		
 		if (entity.onGround && key_slide.isKeyDown()) {
@@ -691,7 +699,8 @@ public class ClientProxyClass extends CommonProxyClass {
 						}
 					}
 				}
-				if (was_sliding || vec.motionvec(entity).removealong(new vec (0,1,0)).length() > GrappleConfig.getconf().sliding_min_speed) {
+				double speed = motion.removealong(new vec (0,1,0)).length();
+				if (speed > GrappleConfig.getconf().sliding_end_min_speed && (was_sliding || speed > GrappleConfig.getconf().sliding_min_speed)) {
 					return true;
 				}
 			}
@@ -711,7 +720,7 @@ public class ClientProxyClass extends CommonProxyClass {
 		
 		if (Minecraft.getMinecraft().gameSettings.keyBindJump.isKeyDown()) {
 			if (controller != null) {
-				if (controller instanceof airfrictionController && issliding(player)) {
+				if (controller instanceof airfrictionController && ((airfrictionController) controller).was_sliding) {
 					controller.slidingJump();
 				}
 			}
@@ -779,4 +788,63 @@ public class ClientProxyClass extends CommonProxyClass {
 		}
 	}
 
+	@Override
+	public grappleController createControl(int id, int arrowid, int entityid, World world, vec pos, BlockPos blockpos, GrappleCustomization custom) {
+		grappleArrow arrow = null;
+		Entity arrowentity = world.getEntityByID(arrowid);
+		if (arrowentity != null && arrowentity instanceof grappleArrow) {
+			arrow = (grappleArrow) arrowentity;
+		}
+		
+		boolean multi = (custom != null) && (custom.doublehook);
+		
+		grappleController currentcontroller = grapplemod.controllers.get(entityid);
+		if (currentcontroller != null && !(multi && currentcontroller.custom != null && currentcontroller.custom.doublehook)) {
+			currentcontroller.unattach();
+		}
+		
+//		System.out.println(blockpos);
+		
+		grappleController control = null;
+		if (id == grapplemod.GRAPPLEID) {
+			if (!multi) {
+				control = new grappleController(arrowid, entityid, world, pos, id, custom);
+			} else {
+				control = grapplemod.controllers.get(entityid);
+				boolean created = false;
+				if (control != null && control.getClass().equals(grappleController.class)) {
+					grappleController c = (grappleController) control;
+					if (control.custom.doublehook) {
+						if (arrow != null && arrow instanceof grappleArrow) {
+							grappleArrow multiarrow = (grappleArrow) arrowentity;
+							created = true;
+							c.addArrow(multiarrow);
+						}
+					}
+				}
+				if (!created) {
+/*					System.out.println("Couldn't create");
+					grapplemod.removesubarrow(arrowid);*/
+					control = new grappleController(arrowid, entityid, world, pos, id, custom);
+				}
+			}
+		} else if (id == grapplemod.REPELID) {
+			control = new repelController(arrowid, entityid, world, pos, id);
+		} else if (id == grapplemod.AIRID) {
+			control = new airfrictionController(arrowid, entityid, world, pos, id, custom);
+		} else {
+			return null;
+		}
+		if (blockpos != null && control != null) {
+			grapplemod.controllerpos.put(blockpos, control);
+		}
+		
+		Entity e = world.getEntityByID(entityid);
+		if (e != null && e instanceof EntityPlayerSP) {
+			EntityPlayerSP p = (EntityPlayerSP) e;
+			control.receivePlayerMovementMessage(p.movementInput.moveStrafe, p.movementInput.moveForward, p.movementInput.jump, p.movementInput.sneak);
+		}
+		
+		return control;
+	}
 }

@@ -13,6 +13,8 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.NetHandlerPlayServer;
 import net.minecraft.util.DamageSource;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.event.entity.living.LivingHurtEvent;
@@ -138,15 +140,19 @@ public class CommonProxyClass {
 		return 0;
 	}
 
-	public boolean iswallrunning(Entity entity) {
+	public boolean iswallrunning(Entity entity, vec motion) {
 		return false;
 	}
 	
-	public boolean issliding(Entity entity) {
+	public boolean issliding(Entity entity, vec motion) {
 		return false;
 	}
 	
 	public Method getCapturePositionMethod() {
 		return capturePosition;
+	}
+	
+	public grappleController createControl(int id, int arrowid, int entityid, World world, vec pos, BlockPos blockpos, GrappleCustomization custom) {
+		return null;
 	}
 }

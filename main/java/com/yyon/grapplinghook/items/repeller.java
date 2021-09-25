@@ -48,7 +48,7 @@ public class repeller extends Item {
 				grappleController controller = grapplemod.controllers.get(playerid);
 				controller.unattach();
 			} else {
-				grapplemod.createControl(grapplemod.REPELID, -1, playerid, worldIn, new vec(0,0,0), null, null);
+				grapplemod.proxy.createControl(grapplemod.REPELID, -1, playerid, worldIn, new vec(0,0,0), null, null);
 			}
 		}
 	}

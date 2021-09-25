@@ -535,58 +535,7 @@ public class grapplemod {
 		}
 	}
 	
-	public static grappleController createControl(int id, int arrowid, int entityid, World world, vec pos, BlockPos blockpos, GrappleCustomization custom) {
 
-		grappleArrow arrow = null;
-		Entity arrowentity = world.getEntityByID(arrowid);
-		if (arrowentity != null && arrowentity instanceof grappleArrow) {
-			arrow = (grappleArrow) arrowentity;
-		}
-		
-		boolean multi = (custom != null) && (custom.doublehook);
-		
-		grappleController currentcontroller = controllers.get(entityid);
-		if (currentcontroller != null && !(multi && currentcontroller.custom != null && currentcontroller.custom.doublehook)) {
-			currentcontroller.unattach();
-		}
-		
-//		System.out.println(blockpos);
-		
-		grappleController control = null;
-		if (id == GRAPPLEID) {
-			if (!multi) {
-				control = new grappleController(arrowid, entityid, world, pos, id, custom);
-			} else {
-				control = grapplemod.controllers.get(entityid);
-				boolean created = false;
-				if (control != null && control.getClass().equals(grappleController.class)) {
-					grappleController c = (grappleController) control;
-					if (control.custom.doublehook) {
-						if (arrow != null && arrow instanceof grappleArrow) {
-							grappleArrow multiarrow = (grappleArrow) arrowentity;
-							created = true;
-							c.addArrow(multiarrow);
-						}
-					}
-				}
-				if (!created) {
-/*					System.out.println("Couldn't create");
-					grapplemod.removesubarrow(arrowid);*/
-					control = new grappleController(arrowid, entityid, world, pos, id, custom);
-				}
-			}
-		} else if (id == REPELID) {
-			control = new repelController(arrowid, entityid, world, pos, id);
-		} else if (id == AIRID) {
-			control = new airfrictionController(arrowid, entityid, world, pos, id, custom);
-		}
-		if (blockpos != null && control != null) {
-			grapplemod.controllerpos.put(blockpos, control);
-		}
-		
-		return control;
-	}
-	
 	public static void removesubarrow(int id) {
 		HashSet<Integer> arrowIds = new HashSet<Integer>();
 		arrowIds.add(id);

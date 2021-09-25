@@ -112,11 +112,12 @@ public class grappleController {
         {
             BlockPos.PooledMutableBlockPos blockpos$pooledmutableblockpos = BlockPos.PooledMutableBlockPos.retain(entity.posX, entity.getEntityBoundingBox().minY - 1.0D, entity.posZ);
             IBlockState underState = this.world.getBlockState(blockpos$pooledmutableblockpos.setPos(entity.posX, entity.getEntityBoundingBox().minY - 1.0D, entity.posZ));
-            f6 = underState.getBlock().getSlipperiness(underState, entity.world, blockpos$pooledmutableblockpos, entity) * 0.91F;
+            f6 = underState.getBlock().getSlipperiness(underState, entity.world, blockpos$pooledmutableblockpos, entity);// * 0.91F;
         }
         motion.y /= 0.9800000190734863D;
         motion.x /= (double)f6;
         motion.z /= (double)f6;
+        this.applyAirFriction();
 
 		this.ongroundtimer = 0;
 		
@@ -148,7 +149,7 @@ public class grappleController {
 			
 			if (this.controllerid != grapplemod.AIRID) {
 				grapplemod.network.sendToServer(new GrappleEndMessage(this.entityId, this.arrowIds));
-				grapplemod.createControl(grapplemod.AIRID, -1, this.entityId, this.entity.world, new vec(0,0,0), null, this.custom);
+				grapplemod.proxy.createControl(grapplemod.AIRID, -1, this.entityId, this.entity.world, new vec(0,0,0), null, this.custom);
 			}
 		}
 	}
@@ -1119,7 +1120,7 @@ public class grappleController {
 				}
 				
 				// start wallrun
-				if (grapplemod.proxy.iswallrunning(this.entity)) {
+				if (grapplemod.proxy.iswallrunning(this.entity, this.motion)) {
 					isonwall = true;
 					return true;
 				}
@@ -1176,7 +1177,7 @@ public class grappleController {
 			}
 			wallfric.changelen_ip(-dragforce);
 			this.motion.add_ip(wallfric);
-			
+
 			ticks_since_last_wallrun_sound_effect++;
 			if (ticks_since_last_wallrun_sound_effect > GrappleConfig.client_options.wallrun_sound_effect_time_s * 20 * GrappleConfig.getconf().wallrun_max_speed / (vel + 0.00000001)) {
 				if (wallrun_raytrace_result != null && wallrun_raytrace_result.typeOfHit == RayTraceResult.Type.BLOCK) {
