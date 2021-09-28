@@ -155,4 +155,7 @@ public class CommonProxyClass {
 	public grappleController createControl(int id, int arrowid, int entityid, World world, vec pos, BlockPos blockpos, GrappleCustomization custom) {
 		return null;
 	}
+
+	public void playSlideSound(Entity entity) {
+	}
 }

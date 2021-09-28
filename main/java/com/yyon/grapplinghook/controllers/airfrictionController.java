@@ -64,6 +64,10 @@ public class airfrictionController extends grappleController {
 		if (this.attached) {
 			boolean issliding = grapplemod.proxy.issliding(entity, motion);
 			
+			if (issliding && !was_sliding) {
+				playSlideSound();
+			}
+			
 			if (this.ignoregroundcounter <= 0) {
 				this.normalGround(!issliding);					
 				this.normalCollisions(!issliding);
@@ -193,5 +197,9 @@ public class airfrictionController extends grappleController {
 	public void slidingJump() {
 		super.slidingJump();
 		this.ignoregroundcounter = 2;
+	}
+	
+	public void playSlideSound() {
+		grapplemod.proxy.playSlideSound(this.entity);
 	}
 }

@@ -211,6 +211,9 @@ public class GrappleConfig {
 		public double wallrun_sound_effect_time_s = 0.35;
 		public float wallrun_camera_tilt_degrees = 5;
 		public float wallrun_camera_animation_s = 0.5f;
+		public float wallrun_sound_volume = 1.0F;
+		public float doublejump_sound_volume = 1.0F;
+		public float slide_sound_volume = 1.0F;
 	}
 	
 	public static ClientConfig client_options = new ClientConfig(); // client-only options, don't need to sync with server

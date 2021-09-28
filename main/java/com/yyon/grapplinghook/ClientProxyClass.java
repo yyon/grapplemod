@@ -40,6 +40,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.MovementInput;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.SoundEvent;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.world.World;
@@ -103,6 +104,9 @@ public class ClientProxyClass extends CommonProxyClass {
 	public ModelResourceLocation odmropeloc = new ModelResourceLocation("grapplemod:odmrope", "inventory");
 	public ModelResourceLocation rocketloc = new ModelResourceLocation("grapplemod:rocket", "inventory");
 	public ModelResourceLocation rocketropeloc = new ModelResourceLocation("grapplemod:rocketrope", "inventory");
+	
+	public ResourceLocation doubleJumpSoundLoc = new ResourceLocation("grapplemod", "doublejump");
+	public ResourceLocation slideSoundLoc = new ResourceLocation("grapplemod", "slide");
 	
 	private void setgrapplebowtextures(Item item, final ModelResourceLocation notinusetexture, final ModelResourceLocation inusetexture) {
 		ModelLoader.setCustomMeshDefinition(item, new ItemMeshDefinition() {
@@ -637,6 +641,7 @@ public class ClientProxyClass extends CommonProxyClass {
 							alreadyuseddoublejump = true;
 							controller.doublejump();
 						}
+						this.playDoubleJumpSound(controller.entity);
 					}
 				}
 			}
@@ -847,4 +852,13 @@ public class ClientProxyClass extends CommonProxyClass {
 		
 		return control;
 	}
+
+	public void playSlideSound(Entity entity) {
+		entity.playSound(new SoundEvent(this.slideSoundLoc), GrappleConfig.client_options.slide_sound_volume, 1.0F);
+	}
+
+	private void playDoubleJumpSound(Entity entity) {
+		entity.playSound(new SoundEvent(this.doubleJumpSoundLoc), GrappleConfig.client_options.doublejump_sound_volume * 0.7F, 1.0F);
+	}
+
 }

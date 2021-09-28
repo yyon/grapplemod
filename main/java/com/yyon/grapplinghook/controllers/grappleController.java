@@ -1190,7 +1190,7 @@ public class grappleController {
 
 			        if (!blockIn.getDefaultState().getMaterial().isLiquid())
 			        {
-			            this.entity.playSound(soundtype.getStepSound(), soundtype.getVolume() * 0.15F, soundtype.getPitch());
+			            this.entity.playSound(soundtype.getStepSound(), soundtype.getVolume() * 0.30F * GrappleConfig.client_options.wallrun_sound_volume, soundtype.getPitch());
 						ticks_since_last_wallrun_sound_effect = 0;
 			        }
 				}
