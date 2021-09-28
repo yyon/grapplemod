@@ -107,17 +107,21 @@ public class grappleController {
 		this.motion = vec.motionvec(entity);
 		
 		// undo friction
-		double f6 = 0.91F;
-        if (entity.onGround)
-        {
-            BlockPos.PooledMutableBlockPos blockpos$pooledmutableblockpos = BlockPos.PooledMutableBlockPos.retain(entity.posX, entity.getEntityBoundingBox().minY - 1.0D, entity.posZ);
-            IBlockState underState = this.world.getBlockState(blockpos$pooledmutableblockpos.setPos(entity.posX, entity.getEntityBoundingBox().minY - 1.0D, entity.posZ));
-            f6 = underState.getBlock().getSlipperiness(underState, entity.world, blockpos$pooledmutableblockpos, entity);// * 0.91F;
-        }
-        motion.y /= 0.9800000190734863D;
-        motion.x /= (double)f6;
-        motion.z /= (double)f6;
-        this.applyAirFriction();
+		vec newmotion = new vec(entity.posX - entity.prevPosX, entity.posY - entity.prevPosY, entity.posZ - entity.prevPosZ);
+		if (newmotion.x/motion.x < 2 && motion.x/newmotion.x < 2 && newmotion.y/motion.y < 2 && motion.y/newmotion.y < 2 && newmotion.z/motion.z < 2 && motion.z/newmotion.z < 2) {
+			this.motion = newmotion;
+		}
+//		double f6 = 0.91F;
+//        if (entity.onGround)
+//        {
+//            BlockPos.PooledMutableBlockPos blockpos$pooledmutableblockpos = BlockPos.PooledMutableBlockPos.retain(entity.posX, entity.getEntityBoundingBox().minY - 1.0D, entity.posZ);
+//            IBlockState underState = this.world.getBlockState(blockpos$pooledmutableblockpos.setPos(entity.posX, entity.getEntityBoundingBox().minY - 1.0D, entity.posZ));
+//            f6 = underState.getBlock().getSlipperiness(underState, entity.world, blockpos$pooledmutableblockpos, entity);// * 0.91F;
+//        }
+//        motion.y /= 0.9800000190734863D;
+//        motion.x /= (double)f6;
+//        motion.z /= (double)f6;
+//        this.applyAirFriction();
 
 		this.ongroundtimer = 0;
 		
