@@ -1,11 +1,13 @@
 package com.yyon.grapplinghook;
 
 import java.lang.reflect.Method;
+import java.util.HashSet;
 
 import com.yyon.grapplinghook.blocks.TileEntityGrappleModifier;
 import com.yyon.grapplinghook.controllers.grappleController;
 import com.yyon.grapplinghook.entities.grappleArrow;
 import com.yyon.grapplinghook.items.grappleBow;
+import com.yyon.grapplinghook.network.GrappleDetachMessage;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
@@ -111,14 +113,6 @@ public class CommonProxyClass {
     	}
     }
     
-    @SubscribeEvent
-    public void onLivingDeath(LivingDeathEvent event) {
-    	this.handleDeath(event.getEntity());
-    }
-    
-    public void handleDeath(Entity entity) {
-    }
-    
 	public String getkeyname(CommonProxyClass.keys keyenum) {
 		return null;
 	}
@@ -157,5 +151,52 @@ public class CommonProxyClass {
 	}
 
 	public void playSlideSound(Entity entity) {
+	}
+	
+    @SubscribeEvent
+    public void onLivingDeath(LivingDeathEvent event) {
+		Entity entity = event.getEntity();
+		int id = entity.getEntityId();
+		boolean isconnected = grapplemod.allarrows.containsKey(id);
+		if (isconnected) {
+			HashSet<grappleArrow> arrows = grapplemod.allarrows.get(id);
+			for (grappleArrow arrow: arrows) {
+//				if (!arrow.isAddedToWorld()) {
+//					System.out.println("arrow unloaded");
+//					IChunkProvider chunkprovider = arrow.world.getChunkProvider();
+//					if (chunkprovider instanceof ChunkProviderServer) {
+//						ChunkProviderServer chunkproviderserver = (ChunkProviderServer) chunkprovider;
+//						chunkproviderserver.loadChunk(arrow.chunkCoordX, arrow.chunkCoordZ, new Runnable() {
+//							@Override
+//							public void run() {
+//								Entity newArrow = arrow.world.getEntityByID(arrow.getEntityId());
+//								if (newArrow == null) {
+//									System.out.println("Couldn't delete grappleArrow");
+//									return;
+//									}
+//								newArrow.setDead();
+//							}
+//						});
+//					}
+//				}
+				arrow.removeServer();
+			}
+			arrows.clear();
+
+			grapplemod.attached.remove(id);
+			
+			if (grapplemod.controllers.containsKey(id)) {
+				grapplemod.controllers.remove(id);
+			}
+			
+			if (grappleBow.grapplearrows1.containsKey(entity)) {
+				grappleBow.grapplearrows1.remove(entity);
+			}
+			if (grappleBow.grapplearrows2.containsKey(entity)) {
+				grappleBow.grapplearrows2.remove(entity);
+			}
+			
+			grapplemod.sendtocorrectclient(new GrappleDetachMessage(id), id, entity.world);
+		}
 	}
 }

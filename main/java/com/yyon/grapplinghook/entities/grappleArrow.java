@@ -370,11 +370,38 @@ public class grappleArrow extends EntityThrowable implements IEntityAdditionalSp
 	@Override
 	protected void onImpact(RayTraceResult movingobjectposition) {
 		if (!this.world.isRemote) {
+			if (this.attached) {
+				return;
+			}
 			if (this.shootingEntityID != 0) {
-				if (movingobjectposition.typeOfHit == RayTraceResult.Type.ENTITY && !GrappleConfig.getconf().hookaffectsentities) {
-					Vec3d vec3d = new Vec3d(this.posX, this.posY, this.posZ);
-			        Vec3d vec3d1 = new Vec3d(this.posX + this.motionX, this.posY + this.motionY, this.posZ + this.motionZ);
-			        movingobjectposition = this.world.rayTraceBlocks(vec3d, vec3d1);
+				Vec3d vec3d = new Vec3d(this.posX, this.posY, this.posZ);
+		        Vec3d vec3d1 = new Vec3d(this.posX + this.motionX, this.posY + this.motionY, this.posZ + this.motionZ);
+
+				if (movingobjectposition != null && movingobjectposition.typeOfHit == RayTraceResult.Type.ENTITY && !GrappleConfig.getconf().hookaffectsentities) {
+			        movingobjectposition = this.world.rayTraceBlocks(vec3d, vec3d1, false, false, false);
+				}
+				
+				if (movingobjectposition != null && grapplemod.anyignoresblocks && movingobjectposition.typeOfHit == RayTraceResult.Type.BLOCK) {
+					BlockPos blockpos = movingobjectposition.getBlockPos();
+					if (blockpos != null) {
+						Block block = this.world.getBlockState(blockpos).getBlock();
+						if (grapplemod.grapplingignoresblocks.contains(block)) {
+							System.out.println("ignore block");
+					        movingobjectposition = this.world.rayTraceBlocks(vec3d, vec3d1, false, true, false);
+						}
+					}
+				}
+				
+				if (movingobjectposition != null && grapplemod.anybreakblocks && movingobjectposition.typeOfHit == RayTraceResult.Type.BLOCK) {
+					BlockPos blockpos = movingobjectposition.getBlockPos();
+					if (blockpos != null) {
+						Block block = this.world.getBlockState(blockpos).getBlock();
+						if (grapplemod.grapplingbreaksblocks.contains(block)) {
+							this.world.destroyBlock(blockpos, true);
+							System.out.println("break block");
+					        movingobjectposition = this.world.rayTraceBlocks(vec3d, vec3d1, false, true, false);
+						}
+					}
 				}
 				
 				if (movingobjectposition == null) {

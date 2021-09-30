@@ -2,8 +2,8 @@ package com.yyon.grapplinghook;
 
 import com.yyon.grapplinghook.network.LoggedInMessage;
 
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
@@ -33,14 +33,8 @@ public class ServerProxyClass extends CommonProxyClass {
 		}
 	}
 	
-	@Override
-	public void handleDeath(Entity entity) {
-		grapplemod.attached.remove(new Integer(entity.getEntityId()));
-	}
-	
 	@SubscribeEvent
 	public void onPlayerLoggedInEvent(PlayerLoggedInEvent e) {
-		System.out.println("Player logged in event");
 		if (e.player instanceof EntityPlayerMP) {
 			grapplemod.network.sendTo(new LoggedInMessage(GrappleConfig.options), (EntityPlayerMP) e.player);
 		} else {

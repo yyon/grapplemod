@@ -201,6 +201,9 @@ public class GrappleConfig {
 		public int enchant_rarity_sliding = 0;
 		public int enchant_rarity_wallrun = 0;
 		public double airstrafe_acceleration = 0.015;
+		
+		public String grappleBreakBlocks = "none";
+		public String grappleIgnoreBlocks = "minecraft:tallgrass,minecraft:double_plant";
 	}
 	
 	public static Config options = new Config(); // local options

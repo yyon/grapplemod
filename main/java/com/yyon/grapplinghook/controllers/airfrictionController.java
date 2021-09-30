@@ -1,6 +1,5 @@
 package com.yyon.grapplinghook.controllers;
 
-import com.yyon.grapplinghook.ClientProxyClass;
 import com.yyon.grapplinghook.GrappleConfig;
 import com.yyon.grapplinghook.GrappleCustomization;
 import com.yyon.grapplinghook.grapplemod;
@@ -8,7 +7,6 @@ import com.yyon.grapplinghook.vec;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.world.World;
 
 /*

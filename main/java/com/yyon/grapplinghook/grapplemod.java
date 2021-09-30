@@ -171,8 +171,12 @@ public class grapplemod {
 	public static int AIRID = controllerid++;
 		
 	public static boolean anyblocks = true;
-	public static ArrayList<Block> grapplingblocks;
+	public static HashSet<Block> grapplingblocks;
 	public static boolean removeblocks = false;
+	public static HashSet<Block> grapplingbreaksblocks;
+	public static boolean anybreakblocks = false;
+	public static HashSet<Block> grapplingignoresblocks;
+	public static boolean anyignoresblocks = false;
 	
 	public static Block blockGrappleModifier;
 	public static ItemBlock itemBlockGrappleModifier;
@@ -285,6 +289,36 @@ public class grapplemod {
 	public void serverLoad(FMLServerStartingEvent event){
 	}
 	
+	public static HashSet<Block> stringToBlocks(String s) {
+		HashSet<Block> blocks = new HashSet<Block>();
+		
+		if (s.equals("") || s.equals("none") || s.equals("any")) {
+			return blocks;
+		}
+		
+		String[] blockstr = s.split(",");
+		
+	    for(String str:blockstr){
+	    	str = str.trim();
+	    	String modid;
+	    	String name;
+	    	if (str.contains(":")) {
+	    		String[] splitstr = str.split(":");
+	    		modid = splitstr[0];
+	    		name = splitstr[1];
+	    	} else {
+	    		modid = "minecraft";
+	    		name = str;
+	    	}
+	    	
+	    	Block b = Block.REGISTRY.getObject(new ResourceLocation(modid, name));
+	    	
+	    	blocks.add(b);
+	    }
+	    
+	    return blocks;
+	}
+	
 	public static void updateGrapplingBlocks() {
 		String s = GrappleConfig.getconf().grapplingBlocks;
 		if (s.equals("any") || s.equals("")) {
@@ -301,28 +335,15 @@ public class grapplemod {
 		}
 	
 		if (!anyblocks) {
-			String[] blockstr = s.split(",");
-			
-			grapplingblocks = new ArrayList<Block>();
-			
-		    for(String str:blockstr){
-		    	str = str.trim();
-		    	String modid;
-		    	String name;
-		    	if (str.contains(":")) {
-		    		String[] splitstr = str.split(":");
-		    		modid = splitstr[0];
-		    		name = splitstr[1];
-		    	} else {
-		    		modid = "minecraft";
-		    		name = str;
-		    	}
-		    	
-		    	Block b = Block.REGISTRY.getObject(new ResourceLocation(modid, name));
-		    	
-		        grapplingblocks.add(b);
-		    }
+			grapplingblocks = stringToBlocks(s);
 		}
+		
+		grapplingbreaksblocks = stringToBlocks(GrappleConfig.getconf().grappleBreakBlocks);
+		anybreakblocks = grapplingbreaksblocks.size() != 0;
+		
+		grapplingignoresblocks = stringToBlocks(GrappleConfig.getconf().grappleIgnoreBlocks);
+		anyignoresblocks = grapplingignoresblocks.size() != 0;
+		
 	}
 	
 	@SubscribeEvent
