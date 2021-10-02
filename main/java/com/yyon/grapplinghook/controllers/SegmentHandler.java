@@ -177,12 +177,12 @@ public class SegmentHandler {
 	}
 	
 	public void updatesegment(vec top, vec prevtop, vec bottom, vec prevbottom, int index, int numberrecursions) {
-        RayTraceResult bottomraytraceresult = this.world.rayTraceBlocks(bottom.toVec3d(), top.toVec3d());
+        RayTraceResult bottomraytraceresult = this.world.rayTraceBlocks(bottom.toVec3d(), top.toVec3d(), false, true, false);
         
         // if rope hit block
         if (bottomraytraceresult != null)
         {
-        	if (this.world.rayTraceBlocks(prevbottom.toVec3d(), prevtop.toVec3d()) != null) {
+        	if (this.world.rayTraceBlocks(prevbottom.toVec3d(), prevtop.toVec3d(), false, true, false) != null) {
 //        		System.out.println("Warning: prev collision");
         		return;
         	}
@@ -240,7 +240,7 @@ public class SegmentHandler {
             	}
             	
             	// the corner must be in the line (cornerbound2, cornerbound1)
-                RayTraceResult cornerraytraceresult = this.world.rayTraceBlocks(cornerbound2.toVec3d(), cornerbound1.toVec3d());
+                RayTraceResult cornerraytraceresult = this.world.rayTraceBlocks(cornerbound2.toVec3d(), cornerbound1.toVec3d(), false, true, false);
                 if (cornerraytraceresult != null) {
                 	vec cornerhitpos = new vec(cornerraytraceresult.hitVec.x, cornerraytraceresult.hitVec.y, cornerraytraceresult.hitVec.z);
                 	EnumFacing cornerside = cornerraytraceresult.sideHit;

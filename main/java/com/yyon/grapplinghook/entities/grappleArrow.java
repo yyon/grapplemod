@@ -374,38 +374,41 @@ public class grappleArrow extends EntityThrowable implements IEntityAdditionalSp
 				return;
 			}
 			if (this.shootingEntityID != 0) {
+				if (movingobjectposition == null) {
+					return;
+				}
+				
 				Vec3d vec3d = new Vec3d(this.posX, this.posY, this.posZ);
 		        Vec3d vec3d1 = new Vec3d(this.posX + this.motionX, this.posY + this.motionY, this.posZ + this.motionZ);
 
-				if (movingobjectposition != null && movingobjectposition.typeOfHit == RayTraceResult.Type.ENTITY && !GrappleConfig.getconf().hookaffectsentities) {
-			        movingobjectposition = this.world.rayTraceBlocks(vec3d, vec3d1, false, false, false);
+				if (movingobjectposition.typeOfHit == RayTraceResult.Type.ENTITY && !GrappleConfig.getconf().hookaffectsentities) {
+			        onImpact(this.world.rayTraceBlocks(vec3d, vec3d1, false, true, false));
+			        return;
 				}
 				
-				if (movingobjectposition != null && grapplemod.anyignoresblocks && movingobjectposition.typeOfHit == RayTraceResult.Type.BLOCK) {
+				if (grapplemod.anyignoresblocks && movingobjectposition.typeOfHit == RayTraceResult.Type.BLOCK) {
 					BlockPos blockpos = movingobjectposition.getBlockPos();
 					if (blockpos != null) {
 						Block block = this.world.getBlockState(blockpos).getBlock();
 						if (grapplemod.grapplingignoresblocks.contains(block)) {
 							System.out.println("ignore block");
-					        movingobjectposition = this.world.rayTraceBlocks(vec3d, vec3d1, false, true, false);
+					        onImpact(this.world.rayTraceBlocks(vec3d, vec3d1, false, true, false));
+					        return;
 						}
 					}
 				}
 				
-				if (movingobjectposition != null && grapplemod.anybreakblocks && movingobjectposition.typeOfHit == RayTraceResult.Type.BLOCK) {
+				if (grapplemod.anybreakblocks && movingobjectposition.typeOfHit == RayTraceResult.Type.BLOCK) {
 					BlockPos blockpos = movingobjectposition.getBlockPos();
 					if (blockpos != null) {
 						Block block = this.world.getBlockState(blockpos).getBlock();
 						if (grapplemod.grapplingbreaksblocks.contains(block)) {
 							this.world.destroyBlock(blockpos, true);
 							System.out.println("break block");
-					        movingobjectposition = this.world.rayTraceBlocks(vec3d, vec3d1, false, true, false);
+					        onImpact(this.world.rayTraceBlocks(vec3d, vec3d1, false, true, false));
+					        return;
 						}
 					}
-				}
-				
-				if (movingobjectposition == null) {
-					return;
 				}
 				
 				if (movingobjectposition.typeOfHit == RayTraceResult.Type.ENTITY) {

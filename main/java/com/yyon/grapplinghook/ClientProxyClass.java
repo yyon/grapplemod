@@ -733,14 +733,24 @@ public class ClientProxyClass extends CommonProxyClass {
 			MovementInput input = event.getMovementInput();
 			grappleController control = grapplemod.controllers.get(id);
 			control.receivePlayerMovementMessage(input.moveStrafe, input.moveForward, input.jump, input.sneak);
-			input.jump = false;
-			input.backKeyDown = false;
-			input.forwardKeyDown = false;
-			input.leftKeyDown = false;
-			input.rightKeyDown = false;
-			input.moveForward = 0;
-			input.moveStrafe = 0;
-//			input.sneak = false; // fix alternate throw angles
+			
+			boolean overrideMovement = true;
+			if (Minecraft.getMinecraft().player.onGround) {
+				if (!(control instanceof airfrictionController) && !(control instanceof repelController)) {
+					overrideMovement = false;
+				}
+			}
+			
+			if (overrideMovement) {
+				input.jump = false;
+				input.backKeyDown = false;
+				input.forwardKeyDown = false;
+				input.leftKeyDown = false;
+				input.rightKeyDown = false;
+				input.moveForward = 0;
+				input.moveStrafe = 0;
+//				input.sneak = false; // fix alternate throw angles
+			}
 		}
 	}
 	
@@ -851,6 +861,11 @@ public class ClientProxyClass extends CommonProxyClass {
 
 	private void playDoubleJumpSound(Entity entity) {
 		entity.playSound(new SoundEvent(this.doubleJumpSoundLoc), GrappleConfig.client_options.doublejump_sound_volume * 0.7F, 1.0F);
+	}
+
+	@Override
+	public void playWallrunJumpSound(Entity entity) {
+		entity.playSound(new SoundEvent(this.doubleJumpSoundLoc), GrappleConfig.client_options.wallrunjump_sound_volume * 0.7F, 1.0F);
 	}
 
 }

@@ -217,6 +217,7 @@ public class GrappleConfig {
 		public float wallrun_sound_volume = 1.0F;
 		public float doublejump_sound_volume = 1.0F;
 		public float slide_sound_volume = 1.0F;
+		public float wallrunjump_sound_volume = 1.0F;
 	}
 	
 	public static ClientConfig client_options = new ClientConfig(); // client-only options, don't need to sync with server

@@ -199,4 +199,7 @@ public class CommonProxyClass {
 			grapplemod.sendtocorrectclient(new GrappleDetachMessage(id), id, entity.world);
 		}
 	}
+
+	public void playWallrunJumpSound(Entity entity) {
+	}
 }

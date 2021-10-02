@@ -1213,6 +1213,8 @@ public class grappleController {
 			motion.add_ip(jump);
 			
 			wallrun = false;
+
+			grapplemod.proxy.playWallrunJumpSound(entity);
 		}
 		
 		return wallrun;
