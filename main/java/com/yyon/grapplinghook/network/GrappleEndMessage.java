@@ -1,5 +1,10 @@
 package com.yyon.grapplinghook.network;
 
+import java.util.HashSet;
+
+import com.yyon.grapplinghook.grapplemod;
+//* // 1.8 Compatability
+
 import io.netty.buffer.ByteBuf;
 import net.minecraft.util.IThreadListener;
 import net.minecraft.world.World;
@@ -7,11 +12,6 @@ import net.minecraft.world.WorldServer;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
-
-import java.util.HashSet;
-
-import com.yyon.grapplinghook.grapplemod;
-//* // 1.8 Compatability
 
 /*
  * This file is part of GrappleMod.

@@ -2,8 +2,12 @@ package com.yyon.grapplinghook.items;
 
 import java.util.List;
 
+import org.spongepowered.asm.mixin.MixinEnvironment.Side;
+
+import com.yyon.grapplinghook.CommonProxyClass;
+import com.yyon.grapplinghook.grapplemod;
+
 import net.minecraft.client.util.ITooltipFlag;
-import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.EnumAction;
 import net.minecraft.item.Item;
@@ -15,11 +19,7 @@ import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
-
-import com.yyon.grapplinghook.CommonProxyClass;
-import com.yyon.grapplinghook.grapplemod;
 
 /*
  * This file is part of GrappleMod.

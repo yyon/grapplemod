@@ -1,7 +1,5 @@
 package com.yyon.grapplinghook.network;
 
-import java.util.HashSet;
-
 import com.yyon.grapplinghook.grapplemod;
 //* // 1.8 Compatability
 import com.yyon.grapplinghook.items.KeypressItem;

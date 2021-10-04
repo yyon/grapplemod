@@ -1,11 +1,10 @@
 package com.yyon.grapplinghook.controllers;
 
+import com.yyon.grapplinghook.vec;
+
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.world.World;
-
-import com.yyon.grapplinghook.grapplemod;
-import com.yyon.grapplinghook.vec;
 
 public class repelController extends grappleController {
 	public repelController(int arrowId, int entityId, World world, vec pos, int id) {
