@@ -192,7 +192,7 @@ public class GrappleCustomization {
 	}
 
 	public String getName(String option) {
-		return "grapplecustomization." + option + ".name";
+		return "grapplecustomization." + option;
 	}
 	
 	public String getDescription(String option) {

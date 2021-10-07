@@ -54,6 +54,7 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.network.NetworkDirection;
@@ -267,7 +268,7 @@ public class grapplemod {
 
 	public static TileEntityType<TileEntityGrappleModifier> tileEntityGrappleModifierType;
 
-	public static CommonProxyClass proxy = null;
+	public static CommonProxyClass proxy = DistExecutor.unsafeRunForDist(() -> ClientProxyClass::new, () -> () -> null);
 	
 	@SubscribeEvent
 	public static void onTileEntityTypeRegistration(final RegistryEvent.Register<TileEntityType<?>> event) {

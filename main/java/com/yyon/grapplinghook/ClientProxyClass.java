@@ -35,7 +35,6 @@ import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 
 @Mod.EventBusSubscriber(bus=Mod.EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)
-@OnlyIn(Dist.CLIENT)
 public class ClientProxyClass implements CommonProxyClass {
 	public boolean prevkeys[] = {false, false, false, false, false};
 	
