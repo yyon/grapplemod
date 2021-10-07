@@ -1,6 +1,8 @@
 package com.yyon.grapplinghook.network;
 
 import net.minecraft.network.PacketBuffer;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.fml.network.NetworkEvent;
 
 /*
@@ -20,7 +22,7 @@ import net.minecraftforge.fml.network.NetworkEvent;
     along with GrappleMod.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-public class GrappleDetachMessage extends BaseMessage {
+public class GrappleDetachMessage extends BaseMessageClient {
    
 	public int id;
 
@@ -39,7 +41,8 @@ public class GrappleDetachMessage extends BaseMessage {
     public void encode(PacketBuffer buf) {
     	buf.writeInt(this.id);
     }
-
+    
+    @OnlyIn(Dist.CLIENT)
     public void processMessage(NetworkEvent.Context ctx) {
 //    	grapplemod.receiveGrappleDetach(this.id);
     }

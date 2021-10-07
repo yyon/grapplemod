@@ -9,6 +9,8 @@ import java.util.Comparator;
 import com.yyon.grapplinghook.GrappleConfig;
 
 import net.minecraft.network.PacketBuffer;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.fml.network.NetworkEvent;
 
 /*
@@ -28,7 +30,7 @@ import net.minecraftforge.fml.network.NetworkEvent;
     along with GrappleMod.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-public class LoggedInMessage extends BaseMessage {
+public class LoggedInMessage extends BaseMessageClient {
     GrappleConfig.Config conf = null;
 
     public LoggedInMessage(PacketBuffer buf) {
@@ -107,6 +109,7 @@ public class LoggedInMessage extends BaseMessage {
     	}
     }
 
+    @OnlyIn(Dist.CLIENT)
     public void processMessage(NetworkEvent.Context ctx) {
     	GrappleConfig.setserveroptions(this.conf);
     }

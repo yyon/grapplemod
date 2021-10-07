@@ -1,6 +1,8 @@
 package com.yyon.grapplinghook.network;
 
 import net.minecraft.network.PacketBuffer;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.fml.network.NetworkEvent;
 
 
@@ -21,7 +23,7 @@ import net.minecraftforge.fml.network.NetworkEvent;
     along with GrappleMod.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-public class GrappleAttachPosMessage extends BaseMessage {
+public class GrappleAttachPosMessage extends BaseMessageClient {
    
 	public int id;
 	public double x;
@@ -53,6 +55,7 @@ public class GrappleAttachPosMessage extends BaseMessage {
         buf.writeDouble(this.z);
     }
 
+    @OnlyIn(Dist.CLIENT)
     public void processMessage(NetworkEvent.Context ctx) {
     	/*
     	World world = Minecraft.getInstance().world;

@@ -23,7 +23,7 @@ import net.minecraftforge.fml.network.NetworkEvent;
     along with GrappleMod.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-public class KeypressMessage extends BaseMessage {
+public class KeypressMessage extends BaseMessageServer {
 	
 	KeypressItem.Keys key;
 	boolean isDown;

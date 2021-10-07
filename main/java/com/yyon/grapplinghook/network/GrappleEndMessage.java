@@ -22,7 +22,7 @@ import net.minecraftforge.fml.network.NetworkEvent;
     along with GrappleMod.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-public class GrappleEndMessage extends BaseMessage {
+public class GrappleEndMessage extends BaseMessageServer {
    
 	public int entityid;
 	public HashSet<Integer> arrowIds;

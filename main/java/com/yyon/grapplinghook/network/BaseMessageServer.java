@@ -6,17 +6,15 @@ import com.yyon.grapplinghook.grapplemod;
 
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.network.PacketBuffer;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.fml.LogicalSide;
 import net.minecraftforge.fml.network.NetworkEvent;
 
-public abstract class BaseMessage {
-	public BaseMessage(PacketBuffer buf) {
+public abstract class BaseMessageServer {
+	public BaseMessageServer(PacketBuffer buf) {
 		this.decode(buf);
 	}
 	
-	public BaseMessage() {
+	public BaseMessageServer() {
 	}
 	
 	public abstract void decode(PacketBuffer buf);
@@ -25,7 +23,7 @@ public abstract class BaseMessage {
 
     public abstract void processMessage(NetworkEvent.Context ctx);
     
-    public void onMessageReceivedServer(Supplier<NetworkEvent.Context> ctxSupplier) {
+    public void onMessageReceived(Supplier<NetworkEvent.Context> ctxSupplier) {
         NetworkEvent.Context ctx = ctxSupplier.get();
         LogicalSide sideReceived = ctx.getDirection().getReceptionSide();
         if (sideReceived != LogicalSide.SERVER) {
@@ -41,20 +39,5 @@ public abstract class BaseMessage {
         }
 
         ctx.enqueueWork(() -> processMessage(ctx));
-    }
-
-    public void onMessageReceivedClient(Supplier<NetworkEvent.Context> ctxSupplier) {
-        NetworkEvent.Context ctx = ctxSupplier.get();
-        LogicalSide sideReceived = ctx.getDirection().getReceptionSide();
-        if (sideReceived != LogicalSide.CLIENT) {
-			grapplemod.LOGGER.warn("message received on wrong side:" + ctx.getDirection().getReceptionSide());
-			return;
-        }
-        
-        ctx.setPacketHandled(true);
-        
-        ctx.enqueueWork(() -> 
-        	DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> processMessage(ctx))
-        );
     }
 }

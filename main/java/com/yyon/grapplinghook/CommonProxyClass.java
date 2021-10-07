@@ -1,9 +1,11 @@
 package com.yyon.grapplinghook;
 
 import com.yyon.grapplinghook.blocks.TileEntityGrappleModifier;
+import com.yyon.grapplinghook.network.BaseMessageClient;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraftforge.fml.network.NetworkEvent.Context;
 
 public interface CommonProxyClass {
 
@@ -38,4 +40,6 @@ public interface CommonProxyClass {
 	public void playSlideSound(Entity entity);
 	
 	public void playWallrunJumpSound(Entity entity);
+
+	public void onMessageReceivedClient(BaseMessageClient baseMessage, Context ctx);
 }

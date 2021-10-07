@@ -4,6 +4,8 @@ import com.yyon.grapplinghook.vec;
 
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.Direction;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.fml.network.NetworkEvent;
 
 /*
@@ -23,7 +25,7 @@ import net.minecraftforge.fml.network.NetworkEvent;
     along with GrappleMod.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-public class SegmentMessage extends BaseMessage {
+public class SegmentMessage extends BaseMessageClient {
    
 	public int id;
 	public boolean add;
@@ -65,6 +67,7 @@ public class SegmentMessage extends BaseMessage {
     	buf.writeInt(this.bottomfacing.get2DDataValue());
     }
 
+    @OnlyIn(Dist.CLIENT)
     public void processMessage(NetworkEvent.Context ctx) {
     	/*
     	World world = Minecraft.getMinecraft().world;

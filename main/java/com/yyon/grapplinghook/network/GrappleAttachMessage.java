@@ -8,6 +8,8 @@ import com.yyon.grapplinghook.vec;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.fml.network.NetworkEvent;
 
 /*
@@ -27,7 +29,7 @@ import net.minecraftforge.fml.network.NetworkEvent;
     along with GrappleMod.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-public class GrappleAttachMessage extends BaseMessage {
+public class GrappleAttachMessage extends BaseMessageClient {
    
 	public int id;
 	public double x;
@@ -117,6 +119,7 @@ public class GrappleAttachMessage extends BaseMessage {
         }
     }
 
+    @OnlyIn(Dist.CLIENT)
     public void processMessage(NetworkEvent.Context ctx) {
     	/*
     	World world = Minecraft.getInstance().level;

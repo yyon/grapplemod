@@ -16,7 +16,7 @@ import net.minecraftforge.fml.network.NetworkEvent;
     along with GrappleMod.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-public class GrappleModifierMessage extends BaseMessage {
+public class GrappleModifierMessage extends BaseMessageServer {
    
 	public BlockPos pos;
 	public GrappleCustomization custom;
