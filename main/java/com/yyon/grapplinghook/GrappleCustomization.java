@@ -1,7 +1,7 @@
 package com.yyon.grapplinghook;
 
 import io.netty.buffer.ByteBuf;
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.CompoundNBT;
 
 public class GrappleCustomization {
 	public static final String[] booleanoptions = new String[] {"phaserope", "motor", "motorwhencrouching", "motorwhennotcrouching", "smartmotor", "enderstaff", "repel", "attract", "doublehook", "smartdoublemotor", "motordampener", "reelin", "pullbackwards", "oneropepull", "climbkey", "sticky", "detachonkeyrelease", "rocket"};
@@ -63,25 +63,25 @@ public class GrappleCustomization {
 		
 	}
 	
-	public NBTTagCompound writeNBT() {
-		NBTTagCompound compound = new NBTTagCompound();
+	public CompoundNBT writeNBT() {
+		CompoundNBT compound = new CompoundNBT();
 		for (String option : booleanoptions) {
-			compound.setBoolean(option, this.getBoolean(option));
+			compound.putBoolean(option, this.getBoolean(option));
 		}
 		for (String option : doubleoptions) {
-			compound.setDouble(option, this.getDouble(option));
+			compound.putDouble(option, this.getDouble(option));
 		}
 		return compound;
 	}
 	
-	public void loadNBT(NBTTagCompound compound) {
+	public void loadNBT(CompoundNBT compound) {
 		for (String option : booleanoptions) {
-			if (compound.hasKey(option)) {
+			if (compound.contains(option)) {
 				this.setBoolean(option, compound.getBoolean(option));
 			}
 		}
 		for (String option : doubleoptions) {
-			if (compound.hasKey(option)) {
+			if (compound.contains(option)) {
 				this.setDouble(option, compound.getDouble(option));
 			}
 		}

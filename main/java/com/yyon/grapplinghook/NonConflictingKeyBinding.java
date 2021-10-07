@@ -1,16 +1,47 @@
 package com.yyon.grapplinghook;
 
 import net.minecraft.client.settings.KeyBinding;
+import net.minecraft.client.util.InputMappings;
+import net.minecraftforge.client.settings.IKeyConflictContext;
 
 public class NonConflictingKeyBinding extends KeyBinding {
 
 	public NonConflictingKeyBinding(String description, int keyCode, String category) {
 		super(description, keyCode, category);
+		this.setNonConflict();
 	}
 
-	@Override
-    public boolean isActiveAndMatches(int keyCode) {
-		return false;
+	boolean isActive = false;
+	private void setNonConflict() {
+		this.setKeyConflictContext(new IKeyConflictContext() {
+			@Override
+			public boolean isActive() {
+				return isActive;
+			}
+			@Override
+			public boolean conflicts(IKeyConflictContext other) {
+				return false;
+			}
+			
+		});
 	}
 
+	public NonConflictingKeyBinding(String description, InputMappings.Type type, int keyCode, String category) {
+		super(description, type, keyCode, category);
+		this.setNonConflict();
+	}
+
+   public boolean same(KeyBinding p_197983_1_) {
+	   return false;
+   }
+   public boolean hasKeyCodeModifierConflict(KeyBinding other) {
+	   return true;
+   }
+   
+   public boolean isDown() {
+	   isActive = true;
+	   boolean down = super.isDown();
+	   isActive = false;
+	   return down;
+   }
 }

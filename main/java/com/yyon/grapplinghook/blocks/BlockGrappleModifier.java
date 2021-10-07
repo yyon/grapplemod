@@ -1,90 +1,54 @@
 package com.yyon.grapplinghook.blocks;
 
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.List;
 
-import javax.annotation.Nullable;
-
-import org.spongepowered.asm.mixin.MixinEnvironment.Side;
-
-import com.yyon.grapplinghook.GrappleConfig;
+import com.yyon.grapplinghook.GrappleCustomization;
 import com.yyon.grapplinghook.GrappleCustomization;
 import com.yyon.grapplinghook.grapplemod;
-import com.yyon.grapplinghook.items.grappleBow;
-import com.yyon.grapplinghook.items.upgrades.BaseUpgradeItem;
+import com.yyon.grapplinghook.network.GrappleModifierMessage;
 
 import net.minecraft.block.Block;
+import net.minecraft.block.BlockState;
 import net.minecraft.block.material.Material;
-import net.minecraft.block.state.IBlockState;
-import net.minecraft.enchantment.Enchantment;
-import net.minecraft.enchantment.EnchantmentHelper;
-import net.minecraft.enchantment.Enchantments;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.Item;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.loot.LootContext;
+import net.minecraft.loot.LootParameters;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.BlockRenderLayer;
-import net.minecraft.util.EnumBlockRenderType;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.EnumHand;
-import net.minecraft.util.NonNullList;
+import net.minecraft.util.ActionResultType;
+import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.text.TextComponentString;
-import net.minecraft.world.IBlockAccess;
+import net.minecraft.util.math.BlockRayTraceResult;
+import net.minecraft.world.IBlockReader;
 import net.minecraft.world.World;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import net.minecraftforge.fml.network.PacketDistributor;
 
 public class BlockGrappleModifier extends Block {
 
 	public BlockGrappleModifier() {
-		super(Material.ROCK);
-		setCreativeTab(grapplemod.tabGrapplemod);
+		super(Block.Properties.of(Material.STONE));
 	}
 
 	@Override
-	public boolean hasTileEntity(IBlockState state) {
+	public boolean hasTileEntity(BlockState state) {
 		return true;
 	}
 
-	// Called when the block is placed or loaded client side to get the tile entity
-	// for the block
-	// Should return a new instance of the tile entity for the block
 	@Override
-	public TileEntity createTileEntity(World world, IBlockState state) {
+    public TileEntity createTileEntity(BlockState state, IBlockReader world) {
 		return new TileEntityGrappleModifier();
-	}
-
-	// the block will render in the SOLID layer. See
-	// http://greyminecraftcoder.blogspot.co.at/2014/12/block-rendering-18.html for
-	// more information.
-	@SideOnly(Side.CLIENT)
-	public BlockRenderLayer getBlockLayer() {
-		return BlockRenderLayer.SOLID;
-	}
-
-	@Override
-	public boolean isOpaqueCube(IBlockState state) {
-		return true;
-	}
-
-	@Override
-	public boolean isFullCube(IBlockState state) {
-		return true;
-	}
-
-	// render using a BakedModel
-	// not required because the default (super method) is MODEL
-	@Override
-	public EnumBlockRenderType getRenderType(IBlockState iBlockState) {
-		return EnumBlockRenderType.MODEL;
 	}
 	
 	@Override
-	public void getDrops(NonNullList<ItemStack> drops, IBlockAccess world, BlockPos pos, IBlockState state, int fortune) {
-		super.getDrops(drops, world, pos, state, fortune);
-		
-		TileEntity ent = world.getTileEntity(pos);
+	public List<ItemStack> getDrops(BlockState state, LootContext.Builder lootctx) {
+		List<ItemStack> drops = new ArrayList<ItemStack>();
+		drops.add(new ItemStack(this.asItem()));
+		TileEntity ent = lootctx.getOptionalParameter(LootParameters.BLOCK_ENTITY);
+		if (ent == null || !(ent instanceof TileEntityGrappleModifier)) {
+			return drops;
+		}
 		TileEntityGrappleModifier tileent = (TileEntityGrappleModifier) ent;
 		
 		for (grapplemod.upgradeCategories category : grapplemod.upgradeCategories.values()) {
@@ -92,28 +56,14 @@ public class BlockGrappleModifier extends Block {
 				drops.add(new ItemStack(category.getItem()));
 			}
 		}
+		return drops;
 	}
 	
     @Override
-    public boolean removedByPlayer(IBlockState state, World world, BlockPos pos, EntityPlayer player, boolean willHarvest)
-    {
-        if (willHarvest) return true; //If it will harvest, delay deletion of the block until after getDrops
-        return super.removedByPlayer(state, world, pos, player, willHarvest);
-    }
-    /**
-     * Spawns the block's drops in the world. By the time this is called the Block has possibly been set to air via
-     * Block.removedByPlayer
-     */
-    @Override
-    public void harvestBlock(World world, EntityPlayer player, BlockPos pos, IBlockState state, @Nullable TileEntity te, ItemStack tool)
-    {
-        super.harvestBlock(world, player, pos, state, te, tool);
-        world.setBlockToAir(pos);
-    }
-	
-	@Override
-	public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn,
-			EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
+    public ActionResultType use(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockRayTraceResult raytraceresult) {
+    	grapplemod.LOGGER.info("Block use");
+    	return ActionResultType.SUCCESS;
+    	/*
 		ItemStack helditemstack = playerIn.getHeldItemMainhand();
 		Item helditem = helditemstack.getItem();
 
@@ -177,6 +127,6 @@ public class BlockGrappleModifier extends Block {
 			grapplemod.proxy.openModifierScreen(tileent);
 		}
 		return true;
-
+		*/
 	}
 }

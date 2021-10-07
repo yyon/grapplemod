@@ -8,12 +8,8 @@ import java.util.Comparator;
 
 import com.yyon.grapplinghook.GrappleConfig;
 
-import io.netty.buffer.ByteBuf;
-import net.minecraft.client.Minecraft;
-import net.minecraft.util.IThreadListener;
-import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
-import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
-import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
+import net.minecraft.network.PacketBuffer;
+import net.minecraftforge.fml.network.NetworkEvent;
 
 /*
  * This file is part of GrappleMod.
@@ -32,17 +28,18 @@ import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
     along with GrappleMod.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-public class LoggedInMessage implements IMessage {
+public class LoggedInMessage extends BaseMessage {
     GrappleConfig.Config conf = null;
 
-    public LoggedInMessage() { }
+    public LoggedInMessage(PacketBuffer buf) {
+    	super(buf);
+    }
     
     public LoggedInMessage(GrappleConfig.Config serverconf) {
     	this.conf = serverconf;
     }
 
-    @Override
-    public void fromBytes(ByteBuf buf) {
+    public void decode(PacketBuffer buf) {
     	Class<GrappleConfig.Config> confclass = GrappleConfig.Config.class;
     	Field[] fields = confclass.getDeclaredFields();
     	Arrays.sort(fields, new Comparator<Field>() {
@@ -77,8 +74,7 @@ public class LoggedInMessage implements IMessage {
     	}
     }
 
-    @Override
-    public void toBytes(ByteBuf buf) {
+    public void encode(PacketBuffer buf) {
     	Class<GrappleConfig.Config> confclass = GrappleConfig.Config.class;
     	Field[] fields = confclass.getDeclaredFields();
     	Arrays.sort(fields, new Comparator<Field>() {
@@ -111,30 +107,7 @@ public class LoggedInMessage implements IMessage {
     	}
     }
 
-    public static class Handler implements IMessageHandler<LoggedInMessage, IMessage> {
-    	public class runner implements Runnable {
-    		LoggedInMessage message;
-    		MessageContext ctx;
-    		public runner(LoggedInMessage message, MessageContext ctx) {
-    			super();
-    			this.message = message;
-    			this.ctx = ctx;
-    		}
-    		
-            @Override
-            public void run() {
-            	GrappleConfig.setserveroptions(this.message.conf);
-            }
-    	}
-    	
-       
-        @Override
-        public IMessage onMessage(LoggedInMessage message, MessageContext ctx) {
-
-        	IThreadListener mainThread = Minecraft.getMinecraft();
-            mainThread.addScheduledTask(new runner(message, ctx));
-
-            return null; 
-        }
+    public void processMessage(NetworkEvent.Context ctx) {
+    	GrappleConfig.setserveroptions(this.conf);
     }
 }

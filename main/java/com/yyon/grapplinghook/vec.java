@@ -1,7 +1,7 @@
 package com.yyon.grapplinghook;
 
 import net.minecraft.entity.Entity;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.vector.Vector3d;
 
 public class vec {
 	public double x;
@@ -14,7 +14,7 @@ public class vec {
 		this.z = z;
 	}
 	
-	public vec(Vec3d vec3d) {
+	public vec(Vector3d vec3d) {
 		this.x = vec3d.x;
 		this.y = vec3d.y;
 		this.z = vec3d.z;
@@ -26,14 +26,14 @@ public class vec {
 		this.z = vec.z;
 	}
 
-	public Vec3d toVec3d() {
-		return new Vec3d(this.x, this.y, this.z);
+	public Vector3d toVec3d() {
+		return new Vector3d(this.x, this.y, this.z);
 	}
 	
 	public static vec positionvec(Entity e) {
 //		if(Loader.isModLoaded("valkyrienwarfare"))
 //			return positionship(e);
-		return new vec(e.posX, e.posY, e.posZ);
+		return new vec(e.position());
 	}
 	
 	/*
@@ -53,7 +53,7 @@ public class vec {
 	*/
 	
 	public static vec motionvec(Entity e) {
-		return new vec(e.motionX, e.motionY, e.motionZ);
+		return new vec(e.getDeltaMovement());
 	}
 	
 	public vec add(vec v2) {

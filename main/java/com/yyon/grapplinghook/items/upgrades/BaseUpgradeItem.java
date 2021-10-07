@@ -5,22 +5,15 @@ import com.yyon.grapplinghook.grapplemod;
 import net.minecraft.item.Item;
 
 public class BaseUpgradeItem extends Item {
-	public String unlocalizedname;
-	public grapplemod.upgradeCategories category;
+	public grapplemod.upgradeCategories category = null;
 	
-	public BaseUpgradeItem() {
-		super();
-		maxStackSize = 1;
-		setvars();
-		setFull3D();
-		setUnlocalizedName(unlocalizedname);
+	public BaseUpgradeItem(int maxStackSize, grapplemod.upgradeCategories theCategory) {
+		super(new Item.Properties().stacksTo(maxStackSize).tab(grapplemod.tabGrapplemod));
 		
-		setCreativeTab(grapplemod.tabGrapplemod);
+		this.category = theCategory;
 	}
 	
-	public void setvars() {
-		unlocalizedname = "baseupgradeitem";
-		category = null;
-		maxStackSize = 64;
+	public BaseUpgradeItem() {
+		this(64, null);
 	}
 }

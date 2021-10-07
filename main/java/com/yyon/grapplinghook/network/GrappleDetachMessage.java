@@ -1,13 +1,7 @@
 package com.yyon.grapplinghook.network;
 
-import com.yyon.grapplinghook.grapplemod;
-
-import io.netty.buffer.ByteBuf;
-import net.minecraft.client.Minecraft;
-import net.minecraft.util.IThreadListener;
-import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
-import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
-import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
+import net.minecraft.network.PacketBuffer;
+import net.minecraftforge.fml.network.NetworkEvent;
 
 /*
  * This file is part of GrappleMod.
@@ -26,50 +20,27 @@ import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
     along with GrappleMod.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-public class GrappleDetachMessage implements IMessage {
+public class GrappleDetachMessage extends BaseMessage {
    
 	public int id;
 
-    public GrappleDetachMessage() { }
+    public GrappleDetachMessage(PacketBuffer buf) {
+    	super(buf);
+    }
 
     public GrappleDetachMessage(int id) {
     	this.id = id;
     }
 
-    @Override
-    public void fromBytes(ByteBuf buf) {
+    public void decode(PacketBuffer buf) {
     	this.id = buf.readInt();
     }
 
-    @Override
-    public void toBytes(ByteBuf buf) {
+    public void encode(PacketBuffer buf) {
     	buf.writeInt(this.id);
     }
 
-    public static class Handler implements IMessageHandler<GrappleDetachMessage, IMessage> {
-    	public class runner implements Runnable {
-    		GrappleDetachMessage message;
-    		MessageContext ctx;
-    		public runner(GrappleDetachMessage message, MessageContext ctx) {
-    			super();
-    			this.message = message;
-    			this.ctx = ctx;
-    		}
-    		
-            @Override
-            public void run() {
-            	grapplemod.receiveGrappleDetach(message.id);
-            }
-    	}
-    	
-       
-        @Override
-        public IMessage onMessage(GrappleDetachMessage message, MessageContext ctx) {
-
-        	IThreadListener mainThread = Minecraft.getMinecraft(); // or Minecraft.getMinecraft() on the client
-            mainThread.addScheduledTask(new runner(message, ctx));
-
-            return null; // no response in this case
-        }
+    public void processMessage(NetworkEvent.Context ctx) {
+//    	grapplemod.receiveGrappleDetach(this.id);
     }
 }

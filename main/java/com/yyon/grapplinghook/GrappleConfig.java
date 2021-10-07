@@ -1,8 +1,8 @@
 package com.yyon.grapplinghook;
 
-import net.minecraftforge.common.config.Config;
-
-@Config(modid="grapplemod", name="grappling_hook", category="")
+//import net.minecraftforge.common.config.Config;
+//
+//@Config(modid="grapplemod", name="grappling_hook", category="")
 public class GrappleConfig {
 	public static class Config {
 		// rope

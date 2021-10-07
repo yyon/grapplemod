@@ -1,0 +1,22 @@
+{
+    "item.grapplinghook": "Grappin",
+    "item.motorhook": "Grappin motorisé",
+    "item.launcheritem": "Bâton de l'Ender",
+    "item.longfallboots": "Bottes de longue chute",
+    "item.enderhook": "Grappin de l'Ender",
+    "item.magnethook": "Grappin magnétique",
+    "item.repeller": "Champ de force magnétique",
+    "item.doublemotorhook": "Double grappin motorisé",
+    "item.smarthook": "Grappin motorisé intelligent",
+    "item.baseupgradeitem": "Base d'amélioration de grappin",
+    "item.doubleupgradeitem": "Amélioration double grappin",
+    "item.forcefieldupgradeitem": "Amélioration grappin champ de force",
+    "item.motorupgradeitem": "Amélioration grappin motorisé",
+    "item.magnetupgradeitem": "Amélioration grappin aimanté",
+    "item.ropeupgradeitem": "Amélioration corde de grappin",
+    "item.staffupgradeitem": "Amélioration grappin bâton de l'Ender",
+    "item.swingupgradeitem": "Amélioration balancement de grappin",
+    "item.throwupgradeitem": "Amélioration lancement de grappin",
+    "item.limitsupgradeitem": "Amélioration limites de grappin",
+    "block.block_grapple_modifier": "Modificateur de grappin"
+}

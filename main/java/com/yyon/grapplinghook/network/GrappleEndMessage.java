@@ -2,16 +2,8 @@ package com.yyon.grapplinghook.network;
 
 import java.util.HashSet;
 
-import com.yyon.grapplinghook.grapplemod;
-//* // 1.8 Compatability
-
-import io.netty.buffer.ByteBuf;
-import net.minecraft.util.IThreadListener;
-import net.minecraft.world.World;
-import net.minecraft.world.WorldServer;
-import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
-import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
-import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
+import net.minecraft.network.PacketBuffer;
+import net.minecraftforge.fml.network.NetworkEvent;
 
 /*
  * This file is part of GrappleMod.
@@ -30,20 +22,21 @@ import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
     along with GrappleMod.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-public class GrappleEndMessage implements IMessage {
+public class GrappleEndMessage extends BaseMessage {
    
 	public int entityid;
 	public HashSet<Integer> arrowIds;
 
-    public GrappleEndMessage() { }
+    public GrappleEndMessage(PacketBuffer buf) {
+    	super(buf);
+    }
 
     public GrappleEndMessage(int entityid, HashSet<Integer> arrowIds) {
     	this.entityid = entityid;
     	this.arrowIds = arrowIds;
     }
 
-    @Override
-    public void fromBytes(ByteBuf buf) {
+    public void decode(PacketBuffer buf) {
     	this.entityid = buf.readInt();
     	int size = buf.readInt();
     	this.arrowIds = new HashSet<Integer>();
@@ -52,8 +45,7 @@ public class GrappleEndMessage implements IMessage {
     	}
     }
 
-    @Override
-    public void toBytes(ByteBuf buf) {
+    public void encode(PacketBuffer buf) {
     	buf.writeInt(this.entityid);
     	buf.writeInt(this.arrowIds.size());
     	for (int id : this.arrowIds) {
@@ -61,34 +53,13 @@ public class GrappleEndMessage implements IMessage {
     	}
     }
 
-    public static class Handler implements IMessageHandler<GrappleEndMessage, IMessage> {
-    	public class runner implements Runnable {
-    		GrappleEndMessage message;
-    		MessageContext ctx;
-    		public runner(GrappleEndMessage message, MessageContext ctx) {
-    			super();
-    			this.message = message;
-    			this.ctx = ctx;
-    		}
-    		
-            @Override
-            public void run() {
-
-				int id = message.entityid;
-				
-				World w = ctx.getServerHandler().player.world;
-				
-				grapplemod.receiveGrappleEnd(id, w, message.arrowIds);
-            }
-    	}
-    	
-        @Override
-        public IMessage onMessage(GrappleEndMessage message, MessageContext ctx) {
-
-        	IThreadListener mainThread = (WorldServer) ctx.getServerHandler().player.world; // or Minecraft.getMinecraft() on the client
-            mainThread.addScheduledTask(new runner(message, ctx));
-
-            return null; // no response in this case
-        }
+    public void processMessage(NetworkEvent.Context ctx) {
+    	/*
+		int id = this.entityid;
+		
+		World w = ctx.getServerHandler().player.world;
+		
+		grapplemod.receiveGrappleEnd(id, w, this.arrowIds);
+		*/
     }
 }

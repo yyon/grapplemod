@@ -1,18 +1,10 @@
 package com.yyon.grapplinghook.network;
 
 import com.yyon.grapplinghook.vec;
-import com.yyon.grapplinghook.controllers.SegmentHandler;
-import com.yyon.grapplinghook.entities.grappleArrow;
 
-import io.netty.buffer.ByteBuf;
-import net.minecraft.client.Minecraft;
-import net.minecraft.entity.Entity;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.IThreadListener;
-import net.minecraft.world.World;
-import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
-import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
-import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
+import net.minecraft.network.PacketBuffer;
+import net.minecraft.util.Direction;
+import net.minecraftforge.fml.network.NetworkEvent;
 
 /*
  * This file is part of GrappleMod.
@@ -31,19 +23,20 @@ import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
     along with GrappleMod.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-public class SegmentMessage implements IMessage {
+public class SegmentMessage extends BaseMessage {
    
 	public int id;
 	public boolean add;
 	public int index;
 	public vec pos;
-	public EnumFacing topfacing;
-	public EnumFacing bottomfacing;
+	public Direction topfacing;
+	public Direction bottomfacing;
 
+    public SegmentMessage(PacketBuffer buf) {
+    	super(buf);
+    }
 
-    public SegmentMessage() { }
-
-    public SegmentMessage(int id, boolean add, int index, vec pos, EnumFacing topfacing, EnumFacing bottomfacing) {
+    public SegmentMessage(int id, boolean add, int index, vec pos, Direction topfacing, Direction bottomfacing) {
     	this.id = id;
     	this.add = add;
     	this.index = index;
@@ -52,66 +45,43 @@ public class SegmentMessage implements IMessage {
     	this.bottomfacing = bottomfacing;
     }
 
-    @Override
-    public void fromBytes(ByteBuf buf) {
+    public void decode(PacketBuffer buf) {
     	this.id = buf.readInt();
     	this.add = buf.readBoolean();
     	this.index = buf.readInt();
     	this.pos = new vec(buf.readDouble(), buf.readDouble(), buf.readDouble());
-    	this.topfacing = EnumFacing.getFront(buf.readInt());
-    	this.bottomfacing = EnumFacing.getFront(buf.readInt());
+    	this.topfacing = Direction.from2DDataValue(buf.readInt());
+    	this.bottomfacing = Direction.from2DDataValue(buf.readInt());
     }
 
-    @Override
-    public void toBytes(ByteBuf buf) {
+    public void encode(PacketBuffer buf) {
     	buf.writeInt(this.id);
     	buf.writeBoolean(this.add);
     	buf.writeInt(this.index);
     	buf.writeDouble(pos.x);
     	buf.writeDouble(pos.y);
     	buf.writeDouble(pos.z);
-    	buf.writeInt(this.topfacing.getIndex());
-    	buf.writeInt(this.bottomfacing.getIndex());
+    	buf.writeInt(this.topfacing.get2DDataValue());
+    	buf.writeInt(this.bottomfacing.get2DDataValue());
     }
 
-    public static class Handler implements IMessageHandler<SegmentMessage, IMessage> {
-    	public class runner implements Runnable {
-    		SegmentMessage message;
-    		MessageContext ctx;
-    		public runner(SegmentMessage message, MessageContext ctx) {
-    			super();
-    			this.message = message;
-    			this.ctx = ctx;
-    		}
-    		
-            @Override
-            public void run() {
-            	World world = Minecraft.getMinecraft().world;
-            	Entity grapple = world.getEntityByID(message.id);
-            	if (grapple == null) {
-            		return;
-            	}
-            	
-            	if (grapple instanceof grappleArrow) {
-            		SegmentHandler segmenthandler = ((grappleArrow) grapple).segmenthandler;
-            		if (message.add) {
-            			segmenthandler.actuallyaddsegment(message.index, message.pos, message.bottomfacing, message.topfacing);
-            		} else {
-            			segmenthandler.removesegment(message.index);
-            		}
-            	} else {
-            	}
-            }
+    public void processMessage(NetworkEvent.Context ctx) {
+    	/*
+    	World world = Minecraft.getMinecraft().world;
+    	Entity grapple = world.getEntityByID(message.id);
+    	if (grapple == null) {
+    		return;
     	}
     	
-       
-        @Override
-        public IMessage onMessage(SegmentMessage message, MessageContext ctx) {
-
-        	IThreadListener mainThread = Minecraft.getMinecraft();
-            mainThread.addScheduledTask(new runner(message, ctx));
-
-            return null; 
-        }
+    	if (grapple instanceof grappleArrow) {
+    		SegmentHandler segmenthandler = ((grappleArrow) grapple).segmenthandler;
+    		if (message.add) {
+    			segmenthandler.actuallyaddsegment(message.index, message.pos, message.bottomfacing, message.topfacing);
+    		} else {
+    			segmenthandler.removesegment(message.index);
+    		}
+    	} else {
+    	}
+//    	*/
     }
 }

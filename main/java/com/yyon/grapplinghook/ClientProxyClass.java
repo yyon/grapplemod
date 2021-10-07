@@ -1,66 +1,42 @@
 package com.yyon.grapplinghook;
 
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.ConcurrentModificationException;
 import java.util.HashMap;
-import java.util.Map;
+
+import org.lwjgl.glfw.GLFW;
 
 import com.yyon.grapplinghook.blocks.TileEntityGrappleModifier;
-import com.yyon.grapplinghook.controllers.airfrictionController;
-import com.yyon.grapplinghook.controllers.grappleController;
-import com.yyon.grapplinghook.controllers.repelController;
-import com.yyon.grapplinghook.entities.RenderGrappleArrow;
-import com.yyon.grapplinghook.entities.grappleArrow;
 import com.yyon.grapplinghook.items.KeypressItem;
-import com.yyon.grapplinghook.items.grappleBow;
-import com.yyon.grapplinghook.items.launcherItem;
-import com.yyon.grapplinghook.items.repeller;
+import com.yyon.grapplinghook.network.GrappleModifierMessage;
 
-import net.java.games.input.Keyboard;
-import net.minecraft.block.state.IBlockState;
+import net.minecraft.block.BlockState;
 import net.minecraft.client.GameSettings;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.entity.EntityPlayerSP;
-import net.minecraft.client.renderer.ItemMeshDefinition;
-import net.minecraft.client.renderer.entity.Render;
-import net.minecraft.client.renderer.entity.RenderManager;
-import net.minecraft.client.renderer.model.ModelBakery;
 import net.minecraft.client.renderer.model.ModelResourceLocation;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.client.settings.KeyBinding;
-import net.minecraft.enchantment.Enchantment;
-import net.minecraft.enchantment.EnchantmentHelper;
+import net.minecraft.client.util.InputMappings;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.MovementInput;
+import net.minecraft.util.Hand;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.SoundEvent;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.BlockRayTraceResult;
 import net.minecraft.util.math.RayTraceResult;
-import net.minecraft.world.World;
-import net.minecraftforge.client.event.EntityViewRenderEvent.CameraSetup;
-import net.minecraftforge.client.event.InputEvent.KeyInputEvent;
-import net.minecraftforge.client.event.InputUpdateEvent;
-import net.minecraftforge.client.event.ModelRegistryEvent;
-import net.minecraftforge.client.model.ModelLoader;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
+import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.TickEvent;
-import net.minecraftforge.event.TickEvent.ClientTickEvent;
-import net.minecraftforge.event.world.BlockEvent.BreakEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.client.registry.ClientRegistry;
-import net.minecraftforge.fml.client.registry.IRenderFactory;
-import net.minecraftforge.fml.client.registry.RenderingRegistry;
-import net.minecraftforge.fml.common.event.FMLInitializationEvent;
-import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
-import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
-import net.minecraftforge.fml.common.network.FMLNetworkEvent.ClientDisconnectionFromServerEvent;
+import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 
-public class ClientProxyClass extends CommonProxyClass {
+@Mod.EventBusSubscriber(bus=Mod.EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)
+@OnlyIn(Dist.CLIENT)
+public class ClientProxyClass implements CommonProxyClass {
 	public boolean prevkeys[] = {false, false, false, false, false};
 	
 	public HashMap<Integer, Long> enderlaunchtimer = new HashMap<Integer, Long>();
@@ -71,6 +47,7 @@ public class ClientProxyClass extends CommonProxyClass {
 	
 	public static long prev_rope_jump_time = 0;
 	
+	/*
 	@Override
 	public void preInit(FMLPreInitializationEvent event) {
 		super.preInit(event);
@@ -86,6 +63,7 @@ public class ClientProxyClass extends CommonProxyClass {
 	    final int DEFAULT_ITEM_SUBTYPE = 0;
 		ModelLoader.setCustomModelResourceLocation(grapplemod.itemBlockGrappleModifier, DEFAULT_ITEM_SUBTYPE, itemModelResourceLocation);
 	}
+	*/
 	
 	public ModelResourceLocation grapplinghookloc = new ModelResourceLocation("grapplemod:grapplinghook", "inventory");
 	public ModelResourceLocation hookshotloc = new ModelResourceLocation("grapplemod:hookshot", "inventory");
@@ -106,7 +84,23 @@ public class ClientProxyClass extends CommonProxyClass {
 	
 	public ResourceLocation doubleJumpSoundLoc = new ResourceLocation("grapplemod", "doublejump");
 	public ResourceLocation slideSoundLoc = new ResourceLocation("grapplemod", "slide");
+
+	public ClientProxyClass() {
+	    MinecraftForge.EVENT_BUS.register(this);
+	}
 	
+	@SubscribeEvent
+	public static void clientSetup(final FMLClientSetupEvent event) {
+		grapplemod.proxy = new ClientProxyClass();
+
+		// register all the key bindings
+		for (int i = 0; i < keyBindings.size(); ++i) 
+		{
+		    ClientRegistry.registerKeyBinding(keyBindings.get(i));
+		}
+	}
+
+	/*
 	private void setgrapplebowtextures(Item item, final ModelResourceLocation notinusetexture, final ModelResourceLocation inusetexture) {
 		ModelLoader.setCustomMeshDefinition(item, new ItemMeshDefinition() {
 			@Override
@@ -120,7 +114,9 @@ public class ClientProxyClass extends CommonProxyClass {
 		ModelBakery.registerItemVariants(item, notinusetexture);
 		ModelBakery.registerItemVariants(item, inusetexture);
 	}
+	*/
 	
+	/*
 	private void registerItemModels() {
 //		setgrapplebowtextures(grapplemod.grapplebowitem, grapplinghookloc, ropeloc);
 		registerItemModel(grapplemod.launcheritem);
@@ -191,7 +187,9 @@ public class ClientProxyClass extends CommonProxyClass {
 			ModelBakery.registerItemVariants(grapplemod.rockethookitem, loc);
 		}
 	}
+	*/
 
+	/*
 	@SubscribeEvent
 	public void registerAllModels(final ModelRegistryEvent event) {
 		System.out.println("REGISTERING ALL MODELS!!!!!!!!!!!!!");
@@ -207,47 +205,30 @@ public class ClientProxyClass extends CommonProxyClass {
 //		ModelBakery.registerItemVariants(item, fullModelLocation); // Ensure the custom model is loaded and prevent the default model from being loaded
 		ModelLoader.setCustomModelResourceLocation(item, 0, fullModelLocation);
 	}
+	*/
 	
 	
 	public static ArrayList<KeyBinding> keyBindings = new ArrayList<KeyBinding>();
 	
-	public static KeyBinding createkeybinding(String desc, int key, String category) {
-		KeyBinding k = new NonConflictingKeyBinding(desc, key, category);
+	public static KeyBinding createkeybinding(KeyBinding k) {
 		keyBindings.add(k);
 		return k;
 	}
 	
-	public static KeyBinding key_boththrow = createkeybinding("key.boththrow.desc", -99, "key.grapplemod.category");
-	public static KeyBinding key_leftthrow = createkeybinding("key.leftthrow.desc", 0, "key.grapplemod.category");
-	public static KeyBinding key_rightthrow = createkeybinding("key.rightthrow.desc", 0, "key.grapplemod.category");
-	public static KeyBinding key_motoronoff = createkeybinding("key.motoronoff.desc", Keyboard.KEY_LSHIFT, "key.grapplemod.category");
-	public static KeyBinding key_jumpanddetach = createkeybinding("key.jumpanddetach.desc", Keyboard.KEY_SPACE, "key.grapplemod.category");
-	public static KeyBinding key_slow = createkeybinding("key.slow.desc", Keyboard.KEY_LSHIFT, "key.grapplemod.category");
-	public static KeyBinding key_climb = createkeybinding("key.climb.desc", Keyboard.KEY_LSHIFT, "key.grapplemod.category");
-	public static KeyBinding key_climbup = createkeybinding("key.climbup.desc", Keyboard.KEY_W, "key.grapplemod.category");
-	public static KeyBinding key_climbdown = createkeybinding("key.climbdown.desc", Keyboard.KEY_S, "key.grapplemod.category");
-	public static KeyBinding key_enderlaunch = createkeybinding("key.enderlaunch.desc", -100, "key.grapplemod.category");
-	public static KeyBinding key_rocket = createkeybinding("key.rocket.desc", -100, "key.grapplemod.category");
-	public static KeyBinding key_slide = createkeybinding("key.slide.desc", Keyboard.KEY_LSHIFT, "key.grapplemod.category");
+	public static KeyBinding key_boththrow = createkeybinding(new NonConflictingKeyBinding("key.boththrow.desc", InputMappings.Type.MOUSE, GLFW.GLFW_MOUSE_BUTTON_2, "key.grapplemod.category"));
+	public static KeyBinding key_leftthrow = createkeybinding(new NonConflictingKeyBinding("key.leftthrow.desc", InputMappings.UNKNOWN.getValue(), "key.grapplemod.category"));
+	public static KeyBinding key_rightthrow = createkeybinding(new NonConflictingKeyBinding("key.rightthrow.desc", InputMappings.UNKNOWN.getValue(), "key.grapplemod.category"));
+	public static KeyBinding key_motoronoff = createkeybinding(new NonConflictingKeyBinding("key.motoronoff.desc", GLFW.GLFW_KEY_LEFT_SHIFT, "key.grapplemod.category"));
+	public static KeyBinding key_jumpanddetach = createkeybinding(new NonConflictingKeyBinding("key.jumpanddetach.desc", GLFW.GLFW_KEY_SPACE, "key.grapplemod.category"));
+	public static KeyBinding key_slow = createkeybinding(new NonConflictingKeyBinding("key.slow.desc", GLFW.GLFW_KEY_LEFT_SHIFT, "key.grapplemod.category"));
+	public static KeyBinding key_climb = createkeybinding(new NonConflictingKeyBinding("key.climb.desc", GLFW.GLFW_KEY_LEFT_SHIFT, "key.grapplemod.category"));
+	public static KeyBinding key_climbup = createkeybinding(new NonConflictingKeyBinding("key.climbup.desc", GLFW.GLFW_KEY_W, "key.grapplemod.category"));
+	public static KeyBinding key_climbdown = createkeybinding(new NonConflictingKeyBinding("key.climbdown.desc", GLFW.GLFW_KEY_S, "key.grapplemod.category"));
+	public static KeyBinding key_enderlaunch = createkeybinding(new NonConflictingKeyBinding("key.enderlaunch.desc", InputMappings.Type.MOUSE, GLFW.GLFW_MOUSE_BUTTON_1, "key.grapplemod.category"));
+	public static KeyBinding key_rocket = createkeybinding(new NonConflictingKeyBinding("key.rocket.desc", InputMappings.Type.MOUSE, GLFW.GLFW_MOUSE_BUTTON_1, "key.grapplemod.category"));
+	public static KeyBinding key_slide = createkeybinding(new NonConflictingKeyBinding("key.slide.desc", GLFW.GLFW_KEY_LEFT_SHIFT, "key.grapplemod.category"));
 
-
-	@Override
-	public void init(FMLInitializationEvent event, grapplemod grappleModInst) {
-		super.init(event, grappleModInst);
-//		Minecraft.getMinecraft().getRenderItem().getItemModelMesher().register(grapplemod.grapplebowitem, 0, new ModelResourceLocation("grapplemod:grapplinghook", "inventory"));
-//		Minecraft.getMinecraft().getRenderItem().getItemModelMesher().register(grapplemod.hookshotitem, 0, new ModelResourceLocation("grapplemod:hookshot", "inventory"));
-//		Minecraft.getMinecraft().getRenderItem().getItemModelMesher().register(grapplemod.launcheritem, 0, new ModelResourceLocation("grapplemod:launcheritem", "inventory"));
-//		Minecraft.getMinecraft().getRenderItem().getItemModelMesher().register(grapplemod.longfallboots, 0, new ModelResourceLocation("grapplemod:longfallboots", "inventory"));
-//		Minecraft.getMinecraft().getRenderItem().getItemModelMesher().register(grapplemod.enderhookitem, 0, new ModelResourceLocation("grapplemod:enderhook", "inventory"));
-		
-		  
-		// register all the key bindings
-		for (int i = 0; i < keyBindings.size(); ++i) 
-		{
-		    ClientRegistry.registerKeyBinding(keyBindings.get(i));
-		}
-	}
-	
+	/*
 	public crosshairRenderer crosshairrenderer;
 	
 	@Override
@@ -256,10 +237,11 @@ public class ClientProxyClass extends CommonProxyClass {
 		
 		crosshairrenderer = new crosshairRenderer();
 	}
+	*/
 	
-	public ItemStack getKeypressStack(EntityPlayer player) {
+	public ItemStack getKeypressStack(PlayerEntity player) {
 		if (player != null) {
-           ItemStack stack = player.getHeldItemMainhand();
+           ItemStack stack = player.getItemInHand(Hand.MAIN_HAND);
            if (stack != null) {
                Item item = stack.getItem();
                if (item instanceof KeypressItem) {
@@ -267,7 +249,7 @@ public class ClientProxyClass extends CommonProxyClass {
                }
            }
            
-           stack = player.getHeldItemOffhand();
+           stack = player.getItemInHand(Hand.OFF_HAND);
            if (stack != null) {
         	   Item item = stack.getItem();
         	   if (item instanceof KeypressItem) {
@@ -278,11 +260,17 @@ public class ClientProxyClass extends CommonProxyClass {
 		return null;
 	}
 	
-	public boolean isLookingAtModifierBlock(EntityPlayer player) {
-		RayTraceResult raytraceresult = Minecraft.getMinecraft().objectMouseOver;
-		if (raytraceresult != null && raytraceresult.typeOfHit == RayTraceResult.Type.BLOCK) {
-			BlockPos pos = raytraceresult.getBlockPos();
-			IBlockState state = player.world.getBlockState(pos);
+	public boolean isLookingAtModifierBlock(PlayerEntity player) {
+		RayTraceResult raytraceresult = Minecraft.getInstance().hitResult;
+		if (raytraceresult != null && raytraceresult.getType() == RayTraceResult.Type.BLOCK) {
+			BlockRayTraceResult bray = (BlockRayTraceResult) raytraceresult;
+			BlockPos pos = bray.getBlockPos();
+			BlockState state = player.level.getBlockState(pos);
+
+			if ((state.getBlock() == grapplemod.blockGrappleModifier)) {
+	        	grapplemod.simpleChannel.sendToServer(new GrappleModifierMessage(pos, new GrappleCustomization()));
+			}
+			
 			return (state.getBlock() == grapplemod.blockGrappleModifier);
 		}
 		return false;
@@ -290,11 +278,11 @@ public class ClientProxyClass extends CommonProxyClass {
 	
 	@SubscribeEvent
 	public void onClientTick(TickEvent.ClientTickEvent event) {
-		EntityPlayer player = Minecraft.getMinecraft().player;
+		PlayerEntity player = Minecraft.getInstance().player;
 		if (player != null) {
-			if (!Minecraft.getMinecraft().isGamePaused() || !Minecraft.getMinecraft().isSingleplayer()) {
-//				System.out.println(vec.motionvec(player).removealong(new vec(0,1,0)).length() + " " + grapplemod.controllers.containsKey(player.getEntityId()));
-				
+			if (!Minecraft.getInstance().isPaused()) {
+
+				/*
 				if (this.iswallrunning(player, vec.motionvec(player))) {
 					if (!grapplemod.controllers.containsKey(player.getEntityId())) {
 						grappleController controller = this.createControl(grapplemod.AIRID, -1, player.getEntityId(), player.world, new vec(0,0,0), null, null);
@@ -325,10 +313,11 @@ public class ClientProxyClass extends CommonProxyClass {
 				}
 
 				if (this.rocketFuel > 1) {this.rocketFuel = 1;}
+				*/
 				
-				if (Minecraft.getMinecraft().currentScreen == null) {
+				if (Minecraft.getInstance().screen == null) {
 					// keep in same order as enum from KeypressItem
-					boolean keys[] = {key_enderlaunch.isKeyDown(), key_leftthrow.isKeyDown(), key_rightthrow.isKeyDown(), key_boththrow.isKeyDown(), key_rocket.isKeyDown()};
+					boolean keys[] = {key_enderlaunch.isDown(), key_leftthrow.isDown(), key_rightthrow.isDown(), key_boththrow.isDown(), key_rocket.isDown()};
 					
 					for (int i = 0; i < keys.length; i++) {
 						boolean iskeydown = keys[i];
@@ -353,18 +342,21 @@ public class ClientProxyClass extends CommonProxyClass {
 					}
 				}
 				
-				if (player.onGround) {
-					if (enderlaunchtimer.containsKey(player.getEntityId())) {
+				/*
+				if (player.isOnGround()) {
+					if (enderlaunchtimer.containsKey(player.entity())) {
 						long timer = player.world.getTotalWorldTime() - enderlaunchtimer.get(player.getEntityId());
 						if (timer > 10) {
 							this.resetlaunchertime(player.getEntityId());
 						}
 					}
 				}
+				*/
 			}
 		}
 	}
 	
+	/*
 	private void checkslide(EntityPlayer player) {
 		if (key_slide.isKeyDown() && !grapplemod.controllers.containsKey(player.getEntityId()) && this.issliding(player, vec.motionvec(player))) {
 			this.createControl(grapplemod.AIRID, -1, player.getEntityId(), player.world, new vec(0,0,0), null, null);
@@ -389,8 +381,9 @@ public class ClientProxyClass extends CommonProxyClass {
 			}
 		}
 	}
-
+	*/
 	
+	/*
 	@Override
 	public void launchplayer(EntityPlayer player) {
 		long prevtime;
@@ -405,25 +398,6 @@ public class ClientProxyClass extends CommonProxyClass {
 				enderlaunchtimer.put(player.getEntityId(), player.world.getTotalWorldTime());
 				
 	        	vec facing = new vec(player.getLookVec());
-//				vec playermotion = vec.motionvec(player);
-//				vec newvec = playermotion.add(facing.mult(3));
-				
-				/*
-				if (!grapplemod.controllers.containsKey(player.getEntityId())) {
-					player.motionX = newvec.x;
-					player.motionY = newvec.y;
-					player.motionZ = newvec.z;
-					
-					if (player instanceof EntityPlayerMP) {
-						((EntityPlayerMP) player).connection.sendPacket(new SPacketEntityVelocity(player));
-					} else {
-						grapplemod.network.sendToServer(new PlayerMovementMessage(player.getEntityId(), player.posX, player.posY, player.posZ, player.motionX, player.motionY, player.motionZ));
-					}
-				} else {
-					facing.mult_ip(3);
-					grapplemod.receiveEnderLaunch(player.getEntityId(), facing.x, facing.y, facing.z);
-				}
-				*/
 	        	
 	        	GrappleCustomization custom = null;
 	        	if (player.getHeldItemMainhand().getItem() instanceof grappleBow) {
@@ -470,36 +444,36 @@ public class ClientProxyClass extends CommonProxyClass {
 			}
 		}
     }
+    */
 	
-	@Override
-	public String getkeyname(CommonProxyClass.keys keyenum) {
+	public String getkeyname(grapplemod.keys keyenum) {
 		KeyBinding binding = null;
 		
-		GameSettings gs = Minecraft.getMinecraft().gameSettings;
+		GameSettings gs = Minecraft.getInstance().options;
 		
-		if (keyenum == keys.keyBindAttack) {
-			binding = gs.keyBindAttack;
-		} else if (keyenum == keys.keyBindBack) {
-			binding = gs.keyBindBack;
-		} else if (keyenum == keys.keyBindForward) {
-			binding = gs.keyBindForward;
-		} else if (keyenum == keys.keyBindJump) {
-			binding = gs.keyBindJump;
-		} else if (keyenum == keys.keyBindLeft) {
-			binding = gs.keyBindLeft;
-		} else if (keyenum == keys.keyBindRight) {
-			binding = gs.keyBindRight;
-		} else if (keyenum == keys.keyBindSneak) {
-			binding = gs.keyBindSneak;
-		} else if (keyenum == keys.keyBindUseItem) {
-			binding = gs.keyBindUseItem;
+		if (keyenum == grapplemod.keys.keyBindAttack) {
+			binding = gs.keyAttack;
+		} else if (keyenum == grapplemod.keys.keyBindBack) {
+			binding = gs.keyDown;
+		} else if (keyenum == grapplemod.keys.keyBindForward) {
+			binding = gs.keyUp;
+		} else if (keyenum == grapplemod.keys.keyBindJump) {
+			binding = gs.keyJump;
+		} else if (keyenum == grapplemod.keys.keyBindLeft) {
+			binding = gs.keyLeft;
+		} else if (keyenum == grapplemod.keys.keyBindRight) {
+			binding = gs.keyRight;
+		} else if (keyenum == grapplemod.keys.keyBindSneak) {
+			binding = gs.keyShift;
+		} else if (keyenum == grapplemod.keys.keyBindUseItem) {
+			binding = gs.keyUse;
 		}
 		
 		if (binding == null) {
 			return "";
 		}
 		
-		String displayname = binding.getDisplayName();
+		String displayname = binding.getName();
 		if (displayname.equals("Button 1")) {
 			return "Left Click";
 		} else if (displayname.equals("Button 2")) {
@@ -509,6 +483,7 @@ public class ClientProxyClass extends CommonProxyClass {
 		}
 	}
 
+	/*
 	public static boolean isactive(ItemStack stack) {
 		EntityPlayer p = Minecraft.getMinecraft().player;
 //		if (p.getItemStackFromSlot(EntityEquipmentSlot.MAINHAND) == stack || p.getItemStackFromSlot(EntityEquipmentSlot.OFFHAND) == stack) {
@@ -547,12 +522,79 @@ public class ClientProxyClass extends CommonProxyClass {
 //			}
 		}
 	}
+	*/
+
+	public String localize(String string) {
+		return I18n.get(string);
+	}
 
 	@Override
-	public String localize(String string) {
-		return I18n.format(string);
+	public void resetlaunchertime(int playerid) {
+		// TODO Auto-generated method stub
+		
 	}
-	
+
+	@Override
+	public void launchplayer(PlayerEntity player) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public boolean isSneaking(Entity entity) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public void openModifierScreen(TileEntityGrappleModifier tileent) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void startrocket(PlayerEntity player, GrappleCustomization custom) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void updateRocketRegen(double rocket_active_time, double rocket_refuel_ratio) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public double getRocketFunctioning() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public boolean iswallrunning(Entity entity, vec motion) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean issliding(Entity entity, vec motion) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public void playSlideSound(Entity entity) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void playWallrunJumpSound(Entity entity) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	/*
 	@Override
 	public void updateRocketRegen(double rocket_active_time, double rocket_refuel_ratio) {
 		this.rocketDecreaseTick = 0.05 / 2.0 / rocket_active_time;
@@ -828,8 +870,6 @@ public class ClientProxyClass extends CommonProxyClass {
 					}
 				}
 				if (!created) {
-/*					System.out.println("Couldn't create");
-					grapplemod.removesubarrow(arrowid);*/
 					control = new grappleController(arrowid, entityid, world, pos, id, custom);
 				}
 			}
@@ -865,5 +905,5 @@ public class ClientProxyClass extends CommonProxyClass {
 	public void playWallrunJumpSound(Entity entity) {
 		entity.playSound(new SoundEvent(this.doubleJumpSoundLoc), GrappleConfig.client_options.wallrunjump_sound_volume * 0.7F, 1.0F);
 	}
-
+	*/
 }

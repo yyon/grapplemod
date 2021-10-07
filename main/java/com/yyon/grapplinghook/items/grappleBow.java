@@ -1,43 +1,13 @@
 package com.yyon.grapplinghook.items;
 
-import java.util.HashMap;
-import java.util.List;
-
-import org.spongepowered.asm.mixin.MixinEnvironment.Side;
-
-import com.yyon.grapplinghook.ClientProxyClass;
-import com.yyon.grapplinghook.CommonProxyClass;
-import com.yyon.grapplinghook.GrappleConfig;
 import com.yyon.grapplinghook.GrappleCustomization;
 import com.yyon.grapplinghook.grapplemod;
-import com.yyon.grapplinghook.vec;
-import com.yyon.grapplinghook.entities.grappleArrow;
-import com.yyon.grapplinghook.network.DetachSingleHookMessage;
-import com.yyon.grapplinghook.network.GrappleDetachMessage;
-import com.yyon.grapplinghook.network.KeypressMessage;
 
-import net.java.games.input.Keyboard;
-import net.minecraft.client.util.ITooltipFlag;
-import net.minecraft.creativetab.CreativeTabs;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.EnumAction;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.ActionResult;
-import net.minecraft.util.EnumActionResult;
-import net.minecraft.util.EnumHand;
-import net.minecraft.util.NonNullList;
-import net.minecraft.util.SoundCategory;
-import net.minecraft.util.SoundEvents;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.world.World;
+import net.minecraft.nbt.CompoundNBT;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.fml.relauncher.SideOnly;
 
 
 /*
@@ -58,22 +28,23 @@ import net.minecraftforge.fml.relauncher.SideOnly;
  */
 
 public class grappleBow extends Item implements KeypressItem {
-	public static HashMap<Entity, grappleArrow> grapplearrows1 = new HashMap<Entity, grappleArrow>();
-	public static HashMap<Entity, grappleArrow> grapplearrows2 = new HashMap<Entity, grappleArrow>();
+//	public static HashMap<Entity, grappleArrow> grapplearrows1 = new HashMap<Entity, grappleArrow>();
+//	public static HashMap<Entity, grappleArrow> grapplearrows2 = new HashMap<Entity, grappleArrow>();
 	
 	public grappleBow() {
-		super();
-		maxStackSize = 1;
-		setFull3D();
-		setUnlocalizedName("grapplinghook");
+		super(new Item.Properties().stacksTo(1).tab(grapplemod.tabGrapplemod));
+//		maxStackSize = 1;
+//		setFull3D();
+//		setUnlocalizedName("grapplinghook");
+//		
+//		this.setMaxDamage(GrappleConfig.getconf().default_durability);
+//		
+//		setCreativeTab(grapplemod.tabGrapplemod);
 		
-		this.setMaxDamage(GrappleConfig.getconf().default_durability);
-		
-		setCreativeTab(grapplemod.tabGrapplemod);
-		
-		MinecraftForge.EVENT_BUS.register(this);
+//		MinecraftForge.EVENT_BUS.register(this);
 	}
 
+	/*
     @Override
 	public int getMaxItemUseDuration(ItemStack par1ItemStack)
 	{
@@ -325,10 +296,12 @@ public class grappleBow extends Item implements KeypressItem {
 		}
 		super.onPlayerStoppedUsing(stack, worldIn, entityLiving, timeLeft);
 	}
+	*/
 
 	/**
 	 * returns the action that specifies what animation to play when the items is being used
 	 */
+	/*
     @Override
 	public EnumAction getItemUseAction(ItemStack par1ItemStack)
 	{
@@ -340,10 +313,11 @@ public class grappleBow extends Item implements KeypressItem {
     {
     	return true;
     }
+    */
     
 	@Override
-	public void onCustomKeyDown(ItemStack stack, EntityPlayer player, KeypressItem.Keys key, boolean ismainhand) {
-		if (player.world.isRemote) {
+	public void onCustomKeyDown(ItemStack stack, PlayerEntity player, KeypressItem.Keys key, boolean ismainhand) {
+/*		if (player.world.isRemote) {
 			if (key == KeypressItem.Keys.LAUNCHER) {
 				if (this.getCustomization(stack).enderstaff) {
 					grapplemod.proxy.launchplayer(player);
@@ -386,12 +360,12 @@ public class grappleBow extends Item implements KeypressItem {
 				stack.damageItem(1, player);
 		        player.world.playSound((EntityPlayer)null, player.posX, player.posY, player.posZ, SoundEvents.ENTITY_ARROW_SHOOT, SoundCategory.NEUTRAL, 1.0F, 1.0F / (itemRand.nextFloat() * 0.4F + 1.2F) + 2.0F * 0.5F);
 			}
-		}
+		}*/
 	}
 	
 	@Override
-	public void onCustomKeyUp(ItemStack stack, EntityPlayer player, KeypressItem.Keys key, boolean ismainhand) {
-		if (player.world.isRemote) {
+	public void onCustomKeyUp(ItemStack stack, PlayerEntity player, KeypressItem.Keys key, boolean ismainhand) {
+/*		if (player.world.isRemote) {
 			if (key == KeypressItem.Keys.THROWLEFT || key == KeypressItem.Keys.THROWRIGHT || key == KeypressItem.Keys.THROWBOTH) {
 				grapplemod.network.sendToServer(new KeypressMessage(key, false));
 			}
@@ -410,9 +384,10 @@ public class grappleBow extends Item implements KeypressItem {
 		    		if (arrow_right != null) detachRight(player);
 				}
 	    	}
-		}
+		}*/
 	}
    
+	/*
     @Override
     public boolean hitEntity(ItemStack stack, EntityLivingBase target, EntityLivingBase attacker)
     {
@@ -424,18 +399,19 @@ public class grappleBow extends Item implements KeypressItem {
     {
       return true;
     }
+    */
     
     public GrappleCustomization getCustomization(ItemStack itemstack) {
-    	if (itemstack.hasTagCompound()) {
+    	if (itemstack.hasTag()) {
         	GrappleCustomization custom = new GrappleCustomization();
-    		custom.loadNBT(itemstack.getTagCompound());
+    		custom.loadNBT(itemstack.getTag());
         	return custom;
     	} else {
     		GrappleCustomization custom = this.getDefaultCustomization();
 
-			NBTTagCompound nbt = custom.writeNBT();
+			CompoundNBT nbt = custom.writeNBT();
 			
-			itemstack.setTagCompound(nbt);
+			itemstack.setTag(nbt);
     		
     		return custom;
     	}
@@ -445,105 +421,106 @@ public class grappleBow extends Item implements KeypressItem {
     	return new GrappleCustomization();
     }
     
+    /*
 	@Override
-    @SideOnly(Side.CLIENT)
-	public void addInformation(ItemStack stack, World world, List<String> list, ITooltipFlag par4)
-	{
+	@OnlyIn(Dist.CLIENT)
+	public void appendHoverText(ItemStack stack, @Nullable World world, List<ITextComponent> list, ITooltipFlag par4) {
 		GrappleCustomization custom = getCustomization(stack);
-
 		
-		if (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT)) {
+		if (Minecraft.getInstance().options.keyShift.isDown()) {
 			if (!custom.detachonkeyrelease) {
-				list.add(ClientProxyClass.key_boththrow.getDisplayName() + " " + grapplemod.proxy.localize("grappletooltip.throw.desc"));
-				list.add(ClientProxyClass.key_boththrow.getDisplayName() + " " + grapplemod.proxy.localize("grappletooltip.release.desc"));
-				list.add(grapplemod.proxy.localize("grappletooltip.double.desc") + ClientProxyClass.key_boththrow.getDisplayName() + " " + grapplemod.proxy.localize("grappletooltip.releaseandthrow.desc"));
+				list.add(new StringTextComponent(ClientProxyClass.key_boththrow.getName() + " " + grapplemod.proxy.localize("grappletooltip.throw.desc")));
+				list.add(new StringTextComponent(ClientProxyClass.key_boththrow.getName() + " " + grapplemod.proxy.localize("grappletooltip.release.desc")));
+				list.add(new StringTextComponent(grapplemod.proxy.localize("grappletooltip.double.desc") + ClientProxyClass.key_boththrow.getName() + " " + grapplemod.proxy.localize("grappletooltip.releaseandthrow.desc")));
 			} else {
-				list.add(ClientProxyClass.key_boththrow.getDisplayName() + " " + grapplemod.proxy.localize("grappletooltip.throwhold.desc"));
+				list.add(new StringTextComponent(ClientProxyClass.key_boththrow.getName() + " " + grapplemod.proxy.localize("grappletooltip.throwhold.desc")));
 			}
-			list.add(grapplemod.proxy.getkeyname(CommonProxyClass.keys.keyBindForward) + ", " +
-					grapplemod.proxy.getkeyname(CommonProxyClass.keys.keyBindLeft) + ", " +
-					grapplemod.proxy.getkeyname(CommonProxyClass.keys.keyBindBack) + ", " +
-					grapplemod.proxy.getkeyname(CommonProxyClass.keys.keyBindRight) +
-					" " + grapplemod.proxy.localize("grappletooltip.swing.desc"));
-			list.add(ClientProxyClass.key_jumpanddetach.getDisplayName() + " " + grapplemod.proxy.localize("grappletooltip.jump.desc"));
-			list.add(ClientProxyClass.key_slow.getDisplayName() + " " + grapplemod.proxy.localize("grappletooltip.slow.desc"));
-			list.add((custom.climbkey ? ClientProxyClass.key_climb.getDisplayName() + " + " : "") +
-					ClientProxyClass.key_climbup.getDisplayName() + 
-					" " + grapplemod.proxy.localize("grappletooltip.climbup.desc"));
-			list.add((custom.climbkey ? ClientProxyClass.key_climb.getDisplayName() + " + " : "") +
-					ClientProxyClass.key_climbdown.getDisplayName() + 
-					" " + grapplemod.proxy.localize("grappletooltip.climbdown.desc"));
+			list.add(new StringTextComponent(grapplemod.proxy.getkeyname(grapplemod.keys.keyBindForward) + ", " +
+					grapplemod.proxy.getkeyname(grapplemod.keys.keyBindLeft) + ", " +
+					grapplemod.proxy.getkeyname(grapplemod.keys.keyBindBack) + ", " +
+					grapplemod.proxy.getkeyname(grapplemod.keys.keyBindRight) +
+					" " + grapplemod.proxy.localize("grappletooltip.swing.desc")));
+			list.add(new StringTextComponent(ClientProxyClass.key_jumpanddetach.getName() + " " + grapplemod.proxy.localize("grappletooltip.jump.desc")));
+			list.add(new StringTextComponent(ClientProxyClass.key_slow.getName() + " " + grapplemod.proxy.localize("grappletooltip.slow.desc")));
+			list.add(new StringTextComponent((custom.climbkey ? ClientProxyClass.key_climb.getName() + " + " : "") +
+					ClientProxyClass.key_climbup.getName() + 
+					" " + grapplemod.proxy.localize("grappletooltip.climbup.desc")));
+			list.add(new StringTextComponent((custom.climbkey ? ClientProxyClass.key_climb.getName() + " + " : "") +
+					ClientProxyClass.key_climbdown.getName() + 
+					" " + grapplemod.proxy.localize("grappletooltip.climbdown.desc")));
 			if (custom.enderstaff) {
-				list.add(ClientProxyClass.key_enderlaunch.getDisplayName() + " " + grapplemod.proxy.localize("grappletooltip.enderlaunch.desc"));
+				list.add(new StringTextComponent(ClientProxyClass.key_enderlaunch.getName() + " " + grapplemod.proxy.localize("grappletooltip.enderlaunch.desc")));
 			}
 			if (custom.rocket) {
-				list.add(ClientProxyClass.key_rocket.getDisplayName() + " " + grapplemod.proxy.localize("grappletooltip.rocket.desc"));
+				list.add(new StringTextComponent(ClientProxyClass.key_rocket.getName() + " " + grapplemod.proxy.localize("grappletooltip.rocket.desc")));
 			}
 			if (custom.motor) {
 				if (custom.motorwhencrouching && !custom.motorwhennotcrouching) {
-					list.add(ClientProxyClass.key_motoronoff.getDisplayName() + " " + grapplemod.proxy.localize("grappletooltip.motoron.desc"));
+					list.add(new StringTextComponent(ClientProxyClass.key_motoronoff.getName() + " " + grapplemod.proxy.localize("grappletooltip.motoron.desc")));
 				}
 				else if (!custom.motorwhencrouching && custom.motorwhennotcrouching) {
-					list.add(ClientProxyClass.key_motoronoff.getDisplayName() + " " + grapplemod.proxy.localize("grappletooltip.motoroff.desc"));
+					list.add(new StringTextComponent(ClientProxyClass.key_motoronoff.getName() + " " + grapplemod.proxy.localize("grappletooltip.motoroff.desc")));
 				}
 			}
 			if (custom.doublehook) {
 				if (!custom.detachonkeyrelease) {
-					list.add(ClientProxyClass.key_leftthrow.getDisplayName() + " " + grapplemod.proxy.localize("grappletooltip.throwleft.desc"));
-					list.add(ClientProxyClass.key_rightthrow.getDisplayName() + " " + grapplemod.proxy.localize("grappletooltip.throwright.desc"));
+					list.add(new StringTextComponent(ClientProxyClass.key_leftthrow.getName() + " " + grapplemod.proxy.localize("grappletooltip.throwleft.desc")));
+					list.add(new StringTextComponent(ClientProxyClass.key_rightthrow.getName() + " " + grapplemod.proxy.localize("grappletooltip.throwright.desc")));
 				} else {
-					list.add(ClientProxyClass.key_leftthrow.getDisplayName() + " " + grapplemod.proxy.localize("grappletooltip.throwlefthold.desc"));
-					list.add(ClientProxyClass.key_rightthrow.getDisplayName() + " " + grapplemod.proxy.localize("grappletooltip.throwrighthold.desc"));
+					list.add(new StringTextComponent(ClientProxyClass.key_leftthrow.getName() + " " + grapplemod.proxy.localize("grappletooltip.throwlefthold.desc")));
+					list.add(new StringTextComponent(ClientProxyClass.key_rightthrow.getName() + " " + grapplemod.proxy.localize("grappletooltip.throwrighthold.desc")));
 				}
 			} else {
-				list.add(ClientProxyClass.key_rightthrow.getDisplayName() + " " + grapplemod.proxy.localize("grappletooltip.throwalt.desc"));
+				list.add(new StringTextComponent(ClientProxyClass.key_rightthrow.getName() + " " + grapplemod.proxy.localize("grappletooltip.throwalt.desc")));
 			}
 		} else {
-			if (Keyboard.isKeyDown(Keyboard.KEY_LCONTROL)) {
+			if (Minecraft.getInstance().options.keySprint.isDown()) {
 				for (String option : GrappleCustomization.booleanoptions) {
 					if (custom.isoptionvalid(option) && custom.getBoolean(option)) {
-						list.add(grapplemod.proxy.localize(custom.getName(option)));
+						list.add(new StringTextComponent(grapplemod.proxy.localize(custom.getName(option))));
 					}
 				}
 				for (String option : GrappleCustomization.doubleoptions) {
 					if (custom.isoptionvalid(option)) {
-						list.add(grapplemod.proxy.localize(custom.getName(option)) + ": " + Math.floor(custom.getDouble(option) * 100) / 100);
+						list.add(new StringTextComponent(grapplemod.proxy.localize(custom.getName(option)) + ": " + Math.floor(custom.getDouble(option) * 100) / 100));
 					}
 				}
 			} else {
 				if (custom.doublehook) {
-					list.add(grapplemod.proxy.localize(custom.getName("doublehook")));
+					list.add(new StringTextComponent(grapplemod.proxy.localize(custom.getName("doublehook"))));
 				}
 				if (custom.motor) {
 					if (custom.smartmotor) {
-						list.add(grapplemod.proxy.localize(custom.getName("smartmotor")));
+						list.add(new StringTextComponent(grapplemod.proxy.localize(custom.getName("smartmotor"))));
 					} else {
-						list.add(grapplemod.proxy.localize(custom.getName("motor")));
+						list.add(new StringTextComponent(grapplemod.proxy.localize(custom.getName("motor"))));
 					}
 				}
 				if (custom.enderstaff) {
-					list.add(grapplemod.proxy.localize(custom.getName("enderstaff")));
+					list.add(new StringTextComponent(grapplemod.proxy.localize(custom.getName("enderstaff"))));
 				}
 				if (custom.rocket) {
-					list.add(grapplemod.proxy.localize(custom.getName("rocket")));
+					list.add(new StringTextComponent(grapplemod.proxy.localize(custom.getName("rocket"))));
 				}
 				if (custom.attract) {
-					list.add(grapplemod.proxy.localize(custom.getName("attract")));
+					list.add(new StringTextComponent(grapplemod.proxy.localize(custom.getName("attract"))));
 				}
 				if (custom.repel) {
-					list.add(grapplemod.proxy.localize(custom.getName("repel")));
+					list.add(new StringTextComponent(grapplemod.proxy.localize(custom.getName("repel"))));
 				}
 				
-				list.add("");
-				list.add(grapplemod.proxy.localize("grappletooltip.shiftcontrols.desc"));
-				list.add(grapplemod.proxy.localize("grappletooltip.controlconfiguration.desc"));
+				list.add(new StringTextComponent(""));
+				list.add(new StringTextComponent(grapplemod.proxy.localize("grappletooltip.shiftcontrols.desc")));
+				list.add(new StringTextComponent(grapplemod.proxy.localize("grappletooltip.controlconfiguration.desc")));
 			}
 		}
 		
 
 	}
+	*/
 
 	
+    /*
 	@Override
     @SideOnly(Side.CLIENT)
     public ItemStack getDefaultInstance()
@@ -591,4 +568,5 @@ public class grappleBow extends Item implements KeypressItem {
 		
 		return super.onDroppedByPlayer(item, player);
 	}
+	*/
 }

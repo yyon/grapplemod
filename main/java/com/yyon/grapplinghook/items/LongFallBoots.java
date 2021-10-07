@@ -1,27 +1,12 @@
 package com.yyon.grapplinghook.items;
 
-import java.util.List;
-
-import org.spongepowered.asm.mixin.MixinEnvironment.Side;
-
-import com.yyon.grapplinghook.GrappleConfig;
 import com.yyon.grapplinghook.grapplemod;
 
-import net.minecraft.client.util.ITooltipFlag;
-import net.minecraft.creativetab.CreativeTabs;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.inventory.EntityEquipmentSlot;
+import net.minecraft.inventory.EquipmentSlotType;
+import net.minecraft.item.ArmorItem;
 import net.minecraft.item.ArmorMaterial;
-import net.minecraft.item.ItemArmor;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.DamageSource;
-import net.minecraft.util.NonNullList;
-import net.minecraft.world.World;
+import net.minecraft.item.Item;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.event.entity.living.LivingFallEvent;
-import net.minecraftforge.event.entity.living.LivingHurtEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.relauncher.SideOnly;
 
 /*
  * This file is part of GrappleMod.
@@ -40,14 +25,14 @@ import net.minecraftforge.fml.relauncher.SideOnly;
     along with GrappleMod.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-public class LongFallBoots extends ItemArmor {
+public class LongFallBoots extends ArmorItem {
 	public LongFallBoots(ArmorMaterial material, int type) {
-	    super(material, 0, EntityEquipmentSlot.FEET);
-	    this.setUnlocalizedName("longfallboots");
-	    MinecraftForge.EVENT_BUS.register(this);
-		setCreativeTab(grapplemod.tabGrapplemod);
+	    super(material, EquipmentSlotType.FEET, new Item.Properties().stacksTo(1).tab(grapplemod.tabGrapplemod));
+
+//	    MinecraftForge.EVENT_BUS.register(this);
 	}
 	
+	/*
 	@SubscribeEvent
 	public void onLivingHurtEvent(LivingHurtEvent event) {
 		if (event.getEntity() != null && event.getEntity() instanceof EntityPlayer)
@@ -111,4 +96,5 @@ public class LongFallBoots extends ItemArmor {
             items.add(stack);
         }
     }
+    */
 }
