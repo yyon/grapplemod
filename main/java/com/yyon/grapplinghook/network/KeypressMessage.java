@@ -1,8 +1,9 @@
 package com.yyon.grapplinghook.network;
 
-//* // 1.8 Compatability
+import com.yyon.grapplinghook.grapplemod;
 import com.yyon.grapplinghook.items.KeypressItem;
 
+import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.network.PacketBuffer;
 import net.minecraftforge.fml.network.NetworkEvent;
 
@@ -48,10 +49,11 @@ public class KeypressMessage extends BaseMessageServer {
     }
 
     public void processMessage(NetworkEvent.Context ctx) {
-    	/*
-		World w = ctx.getServerHandler().player.world;
-		
-		grapplemod.receiveKeypress(ctx.getServerHandler().player, this.message.key, this.message.isDown);
-		*/
+    	final ServerPlayerEntity sendingPlayer = ctx.getSender();
+        if (sendingPlayer == null) {
+          grapplemod.LOGGER.warn("EntityPlayerMP was null when KeypressMessage was received");
+        }
+        
+		grapplemod.receiveKeypress(sendingPlayer, this.key, this.isDown);
 	}
 }

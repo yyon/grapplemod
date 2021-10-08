@@ -6,6 +6,7 @@ import java.util.HashMap;
 import org.lwjgl.glfw.GLFW;
 
 import com.yyon.grapplinghook.blocks.TileEntityGrappleModifier;
+import com.yyon.grapplinghook.entities.grappleArrow;
 import com.yyon.grapplinghook.items.KeypressItem;
 import com.yyon.grapplinghook.network.BaseMessageClient;
 import com.yyon.grapplinghook.network.GrappleModifierMessage;
@@ -13,6 +14,10 @@ import com.yyon.grapplinghook.network.GrappleModifierMessage;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.GameSettings;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.ItemRenderer;
+import net.minecraft.client.renderer.entity.EntityRenderer;
+import net.minecraft.client.renderer.entity.EntityRendererManager;
+import net.minecraft.client.renderer.entity.SpriteRenderer;
 import net.minecraft.client.renderer.model.ModelResourceLocation;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.client.settings.KeyBinding;
@@ -31,6 +36,8 @@ import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.client.registry.ClientRegistry;
+import net.minecraftforge.fml.client.registry.IRenderFactory;
+import net.minecraftforge.fml.client.registry.RenderingRegistry;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.network.NetworkEvent.Context;
@@ -91,13 +98,13 @@ public class ClientProxyClass implements CommonProxyClass {
 	
 	@SubscribeEvent
 	public static void clientSetup(final FMLClientSetupEvent event) {
-		grapplemod.proxy = new ClientProxyClass();
-
 		// register all the key bindings
 		for (int i = 0; i < keyBindings.size(); ++i) 
 		{
 		    ClientRegistry.registerKeyBinding(keyBindings.get(i));
 		}
+		
+	    RenderingRegistry.registerEntityRenderingHandler(grapplemod.grappleArrowType, new grappleArrowRenderFactory());
 	}
 
 	/*
@@ -239,6 +246,14 @@ public class ClientProxyClass implements CommonProxyClass {
 	}
 	*/
 	
+	private static class grappleArrowRenderFactory implements IRenderFactory<grappleArrow> {
+	    @Override
+	    public EntityRenderer<? super grappleArrow> createRenderFor(EntityRendererManager manager) {
+	      ItemRenderer itemRenderer = Minecraft.getInstance().getItemRenderer();
+	      return new SpriteRenderer<>(manager, itemRenderer);
+	    }
+	  }
+	
 	public ItemStack getKeypressStack(PlayerEntity player) {
 		if (player != null) {
            ItemStack stack = player.getItemInHand(Hand.MAIN_HAND);
@@ -268,7 +283,7 @@ public class ClientProxyClass implements CommonProxyClass {
 			BlockState state = player.level.getBlockState(pos);
 
 			if ((state.getBlock() == grapplemod.blockGrappleModifier)) {
-	        	grapplemod.simpleChannel.sendToServer(new GrappleModifierMessage(pos, new GrappleCustomization()));
+	        	grapplemod.network.sendToServer(new GrappleModifierMessage(pos, new GrappleCustomization()));
 			}
 			
 			return (state.getBlock() == grapplemod.blockGrappleModifier);

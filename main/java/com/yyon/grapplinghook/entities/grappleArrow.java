@@ -1,35 +1,25 @@
 package com.yyon.grapplinghook.entities;
 
-import java.util.HashMap;
+import javax.annotation.Nonnull;
 
-import org.spongepowered.asm.mixin.MixinEnvironment.Side;
-
-import com.yyon.grapplinghook.GrappleConfig;
 import com.yyon.grapplinghook.GrappleCustomization;
 import com.yyon.grapplinghook.grapplemod;
 import com.yyon.grapplinghook.vec;
 import com.yyon.grapplinghook.controllers.SegmentHandler;
-import com.yyon.grapplinghook.network.GrappleAttachMessage;
-import com.yyon.grapplinghook.network.GrappleAttachPosMessage;
 
-import io.netty.buffer.ByteBuf;
-import net.minecraft.block.Block;
-import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.entity.projectile.EntityThrowable;
-import net.minecraft.server.MinecraftServer;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.entity.EntityType;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.projectile.ProjectileItemEntity;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
+import net.minecraft.network.IPacket;
+import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.RayTraceResult;
-import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.registry.IEntityAdditionalSpawnData;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import net.minecraftforge.fml.network.NetworkHooks;
 
 /*
  * This file is part of GrappleMod.
@@ -48,8 +38,33 @@ import net.minecraftforge.fml.relauncher.SideOnly;
     along with GrappleMod.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-public class grappleArrow extends EntityThrowable implements IEntityAdditionalSpawnData
-{
+public class grappleArrow extends ProjectileItemEntity implements IEntityAdditionalSpawnData {
+	public grappleArrow(EntityType<? extends grappleArrow> type, World world) {
+		super(type, world);
+
+		this.segmenthandler = new SegmentHandler(this.level, this, vec.positionvec(this), vec.positionvec(this));
+		this.customization = new GrappleCustomization();
+	}
+
+	public grappleArrow(World world, LivingEntity shooter,
+			boolean righthand, GrappleCustomization customization, boolean isdouble) {
+		super(grapplemod.grappleArrowType, shooter.position().x, shooter.position().y + shooter.getEyeHeight(), shooter.position().z, world);
+		
+		this.shootingEntity = shooter;
+		this.shootingEntityID = this.shootingEntity.getId();
+		
+		this.isdouble = isdouble;
+		
+		vec pos = vec.positionvec(this.shootingEntity).add(new vec(0, this.shootingEntity.getEyeHeight(), 0));
+
+		this.segmenthandler = new SegmentHandler(this.level, this, new vec(pos), new vec(pos));
+
+		this.customization = customization;
+		this.r = customization.maxlen;
+		
+		this.righthand = righthand;
+	}
+
 	public Entity shootingEntity = null;
 	public int shootingEntityID;
 	
@@ -85,44 +100,54 @@ public class grappleArrow extends EntityThrowable implements IEntityAdditionalSp
 	public boolean wasinair = false;
 	public BlockPos magnetblock = null;
 	
-	public grappleArrow(World worldIn) {
-		super(worldIn);
-		
-		this.segmenthandler = new SegmentHandler(this.world, this, vec.positionvec(this), vec.positionvec(this));
-		this.customization = new GrappleCustomization();
-	}
-	
-	public grappleArrow(World worldIn, EntityLivingBase shooter,
-			boolean righthand, GrappleCustomization customization, boolean isdouble) {
-		super(worldIn, shooter);
-		
-		this.shootingEntity = shooter;
-		this.shootingEntityID = this.shootingEntity.getEntityId();
-		
-		this.isdouble = isdouble;
-		
-		/*
-		double x = 0.36;
-		if (righthand) {x = -0.36;}
-        vec pos = vec.positionvec(this);
-        pos.add_ip(new vec(x, -0.175, 0.45).rotate_yaw(Math.toRadians(shooter.rotationYaw)));
-        this.setPosition(pos.x, pos.y, pos.z);
-        */
-		
-		vec pos = vec.positionvec(this.shootingEntity).add(new vec(0, this.shootingEntity.getEyeHeight(), 0));
-
-		this.segmenthandler = new SegmentHandler(this.world, this, new vec(pos), new vec(pos));
-
-		this.customization = customization;
-		this.r = customization.maxlen;
-		
-		this.righthand = righthand;
-	}
+	@Override
+    public void writeSpawnData(PacketBuffer data)
+    {
+	    data.writeInt(this.shootingEntity != null ? this.shootingEntity.getId() : 0);
+	    data.writeBoolean(this.righthand);
+	    data.writeBoolean(this.isdouble);
+	    if (this.customization == null) {
+	    	System.out.println("error: customization null");
+	    }
+	    this.customization.writeToBuf(data);
+    }
 	
 	@Override
-	public void onUpdate(){
-		super.onUpdate();
+    public void readSpawnData(PacketBuffer data)
+    {
+    	this.shootingEntityID = data.readInt();
+	    this.shootingEntity = this.level.getEntity(this.shootingEntityID);
+	    this.righthand = data.readBoolean();
+	    this.isdouble = data.readBoolean();
+	    this.customization = new GrappleCustomization();
+	    this.customization.readFromBuf(data);
+    }
+
+	@Override
+	public void defineSynchedData() {
+		super.defineSynchedData();
+	}
+	
+//	public void remove(boolean keepData) {
+//		grapplemod.LOGGER.info("remove");
+//		throw new RuntimeException("hi");
+////		super.remove(keepData);
+//	}
+	
+	public void removeServer() {
+		this.remove();
+		this.shootingEntityID = 0;
+	}
+
+	public float getVelocity() {
+        return (float) this.customization.throwspeed;
+    }
+	
+	@Override
+	public void tick() {
+		super.tick();
 		
+		/*
 		if (this.shootingEntityID == 0 || this.shootingEntity == null) { // removes ghost grappling hooks
 			this.remove();
 		}
@@ -189,14 +214,6 @@ public class grappleArrow extends EntityThrowable implements IEntityAdditionalSp
 					
 				}
 			}
-/*		} else {
-			vec farthest = this.segmenthandler.getfarthest();
-			double distToFarthest = this.segmenthandler.getDistToFarthest();
-			
-			vec ropevec = vec.positionvec(this).sub(farthest);
-			double d = ropevec.length();
-			
-			this.taut = d + distToFarthest / maxlen;*/
 		}
 		
 		// magnet attraction
@@ -261,8 +278,10 @@ public class grappleArrow extends EntityThrowable implements IEntityAdditionalSp
 	    		}
 	    	}
 		}
+		*/
 	}
 	
+	/*
 	public void setVelocityActually(double x, double y, double z) {
         this.motionX = x;
         this.motionY = y;
@@ -310,21 +329,6 @@ public class grappleArrow extends EntityThrowable implements IEntityAdditionalSp
 //	public AxisAlignedBB getEntityBoundingBox() {
 //		return this.segmenthandler.getBoundingBox(vec.positionvec(this), vec.positionvec(this.shootingEntity).add(new vec(0, this.shootingEntity.getEyeHeight(), 0)));
 //	}
-	
-/*	public boolean toofaraway() {
-    	if (this.shootingEntity == null) {return false;}
-		if (!this.world.isRemote) {
-			if (!grapplemod.attached.contains(this.shootingEntityID)) {
-				if (grapplemod.grapplingLength != 0) {
-					double d = vec.positionvec(this).sub(vec.positionvec(this.shootingEntity)).length();
-					if (d > grapplemod.grapplingLength) {
-						return true;
-					}
-				}
-			}
-		}
-		return false;
-	}*/
 
 	public void setPosition(double x, double y, double z) {
 		if (this.thispos != null) {
@@ -336,28 +340,6 @@ public class grappleArrow extends EntityThrowable implements IEntityAdditionalSp
 	}
 	
 	
-	@Override
-    public void writeSpawnData(ByteBuf data)
-    {
-	    data.writeInt(this.shootingEntity != null ? this.shootingEntity.getEntityId() : 0);
-	    data.writeBoolean(this.righthand);
-	    data.writeBoolean(this.isdouble);
-	    if (this.customization == null) {
-	    	System.out.println("error: customization null");
-	    }
-	    this.customization.writeToBuf(data);
-    }
-	
-	@Override
-    public void readSpawnData(ByteBuf data)
-    {
-    	this.shootingEntityID = data.readInt();
-	    this.shootingEntity = this.world.getEntityByID(this.shootingEntityID);
-	    this.righthand = data.readBoolean();
-	    this.isdouble = data.readBoolean();
-	    this.customization = new GrappleCustomization();
-	    this.customization.readFromBuf(data);
-    }
 	
 	public void remove() {
 		this.setDead();
@@ -367,9 +349,12 @@ public class grappleArrow extends EntityThrowable implements IEntityAdditionalSp
 	public String toString() {
 		return super.toString() + String.valueOf(System.identityHashCode(this)) + "]";
 	}
+	*/
 
 	@Override
-	protected void onImpact(RayTraceResult movingobjectposition) {
+	protected void onHit(RayTraceResult movingobjectposition) {
+		this.removeServer();
+		/*
 		if (!this.world.isRemote) {
 			if (this.attached) {
 				return;
@@ -437,8 +422,15 @@ public class grappleArrow extends EntityThrowable implements IEntityAdditionalSp
 				}
 			}
 		}
+		*/
+	}
+
+	@Override
+	protected Item getDefaultItem() {
+		return grapplemod.grapplebowitem;
 	}
 	
+	/*
 	public void serverAttach(BlockPos blockpos, vec pos, EnumFacing sideHit) {
 		if (this.attached) {
 			return;
@@ -518,16 +510,7 @@ public class grappleArrow extends EntityThrowable implements IEntityAdditionalSp
         return (float) this.customization.hookgravity * 0.1F;
     }
 	
-    public float getVelocity()
-    {
-        return (float) this.customization.throwspeed;
-    }
 
-	public void removeServer() {
-		this.setDead();
-		this.shootingEntityID = 0;
-
-	}
 	
 	public int getControlId() {
 		return grapplemod.GRAPPLEID;
@@ -592,5 +575,17 @@ public class grappleArrow extends EntityThrowable implements IEntityAdditionalSp
     	} else {
     		return checkedset.get(pos);
     	}
+	}
+	*/
+	
+	@Nonnull
+	@Override
+	public IPacket<?> getAddEntityPacket() {
+		  return NetworkHooks.getEntitySpawningPacket(this);
+	}
+
+	@Override
+	public ItemStack getItem() {
+		return new ItemStack(this.getDefaultItem());
 	}
 }

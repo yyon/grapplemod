@@ -61,7 +61,6 @@ public class BlockGrappleModifier extends Block {
 	
     @Override
     public ActionResultType use(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockRayTraceResult raytraceresult) {
-    	grapplemod.LOGGER.info("Block use");
     	return ActionResultType.SUCCESS;
     	/*
 		ItemStack helditemstack = playerIn.getHeldItemMainhand();

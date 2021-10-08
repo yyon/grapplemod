@@ -7,19 +7,20 @@ import com.yyon.grapplinghook.vec;
 import com.yyon.grapplinghook.entities.grappleArrow;
 import com.yyon.grapplinghook.network.SegmentMessage;
 
-import net.minecraft.util.EnumFacing;
+import net.minecraft.util.Direction;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.RayTraceResult;
-import net.minecraft.util.math.Vec3i;
+import net.minecraft.util.math.BlockRayTraceResult;
+import net.minecraft.util.math.vector.Vector3i;
 import net.minecraft.world.World;
+import net.minecraftforge.fml.network.PacketDistributor;
 import net.minecraftforge.fml.network.PacketDistributor.TargetPoint;
 
 public class SegmentHandler {
 
 	public LinkedList<vec> segments;
-	public LinkedList<EnumFacing> segmentbottomsides;
-	public LinkedList<EnumFacing> segmenttopsides;
+	public LinkedList<Direction> segmentbottomsides;
+	public LinkedList<Direction> segmenttopsides;
 	public World world;
 	public grappleArrow arrow;
 	
@@ -33,10 +34,10 @@ public class SegmentHandler {
 		segments = new LinkedList<vec>();
 		segments.add(hookpos);
 		segments.add(playerpos);
-		segmentbottomsides = new LinkedList<EnumFacing>();
+		segmentbottomsides = new LinkedList<Direction>();
 		segmentbottomsides.add(null);
 		segmentbottomsides.add(null);
-		segmenttopsides = new LinkedList<EnumFacing>();
+		segmenttopsides = new LinkedList<Direction>();
 		segmenttopsides.add(null);
 		segmenttopsides.add(null);
 		this.world = w;
@@ -84,8 +85,8 @@ public class SegmentHandler {
 			
 			int index = segments.size()-2;
 			closest = segments.get(index);
-			EnumFacing bottomside = segmentbottomsides.get(index);
-			EnumFacing topside = segmenttopsides.get(index);
+			Direction bottomside = segmentbottomsides.get(index);
+			Direction topside = segmenttopsides.get(index);
 			vec ropevec = playerpos.sub(closest);
 			
 			vec beforepoint = segments.get(index-1);
@@ -113,8 +114,8 @@ public class SegmentHandler {
 				
 				int index = 1;
 				farthest = segments.get(index);
-				EnumFacing bottomside = segmentbottomsides.get(index);
-				EnumFacing topside = segmenttopsides.get(index);
+				Direction bottomside = segmentbottomsides.get(index);
+				Direction topside = segmenttopsides.get(index);
 				vec ropevec = farthest.sub(hookpos);
 				
 				vec beforepoint = segments.get(index+1);
@@ -169,30 +170,30 @@ public class SegmentHandler {
 		segmentbottomsides.remove(index);
 		segmenttopsides.remove(index);
 
-		if (!this.world.isRemote) {
-			SegmentMessage addmessage = new SegmentMessage(this.arrow.getEntityId(), false, index, new vec(0, 0, 0), EnumFacing.DOWN, EnumFacing.DOWN);
+		if (!this.world.isClientSide) {
+			SegmentMessage addmessage = new SegmentMessage(this.arrow.getId(), false, index, new vec(0, 0, 0), Direction.DOWN, Direction.DOWN);
 			vec playerpoint = vec.positionvec(this.arrow.shootingEntity);
-			grapplemod.network.sendToAllAround(addmessage, new TargetPoint(this.world.provider.getDimension(), playerpoint.x, playerpoint.y, playerpoint.z, 100));
+			grapplemod.network.send(PacketDistributor.TRACKING_CHUNK.with(() -> world.getChunkAt(new BlockPos(playerpoint.x, playerpoint.y, playerpoint.z))), addmessage);
+//			grapplemod.network.sendToAllAround(addmessage, new TargetPoint(this.world.provider.getDimension(), playerpoint.x, playerpoint.y, playerpoint.z, 100));
 		}
 	}
 	
 	public void updatesegment(vec top, vec prevtop, vec bottom, vec prevbottom, int index, int numberrecursions) {
-        RayTraceResult bottomraytraceresult = this.world.rayTraceBlocks(bottom.toVec3d(), top.toVec3d(), false, true, false);
+		BlockRayTraceResult bottomraytraceresult = grapplemod.rayTraceBlocks(this.world, bottom, top);
         
         // if rope hit block
-        if (bottomraytraceresult != null)
-        {
-        	if (this.world.rayTraceBlocks(prevbottom.toVec3d(), prevtop.toVec3d(), false, true, false) != null) {
+        if (bottomraytraceresult != null) {
+        	if (grapplemod.rayTraceBlocks(this.world, prevbottom, prevtop) != null) {
 //        		System.out.println("Warning: prev collision");
         		return;
         	}
         	
 //        	System.out.println(bottomraytraceresult.typeOfHit);
-            vec bottomhitvec = new vec(bottomraytraceresult.hitVec.x, bottomraytraceresult.hitVec.y, bottomraytraceresult.hitVec.z);
+            vec bottomhitvec = new vec(bottomraytraceresult.getLocation());
 /*            this.arrow.debugpos = bottomhitvec;
             this.arrow.debugpos2 = bottom;
             this.arrow.debugpos3 = top;*/
-            EnumFacing bottomside = bottomraytraceresult.sideHit;
+            Direction bottomside = bottomraytraceresult.getDirection();
             vec bottomnormal = this.getnormal(bottomside);
             
             // calculate where bottomhitvec was along the rope in the previous tick
@@ -240,10 +241,10 @@ public class SegmentHandler {
             	}
             	
             	// the corner must be in the line (cornerbound2, cornerbound1)
-                RayTraceResult cornerraytraceresult = this.world.rayTraceBlocks(cornerbound2.toVec3d(), cornerbound1.toVec3d(), false, true, false);
+            	BlockRayTraceResult cornerraytraceresult = grapplemod.rayTraceBlocks(this.world, cornerbound2, cornerbound1);
                 if (cornerraytraceresult != null) {
-                	vec cornerhitpos = new vec(cornerraytraceresult.hitVec.x, cornerraytraceresult.hitVec.y, cornerraytraceresult.hitVec.z);
-                	EnumFacing cornerside = cornerraytraceresult.sideHit;
+                	vec cornerhitpos = new vec(cornerraytraceresult.getLocation());
+                	Direction cornerside = cornerraytraceresult.getDirection();
                 	
                 	if (cornerside == bottomside || 
                 			cornerside.getOpposite() == bottomside) {
@@ -302,19 +303,18 @@ public class SegmentHandler {
             
             
             
-/*            RayTraceResult topraytraceresult = this.world.rayTraceBlocks(top.toVec3d(), bottom.toVec3d());
-            vec tophitvec = new vec(topraytraceresult.hitVec.x, topraytraceresult.hitVec.y, topraytraceresult.hitVec.z);
-            EnumFacing topside = topraytraceresult.sideHit;
+/*            RayTraceResult topraytraceresult = grapplemod.rayTraceBlocks(this.world, top, bottom(topraytraceresult.hitVec.x, topraytraceresult.hitVec.y, topraytraceresult.hitVec.z);
+            Direction topside = topraytraceresult.sideHit;
             
             if (bottomhitvec.sub(top).length() > 0.01 && tophitvec.sub(bottom).length() > 0.01) {
             	if (bottomside == topside) {
             		System.out.println("Warning: bottomside == topside");
-            	} else if ((bottomside == EnumFacing.DOWN && topside == EnumFacing.UP) || 
-	            		(bottomside == EnumFacing.UP && topside == EnumFacing.DOWN) || 
-	            		(bottomside == EnumFacing.EAST && topside == EnumFacing.WEST) || 
-	            		(bottomside == EnumFacing.WEST && topside == EnumFacing.EAST) || 
-	            		(bottomside == EnumFacing.NORTH && topside == EnumFacing.SOUTH) || 
-	            		(bottomside == EnumFacing.SOUTH && topside == EnumFacing.NORTH)) {
+            	} else if ((bottomside == Direction.DOWN && topside == Direction.UP) || 
+	            		(bottomside == Direction.UP && topside == Direction.DOWN) || 
+	            		(bottomside == Direction.EAST && topside == Direction.WEST) || 
+	            		(bottomside == Direction.WEST && topside == Direction.EAST) || 
+	            		(bottomside == Direction.NORTH && topside == Direction.SOUTH) || 
+	            		(bottomside == Direction.SOUTH && topside == Direction.NORTH)) {
 	            	System.out.println("two sides");
 	            	// binary search to find 3rd side
 	            	vec newprevtop = prevtop;
@@ -322,11 +322,10 @@ public class SegmentHandler {
             		vec center = bottomhitvec.add(tophitvec).mult(0.5);
 	            	for (int i = 0; i < 20; i++) {
 	            		vec prevcenter = newprevtop.add(newprevbottom).mult(0.5);
-	            		RayTraceResult thirdsidetrace = this.world.rayTraceBlocks(prevcenter.toVec3d(), center.toVec3d());
-	            		if (thirdsidetrace == null) {
+	            		RayTraceResult thirdsidetrace = grapplemod.rayTraceBlocks(this.world, prevcenter, center {
 	            			break;
 	            		}
-	            		EnumFacing thirdside = thirdsidetrace.sideHit;
+	            		Direction thirdside = thirdsidetrace.sideHit;
 	            		if (thirdside == bottomside) {
 	            			newprevbottom = prevcenter;
 	            		} else if (thirdside == topside) {
@@ -359,8 +358,8 @@ public class SegmentHandler {
 		return linepoint1.add(linevec.mult(d));
 	}
 	
-	public vec getnormal(EnumFacing facing) {
-		Vec3i facingvec = facing.getDirectionVec();
+	public vec getnormal(Direction facing) {
+		Vector3i facingvec = facing.getNormal();
 		return new vec(facingvec.getX(), facingvec.getY(), facingvec.getZ());
 	}
 	
@@ -375,7 +374,7 @@ public class SegmentHandler {
 		return new BlockPos(bendpos.x, bendpos.y, bendpos.z);
 	}
 	
-/*	public void addsegment(vec bottomhit, vec tophit, EnumFacing bottomside, EnumFacing topside, int index, vec top, vec prevtop, vec bottom, vec prevbottom) {
+/*	public void addsegment(vec bottomhit, vec tophit, Direction bottomside, Direction topside, int index, vec top, vec prevtop, vec bottom, vec prevbottom) {
 		System.out.println("Computing bend point");
 		
 		vec bottomnormal = getnormal(bottomside);
@@ -421,7 +420,7 @@ public class SegmentHandler {
 		}
 	}*/
 	
-	public void actuallyaddsegment(int index, vec bendpoint, EnumFacing bottomside, EnumFacing topside) {
+	public void actuallyaddsegment(int index, vec bendpoint, Direction bottomside, Direction topside) {
         segments.add(index, bendpoint);
         segmentbottomsides.add(index, bottomside);
         segmenttopsides.add(index, topside);
@@ -429,10 +428,11 @@ public class SegmentHandler {
         /*System.out.println("added segment");
 		this.print();*/
 		
-		if (!this.world.isRemote) {
-			SegmentMessage addmessage = new SegmentMessage(this.arrow.getEntityId(), true, index, bendpoint, topside, bottomside);
+		if (!this.world.isClientSide) {
+			SegmentMessage addmessage = new SegmentMessage(this.arrow.getId(), true, index, bendpoint, topside, bottomside);
 			vec playerpoint = vec.positionvec(this.arrow.shootingEntity);
-			grapplemod.network.sendToAllAround(addmessage, new TargetPoint(this.world.provider.getDimension(), playerpoint.x, playerpoint.y, playerpoint.z, 100));
+			grapplemod.network.send(PacketDistributor.TRACKING_CHUNK.with(() -> world.getChunkAt(new BlockPos(playerpoint.x, playerpoint.y, playerpoint.z))), addmessage);
+//			grapplemod.network.sendToAllAround(addmessage, new TargetPoint(this.world.provider.getDimension(), playerpoint.x, playerpoint.y, playerpoint.z, 100));
 		}
 	}
 	

@@ -1,6 +1,7 @@
 package com.yyon.grapplinghook;
 
 import java.lang.reflect.Method;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Optional;
 
@@ -9,6 +10,8 @@ import org.apache.logging.log4j.Logger;
 
 import com.yyon.grapplinghook.blocks.BlockGrappleModifier;
 import com.yyon.grapplinghook.blocks.TileEntityGrappleModifier;
+import com.yyon.grapplinghook.entities.grappleArrow;
+import com.yyon.grapplinghook.items.KeypressItem;
 import com.yyon.grapplinghook.items.LongFallBoots;
 import com.yyon.grapplinghook.items.grappleBow;
 import com.yyon.grapplinghook.items.launcherItem;
@@ -43,13 +46,23 @@ import com.yyon.grapplinghook.network.PlayerMovementMessage;
 import com.yyon.grapplinghook.network.SegmentMessage;
 
 import net.minecraft.block.Block;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityClassification;
+import net.minecraft.entity.EntityType;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.item.ArmorMaterial;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntityType;
+import net.minecraft.util.Hand;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.math.BlockRayTraceResult;
+import net.minecraft.util.math.RayTraceContext;
+import net.minecraft.util.math.RayTraceResult;
+import net.minecraft.world.World;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.event.RegistryEvent;
@@ -59,6 +72,7 @@ import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.network.NetworkDirection;
 import net.minecraftforge.fml.network.NetworkRegistry;
+import net.minecraftforge.fml.network.PacketDistributor;
 import net.minecraftforge.fml.network.simple.SimpleChannel;
 
 /*
@@ -127,15 +141,14 @@ public class grapplemod {
 
 //	public static Object instance;
 	
-	public static SimpleChannel simpleChannel;    // used to transmit your network messages
+	public static SimpleChannel network;    // used to transmit your network messages
 	public static final ResourceLocation simpleChannelRL = new ResourceLocation("grapplemod", "channel");
 //	public static SimpleNetworkWrapper network;
 //	
 //	public static HashMap<Integer, grappleController> controllers = new HashMap<Integer, grappleController>(); // client side
 //	public static HashMap<BlockPos, grappleController> controllerpos = new HashMap<BlockPos, grappleController>();
-//	public static HashSet<Integer> attached = new HashSet<Integer>(); // server side
-	
-//	public static HashMap<Integer, HashSet<grappleArrow>> allarrows = new HashMap<Integer, HashSet<grappleArrow>>(); // server side
+	public static HashSet<Integer> attached = new HashSet<Integer>(); // server side	
+	public static HashMap<Integer, HashSet<grappleArrow>> allarrows = new HashMap<Integer, HashSet<grappleArrow>>(); // server side
 	
 	private static int controllerid = 0;
 	public static int GRAPPLEID = controllerid++;
@@ -234,7 +247,7 @@ public class grapplemod {
 	
 	@SubscribeEvent
 	public static void init(FMLCommonSetupEvent event) {
-		simpleChannel = NetworkRegistry.newSimpleChannel(simpleChannelRL, () -> "1.0",
+		network = NetworkRegistry.newSimpleChannel(simpleChannelRL, () -> "1.0",
 	            version -> true,
 	            version -> true);
 		int id = 0;
@@ -248,16 +261,16 @@ public class grapplemod {
 //		network.registerMessage(GrappleModifierMessage.Handler.class, GrappleModifierMessage.class, id++, Side.SERVER);
 //		network.registerMessage(LoggedInMessage.Handler.class, LoggedInMessage.class, id++, Side.CLIENT);
 //		network.registerMessage(KeypressMessage.Handler.class, KeypressMessage.class, id++, Side.SERVER);
-		simpleChannel.registerMessage(id++, PlayerMovementMessage.class, PlayerMovementMessage::encode, PlayerMovementMessage::new, PlayerMovementMessage::onMessageReceived, Optional.of(NetworkDirection.PLAY_TO_SERVER));
-		simpleChannel.registerMessage(id++, GrappleEndMessage.class, GrappleEndMessage::encode, GrappleEndMessage::new, GrappleEndMessage::onMessageReceived, Optional.of(NetworkDirection.PLAY_TO_SERVER));
-		simpleChannel.registerMessage(id++, GrappleModifierMessage.class, GrappleModifierMessage::encode, GrappleModifierMessage::new, GrappleModifierMessage::onMessageReceived, Optional.of(NetworkDirection.PLAY_TO_SERVER));
-		simpleChannel.registerMessage(id++, KeypressMessage.class, KeypressMessage::encode, KeypressMessage::new, KeypressMessage::onMessageReceived, Optional.of(NetworkDirection.PLAY_TO_SERVER));
-		simpleChannel.registerMessage(id++, GrappleAttachMessage.class, GrappleAttachMessage::encode, GrappleAttachMessage::new, GrappleAttachMessage::onMessageReceived, Optional.of(NetworkDirection.PLAY_TO_CLIENT));
-		simpleChannel.registerMessage(id++, GrappleDetachMessage.class, GrappleDetachMessage::encode, GrappleDetachMessage::new, GrappleDetachMessage::onMessageReceived, Optional.of(NetworkDirection.PLAY_TO_CLIENT));
-		simpleChannel.registerMessage(id++, DetachSingleHookMessage.class, DetachSingleHookMessage::encode, DetachSingleHookMessage::new, DetachSingleHookMessage::onMessageReceived, Optional.of(NetworkDirection.PLAY_TO_CLIENT));
-		simpleChannel.registerMessage(id++, GrappleAttachPosMessage.class, GrappleAttachPosMessage::encode, GrappleAttachPosMessage::new, GrappleAttachPosMessage::onMessageReceived, Optional.of(NetworkDirection.PLAY_TO_CLIENT));
-		simpleChannel.registerMessage(id++, SegmentMessage.class, SegmentMessage::encode, SegmentMessage::new, SegmentMessage::onMessageReceived, Optional.of(NetworkDirection.PLAY_TO_CLIENT));
-		simpleChannel.registerMessage(id++, LoggedInMessage.class, LoggedInMessage::encode, LoggedInMessage::new, LoggedInMessage::onMessageReceived, Optional.of(NetworkDirection.PLAY_TO_CLIENT));
+		network.registerMessage(id++, PlayerMovementMessage.class, PlayerMovementMessage::encode, PlayerMovementMessage::new, PlayerMovementMessage::onMessageReceived, Optional.of(NetworkDirection.PLAY_TO_SERVER));
+		network.registerMessage(id++, GrappleEndMessage.class, GrappleEndMessage::encode, GrappleEndMessage::new, GrappleEndMessage::onMessageReceived, Optional.of(NetworkDirection.PLAY_TO_SERVER));
+		network.registerMessage(id++, GrappleModifierMessage.class, GrappleModifierMessage::encode, GrappleModifierMessage::new, GrappleModifierMessage::onMessageReceived, Optional.of(NetworkDirection.PLAY_TO_SERVER));
+		network.registerMessage(id++, KeypressMessage.class, KeypressMessage::encode, KeypressMessage::new, KeypressMessage::onMessageReceived, Optional.of(NetworkDirection.PLAY_TO_SERVER));
+		network.registerMessage(id++, GrappleAttachMessage.class, GrappleAttachMessage::encode, GrappleAttachMessage::new, GrappleAttachMessage::onMessageReceived, Optional.of(NetworkDirection.PLAY_TO_CLIENT));
+		network.registerMessage(id++, GrappleDetachMessage.class, GrappleDetachMessage::encode, GrappleDetachMessage::new, GrappleDetachMessage::onMessageReceived, Optional.of(NetworkDirection.PLAY_TO_CLIENT));
+		network.registerMessage(id++, DetachSingleHookMessage.class, DetachSingleHookMessage::encode, DetachSingleHookMessage::new, DetachSingleHookMessage::onMessageReceived, Optional.of(NetworkDirection.PLAY_TO_CLIENT));
+		network.registerMessage(id++, GrappleAttachPosMessage.class, GrappleAttachPosMessage::encode, GrappleAttachPosMessage::new, GrappleAttachPosMessage::onMessageReceived, Optional.of(NetworkDirection.PLAY_TO_CLIENT));
+		network.registerMessage(id++, SegmentMessage.class, SegmentMessage::encode, SegmentMessage::new, SegmentMessage::onMessageReceived, Optional.of(NetworkDirection.PLAY_TO_CLIENT));
+		network.registerMessage(id++, LoggedInMessage.class, LoggedInMessage::encode, LoggedInMessage::new, LoggedInMessage::onMessageReceived, Optional.of(NetworkDirection.PLAY_TO_CLIENT));
 	}
 	
 	@SubscribeEvent
@@ -278,7 +291,17 @@ public class grapplemod {
 		event.getRegistry().register(tileEntityGrappleModifierType);
 	}
 
+	public static EntityType<grappleArrow> grappleArrowType;
 	
+	@SubscribeEvent
+	public static void onEntityTypeRegistration(RegistryEvent.Register<EntityType<?>> entityTypeRegisterEvent) {
+		grappleArrowType = EntityType.Builder.<grappleArrow>of(grappleArrow::new, EntityClassification.MISC)
+	            .sized(0.25F, 0.25F)
+	            .build("grapplemod:grapplearrow");
+		grappleArrowType.setRegistryName("grapplemod:grapplearrow");
+	    entityTypeRegisterEvent.getRegistry().register(grappleArrowType);
+	}
+
 	/*
 	public void preInit(FMLPreInitializationEvent event) {
 	    MinecraftForge.EVENT_BUS.register(this);
@@ -600,6 +623,26 @@ public class grapplemod {
 		itemBlockGrappleModifier.setRegistryName(blockGrappleModifier.getRegistryName());
 		itemRegisterEvent.getRegistry().register(itemBlockGrappleModifier);
 	}
+	
+	public static void addarrow(int id, grappleArrow arrow) {
+		if (!allarrows.containsKey(id)) {
+			allarrows.put(id, new HashSet<grappleArrow>());
+		}
+		allarrows.get(id).add(arrow);
+	}
+	
+	public static void removeallmultihookarrows(int id) {
+		if (!allarrows.containsKey(id)) {
+			allarrows.put(id, new HashSet<grappleArrow>());
+		}
+		for (grappleArrow arrow : allarrows.get(id)) {
+			if (arrow != null && arrow.isAlive()) {
+				arrow.removeServer();
+			}
+		}
+		allarrows.put(id, new HashSet<grappleArrow>());
+	}
+
 	/*
 	@EventHandler
 	public void preInit(FMLPreInitializationEvent event){
@@ -768,16 +811,14 @@ public class grapplemod {
 	}
 	*/
 	
-	/*
-	public static void sendtocorrectclient(IMessage message, int playerid, World w) {
-		Entity entity = w.getEntityByID(playerid);
-		if (entity instanceof EntityPlayerMP) {
-			grapplemod.network.sendTo(message, (EntityPlayerMP) entity);
+	public static void sendtocorrectclient(Object message, int playerid, World w) {
+		Entity entity = w.getEntity(playerid);
+		if (entity instanceof ServerPlayerEntity) {
+			grapplemod.network.send(PacketDistributor.PLAYER.with(() -> (ServerPlayerEntity) entity), message);
 		} else {
 			System.out.println("ERROR! couldn't find player");
 		}
 	}
-	*/
 	
 	/*
 	public static void removesubarrow(int id) {
@@ -809,24 +850,6 @@ public class grapplemod {
   		
   		grapplemod.removeallmultihookarrows(id);
 	}
-	public static void addarrow(int id, grappleArrow arrow) {
-		if (!allarrows.containsKey(id)) {
-			allarrows.put(id, new HashSet<grappleArrow>());
-		}
-		allarrows.get(id).add(arrow);
-	}
-	
-	public static void removeallmultihookarrows(int id) {
-		if (!allarrows.containsKey(id)) {
-			allarrows.put(id, new HashSet<grappleArrow>());
-		}
-		for (grappleArrow arrow : allarrows.get(id)) {
-			if (arrow != null && !arrow.isDead) {
-				arrow.removeServer();
-			}
-		}
-		allarrows.put(id, new HashSet<grappleArrow>());
-	}
 	
 
 	public static NBTTagCompound getstackcompound(ItemStack stack, String key) {
@@ -856,10 +879,11 @@ public class grapplemod {
 			grapplemod.updateGrapplingBlocks();
 		}
 	}
+	*/
 
-	public static void receiveKeypress(EntityPlayer player, Keys key, boolean isDown) {
+	public static void receiveKeypress(PlayerEntity player, KeypressItem.Keys key, boolean isDown) {
 		if (player != null) {
-			ItemStack stack = player.getHeldItemMainhand();
+			ItemStack stack = player.getItemInHand(Hand.MAIN_HAND);
 			if (stack != null) {
 				Item item = stack.getItem();
 				if (item instanceof KeypressItem) {
@@ -872,7 +896,7 @@ public class grapplemod {
 				}
 			}
 
-			stack = player.getHeldItemOffhand();
+			stack = player.getItemInHand(Hand.OFF_HAND);
 			if (stack != null) {
 				Item item = stack.getItem();
 				if (item instanceof KeypressItem) {
@@ -887,6 +911,7 @@ public class grapplemod {
 		}
 	}
 
+	/*
 	public static Rarity getRarityFromInt(int rarity_int) {
 		Rarity[] rarities = (new Rarity[] {Rarity.VERY_RARE, Rarity.RARE, Rarity.UNCOMMON, Rarity.COMMON});
 		if (rarity_int < 0) {rarity_int = 0;}
@@ -894,4 +919,12 @@ public class grapplemod {
 		return rarities[rarity_int];
 	}
 	*/
+	
+	public static BlockRayTraceResult rayTraceBlocks(World world, vec from, vec to) {
+		RayTraceResult result = world.clip(new RayTraceContext(from.toVec3d(), to.toVec3d(), RayTraceContext.BlockMode.COLLIDER, RayTraceContext.FluidMode.NONE, null));
+		if (result != null && result instanceof BlockRayTraceResult) {
+			return (BlockRayTraceResult) result;
+		}
+		return null;
+	}
 }
