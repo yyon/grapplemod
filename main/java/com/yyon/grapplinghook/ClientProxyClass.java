@@ -6,6 +6,7 @@ import java.util.HashMap;
 import org.lwjgl.glfw.GLFW;
 
 import com.yyon.grapplinghook.blocks.TileEntityGrappleModifier;
+import com.yyon.grapplinghook.entities.RenderGrappleArrow;
 import com.yyon.grapplinghook.entities.grappleArrow;
 import com.yyon.grapplinghook.items.KeypressItem;
 import com.yyon.grapplinghook.network.BaseMessageClient;
@@ -17,7 +18,6 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.ItemRenderer;
 import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.EntityRendererManager;
-import net.minecraft.client.renderer.entity.SpriteRenderer;
 import net.minecraft.client.renderer.model.ModelResourceLocation;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.client.settings.KeyBinding;
@@ -249,8 +249,8 @@ public class ClientProxyClass implements CommonProxyClass {
 	private static class grappleArrowRenderFactory implements IRenderFactory<grappleArrow> {
 	    @Override
 	    public EntityRenderer<? super grappleArrow> createRenderFor(EntityRendererManager manager) {
-	      ItemRenderer itemRenderer = Minecraft.getInstance().getItemRenderer();
-	      return new SpriteRenderer<>(manager, itemRenderer);
+	      return new RenderGrappleArrow<>(manager, grapplemod.grapplebowitem);
+	    	
 	    }
 	  }
 	

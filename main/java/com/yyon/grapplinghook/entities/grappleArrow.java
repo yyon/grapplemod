@@ -353,7 +353,9 @@ public class grappleArrow extends ProjectileItemEntity implements IEntityAdditio
 
 	@Override
 	protected void onHit(RayTraceResult movingobjectposition) {
-		this.removeServer();
+		this.setDeltaMovement(0, 0, 0);
+		return;
+//		this.removeServer();
 		/*
 		if (!this.world.isRemote) {
 			if (this.attached) {

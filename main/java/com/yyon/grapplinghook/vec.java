@@ -1,6 +1,7 @@
 package com.yyon.grapplinghook;
 
 import net.minecraft.entity.Entity;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.vector.Vector3d;
 
 public class vec {
@@ -34,6 +35,14 @@ public class vec {
 //		if(Loader.isModLoaded("valkyrienwarfare"))
 //			return positionship(e);
 		return new vec(e.position());
+	}
+	
+	public static vec partialpositionvec(Entity e, double partialTicks) {
+		return new vec(lerp(partialTicks, e.xo, e.getX()), lerp(partialTicks, e.yo, e.getY()), lerp(partialTicks, e.zo, e.getZ()));
+	}
+	
+	public static double lerp(double frac, double from, double to) {
+		return (from * (1-frac)) + (to * frac);
 	}
 	
 	/*
