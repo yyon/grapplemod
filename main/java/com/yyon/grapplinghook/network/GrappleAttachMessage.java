@@ -3,11 +3,17 @@ package com.yyon.grapplinghook.network;
 import java.util.LinkedList;
 
 import com.yyon.grapplinghook.GrappleCustomization;
+import com.yyon.grapplinghook.grapplemod;
 import com.yyon.grapplinghook.vec;
+import com.yyon.grapplinghook.controllers.SegmentHandler;
+import com.yyon.grapplinghook.entities.grappleArrow;
 
+import net.minecraft.client.Minecraft;
+import net.minecraft.entity.Entity;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.World;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.fml.network.NetworkEvent;
@@ -121,22 +127,22 @@ public class GrappleAttachMessage extends BaseMessageClient {
 
     @OnlyIn(Dist.CLIENT)
     public void processMessage(NetworkEvent.Context ctx) {
-    	/*
-    	World world = Minecraft.getInstance().level;
+		grapplemod.LOGGER.info("grappleAttachMessage");
+
+		World world = Minecraft.getInstance().level;
     	Entity grapple = world.getEntity(this.id);
     	if (grapple instanceof grappleArrow) {
-        	((grappleArrow) grapple).clientAttach(message.x, message.y, message.z);
+        	((grappleArrow) grapple).clientAttach(this.x, this.y, this.z);
         	SegmentHandler segmenthandler = ((grappleArrow) grapple).segmenthandler;
-        	segmenthandler.segments = message.segments;
-        	segmenthandler.segmentbottomsides = message.segmentbottomsides;
-        	segmenthandler.segmenttopsides = message.segmenttopsides;
+        	segmenthandler.segments = this.segments;
+        	segmenthandler.segmentbottomsides = this.segmentbottomsides;
+        	segmenthandler.segmenttopsides = this.segmenttopsides;
         	
-        	Entity player = world.getEntityByID(message.entityid);
-        	segmenthandler.forceSetPos(new vec(message.x, message.y, message.z), vec.positionvec(player));
+        	Entity player = world.getEntity(this.entityid);
+        	segmenthandler.forceSetPos(new vec(this.x, this.y, this.z), vec.positionvec(player));
     	} else {
     	}
     	            	
-    	grapplemod.proxy.createControl(message.controlid, message.id, message.entityid, world, new vec(message.x, message.y, message.z), message.blockpos, message.custom);
-    	*/
+    	grapplemod.proxy.createControl(this.controlid, this.id, this.entityid, world, new vec(this.x, this.y, this.z), this.blockpos, this.custom);
     }
 }

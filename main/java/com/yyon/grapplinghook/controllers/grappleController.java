@@ -1,6 +1,7 @@
 package com.yyon.grapplinghook.controllers;
 
 import java.util.HashSet;
+import java.util.stream.Stream;
 
 import com.yyon.grapplinghook.ClientProxyClass;
 import com.yyon.grapplinghook.GrappleConfig;
@@ -12,14 +13,15 @@ import com.yyon.grapplinghook.network.GrappleEndMessage;
 import com.yyon.grapplinghook.network.PlayerMovementMessage;
 
 import net.minecraft.block.Block;
+import net.minecraft.block.BlockState;
 import net.minecraft.block.SoundType;
-import net.minecraft.block.state.IBlockState;
-import net.minecraft.client.GameSettings;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.BlockRayTraceResult;
 import net.minecraft.util.math.RayTraceResult;
+import net.minecraft.util.math.shapes.VoxelShape;
 import net.minecraft.world.World;
 
 /*
@@ -83,6 +85,8 @@ public class grappleController {
 	public GrappleCustomization custom = null;
 	
 	public grappleController(int arrowId, int entityId, World world, vec pos, int controllerid, GrappleCustomization custom) {
+		grapplemod.LOGGER.info("grappleController");
+
 		this.entityId = entityId;
 		this.world = world;
 //		this.pos = pos;
@@ -95,8 +99,8 @@ public class grappleController {
 		
 		this.controllerid = controllerid;
 		
-		this.entity = world.getEntityByID(entityId);
-//		grappleArrow arrow = (grappleArrow) world.getEntityByID(arrowId);
+		this.entity = world.getEntity(entityId);
+//		grappleArrow arrow = (grappleArrow) world.getEntity(arrowId);
 //		if (arrow != null) {
 //			((grappleArrow) arrow).segmenthandler = this.segmenthandler;
 //			this.segmenthandler = ((grappleArrow) arrow).segmenthandler;
@@ -107,15 +111,15 @@ public class grappleController {
 		this.motion = vec.motionvec(entity);
 		
 		// undo friction
-		vec newmotion = new vec(entity.posX - entity.prevPosX, entity.posY - entity.prevPosY, entity.posZ - entity.prevPosZ);
+		vec newmotion = new vec(entity.position().x - entity.xOld, entity.position().y - entity.yOld, entity.position().z - entity.zOld);
 		if (newmotion.x/motion.x < 2 && motion.x/newmotion.x < 2 && newmotion.y/motion.y < 2 && motion.y/newmotion.y < 2 && newmotion.z/motion.z < 2 && motion.z/newmotion.z < 2) {
 			this.motion = newmotion;
 		}
 //		double f6 = 0.91F;
-//        if (entity.onGround)
+//        if (entity.isOnGround())
 //        {
 //            BlockPos.PooledMutableBlockPos blockpos$pooledmutableblockpos = BlockPos.PooledMutableBlockPos.retain(entity.posX, entity.getEntityBoundingBox().minY - 1.0D, entity.posZ);
-//            IBlockState underState = this.world.getBlockState(blockpos$pooledmutableblockpos.setPos(entity.posX, entity.getEntityBoundingBox().minY - 1.0D, entity.posZ));
+//            BlockState underState = this.level.getBlockState(blockpos$pooledmutableblockpos.setPos(entity.posX, entity.getEntityBoundingBox().minY - 1.0D, entity.posZ));
 //            f6 = underState.getBlock().getSlipperiness(underState, entity.world, blockpos$pooledmutableblockpos, entity);// * 0.91F;
 //        }
 //        motion.y /= 0.9800000190734863D;
@@ -132,10 +136,11 @@ public class grappleController {
 //		}
 		
 		if (arrowId != -1) {
-			Entity arrowentity = world.getEntityByID(arrowId);
-			if (arrowentity != null && !arrowentity.isDead && arrowentity instanceof grappleArrow) {
+			Entity arrowentity = world.getEntity(arrowId);
+			if (arrowentity != null && arrowentity.isAlive() && arrowentity instanceof grappleArrow) {
 				this.addArrow((grappleArrow)arrowentity);
 			} else {
+				grapplemod.LOGGER.info("no arrow");
 				this.unattach();
 			}
 		}
@@ -146,6 +151,8 @@ public class grappleController {
 	}
 	
 	public void unattach() {
+		grapplemod.LOGGER.info("unattach");
+		
 		if (grapplemod.controllers.containsValue(this)) {
 			this.attached = false;
 			
@@ -153,18 +160,19 @@ public class grappleController {
 			
 			if (this.controllerid != grapplemod.AIRID) {
 				grapplemod.network.sendToServer(new GrappleEndMessage(this.entityId, this.arrowIds));
-				grapplemod.proxy.createControl(grapplemod.AIRID, -1, this.entityId, this.entity.world, new vec(0,0,0), null, this.custom);
+				grapplemod.proxy.createControl(grapplemod.AIRID, -1, this.entityId, this.entity.level, new vec(0,0,0), null, this.custom);
 			}
 		}
 	}
 	
 /*	public grappleArrow getArrow() {
-		return (grappleArrow) world.getEntityByID(arrowId);
+		return (grappleArrow) world.getEntity(arrowId);
 	}*/
 	
 	public void doClientTick() {
 		if (this.attached) {
-			if (this.entity == null || this.entity.isDead) {
+			if (this.entity == null || !this.entity.isAlive()) {
+				grapplemod.LOGGER.info("no entity");
 				this.unattach();
 			} else {
 //				grapplemod.proxy.getplayermovement(this, this.entityId);
@@ -185,7 +193,7 @@ public class grappleController {
 //			waitingonplayerjump = true;
 //		}
 		playermovement_unrotated = new vec(strafe, 0, forward);
-		playermovement = playermovement_unrotated.rotate_yaw((float) (this.entity.rotationYaw * (Math.PI / 180.0)));
+		playermovement = playermovement_unrotated.rotate_yaw((float) (this.entity.yRot * (Math.PI / 180.0)));
 	}
 	
 //	public boolean isjumping() {
@@ -202,7 +210,8 @@ public class grappleController {
 		if (this.attached) {
 			if(entity != null) {
 				if (true) {
-					if (entity.isRiding()) {
+					if (entity.getVehicle() != null) {
+						grapplemod.LOGGER.info("riding");
 						this.unattach();						
 						this.updateServerPos();
 						return;
@@ -223,7 +232,7 @@ public class grappleController {
 					vec gravity = new vec(0, -0.05, 0);
 
 					
-//					if (!(this.ongroundtimer > 0)) {
+//					if (!(this.isOnGround()timer > 0)) {
 						motion.add_ip(gravity);
 //					}
 					
@@ -234,9 +243,9 @@ public class grappleController {
 					// is motor active? (check motorwhencrouching / motorwhennotcrouching)
 					boolean motor = false;
 					if (this.custom.motor) {
-						if (ClientProxyClass.key_motoronoff.isKeyDown() && this.custom.motorwhencrouching) {
+						if (ClientProxyClass.key_motoronoff.isDown() && this.custom.motorwhencrouching) {
 							motor = true;
-						} else if (!ClientProxyClass.key_motoronoff.isKeyDown() && this.custom.motorwhennotcrouching) {
+						} else if (!ClientProxyClass.key_motoronoff.isDown() && this.custom.motorwhennotcrouching) {
 							motor = true;
 						}
 					}
@@ -302,24 +311,24 @@ public class grappleController {
 						this.calctaut(dist, arrow);
 
 						// handle keyboard input (jumping and climbing)
-						if (entity instanceof EntityPlayer) {
-							EntityPlayer player = (EntityPlayer) entity;
-							boolean isjumping = ClientProxyClass.key_jumpanddetach.isKeyDown();
+						if (entity instanceof PlayerEntity) {
+							PlayerEntity player = (PlayerEntity) entity;
+							boolean isjumping = ClientProxyClass.key_jumpanddetach.isDown();
 							isjumping = isjumping && !playerjump; // only jump once when key is first pressed
-							playerjump = ClientProxyClass.key_jumpanddetach.isKeyDown();
+							playerjump = ClientProxyClass.key_jumpanddetach.isDown();
 							if (isjumping) {
 								// jumping
 								if (ongroundtimer > 0) { // on ground: jump normally
 									
 								} else {
-									double timer = this.entity.world.getTotalWorldTime() - ClientProxyClass.prev_rope_jump_time;
+									double timer = this.entity.level.getGameTime() - ClientProxyClass.prev_rope_jump_time;
 									if (timer > GrappleConfig.getconf().rope_jump_cooldown_s * 20.0) {
 										doJump = true;
 										jumpSpeed = this.getJumpPower(player, spherevec, arrow);
 									}
 								}
 							}
-							if (ClientProxyClass.key_slow.isKeyDown()) {
+							if (ClientProxyClass.key_slow.isDown()) {
 								// climbing
 	//							motion = multvec(motion, 0.9);
 								vec motiontorwards = spherevec.changelen(-0.1);
@@ -333,15 +342,15 @@ public class grappleController {
 	//							motion = multvec(motion, 0.98);
 
 							}
-							if ((ClientProxyClass.key_climb.isKeyDown() || !this.custom.climbkey) && !motor) {
+							if ((ClientProxyClass.key_climb.isDown() || !this.custom.climbkey) && !motor) {
 								isClimbing = true;
 								if (anchor.y > playerpos.y) {
 									// when shift is pressed, stop swinging
 									
 									// climb up/down rope
 									float playerforward = 0;
-									if (ClientProxyClass.key_climbup.isKeyDown()) { playerforward = 1.0f; }
-									else if (ClientProxyClass.key_climbdown.isKeyDown()) { playerforward = -1.0f; }
+									if (ClientProxyClass.key_climbup.isDown()) { playerforward = 1.0f; }
+									else if (ClientProxyClass.key_climbdown.isDown()) { playerforward = -1.0f; }
 									if (playerforward != 0) {
 											if (dist + distToAnchor < maxlen || this.playerforward > 0 || maxlen == 0) {
 //												double motionup = this.playerforward;
@@ -377,7 +386,7 @@ public class grappleController {
 //					curspeed = curspeed / this.arrows.size();
 //					averagemotiontowards.mult_ip(1 / this.arrows.size());
 					
-		        	vec facing = new vec(entity.getLookVec()).normalize();
+		        	vec facing = new vec(entity.getLookAngle()).normalize();
 		        	
 		        	// Motor
 					if (motor) {
@@ -503,7 +512,7 @@ public class grappleController {
 						// between the motion (after pulling and gravity) vector and the facing vector
 						// if double hooks, all hooks are scaled by the same amount (to prevent pulling to the left/right)
 						double pullmult = 1;
-						if (this.custom.smartmotor && totalpull.y > 0 && !(this.ongroundtimer > 0 || entity.onGround)) {
+						if (this.custom.smartmotor && totalpull.y > 0 && !(this.ongroundtimer > 0 || entity.isOnGround())) {
 							vec pullxzvector = new vec(totalpull.x, 0, totalpull.z);
 							double pullxz = pullxzvector.length();
 							double motionxz = motion.proj(pullxzvector).dot(pullxzvector.normalize());
@@ -578,7 +587,7 @@ public class grappleController {
 						
 						// if player is at the destination, slow down
 						if (close && !(this.arrows.size() > 1)) {
-							if (entity.collided || entity.onGround) {
+							if (entity.horizontalCollision || entity.verticalCollision || entity.isOnGround()) {
 								motion.mult_ip(0.6);
 							}
 						}
@@ -587,7 +596,7 @@ public class grappleController {
 					
 					// forcefield
 					if (this.custom.repel) {
-						vec blockpush = check_repel(playerpos, entity.world);
+						vec blockpush = check_repel(playerpos, entity.level);
 						blockpush.mult_ip(this.custom.repelforce * 0.5);
 						blockpush = new vec(blockpush.x*0.5, blockpush.y*2, blockpush.z*0.5);
 						this.motion.add_ip(blockpush);
@@ -612,7 +621,7 @@ public class grappleController {
 							jumpSpeed = GrappleConfig.getconf().rope_jump_power;
 						}
 						this.doJump(entity, jumpSpeed, averagemotiontowards, min_spherevec_dist);
-						ClientProxyClass.prev_rope_jump_time = this.entity.world.getTotalWorldTime();
+						ClientProxyClass.prev_rope_jump_time = this.entity.level.getGameTime();
 						return;
 					}
 					
@@ -626,19 +635,17 @@ public class grappleController {
 					}
 					
 //					entity.setVelocity(newmotion.xCoord, newmotion.yCoord, newmotion.zCoord);
-					entity.motionX = newmotion.x;
-					entity.motionY = newmotion.y;
-					entity.motionZ = newmotion.z;
+					entity.setDeltaMovement(newmotion.x, newmotion.y, newmotion.z);
 					
-//					if (entity instanceof EntityPlayerMP) {
+//					if (entity instanceof PlayerEntityMP) {
 						
-//						((EntityPlayerMP) entity).playerNetServerHandler.sendPacket(new S12PacketEntityVelocity(entity));
+//						((PlayerEntityMP) entity).playerNetServerHandler.sendPacket(new S12PacketEntityVelocity(entity));
 						
 						/*
 						counter++;
 						if (counter > 100) {
 							counter = 0;
-							grapplemod.network.sendTo(new PlayerPosMessage(entity.getEntityId(), entity.posX, entity.posY, entity.posZ), (EntityPlayerMP) entity);
+							grapplemod.network.sendTo(new PlayerPosMessage(entity.getEntityId(), entity.posX, entity.posY, entity.posZ), (PlayerEntityMP) entity);
 						}
 						*/
 //					}
@@ -671,14 +678,14 @@ public class grappleController {
 	public void normalCollisions(boolean refreshmotion) {
 		// stop if collided with object
 		vec pos = vec.positionvec(this.entity);
-		if (entity.collidedHorizontally) {
+		if (entity.horizontalCollision) {
 //			if (refreshmotion || prevcollision) {
-				if (entity.motionX == 0) {
+				if (entity.getDeltaMovement().x == 0) {
 					if (refreshmotion || this.tryStepUp(new vec(this.motion.x, 0, 0))) {
 						this.motion.x = 0;
 					}
 				}
-				if (entity.motionZ == 0) {
+				if (entity.getDeltaMovement().z == 0) {
 					if (refreshmotion || this.tryStepUp(new vec(0, 0, this.motion.z))) {
 						this.motion.z = 0;
 					}
@@ -691,10 +698,10 @@ public class grappleController {
 //				prevcollisionpos = pos;
 //			}
 //		}
-		if (entity.collidedVertically) {
-			if (entity.onGround) {
-				if (refreshmotion && GameSettings.isKeyDown(Minecraft.getMinecraft().gameSettings.keyBindJump)) {
-					this.motion.y = entity.motionY;
+		if (entity.verticalCollision) {
+			if (entity.isOnGround()) {
+				if (refreshmotion && Minecraft.getInstance().options.keyJump.isDown()) {
+					this.motion.y = entity.getDeltaMovement().y;
 				} else {
 					if (this.motion.y < 0) {
 						this.motion.y = 0;
@@ -702,7 +709,7 @@ public class grappleController {
 				}
 			} else {
 				if (this.motion.y > 0) {
-					if (entity.lastTickPosY == entity.posY) {
+					if (entity.yOld == entity.position().y) {
 						this.motion.y = 0;
 					}
 				}
@@ -712,18 +719,18 @@ public class grappleController {
 	
 	public boolean tryStepUp(vec collisionmotion) {
 		if (collisionmotion.length() == 0) {return false;}
-		vec moveoffset = collisionmotion.changelen(0.05).add(0, entity.stepHeight+0.01, 0);
-		if (this.world.getCollisionBoxes(this.entity, this.entity.getEntityBoundingBox().offset(moveoffset.x, moveoffset.y, moveoffset.z)).isEmpty()) {
-			if (!this.entity.onGround) {
-				entity.posX += moveoffset.x;
-				entity.posY += moveoffset.y;
-				entity.posZ += moveoffset.z;
-				this.entity.setPosition(entity.posX, entity.posY, entity.posZ);
-				entity.prevPosX = entity.posX;
-				entity.prevPosY = entity.posY;
-				entity.prevPosZ = entity.posZ;
+		vec moveoffset = collisionmotion.changelen(0.05).add(0, entity.maxUpStep+0.01, 0);
+		Stream<VoxelShape> collisions = this.entity.level.getCollisions(this.entity, this.entity.getBoundingBox().move(moveoffset.x, moveoffset.y, moveoffset.z), (e) -> false);
+		if (collisions.count() == 0) {
+			if (!this.entity.isOnGround()) {
+				vec pos = vec.positionvec(entity);
+				pos.add_ip(moveoffset);
+				pos.setpos(entity);
+				entity.xOld = pos.x;
+				entity.yOld = pos.y;
+				entity.zOld = pos.z;
 			}
-			entity.collidedHorizontally = false;
+			entity.horizontalCollision = false;
 			return false;
 		}
 		return true;
@@ -732,7 +739,7 @@ public class grappleController {
 	boolean prevonground = false;
 
 	public void normalGround(boolean refreshmotion) {
-		if (entity.onGround) {
+		if (entity.isOnGround()) {
 			ongroundtimer = maxongroundtimer;
 //			if (this.motion.y < 0) {
 //				this.motion.y = 0;
@@ -742,15 +749,15 @@ public class grappleController {
 				ongroundtimer--;
 			}
 		}
-		if (entity.onGround || ongroundtimer > 0) {
+		if (entity.isOnGround() || ongroundtimer > 0) {
 			if (refreshmotion) {
 				this.motion = vec.motionvec(entity);
-				if (Minecraft.getMinecraft().gameSettings.keyBindJump.isKeyDown()) {
+				if (Minecraft.getInstance().options.keyJump.isDown()) {
 					this.motion.y += 0.05;
 				}
 			}
 		}
-		prevonground = entity.onGround;
+		prevonground = entity.isOnGround();
 	}
 
 	private double getJumpPower(Entity player, double jumppower) {
@@ -759,10 +766,10 @@ public class grappleController {
 			ongroundtimer = 20;
 			return 0;
 		}
-		if (player.onGround) {
+		if (player.isOnGround()) {
 			jumppower = 0;
 		}
-		if (player.collided) {
+		if (player.horizontalCollision || player.verticalCollision) {
 			jumppower = maxjump;
 		}
 		if (jumppower < 0) {
@@ -776,18 +783,17 @@ public class grappleController {
 		if (jumppower > 0) {
 			if (GrappleConfig.getconf().rope_jump_at_angle && min_spherevec_dist > 1) {
 				motion.add_ip(averagemotiontowards.changelen(jumppower));
-				player.motionX = motion.x;
-				player.motionY = motion.y;
-				player.motionZ = motion.z;
 			} else {
-				if (jumppower > player.motionY + jumppower) {
-					player.motionY = jumppower;
+				if (jumppower > player.getDeltaMovement().y + jumppower) {
+					motion.y = jumppower;
 				} else {
-					player.motionY += jumppower;
+					motion.y += jumppower;
 				}
 			}
+			motion.setmotion(player);
 		}
 		
+		grapplemod.LOGGER.info("jump");
 		this.unattach();
 		
 		this.updateServerPos();
@@ -804,7 +810,7 @@ public class grappleController {
 		if (spherevec != null && spherevec.y > 0) {
 			jumppower = 0;
 		}
-		if ((arrow != null) && arrow.r < 1 && (player.posY < arrow.posY)) {
+		if ((arrow != null) && arrow.r < 1 && (player.position().y < arrow.position().y)) {
 			jumppower = maxjump;
 		}
 
@@ -827,20 +833,19 @@ public class grappleController {
 	}
 	
 	public void updateServerPos() {
-		grapplemod.network.sendToServer(new PlayerMovementMessage(this.entityId, this.entity.posX, this.entity.posY, this.entity.posZ, this.entity.motionX, this.entity.motionY, this.entity.motionZ));
+		grapplemod.network.sendToServer(new PlayerMovementMessage(this.entityId, this.entity.position().x, this.entity.position().y, this.entity.position().z, this.entity.getDeltaMovement().x, this.entity.getDeltaMovement().y, this.entity.getDeltaMovement().z));
 	}
 	
 	// Vector stuff:
 	
 	public void receiveGrappleDetach() {
+		grapplemod.LOGGER.info("received detach message");
 		this.unattach();
 	}
 
 	public void receiveEnderLaunch(double x, double y, double z) {
 		this.motion.add_ip(x, y, z);
-		this.entity.motionX = this.motion.x;
-		this.entity.motionY = this.motion.y;
-		this.entity.motionZ = this.motion.z;
+		this.motion.setmotion(this.entity);
 	}
 	
 	public void applyAirFriction() {
@@ -874,7 +879,7 @@ public class grappleController {
 	public void addArrow(grappleArrow arrow) {
 		this.arrows.add(arrow);
 		arrow.r = ((grappleArrow) arrow).segmenthandler.getDist(vec.positionvec(arrow), vec.positionvec(entity).add(new vec(0, entity.getEyeHeight(), 0)));
-		this.arrowIds.add(arrow.getEntityId());
+		this.arrowIds.add(arrow.getId());
 	}
 	
     public double repelmaxpush = 0.3;//0.25;
@@ -953,7 +958,7 @@ public class grappleController {
 	public boolean hasblock(BlockPos pos, World w) {
 //    	if (!blockcache.containsKey(pos)) {
     		boolean isblock = false;
-	    	IBlockState blockstate = w.getBlockState(pos);
+	    	BlockState blockstate = w.getBlockState(pos);
 	    	Block b = blockstate.getBlock();
 	    	if (!(b.isAir(blockstate, w, pos))) {
 	    		isblock = true;
@@ -975,7 +980,7 @@ public class grappleController {
 		
 		grappleArrow arrowToRemove = null;
 		for (grappleArrow arrow : this.arrows) {
-			if (arrow.getEntityId() == hookid) {
+			if (arrow.getId() == hookid) {
 				arrowToRemove = arrow;
 				break;
 			}
@@ -989,10 +994,10 @@ public class grappleController {
 	}
 	
 	public vec rocket(Entity entity) {
-		if (ClientProxyClass.key_rocket.isKeyDown()) {
+		if (ClientProxyClass.key_rocket.isDown()) {
 			double rocket_force = this.custom.rocket_force * 0.225 * grapplemod.proxy.getRocketFunctioning();
-        	double yaw = entity.rotationYaw;
-        	double pitch = -entity.rotationPitch;
+        	double yaw = entity.yRot;
+        	double pitch = -entity.xRot;
         	pitch += this.custom.rocket_vertical_angle;
         	vec force = new vec(0, 0, rocket_force);
         	force = force.rotate_pitch(Math.toRadians(pitch));
@@ -1005,15 +1010,15 @@ public class grappleController {
 	
 	boolean isonwall = false;
 	vec walldirection = null;
-	RayTraceResult wallrun_raytrace_result = null;
+	BlockRayTraceResult wallrun_raytrace_result = null;
 //	boolean wallonleft = true;
 	
 	public vec getnearbywall(vec tryfirst, vec trysecond, double extra) {
-		float entitywidth = this.entity.width;
+		float entitywidth = this.entity.getBbWidth();
 		
 		for (vec direction : new vec[] {tryfirst, trysecond, tryfirst.mult(-1), trysecond.mult(-1)}) {
-			RayTraceResult raytraceresult = this.entity.world.rayTraceBlocks(this.entity.getPositionVector(), vec.positionvec(this.entity).add(direction.changelen(entitywidth/2 + extra)).toVec3d(), false, true, false);
-			if (raytraceresult != null && raytraceresult.typeOfHit == RayTraceResult.Type.BLOCK) {
+			BlockRayTraceResult raytraceresult = grapplemod.rayTraceBlocks(this.entity.level, vec.positionvec(this.entity), vec.positionvec(this.entity).add(direction.changelen(entitywidth/2 + extra)));
+			if (raytraceresult != null) {
 				wallrun_raytrace_result = raytraceresult;
 				return direction;
 			}
@@ -1085,7 +1090,7 @@ public class grappleController {
 //		vec sideways = facing.cross(new vec(0,1,0));
 //		sideways.changelen_ip(boxsize);
 		
-		float entitywidth = this.entity.width;
+		float entitywidth = this.entity.getBbWidth();
 		vec v1 = new vec(entitywidth/2 + dist, 0, 0);
 		vec v2 = new vec(0, 0, entitywidth/2 + dist);
 		
@@ -1093,8 +1098,8 @@ public class grappleController {
 			vec corner1 = getcorner(i, v1, v2);
 			vec corner2 = getcorner((i + 1) % 4, v1, v2);
 			
-			RayTraceResult raytraceresult = this.entity.world.rayTraceBlocks(vec.positionvec(this.entity).add(corner1).toVec3d(), vec.positionvec(this.entity).add(corner2).toVec3d(), false, true, false);
-			if (raytraceresult != null && raytraceresult.typeOfHit == RayTraceResult.Type.BLOCK) {
+			BlockRayTraceResult raytraceresult = grapplemod.rayTraceBlocks(this.entity.level, vec.positionvec(this.entity).add(corner1), vec.positionvec(this.entity).add(corner2));
+			if (raytraceresult != null) {
 				return true;
 			}
 		}
@@ -1119,7 +1124,7 @@ public class grappleController {
 		if (tickswallrunning < GrappleConfig.getconf().max_wallrun_time * 40) {
 			if (!(playersneak)) {
 				// continue wallrun
-				if (isonwall && !this.entity.onGround && this.entity.collidedHorizontally) {
+				if (isonwall && !this.entity.isOnGround() && this.entity.horizontalCollision) {
 					return true;
 				}
 				
@@ -1133,7 +1138,7 @@ public class grappleController {
 			isonwall = false;
 		}
 		
-		if (tickswallrunning > 0 && (this.entity.onGround || (!this.entity.collidedHorizontally && !wallnearby(0.2)))) {
+		if (tickswallrunning > 0 && (this.entity.isOnGround() || (!this.entity.horizontalCollision && !wallnearby(0.2)))) {
 			tickswallrunning = 0;
 			ticks_since_last_wallrun_sound_effect = 0;
 		}
@@ -1152,7 +1157,7 @@ public class grappleController {
 			}
 		}
 		
-		if (wallrun && !ClientProxyClass.key_jumpanddetach.isKeyDown()) {
+		if (wallrun && !ClientProxyClass.key_jumpanddetach.isDown()) {
 
 			vec wallside = this.getwalldirection();
 			if (wallside != null) {
@@ -1184,27 +1189,24 @@ public class grappleController {
 
 			ticks_since_last_wallrun_sound_effect++;
 			if (ticks_since_last_wallrun_sound_effect > GrappleConfig.client_options.wallrun_sound_effect_time_s * 20 * GrappleConfig.getconf().wallrun_max_speed / (vel + 0.00000001)) {
-				if (wallrun_raytrace_result != null && wallrun_raytrace_result.typeOfHit == RayTraceResult.Type.BLOCK) {
+				if (wallrun_raytrace_result != null) {
 					BlockPos blockpos = wallrun_raytrace_result.getBlockPos();
 					
-					IBlockState blockState = this.entity.world.getBlockState(blockpos);
+					BlockState blockState = this.entity.level.getBlockState(blockpos);
 					Block blockIn = blockState.getBlock();
 					
 			        SoundType soundtype = blockIn.getSoundType(blockState, world, blockpos, this.entity);
 
-			        if (!blockIn.getDefaultState().getMaterial().isLiquid())
-			        {
-			            this.entity.playSound(soundtype.getStepSound(), soundtype.getVolume() * 0.30F * GrappleConfig.client_options.wallrun_sound_volume, soundtype.getPitch());
-						ticks_since_last_wallrun_sound_effect = 0;
-			        }
+		            this.entity.playSound(soundtype.getStepSound(), soundtype.getVolume() * 0.30F * GrappleConfig.client_options.wallrun_sound_volume, soundtype.getPitch());
+					ticks_since_last_wallrun_sound_effect = 0;
 				}
 			}
 		}
 		
 		// jump
-		boolean isjumping = ClientProxyClass.key_jumpanddetach.isKeyDown() && isonwall;
+		boolean isjumping = ClientProxyClass.key_jumpanddetach.isDown() && isonwall;
 		isjumping = isjumping && !playerjump; // only jump once when key is first pressed
-		playerjump = ClientProxyClass.key_jumpanddetach.isKeyDown() && isonwall;
+		playerjump = ClientProxyClass.key_jumpanddetach.isDown() && isonwall;
 		if (isjumping && wallrun) {
 			vec jump = new vec(0, GrappleConfig.getconf().wall_jump_up, 0);
 			if (walldirection != null) {
@@ -1236,9 +1238,7 @@ public class grappleController {
 			this.motion.y = 0;
 		}
 		this.motion.y += GrappleConfig.getconf().doublejumpforce;
-		entity.motionX = motion.x;
-		entity.motionY = motion.y;
-		entity.motionZ = motion.z;
+		motion.setmotion(this.entity);
 	}
 	
 	public void applySlidingFriction() {

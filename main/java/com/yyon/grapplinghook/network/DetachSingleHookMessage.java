@@ -1,5 +1,7 @@
 package com.yyon.grapplinghook.network;
 
+import com.yyon.grapplinghook.grapplemod;
+
 import net.minecraft.network.PacketBuffer;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
@@ -48,6 +50,6 @@ public class DetachSingleHookMessage extends BaseMessageClient {
     
     @OnlyIn(Dist.CLIENT)
     public void processMessage(NetworkEvent.Context ctx) {
-//    	grapplemod.receiveGrappleDetachHook(this.id, this.hookid);
+    	grapplemod.receiveGrappleDetachHook(this.id, this.hookid);
     }
 }

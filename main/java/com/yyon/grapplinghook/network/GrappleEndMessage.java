@@ -2,7 +2,11 @@ package com.yyon.grapplinghook.network;
 
 import java.util.HashSet;
 
+import com.yyon.grapplinghook.grapplemod;
+
+import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.network.PacketBuffer;
+import net.minecraft.world.World;
 import net.minecraftforge.fml.network.NetworkEvent;
 
 /*
@@ -54,12 +58,14 @@ public class GrappleEndMessage extends BaseMessageServer {
     }
 
     public void processMessage(NetworkEvent.Context ctx) {
-    	/*
 		int id = this.entityid;
 		
-		World w = ctx.getServerHandler().player.world;
+		ServerPlayerEntity player = ctx.getSender();
+		if (player == null) {
+			return;
+		}
+		World w = player.level;
 		
 		grapplemod.receiveGrappleEnd(id, w, this.arrowIds);
-		*/
     }
 }

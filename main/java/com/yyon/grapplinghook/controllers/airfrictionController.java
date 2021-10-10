@@ -6,7 +6,7 @@ import com.yyon.grapplinghook.grapplemod;
 import com.yyon.grapplinghook.vec;
 
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.world.World;
 
 /*
@@ -45,7 +45,8 @@ public class airfrictionController extends grappleController {
 		
 		if (entity == null) {return;}
 		
-		if (entity.isRiding()) {
+		if (entity.getVehicle() != null) {
+			grapplemod.LOGGER.info("riding");
 			this.unattach();
 			this.updateServerPos();
 			return;
@@ -53,7 +54,7 @@ public class airfrictionController extends grappleController {
 
 		vec additionalmotion = new vec(0,0,0);
 		
-		if (GrappleConfig.getconf().dont_override_movement_in_air && !entity.onGround && !was_sliding && !was_wallrunning && !was_rocket && !first_tick_since_created) {
+		if (GrappleConfig.getconf().dont_override_movement_in_air && !entity.isOnGround() && !was_sliding && !was_wallrunning && !was_rocket && !first_tick_since_created) {
 			motion = vec.motionvec(entity);
 			this.unattach();
 			return;
@@ -138,9 +139,9 @@ public class airfrictionController extends grappleController {
 				}
 			}
 			
-			if (entity instanceof EntityLivingBase) {
-				EntityLivingBase entityliving = (EntityLivingBase) entity;
-				if (entityliving.isElytraFlying()) {
+			if (entity instanceof LivingEntity) {
+				LivingEntity entityliving = (LivingEntity) entity;
+				if (entityliving.isFallFlying()) {
 					this.unattach();
 				}
 			}
@@ -159,13 +160,11 @@ public class airfrictionController extends grappleController {
 //				newmotion.add_ip(this.walldirection);
 //			}
 
-			entity.motionX = newmotion.x;
-			entity.motionY = newmotion.y;
-			entity.motionZ = newmotion.z;
+			newmotion.setmotion(entity);
 			
 			this.updateServerPos();
 			
-			if (entity.onGround) {
+			if (entity.isOnGround()) {
 				if (!issliding) {
 					if (!wallrun) {
 						if (!doesrocket) {

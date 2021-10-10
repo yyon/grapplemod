@@ -203,7 +203,12 @@ public class RenderGrappleArrow<T extends grappleArrow> extends EntityRenderer<T
     		return;
     	}
 
-        vec diff = finish.sub(start);
+        int number_squares = 16;
+        if (taut == 1.0F) {
+        	number_squares = 1;
+        }
+
+    	vec diff = finish.sub(start);
         
         vec forward = diff.changelen(1);
         vec up = forward.cross(new vec(1, 0, 0));
@@ -222,7 +227,6 @@ public class RenderGrappleArrow<T extends grappleArrow> extends EntityRenderer<T
 
         	vec normal = corner1.add(corner2).normalize();
             
-            int number_squares = 16;
             for (int square_num = 0; square_num < number_squares; square_num++)
             {
                 float squarefrac1 = (float)square_num / (float) number_squares;

@@ -5,24 +5,22 @@ import net.minecraft.client.util.InputMappings;
 import net.minecraftforge.client.settings.IKeyConflictContext;
 
 public class NonConflictingKeyBinding extends KeyBinding {
-
 	public NonConflictingKeyBinding(String description, int keyCode, String category) {
 		super(description, keyCode, category);
 		this.setNonConflict();
 	}
 
-	boolean isActive = false;
+//	boolean isActive = false;
 	private void setNonConflict() {
 		this.setKeyConflictContext(new IKeyConflictContext() {
 			@Override
 			public boolean isActive() {
-				return isActive;
+				return false;
 			}
 			@Override
 			public boolean conflicts(IKeyConflictContext other) {
 				return false;
 			}
-			
 		});
 	}
 
@@ -38,10 +36,14 @@ public class NonConflictingKeyBinding extends KeyBinding {
 	   return true;
    }
    
+   public boolean is_down = false;
+   
    public boolean isDown() {
-	   isActive = true;
-	   boolean down = super.isDown();
-	   isActive = false;
-	   return down;
+	   return is_down;
+   }
+   
+   @Override
+   public void setDown(boolean value) {
+	   this.is_down = value;
    }
 }

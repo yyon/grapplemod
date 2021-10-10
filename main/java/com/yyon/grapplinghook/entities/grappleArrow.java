@@ -1,25 +1,40 @@
 package com.yyon.grapplinghook.entities;
 
+import java.util.HashMap;
+
 import javax.annotation.Nonnull;
 
+import com.yyon.grapplinghook.GrappleConfig;
 import com.yyon.grapplinghook.GrappleCustomization;
 import com.yyon.grapplinghook.grapplemod;
 import com.yyon.grapplinghook.vec;
 import com.yyon.grapplinghook.controllers.SegmentHandler;
+import com.yyon.grapplinghook.network.GrappleAttachMessage;
+import com.yyon.grapplinghook.network.GrappleAttachPosMessage;
 
+import net.minecraft.block.Block;
+import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.ProjectileItemEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.IPacket;
 import net.minecraft.network.PacketBuffer;
+import net.minecraft.util.Direction;
+import net.minecraft.util.Direction.Axis;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.BlockRayTraceResult;
+import net.minecraft.util.math.EntityRayTraceResult;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.RayTraceResult;
+import net.minecraft.util.math.shapes.VoxelShape;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.registry.IEntityAdditionalSpawnData;
 import net.minecraftforge.fml.network.NetworkHooks;
+import net.minecraftforge.fml.network.PacketDistributor;
 
 /*
  * This file is part of GrappleMod.
@@ -145,22 +160,23 @@ public class grappleArrow extends ProjectileItemEntity implements IEntityAdditio
 	
 	@Override
 	public void tick() {
-		super.tick();
-		
-		/*
 		if (this.shootingEntityID == 0 || this.shootingEntity == null) { // removes ghost grappling hooks
 			this.remove();
 		}
 		
 		if (this.firstattach) {
-			this.motionX = 0;
-			this.motionY = 0;
-			this.motionZ = 0;
+			this.setDeltaMovement(0, 0, 0);
 			this.firstattach = false;
-			super.setPosition(this.thispos.x, this.thispos.y, this.thispos.z);
+			super.setPos(this.thispos.x, this.thispos.y, this.thispos.z);
 		}
 		
-		if (!this.world.isRemote) {
+		if (this.attached) {
+			this.setDeltaMovement(0, 0, 0);
+		}
+		
+		super.tick();
+		
+		if (!this.level.isClientSide) {
 			if (this.shootingEntity != null)  {
 				if (!this.attached) {
 					if (this.segmenthandler.hookpastbend(this.r)) {
@@ -189,7 +205,7 @@ public class grappleArrow extends ProjectileItemEntity implements IEntityAdditio
 					vec ropevec = vec.positionvec(this).sub(farthest);
 					double d = ropevec.length();
 					
-					if (this.customization.reelin && this.shootingEntity.isSneaking()) {
+					if (this.customization.reelin && this.shootingEntity.isCrouching()) {
 						double newdist = d + distToFarthest - 0.4;
 						if (newdist > 1 && newdist <= this.customization.maxlen) {
 							this.r = newdist;
@@ -209,7 +225,7 @@ public class grappleArrow extends ProjectileItemEntity implements IEntityAdditio
 						ropevec.changelen_ip(this.r - distToFarthest);
 						vec newpos = ropevec.add(farthest);
 						
-						this.setPosition(newpos.x, newpos.y, newpos.z);
+						this.setPos(newpos.x, newpos.y, newpos.z);
 					}
 					
 				}
@@ -220,7 +236,7 @@ public class grappleArrow extends ProjectileItemEntity implements IEntityAdditio
 		if (this.customization.attract && vec.positionvec(this).sub(vec.positionvec(this.shootingEntity)).length() > this.customization.attractradius) {
 	    	if (this.shootingEntity == null) {return;}
 	    	if (!this.foundblock) {
-	    		if (!this.world.isRemote) {
+	    		if (!this.level.isClientSide) {
 	    			vec playerpos = vec.positionvec(this.shootingEntity);
 	    			vec pos = vec.positionvec(this);
 	    			if (magnetblock == null) {
@@ -237,7 +253,7 @@ public class grappleArrow extends ProjectileItemEntity implements IEntityAdditio
 							    		vec distvec = new vec(found.getX(), found.getY(), found.getZ());
 							    		distvec.sub_ip(prevpos);
 							    		if (distvec.length() < radius) {
-					    					this.setPositionAndUpdate(prevpos.x, prevpos.y, prevpos.z);
+					    					this.setPosAndOldPos(prevpos.x, prevpos.y, prevpos.z);
 					    					pos = prevpos;
 					    					
 					    					magnetblock = found;
@@ -255,22 +271,20 @@ public class grappleArrow extends ProjectileItemEntity implements IEntityAdditio
 	    			}
 	    			
 	    			if (magnetblock != null) {
-				    	IBlockState blockstate = this.world.getBlockState(magnetblock);
-				    	AxisAlignedBB BB = blockstate.getCollisionBoundingBox(this.world, magnetblock);
+				    	BlockState blockstate = this.level.getBlockState(magnetblock);
+				    	VoxelShape BB = blockstate.getCollisionShape(this.level, magnetblock);
 
-						vec blockvec = new vec(magnetblock.getX() + (BB.maxX + BB.minX) / 2, magnetblock.getY() + (BB.maxY + BB.minY) / 2, magnetblock.getZ() + (BB.maxZ + BB.minZ) / 2);
+						vec blockvec = new vec(magnetblock.getX() + (BB.max(Axis.X) + BB.min(Axis.X)) / 2, magnetblock.getY() + (BB.max(Axis.Y) + BB.min(Axis.Y)) / 2, magnetblock.getZ() + (BB.max(Axis.Z) + BB.min(Axis.Z)) / 2);
 						vec newvel = blockvec.sub(pos);
 						
 						double l = newvel.length();
 						
 						newvel.changelen(this.getVelocity());
 						
-						this.motionX = newvel.x;
-						this.motionY = newvel.y;
-						this.motionZ = newvel.z;
+						this.setDeltaMovement(newvel.x, newvel.y, newvel.z);
 						
 						if (l < 0.2) {
-							this.serverAttach(magnetblock, blockvec, EnumFacing.UP);
+							this.serverAttach(magnetblock, blockvec, Direction.UP);
 						}
 	    			}
 	    			
@@ -278,25 +292,22 @@ public class grappleArrow extends ProjectileItemEntity implements IEntityAdditio
 	    		}
 	    	}
 		}
-		*/
 	}
 	
-	/*
 	public void setVelocityActually(double x, double y, double z) {
-        this.motionX = x;
-        this.motionY = y;
-        this.motionZ = z;
+		this.setDeltaMovement(x, y, z);
 
-        if (this.prevRotationPitch == 0.0F && this.prevRotationYaw == 0.0F)
+        if (this.xRotO == 0.0F && this.yRotO == 0.0F)
         {
             float f = MathHelper.sqrt(x * x + z * z);
-            this.rotationYaw = (float)(MathHelper.atan2(x, z) * (180D / Math.PI));
-            this.rotationPitch = (float)(MathHelper.atan2(y, (double)f) * (180D / Math.PI));
-            this.prevRotationYaw = this.rotationYaw;
-            this.prevRotationPitch = this.rotationPitch;
+            this.yRot = (float)(MathHelper.atan2(x, z) * (180D / Math.PI));
+            this.xRot = (float)(MathHelper.atan2(y, (double)f) * (180D / Math.PI));
+            this.yRotO = this.yRot;
+            this.xRotO = this.xRot;
         }
 	}
 	
+	/*
 	@Override
 	@SideOnly(Side.CLIENT)
 	public boolean isInRangeToRender3d(double x, double y, double z) {
@@ -353,11 +364,7 @@ public class grappleArrow extends ProjectileItemEntity implements IEntityAdditio
 
 	@Override
 	protected void onHit(RayTraceResult movingobjectposition) {
-		this.setDeltaMovement(0, 0, 0);
-		return;
-//		this.removeServer();
-		/*
-		if (!this.world.isRemote) {
+		if (!this.level.isClientSide) {
 			if (this.attached) {
 				return;
 			}
@@ -366,65 +373,72 @@ public class grappleArrow extends ProjectileItemEntity implements IEntityAdditio
 					return;
 				}
 				
-				Vec3d vec3d = new Vec3d(this.posX, this.posY, this.posZ);
-		        Vec3d vec3d1 = new Vec3d(this.posX + this.motionX, this.posY + this.motionY, this.posZ + this.motionZ);
+				vec vec3d = vec.positionvec(this);
+		        vec vec3d1 = vec3d.add(vec.motionvec(this));
 
-				if (movingobjectposition.typeOfHit == RayTraceResult.Type.ENTITY && !GrappleConfig.getconf().hookaffectsentities) {
-			        onImpact(this.world.rayTraceBlocks(vec3d, vec3d1, false, true, false));
+				if (movingobjectposition instanceof EntityRayTraceResult && !GrappleConfig.getconf().hookaffectsentities) {
+					onHit(grapplemod.rayTraceBlocks(this.level, vec3d, vec3d1));
 			        return;
 				}
 				
-				if (grapplemod.anyignoresblocks && movingobjectposition.typeOfHit == RayTraceResult.Type.BLOCK) {
-					BlockPos blockpos = movingobjectposition.getBlockPos();
+				BlockRayTraceResult blockhit = null;
+				if (movingobjectposition instanceof BlockRayTraceResult) {
+					blockhit = (BlockRayTraceResult) movingobjectposition;
+				}
+				
+				if (grapplemod.anyignoresblocks && blockhit != null) {
+					BlockPos blockpos = blockhit.getBlockPos();
 					if (blockpos != null) {
-						Block block = this.world.getBlockState(blockpos).getBlock();
+						Block block = this.level.getBlockState(blockpos).getBlock();
 						if (grapplemod.grapplingignoresblocks.contains(block)) {
 							System.out.println("ignore block");
-					        onImpact(this.world.rayTraceBlocks(vec3d, vec3d1, false, true, false));
+					        onHit(grapplemod.rayTraceBlocks(this.level, vec3d, vec3d1));
 					        return;
 						}
 					}
 				}
 				
-				if (grapplemod.anybreakblocks && movingobjectposition.typeOfHit == RayTraceResult.Type.BLOCK) {
-					BlockPos blockpos = movingobjectposition.getBlockPos();
+				if (grapplemod.anybreakblocks && blockhit != null) {
+					BlockPos blockpos = blockhit.getBlockPos();
 					if (blockpos != null) {
-						Block block = this.world.getBlockState(blockpos).getBlock();
+						Block block = this.level.getBlockState(blockpos).getBlock();
 						if (grapplemod.grapplingbreaksblocks.contains(block)) {
-							this.world.destroyBlock(blockpos, true);
+							this.level.destroyBlock(blockpos, true);
 							System.out.println("break block");
-					        onImpact(this.world.rayTraceBlocks(vec3d, vec3d1, false, true, false));
+					        onHit(grapplemod.rayTraceBlocks(this.level, vec3d, vec3d1));
 					        return;
 						}
 					}
 				}
 				
-				if (movingobjectposition.typeOfHit == RayTraceResult.Type.ENTITY) {
+				if (movingobjectposition instanceof EntityRayTraceResult) {
 					// hit entity
-					Entity entityhit = movingobjectposition.entityHit;
-					if (entityhit == this.shootingEntity) {
+					EntityRayTraceResult entityHit = (EntityRayTraceResult) movingobjectposition;
+					Entity entity = entityHit.getEntity();
+					if (entity == this.shootingEntity) {
 						return;
 					}
 					
 					vec playerpos = vec.positionvec(this.shootingEntity);
-					vec entitypos = vec.positionvec(entityhit);
+					vec entitypos = vec.positionvec(entity);
 					vec yank = playerpos.sub(entitypos).mult(0.4);
-					entityhit.addVelocity(yank.x, Math.min(yank.y, 2), yank.z);
+					yank.y = Math.min(yank.y, 2);
+					vec newmotion = vec.motionvec(entity).add(yank);
+					entity.setDeltaMovement(newmotion.toVec3d());
 					
 					this.removeServer();
 					return;
-				} else if (movingobjectposition.typeOfHit == RayTraceResult.Type.BLOCK) {
-					BlockPos blockpos = movingobjectposition.getBlockPos();
+				} else if (blockhit != null) {
+					BlockPos blockpos = blockhit.getBlockPos();
 					
-					vec vec3 = new vec(movingobjectposition.hitVec.x, movingobjectposition.hitVec.y, movingobjectposition.hitVec.z);
+					vec vec3 = new vec(movingobjectposition.getLocation());
 
-					this.serverAttach(blockpos, vec3, movingobjectposition.sideHit);
+					this.serverAttach(blockpos, vec3, blockhit.getDirection());
 				} else {
 					System.out.println("unknown impact?");
 				}
 			}
 		}
-		*/
 	}
 
 	@Override
@@ -432,16 +446,17 @@ public class grappleArrow extends ProjectileItemEntity implements IEntityAdditio
 		return grapplemod.grapplebowitem;
 	}
 	
-	/*
-	public void serverAttach(BlockPos blockpos, vec pos, EnumFacing sideHit) {
+	public void serverAttach(BlockPos blockpos, vec pos, Direction sideHit) {
 		if (this.attached) {
 			return;
 		}
 		this.attached = true;
+		
+		grapplemod.LOGGER.info("serverAttach");
 
 		if (blockpos != null) {
 			if (!grapplemod.anyblocks) {
-				Block block = this.world.getBlockState(blockpos).getBlock();
+				Block block = this.level.getBlockState(blockpos).getBlock();
 
 				if ((!grapplemod.removeblocks && !grapplemod.grapplingblocks.contains(block))
 						|| (grapplemod.removeblocks && grapplemod.grapplingblocks.contains(block))) {
@@ -456,74 +471,64 @@ public class grappleArrow extends ProjectileItemEntity implements IEntityAdditio
 		if (pos != null) {
             vec3 = pos;
             
-            this.setPositionAndUpdate(vec3.x, vec3.y, vec3.z);
+            this.setPosAndOldPos(vec3.x, vec3.y, vec3.z);
 		}
 		
 		//west -x
 		//north -z
-		if (sideHit == EnumFacing.DOWN) {
-			this.posY -= 0.3;
-		} else if (sideHit == EnumFacing.WEST) {
-			this.posX -= 0.05;
-		} else if (sideHit == EnumFacing.NORTH) {
-			this.posZ -= 0.05;
-		} else if (sideHit == EnumFacing.SOUTH) {
-			this.posZ += 0.05;
-		} else if (sideHit == EnumFacing.EAST) {
-			this.posX += 0.05;
-		} else if (sideHit == EnumFacing.UP) {
-			this.posY += 0.05;
+		vec curpos = vec.positionvec(this);
+		if (sideHit == Direction.DOWN) {
+			curpos.y -= 0.3;
+		} else if (sideHit == Direction.WEST) {
+			curpos.x -= 0.05;
+		} else if (sideHit == Direction.NORTH) {
+			curpos.z -= 0.05;
+		} else if (sideHit == Direction.SOUTH) {
+			curpos.z += 0.05;
+		} else if (sideHit == Direction.EAST) {
+			curpos.x += 0.05;
+		} else if (sideHit == Direction.UP) {
+			curpos.y += 0.05;
 		}
+		curpos.setpos(this);
 		
-        this.motionX = 0;
-        this.motionY = 0;
-        this.motionZ = 0;
+		this.setDeltaMovement(0, 0, 0);
         
         this.thispos = vec.positionvec(this);
 		this.firstattach = true;
 		grapplemod.attached.add(this.shootingEntityID);
 		
-		grapplemod.sendtocorrectclient(new GrappleAttachMessage(this.getEntityId(), this.posX, this.posY, this.posZ, this.getControlId(), this.shootingEntityID, blockpos, this.segmenthandler.segments, this.segmenthandler.segmenttopsides, this.segmenthandler.segmentbottomsides, this.customization), this.shootingEntityID, this.world);
-		if (this.shootingEntity instanceof EntityPlayerMP) { // fixes strange bug in LAN
-			EntityPlayerMP sender = (EntityPlayerMP) this.shootingEntity;
-			int dimension = sender.dimension;
-			MinecraftServer minecraftServer = sender.mcServer;
-			for (EntityPlayerMP player : minecraftServer.getPlayerList().getPlayers()) {
-				GrappleAttachPosMessage msg = new GrappleAttachPosMessage(this.getEntityId(), this.posX, this.posY, this.posZ);   // must generate a fresh message for every player!
-				if (dimension == player.dimension) {
-					grapplemod.sendtocorrectclient(msg, player.getEntityId(), player.world);
-				}
-			}
-		}
+		grapplemod.sendtocorrectclient(new GrappleAttachMessage(this.getId(), this.position().x, this.position().y, this.position().z, this.getControlId(), this.shootingEntityID, blockpos, this.segmenthandler.segments, this.segmenthandler.segmenttopsides, this.segmenthandler.segmentbottomsides, this.customization), this.shootingEntityID, this.level);
+		
+		GrappleAttachPosMessage msg = new GrappleAttachPosMessage(this.getId(), this.position().x, this.position().y, this.position().z);
+		grapplemod.network.send(PacketDistributor.TRACKING_CHUNK.with(() -> this.level.getChunkAt(new BlockPos(this.position().x, this.position().y, this.position().z))), msg);
 	}
 	
 	public void clientAttach(double x, double y, double z) {
 		this.setAttachPos(x, y, z);
 		
-		if (this.shootingEntity instanceof EntityPlayer) {
+		if (this.shootingEntity instanceof PlayerEntity) {
 			grapplemod.proxy.resetlaunchertime(this.shootingEntityID);
 		}
 	}
 	
 	
 	@Override
-    protected float getGravityVelocity()
-    {
+	protected float getGravity() {
+		if (this.attached) {
+			return 0.0F;
+		}
         return (float) this.customization.hookgravity * 0.1F;
     }
-	
-
 	
 	public int getControlId() {
 		return grapplemod.GRAPPLEID;
 	}
 
 	public void setAttachPos(double x, double y, double z) {
-		this.setPositionAndUpdate(x, y, z);
+		this.setPosAndOldPos(x, y, z);
 
-		this.motionX = 0;
-		this.motionY = 0;
-		this.motionZ = 0;
+		this.setDeltaMovement(0, 0, 0);
 		this.firstattach = true;
 		this.attached = true;
         this.thispos = new vec(x, y, z);
@@ -559,14 +564,14 @@ public class grappleArrow extends ProjectileItemEntity implements IEntityAdditio
 	public boolean hasblock(BlockPos pos, HashMap<BlockPos, Boolean> checkedset) {
     	if (!checkedset.containsKey(pos)) {
     		boolean isblock = false;
-	    	IBlockState blockstate = this.world.getBlockState(pos);
+	    	BlockState blockstate = this.level.getBlockState(pos);
 	    	Block b = blockstate.getBlock();
 			if (!grapplemod.anyblocks && ((!grapplemod.removeblocks && !grapplemod.grapplingblocks.contains(b))
 						|| (grapplemod.removeblocks && grapplemod.grapplingblocks.contains(b)))) {
 			} else {
-		    	if (!(b.isAir(blockstate, this.world, pos))) {
-			    	AxisAlignedBB BB = blockstate.getCollisionBoundingBox(this.world, pos);
-			    	if (BB != null) {
+		    	if (!(b.isAir(blockstate, this.level, pos))) {
+			    	VoxelShape BB = blockstate.getCollisionShape(this.level, pos);
+			    	if (BB != null && !BB.isEmpty()) {
 			    		isblock = true;
 			    	}
 		    	}
@@ -578,7 +583,6 @@ public class grappleArrow extends ProjectileItemEntity implements IEntityAdditio
     		return checkedset.get(pos);
     	}
 	}
-	*/
 	
 	@Nonnull
 	@Override

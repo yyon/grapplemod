@@ -1,6 +1,14 @@
 package com.yyon.grapplinghook.network;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+
+import com.yyon.grapplinghook.grapplemod;
+import com.yyon.grapplinghook.vec;
+
+import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.network.PacketBuffer;
+import net.minecraft.world.World;
 import net.minecraftforge.fml.network.NetworkEvent;
 
 /*
@@ -71,47 +79,27 @@ public class PlayerMovementMessage extends BaseMessageServer {
     }
 
     public void processMessage(NetworkEvent.Context ctx) {
-    	/*
-        World world = ctx.getServerHandler().player.world;
-        Entity entity = world.getEntityByID(message.entityId);
-        if (entity == null) {return;}
-        if(entity instanceof EntityPlayerMP) {
-			EntityPlayerMP referencedPlayer = (EntityPlayerMP)entity;
-			if(ctx.getServerHandler().player.getGameProfile().equals(referencedPlayer.getGameProfile())) {
-				entity.posX = message.x;
-				entity.posY = message.y;
-				entity.posZ = message.z;
-				entity.motionX = message.mx;
-				entity.motionY = message.my;
-				entity.motionZ = message.mz;
-				EntityPlayerMP player = ((EntityPlayerMP) entity);
-				//                	player.connection.update();
-				Method capturePositionMethod = grapplemod.proxy.getCapturePositionMethod();
-				if (capturePositionMethod != null) {
-					try {
-						capturePositionMethod.invoke(player.connection);
-					} catch (IllegalAccessException e) {
-						e.printStackTrace();
-					} catch (IllegalArgumentException e) {
-						e.printStackTrace();
-					} catch (InvocationTargetException e) {
-						e.printStackTrace();
-					}
+    	final ServerPlayerEntity referencedPlayer = ctx.getSender();
+        if (referencedPlayer == null) {
+          grapplemod.LOGGER.warn("EntityPlayerMP was null when KeypressMessage was received");
+          return;
+        }
+        
+		if(referencedPlayer.getId() == this.entityId) {
+			new vec(this.x, this.y, this.z).setpos(referencedPlayer);
+			new vec(this.mx, this.my, this.mz).setmotion(referencedPlayer);
+
+			referencedPlayer.connection.resetPosition();
+			
+			if (!referencedPlayer.isOnGround()) {
+				if (this.my >= 0) {
+					referencedPlayer.fallDistance = 0;
 				} else {
-					System.out.println("Error capturePositionMethod is null");
-				}
-				
-				if (!player.onGround) {
-					if (message.my >= 0) {
-						player.fallDistance = 0;
-					} else {
-						double gravity = 0.05 * 2;
-						// d = v^2 / 2g
-				    	player.fallDistance = (float) (Math.pow(message.my, 2) / (2 * gravity));
-					}
+					double gravity = 0.05 * 2;
+					// d = v^2 / 2g
+					referencedPlayer.fallDistance = (float) (Math.pow(this.my, 2) / (2 * gravity));
 				}
 			}
-        }
-        */
+		}
     }
 }

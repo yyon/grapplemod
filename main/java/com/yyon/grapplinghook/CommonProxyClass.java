@@ -1,10 +1,13 @@
 package com.yyon.grapplinghook;
 
 import com.yyon.grapplinghook.blocks.TileEntityGrappleModifier;
+import com.yyon.grapplinghook.controllers.grappleController;
 import com.yyon.grapplinghook.network.BaseMessageClient;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.World;
 import net.minecraftforge.fml.network.NetworkEvent.Context;
 
 public interface CommonProxyClass {
@@ -35,7 +38,7 @@ public interface CommonProxyClass {
 	
 	public boolean issliding(Entity entity, vec motion);
 		
-//	public grappleController createControl(int id, int arrowid, int entityid, World world, vec pos, BlockPos blockpos, GrappleCustomization custom);
+	public grappleController createControl(int id, int arrowid, int entityid, World world, vec pos, BlockPos blockpos, GrappleCustomization custom);
 
 	public void playSlideSound(Entity entity);
 	

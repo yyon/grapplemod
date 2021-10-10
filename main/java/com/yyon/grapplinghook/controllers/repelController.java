@@ -3,7 +3,6 @@ package com.yyon.grapplinghook.controllers;
 import com.yyon.grapplinghook.vec;
 
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.world.World;
 
 public class repelController extends grappleController {
@@ -27,26 +26,21 @@ public class repelController extends grappleController {
 					
 //					double dist = oldspherevec.length();
 					
-					if (entity instanceof EntityPlayer) {
-//						EntityPlayer player = (EntityPlayer) entity;
-						if (playersneak) {
-							motion.mult_ip(0.95);
-						}
-						applyPlayerMovement();
+					if (playersneak) {
+						motion.mult_ip(0.95);
 					}
+					applyPlayerMovement();
 					
-					vec blockpush = check_repel(playerpos, entity.world);
+					vec blockpush = check_repel(playerpos, entity.level);
 					blockpush.mult_ip(0.5);
 					blockpush = new vec(blockpush.x*0.5, blockpush.y*2, blockpush.z*0.5);
 					this.motion.add_ip(blockpush);
 					
-					if (!entity.onGround) {
+					if (!entity.isOnGround()) {
 						motion.add_ip(0, -0.05, 0);
 					}
 					
-					entity.motionX = motion.x;
-					entity.motionY = motion.y;
-					entity.motionZ = motion.z;
+					motion.setmotion(this.entity);
 					
 					this.updateServerPos();
 				}

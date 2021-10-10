@@ -196,4 +196,12 @@ public class vec {
 		if (la == 0 || lb == 0) { return 0; }
 		return Math.acos(this.dot(b) / (la*lb));
 	}
+	
+	public void setpos(Entity e) {
+		e.setPos(this.x, this.y, this.z);
+	}
+	
+	public void setmotion(Entity e) {
+		e.setDeltaMovement(this.toVec3d());
+	}
 }

@@ -1,9 +1,14 @@
 package com.yyon.grapplinghook.network;
 
 import com.yyon.grapplinghook.vec;
+import com.yyon.grapplinghook.controllers.SegmentHandler;
+import com.yyon.grapplinghook.entities.grappleArrow;
 
+import net.minecraft.client.Minecraft;
+import net.minecraft.entity.Entity;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.Direction;
+import net.minecraft.world.World;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.fml.network.NetworkEvent;
@@ -69,22 +74,20 @@ public class SegmentMessage extends BaseMessageClient {
 
     @OnlyIn(Dist.CLIENT)
     public void processMessage(NetworkEvent.Context ctx) {
-    	/*
-    	World world = Minecraft.getMinecraft().world;
-    	Entity grapple = world.getEntityByID(message.id);
+    	World world = Minecraft.getInstance().level;
+    	Entity grapple = world.getEntity(this.id);
     	if (grapple == null) {
     		return;
     	}
     	
     	if (grapple instanceof grappleArrow) {
     		SegmentHandler segmenthandler = ((grappleArrow) grapple).segmenthandler;
-    		if (message.add) {
-    			segmenthandler.actuallyaddsegment(message.index, message.pos, message.bottomfacing, message.topfacing);
+    		if (this.add) {
+    			segmenthandler.actuallyaddsegment(this.index, this.pos, this.bottomfacing, this.topfacing);
     		} else {
-    			segmenthandler.removesegment(message.index);
+    			segmenthandler.removesegment(this.index);
     		}
     	} else {
     	}
-//    	*/
     }
 }

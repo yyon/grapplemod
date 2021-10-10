@@ -10,6 +10,7 @@ import org.apache.logging.log4j.Logger;
 
 import com.yyon.grapplinghook.blocks.BlockGrappleModifier;
 import com.yyon.grapplinghook.blocks.TileEntityGrappleModifier;
+import com.yyon.grapplinghook.controllers.grappleController;
 import com.yyon.grapplinghook.entities.grappleArrow;
 import com.yyon.grapplinghook.items.KeypressItem;
 import com.yyon.grapplinghook.items.LongFallBoots;
@@ -59,6 +60,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntityType;
 import net.minecraft.util.Hand;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BlockRayTraceResult;
 import net.minecraft.util.math.RayTraceContext;
 import net.minecraft.util.math.RayTraceResult;
@@ -145,8 +147,8 @@ public class grapplemod {
 	public static final ResourceLocation simpleChannelRL = new ResourceLocation("grapplemod", "channel");
 //	public static SimpleNetworkWrapper network;
 //	
-//	public static HashMap<Integer, grappleController> controllers = new HashMap<Integer, grappleController>(); // client side
-//	public static HashMap<BlockPos, grappleController> controllerpos = new HashMap<BlockPos, grappleController>();
+	public static HashMap<Integer, grappleController> controllers = new HashMap<Integer, grappleController>(); // client side
+	public static HashMap<BlockPos, grappleController> controllerpos = new HashMap<BlockPos, grappleController>();
 	public static HashSet<Integer> attached = new HashSet<Integer>(); // server side	
 	public static HashMap<Integer, HashSet<grappleArrow>> allarrows = new HashMap<Integer, HashSet<grappleArrow>>(); // server side
 	
@@ -243,8 +245,6 @@ public class grapplemod {
 		keyBindAttack
 	}
 
-	Method capturePosition = null;
-	
 	@SubscribeEvent
 	public static void init(FMLCommonSetupEvent event) {
 		network = NetworkRegistry.newSimpleChannel(simpleChannelRL, () -> "1.0",
@@ -768,9 +768,9 @@ public class grapplemod {
 	}
 	*/
 	
-	/*
 	public static void registerController(int entityId, grappleController controller) {
 		if (controllers.containsKey(entityId)) {
+			grapplemod.LOGGER.info("overriding registered controller");
 			controllers.get(entityId).unattach();
 		}
 		
@@ -780,9 +780,7 @@ public class grapplemod {
 	public static void unregisterController(int entityId) {
 		controllers.remove(entityId);
 	}
-	*/
 
-	/*
 	public static void receiveGrappleDetach(int id) {
 		grappleController controller = controllers.get(id);
 		if (controller != null) {
@@ -801,6 +799,7 @@ public class grapplemod {
 		}
 	}
 
+	/*
 	public static void receiveEnderLaunch(int id, double x, double y, double z) {
 		grappleController controller = controllers.get(id);
 		if (controller != null) {
@@ -826,16 +825,16 @@ public class grapplemod {
 		arrowIds.add(id);
 		grapplemod.network.sendToServer(new GrappleEndMessage(-1, arrowIds));
 	}
+	*/
 
 	public static void receiveGrappleEnd(int id, World world, HashSet<Integer> arrowIds) {
 		if (grapplemod.attached.contains(id)) {
-			grapplemod.attached.remove(new Integer
-					(id));
+			grapplemod.attached.remove(id);
 		} else {
 		}
 		
 		for (int arrowid : arrowIds) {
-	      	Entity grapple = world.getEntityByID(arrowid);
+	      	Entity grapple = world.getEntity(arrowid);
 	  		if (grapple instanceof grappleArrow) {
 	  			((grappleArrow) grapple).removeServer();
 	  		} else {
@@ -843,7 +842,7 @@ public class grapplemod {
 	  		}
 		}
   		
-  		Entity entity = world.getEntityByID(id);
+  		Entity entity = world.getEntity(id);
   		if (entity != null) {
       		entity.fallDistance = 0;
   		}
@@ -851,7 +850,7 @@ public class grapplemod {
   		grapplemod.removeallmultihookarrows(id);
 	}
 	
-
+	/*
 	public static NBTTagCompound getstackcompound(ItemStack stack, String key) {
 		if (!stack.hasTagCompound()) {
 			stack.setTagCompound(new NBTTagCompound());

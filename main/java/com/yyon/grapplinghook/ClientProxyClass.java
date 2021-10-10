@@ -1,11 +1,16 @@
 package com.yyon.grapplinghook;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.ConcurrentModificationException;
 import java.util.HashMap;
 
 import org.lwjgl.glfw.GLFW;
 
 import com.yyon.grapplinghook.blocks.TileEntityGrappleModifier;
+import com.yyon.grapplinghook.controllers.airfrictionController;
+import com.yyon.grapplinghook.controllers.grappleController;
+import com.yyon.grapplinghook.controllers.repelController;
 import com.yyon.grapplinghook.entities.RenderGrappleArrow;
 import com.yyon.grapplinghook.entities.grappleArrow;
 import com.yyon.grapplinghook.items.KeypressItem;
@@ -15,7 +20,7 @@ import com.yyon.grapplinghook.network.GrappleModifierMessage;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.GameSettings;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.ItemRenderer;
+import net.minecraft.client.entity.player.ClientPlayerEntity;
 import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.EntityRendererManager;
 import net.minecraft.client.renderer.model.ModelResourceLocation;
@@ -27,11 +32,14 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Hand;
+import net.minecraft.util.MovementInput;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BlockRayTraceResult;
 import net.minecraft.util.math.RayTraceResult;
+import net.minecraft.world.World;
 import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.client.event.InputUpdateEvent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -315,6 +323,7 @@ public class ClientProxyClass implements CommonProxyClass {
 				this.checkdoublejump();
 				
 				this.checkslide(player);
+				*/
 				
 				this.rocketFuel += this.rocketIncreaseTick;
 				
@@ -328,7 +337,6 @@ public class ClientProxyClass implements CommonProxyClass {
 				}
 
 				if (this.rocketFuel > 1) {this.rocketFuel = 1;}
-				*/
 				
 				if (Minecraft.getInstance().screen == null) {
 					// keep in same order as enum from KeypressItem
@@ -488,7 +496,7 @@ public class ClientProxyClass implements CommonProxyClass {
 			return "";
 		}
 		
-		String displayname = binding.getName();
+		String displayname = binding.getTranslatedKeyMessage().getString();
 		if (displayname.equals("Button 1")) {
 			return "Left Click";
 		} else if (displayname.equals("Button 2")) {
@@ -785,35 +793,37 @@ public class ClientProxyClass implements CommonProxyClass {
 
 		this.checkslide(Minecraft.getMinecraft().player);
 	}
+	*/
 	
 	@SubscribeEvent
     public void onInputUpdate(InputUpdateEvent event) {
-		int id = Minecraft.getMinecraft().player.getEntityId();
+		int id = Minecraft.getInstance().player.getId();
 		if (grapplemod.controllers.containsKey(id)) {
 			MovementInput input = event.getMovementInput();
 			grappleController control = grapplemod.controllers.get(id);
-			control.receivePlayerMovementMessage(input.moveStrafe, input.moveForward, input.jump, input.sneak);
+			control.receivePlayerMovementMessage(input.leftImpulse, input.forwardImpulse, input.jumping, input.shiftKeyDown);
 			
 			boolean overrideMovement = true;
-			if (Minecraft.getMinecraft().player.onGround) {
+			if (Minecraft.getInstance().player.isOnGround()) {
 				if (!(control instanceof airfrictionController) && !(control instanceof repelController)) {
 					overrideMovement = false;
 				}
 			}
 			
 			if (overrideMovement) {
-				input.jump = false;
-				input.backKeyDown = false;
-				input.forwardKeyDown = false;
-				input.leftKeyDown = false;
-				input.rightKeyDown = false;
-				input.moveForward = 0;
-				input.moveStrafe = 0;
+				input.jumping = false;
+				input.down = false;
+				input.up = false;
+				input.left = false;
+				input.right = false;
+				input.forwardImpulse = 0;
+				input.leftImpulse = 0;
 //				input.sneak = false; // fix alternate throw angles
 			}
 		}
 	}
 	
+	/*
 	public float currentCameraTilt = 0;
 
 	@SubscribeEvent
@@ -854,11 +864,14 @@ public class ClientProxyClass implements CommonProxyClass {
 		    event.setRoll(event.getRoll() + currentCameraTilt*GrappleConfig.client_options.wallrun_camera_tilt_degrees);
 		}
 	}
+	*/
 
 	@Override
 	public grappleController createControl(int id, int arrowid, int entityid, World world, vec pos, BlockPos blockpos, GrappleCustomization custom) {
+		grapplemod.LOGGER.info("createControl");
+
 		grappleArrow arrow = null;
-		Entity arrowentity = world.getEntityByID(arrowid);
+		Entity arrowentity = world.getEntity(arrowid);
 		if (arrowentity != null && arrowentity instanceof grappleArrow) {
 			arrow = (grappleArrow) arrowentity;
 		}
@@ -867,6 +880,7 @@ public class ClientProxyClass implements CommonProxyClass {
 		
 		grappleController currentcontroller = grapplemod.controllers.get(entityid);
 		if (currentcontroller != null && !(multi && currentcontroller.custom != null && currentcontroller.custom.doublehook)) {
+			grapplemod.LOGGER.info("existing controller");
 			currentcontroller.unattach();
 		}
 		
@@ -904,15 +918,16 @@ public class ClientProxyClass implements CommonProxyClass {
 			grapplemod.controllerpos.put(blockpos, control);
 		}
 		
-		Entity e = world.getEntityByID(entityid);
-		if (e != null && e instanceof EntityPlayerSP) {
-			EntityPlayerSP p = (EntityPlayerSP) e;
-			control.receivePlayerMovementMessage(p.movementInput.moveStrafe, p.movementInput.moveForward, p.movementInput.jump, p.movementInput.sneak);
+		Entity e = world.getEntity(entityid);
+		if (e != null && e instanceof ClientPlayerEntity) {
+			ClientPlayerEntity p = (ClientPlayerEntity) e;
+			control.receivePlayerMovementMessage(p.input.leftImpulse, p.input.forwardImpulse, p.input.jumping, p.input.shiftKeyDown);
 		}
 		
 		return control;
 	}
 
+	/*
 	public void playSlideSound(Entity entity) {
 		entity.playSound(new SoundEvent(this.slideSoundLoc), GrappleConfig.client_options.slide_sound_volume, 1.0F);
 	}

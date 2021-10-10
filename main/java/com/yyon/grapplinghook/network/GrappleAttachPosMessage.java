@@ -1,6 +1,11 @@
 package com.yyon.grapplinghook.network;
 
+import com.yyon.grapplinghook.entities.grappleArrow;
+
+import net.minecraft.client.Minecraft;
+import net.minecraft.entity.Entity;
 import net.minecraft.network.PacketBuffer;
+import net.minecraft.world.World;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.fml.network.NetworkEvent;
@@ -57,12 +62,10 @@ public class GrappleAttachPosMessage extends BaseMessageClient {
 
     @OnlyIn(Dist.CLIENT)
     public void processMessage(NetworkEvent.Context ctx) {
-    	/*
-    	World world = Minecraft.getInstance().world;
-    	Entity grapple = world.getEntityByID(this.id);
+    	World world = Minecraft.getInstance().level;
+    	Entity grapple = world.getEntity(this.id);
     	if (grapple instanceof grappleArrow) {
-        	((grappleArrow) grapple).setAttachPos(message.x, message.y, message.z);
+        	((grappleArrow) grapple).setAttachPos(this.x, this.y, this.z);
     	}
-    	*/
     }
 }
