@@ -1,9 +1,24 @@
 package com.yyon.grapplinghook.items;
 
-import com.yyon.grapplinghook.grapplemod;
+import java.util.List;
 
+import javax.annotation.Nullable;
+
+import com.yyon.grapplinghook.grapplemod;
+import com.yyon.grapplinghook.vec;
+import com.yyon.grapplinghook.controllers.grappleController;
+
+import net.minecraft.client.util.ITooltipFlag;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
-import net.minecraftforge.common.MinecraftForge;
+import net.minecraft.item.ItemStack;
+import net.minecraft.util.ActionResult;
+import net.minecraft.util.Hand;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.StringTextComponent;
+import net.minecraft.world.World;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 
 public class repeller extends Item {
 	public repeller() {
@@ -29,10 +44,11 @@ public class repeller extends Item {
 	{
 		return 72000;
 	}
+	*/
 
-	public void dorightclick(ItemStack stack, World worldIn, EntityPlayer player) {
-		if (worldIn.isRemote) {
-			int playerid = player.getEntityId();
+	public void dorightclick(ItemStack stack, World worldIn, PlayerEntity player) {
+		if (worldIn.isClientSide) {
+			int playerid = player.getId();
 			if (grapplemod.controllers.containsKey(playerid) && grapplemod.controllers.get(playerid).controllerid != grapplemod.AIRID) {
 				grappleController controller = grapplemod.controllers.get(playerid);
 				controller.unattach();
@@ -42,36 +58,36 @@ public class repeller extends Item {
 		}
 	}
 
-    @Override
-	public ActionResult<ItemStack> onItemRightClick(World worldIn, EntityPlayer playerIn, EnumHand hand)
-    {
-    	ItemStack itemStackIn = playerIn.getHeldItem(hand);
-        this.dorightclick(itemStackIn, worldIn, playerIn);
-        
-        return new ActionResult<ItemStack>(EnumActionResult.SUCCESS, itemStackIn);
-    }
+//    @Override
+//	public ActionResult<ItemStack> onItemRightClick(World worldIn, EntityPlayer playerIn, EnumHand hand)
+//    {
+//    	ItemStack itemStackIn = playerIn.getHeldItem(hand);
+//        this.dorightclick(itemStackIn, worldIn, playerIn);
+//        
+//        return new ActionResult<ItemStack>(EnumActionResult.SUCCESS, itemStackIn);
+//    }
 
     @Override
-    public EnumAction getItemUseAction(ItemStack par1ItemStack)
-	{
-		return EnumAction.NONE;
+    public ActionResult<ItemStack> use(World worldIn, PlayerEntity playerIn, Hand hand) {
+    	ItemStack stack = playerIn.getItemInHand(hand);
+        this.dorightclick(stack, worldIn, playerIn);
+        
+    	return ActionResult.success(stack);
 	}
     
 	@Override
-    @SideOnly(Side.CLIENT)
-	public void addInformation(ItemStack stack, World world, List<String> list, ITooltipFlag par4)
-	{
-		list.add("Player is repelled by nearby blocks");
-		list.add("Can be used with ender staff");
-		list.add("");
-		list.add(grapplemod.proxy.getkeyname(CommonProxyClass.keys.keyBindUseItem) + " - Turn on");
-		list.add(grapplemod.proxy.getkeyname(CommonProxyClass.keys.keyBindUseItem) + " again - Turn off");
-		list.add(grapplemod.proxy.getkeyname(CommonProxyClass.keys.keyBindSneak) + " - Slow down");
-		list.add(grapplemod.proxy.getkeyname(CommonProxyClass.keys.keyBindForward) + ", " +
-				grapplemod.proxy.getkeyname(CommonProxyClass.keys.keyBindLeft) + ", " +
-				grapplemod.proxy.getkeyname(CommonProxyClass.keys.keyBindBack) + ", " +
-				grapplemod.proxy.getkeyname(CommonProxyClass.keys.keyBindRight) +
-				" - Move");
+	@OnlyIn(Dist.CLIENT)
+	public void appendHoverText(ItemStack stack, @Nullable World world, List<ITextComponent> list, ITooltipFlag par4) {
+		list.add(new StringTextComponent(grapplemod.proxy.localize("grappletooltip.repelleritem.desc")));
+		list.add(new StringTextComponent(grapplemod.proxy.localize("grappletooltip.repelleritem2.desc")));
+		list.add(new StringTextComponent(""));
+		list.add(new StringTextComponent(grapplemod.proxy.getkeyname(grapplemod.keys.keyBindUseItem) + grapplemod.proxy.localize("grappletooltip.repelleritemon.desc")));
+		list.add(new StringTextComponent(grapplemod.proxy.getkeyname(grapplemod.keys.keyBindUseItem) + grapplemod.proxy.localize("grappletooltip.repelleritemoff.desc")));
+		list.add(new StringTextComponent(grapplemod.proxy.getkeyname(grapplemod.keys.keyBindSneak) + grapplemod.proxy.localize("grappletooltip.repelleritemslow.desc")));
+		list.add(new StringTextComponent(grapplemod.proxy.getkeyname(grapplemod.keys.keyBindForward) + ", " +
+				grapplemod.proxy.getkeyname(grapplemod.keys.keyBindLeft) + ", " +
+				grapplemod.proxy.getkeyname(grapplemod.keys.keyBindBack) + ", " +
+				grapplemod.proxy.getkeyname(grapplemod.keys.keyBindRight) +
+				" " + grapplemod.proxy.localize("grappletooltip.repelleritemmove.desc")));
 	}
-	*/
 }

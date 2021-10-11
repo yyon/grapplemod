@@ -1,9 +1,27 @@
 package com.yyon.grapplinghook.items;
 
+import java.util.List;
+
+import javax.annotation.Nullable;
+
+import org.spongepowered.asm.mixin.MixinEnvironment.Side;
+
+import com.yyon.grapplinghook.CommonProxyClass;
 import com.yyon.grapplinghook.grapplemod;
 
+import net.minecraft.client.util.ITooltipFlag;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
-import net.minecraftforge.common.MinecraftForge;
+import net.minecraft.item.ItemStack;
+import net.minecraft.util.ActionResult;
+import net.minecraft.util.Direction;
+import net.minecraft.util.Hand;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.StringTextComponent;
+import net.minecraft.world.World;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 
 /*
  * This file is part of GrappleMod.
@@ -38,51 +56,49 @@ public class launcherItem extends Item {
 //		MinecraftForge.EVENT_BUS.register(this);
 	}
 	
-	/*
-	@Override
-	public int getMaxItemUseDuration(ItemStack par1ItemStack)
-	{
-		return 72000;
-	}
+//	@Override
+//	public int getMaxItemUseDuration(ItemStack par1ItemStack)
+//	{
+//		return 72000;
+//	}
 
-	public void dorightclick(ItemStack stack, World worldIn, EntityPlayer player) {
-		if (worldIn.isRemote) {
+	public void dorightclick(ItemStack stack, World worldIn, PlayerEntity player) {
+		if (worldIn.isClientSide) {
 			grapplemod.proxy.launchplayer(player);
 		}
 	}
 	
     @Override
-    public EnumActionResult onItemUse(EntityPlayer playerIn, World worldIn, BlockPos blockpos, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ)
-    {
-    	ItemStack stack = playerIn.getHeldItem(hand);
+    public ActionResult<ItemStack> use(World worldIn, PlayerEntity playerIn, Hand hand) {
+    	ItemStack stack = playerIn.getItemInHand(hand);
         this.dorightclick(stack, worldIn, playerIn);
         
-    	return EnumActionResult.SUCCESS;
+    	return ActionResult.success(stack);
 	}
     
+    /*
     @Override
-	public ActionResult<ItemStack> onItemRightClick(World worldIn, EntityPlayer entityLiving, EnumHand hand)
+	public ActionResult<ItemStack> onItemRightClick(World worldIn, PlayerEntity entityLiving, Hand hand)
 	{
-    	ItemStack stack = entityLiving.getHeldItem(hand);
+    	ItemStack stack = entityLiving.getItemInHand(hand);
     	this.dorightclick(stack, worldIn, entityLiving);
         
-        return new ActionResult<ItemStack>(EnumActionResult.SUCCESS, stack);
+    	return ActionResult.success(stack);
     }
+    */
 
-    @Override
-    public EnumAction getItemUseAction(ItemStack par1ItemStack)
-	{
-		return EnumAction.NONE;
-	}
+//    @Override
+//    public EnumAction getItemUseAction(ItemStack par1ItemStack)
+//	{
+//		return EnumAction.NONE;
+//	}
     
 	@Override
-    @SideOnly(Side.CLIENT)
-	public void addInformation(ItemStack stack, World world, List<String> list, ITooltipFlag par4)
-	{
-		list.add("Launches player");
-		list.add("");
-		list.add("Use crosshairs to aim");
-		list.add(grapplemod.proxy.getkeyname(CommonProxyClass.keys.keyBindUseItem) + " - Launch player");
+	@OnlyIn(Dist.CLIENT)
+	public void appendHoverText(ItemStack stack, @Nullable World world, List<ITextComponent> list, ITooltipFlag par4) {
+		list.add(new StringTextComponent(grapplemod.proxy.localize("grappletooltip.launcheritem.desc")));
+		list.add(new StringTextComponent(""));
+		list.add(new StringTextComponent(grapplemod.proxy.localize("grappletooltip.launcheritemaim.desc")));
+		list.add(new StringTextComponent(grapplemod.proxy.getkeyname(grapplemod.keys.keyBindUseItem) + grapplemod.proxy.localize("grappletooltip.launcheritemcontrols.desc")));
 	}
-	*/
 }

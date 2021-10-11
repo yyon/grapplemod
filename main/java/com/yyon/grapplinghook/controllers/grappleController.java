@@ -315,7 +315,7 @@ public class grappleController {
 								if (ongroundtimer > 0) { // on ground: jump normally
 									
 								} else {
-									double timer = this.entity.level.getGameTime() - ClientProxyClass.prev_rope_jump_time;
+									double timer = grapplemod.getTime(this.entity.level) - ClientProxyClass.prev_rope_jump_time;
 									if (timer > GrappleConfig.getconf().rope_jump_cooldown_s * 20.0) {
 										doJump = true;
 										jumpSpeed = this.getJumpPower(player, spherevec, arrow);
@@ -615,7 +615,7 @@ public class grappleController {
 							jumpSpeed = GrappleConfig.getconf().rope_jump_power;
 						}
 						this.doJump(entity, jumpSpeed, averagemotiontowards, min_spherevec_dist);
-						ClientProxyClass.prev_rope_jump_time = this.entity.level.getGameTime();
+						ClientProxyClass.prev_rope_jump_time = grapplemod.getTime(this.entity.level);
 						return;
 					}
 					

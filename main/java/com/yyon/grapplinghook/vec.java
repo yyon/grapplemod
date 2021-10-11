@@ -1,6 +1,7 @@
 package com.yyon.grapplinghook;
 
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.vector.Vector3d;
 
@@ -126,6 +127,10 @@ public class vec {
 	}
 	
 	public vec normalize() {
+		if (this.length() == 0) {
+			grapplemod.LOGGER.warn("normalizing vector with no length");
+			return new vec(this);
+		}
 		return this.mult(1.0 / this.length());
 	}
 	
@@ -155,7 +160,7 @@ public class vec {
 		}
 	}
 	
-	public vec proj (vec v2) {
+	public vec proj(vec v2) {
 		vec v3 = v2.normalize();
 		double dot = this.dot(v3);
 		return v3.changelen(dot);
@@ -213,5 +218,9 @@ public class vec {
 		this.checkNaN();
 		
 		e.setDeltaMovement(this.toVec3d());
+	}
+
+	public static vec lookvec(Entity entity) {
+		return new vec(entity.getLookAngle());
 	}
 }

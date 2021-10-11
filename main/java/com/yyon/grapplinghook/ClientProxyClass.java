@@ -14,6 +14,8 @@ import com.yyon.grapplinghook.controllers.repelController;
 import com.yyon.grapplinghook.entities.RenderGrappleArrow;
 import com.yyon.grapplinghook.entities.grappleArrow;
 import com.yyon.grapplinghook.items.KeypressItem;
+import com.yyon.grapplinghook.items.grappleBow;
+import com.yyon.grapplinghook.items.launcherItem;
 import com.yyon.grapplinghook.network.BaseMessageClient;
 import com.yyon.grapplinghook.network.GrappleModifierMessage;
 
@@ -34,14 +36,17 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.Hand;
 import net.minecraft.util.MovementInput;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.SoundEvent;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BlockRayTraceResult;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.world.World;
 import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.client.event.ClientPlayerNetworkEvent.LoggedOutEvent;
 import net.minecraftforge.client.event.InputUpdateEvent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.TickEvent;
+import net.minecraftforge.event.world.BlockEvent.BreakEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.client.registry.ClientRegistry;
 import net.minecraftforge.fml.client.registry.IRenderFactory;
@@ -306,14 +311,14 @@ public class ClientProxyClass implements CommonProxyClass {
 			if (!Minecraft.getInstance().isPaused()) {
 				/*
 				if (this.iswallrunning(player, vec.motionvec(player))) {
-					if (!grapplemod.controllers.containsKey(player.getEntityId())) {
-						grappleController controller = this.createControl(grapplemod.AIRID, -1, player.getEntityId(), player.world, new vec(0,0,0), null, null);
+					if (!grapplemod.controllers.containsKey(player.getId())) {
+						grappleController controller = this.createControl(grapplemod.AIRID, -1, player.getId(), player.world, new vec(0,0,0), null, null);
 						if (controller.getwalldirection() == null) {
 							controller.unattach();
 						}
 					}
 					
-					if (grapplemod.controllers.containsKey(player.getEntityId())) {
+					if (grapplemod.controllers.containsKey(player.getId())) {
 						tickssincelastonground = 0;
 						alreadyuseddoublejump = false;
 					}
@@ -364,35 +369,32 @@ public class ClientProxyClass implements CommonProxyClass {
 					}
 				}
 				
-				/*
 				if (player.isOnGround()) {
-					if (enderlaunchtimer.containsKey(player.entity())) {
-						long timer = player.world.getTotalWorldTime() - enderlaunchtimer.get(player.getEntityId());
+					if (enderlaunchtimer.containsKey(player.getId())) {
+						long timer = grapplemod.getTime(player.level) - enderlaunchtimer.get(player.getId());
 						if (timer > 10) {
-							this.resetlaunchertime(player.getEntityId());
+							this.resetlaunchertime(player.getId());
 						}
 					}
 				}
-				*/
 			}
 		}
 	}
 	
-	/*
-	private void checkslide(EntityPlayer player) {
-		if (key_slide.isKeyDown() && !grapplemod.controllers.containsKey(player.getEntityId()) && this.issliding(player, vec.motionvec(player))) {
-			this.createControl(grapplemod.AIRID, -1, player.getEntityId(), player.world, new vec(0,0,0), null, null);
+	private void checkslide(PlayerEntity player) {
+		if (key_slide.isDown() && !grapplemod.controllers.containsKey(player.getId()) && this.issliding(player, vec.motionvec(player))) {
+			this.createControl(grapplemod.AIRID, -1, player.getId(), player.level, new vec(0,0,0), null, null);
 		}
 	}
 
 	@Override
-	public void startrocket(EntityPlayer player, GrappleCustomization custom) {
+	public void startrocket(PlayerEntity player, GrappleCustomization custom) {
 		if (!custom.rocket) return;
 		
-		if (!grapplemod.controllers.containsKey(player.getEntityId())) {
-			this.createControl(grapplemod.AIRID, -1, player.getEntityId(), player.world, new vec(0,0,0), null, custom);
+		if (!grapplemod.controllers.containsKey(player.getId())) {
+			this.createControl(grapplemod.AIRID, -1, player.getId(), player.level, new vec(0,0,0), null, custom);
 		} else {
-			grappleController controller = grapplemod.controllers.get(player.getEntityId());
+			grappleController controller = grapplemod.controllers.get(player.getId());
 			if (controller.custom == null || !controller.custom.rocket) {
 				if (controller.custom == null) {controller.custom = custom;}
 				controller.custom.rocket = true;
@@ -403,37 +405,35 @@ public class ClientProxyClass implements CommonProxyClass {
 			}
 		}
 	}
-	*/
-	
-	/*
+
 	@Override
-	public void launchplayer(EntityPlayer player) {
+	public void launchplayer(PlayerEntity player) {
 		long prevtime;
-		if (enderlaunchtimer.containsKey(player.getEntityId())) {
-			prevtime = enderlaunchtimer.get(player.getEntityId());
+		if (enderlaunchtimer.containsKey(player.getId())) {
+			prevtime = enderlaunchtimer.get(player.getId());
 		} else {
 			prevtime = 0;
 		}
-		long timer = player.world.getTotalWorldTime() - prevtime;
+		long timer = grapplemod.getTime(player.level) - prevtime;
 		if (timer > GrappleConfig.getconf().ender_staff_recharge) {
-			if ((player.getHeldItemMainhand()!=null && (player.getHeldItemMainhand().getItem() instanceof launcherItem || player.getHeldItemMainhand().getItem() instanceof grappleBow)) || (player.getHeldItemOffhand()!=null && (player.getHeldItemOffhand().getItem() instanceof launcherItem || player.getHeldItemOffhand().getItem() instanceof grappleBow))) {
-				enderlaunchtimer.put(player.getEntityId(), player.world.getTotalWorldTime());
+			if ((player.getItemInHand(Hand.MAIN_HAND)!=null && (player.getItemInHand(Hand.MAIN_HAND).getItem() instanceof launcherItem || player.getItemInHand(Hand.MAIN_HAND).getItem() instanceof grappleBow)) || (player.getItemInHand(Hand.OFF_HAND)!=null && (player.getItemInHand(Hand.OFF_HAND).getItem() instanceof launcherItem || player.getItemInHand(Hand.OFF_HAND).getItem() instanceof grappleBow))) {
+				enderlaunchtimer.put(player.getId(), grapplemod.getTime(player.level));
 				
-	        	vec facing = new vec(player.getLookVec());
+	        	vec facing = vec.lookvec(player);
 	        	
 	        	GrappleCustomization custom = null;
-	        	if (player.getHeldItemMainhand().getItem() instanceof grappleBow) {
-	        		custom = ((grappleBow) player.getHeldItemMainhand().getItem()).getCustomization(player.getHeldItemMainhand());
-	        	} else if (player.getHeldItemOffhand().getItem() instanceof grappleBow) {
-	        		custom = ((grappleBow) player.getHeldItemOffhand().getItem()).getCustomization(player.getHeldItemOffhand());
+	        	if (player.getItemInHand(Hand.MAIN_HAND).getItem() instanceof grappleBow) {
+	        		custom = ((grappleBow) player.getItemInHand(Hand.MAIN_HAND).getItem()).getCustomization(player.getItemInHand(Hand.MAIN_HAND));
+	        	} else if (player.getItemInHand(Hand.OFF_HAND).getItem() instanceof grappleBow) {
+	        		custom = ((grappleBow) player.getItemInHand(Hand.OFF_HAND).getItem()).getCustomization(player.getItemInHand(Hand.OFF_HAND));
 	        	}
 	        	
-				if (!grapplemod.controllers.containsKey(player.getEntityId())) {
-					player.onGround = false;
-					this.createControl(grapplemod.AIRID, -1, player.getEntityId(), player.world, new vec(0,0,0), null, custom);
+				if (!grapplemod.controllers.containsKey(player.getId())) {
+					player.setOnGround(false);
+					this.createControl(grapplemod.AIRID, -1, player.getId(), player.level, new vec(0,0,0), null, custom);
 				}
 				facing.mult_ip(GrappleConfig.getconf().ender_staff_strength);
-				grapplemod.receiveEnderLaunch(player.getEntityId(), facing.x, facing.y, facing.z);
+				grapplemod.receiveEnderLaunch(player.getId(), facing.x, facing.y, facing.z);
 			}
 		}
 	}
@@ -447,10 +447,10 @@ public class ClientProxyClass implements CommonProxyClass {
 	
 	@Override
 	public boolean isSneaking(Entity entity) {
-		if (entity == Minecraft.getMinecraft().player) {
-			return (GameSettings.isKeyDown(Minecraft.getMinecraft().gameSettings.keyBindSneak));
+		if (entity == Minecraft.getInstance().player) {
+			return (Minecraft.getInstance().options.keyShift.isDown());
 		} else {
-			return entity.isSneaking();
+			return entity.isCrouching();
 		}
 	}
 	
@@ -466,7 +466,6 @@ public class ClientProxyClass implements CommonProxyClass {
 			}
 		}
     }
-    */
 	
 	public String getkeyname(grapplemod.keys keyenum) {
 		KeyBinding binding = null;
@@ -507,9 +506,9 @@ public class ClientProxyClass implements CommonProxyClass {
 
 	/*
 	public static boolean isactive(ItemStack stack) {
-		EntityPlayer p = Minecraft.getMinecraft().player;
+		PlayerEntity p = Minecraft.getMinecraft().player;
 //		if (p.getItemStackFromSlot(EntityEquipmentSlot.MAINHAND) == stack || p.getItemStackFromSlot(EntityEquipmentSlot.OFFHAND) == stack) {
-			int entityid = p.getEntityId();
+			int entityid = p.getId();
 			if (grapplemod.controllers.containsKey(entityid)) {
 				Item item = stack.getItem();
 				grappleController controller = grapplemod.controllers.get(entityid);
@@ -529,11 +528,7 @@ public class ClientProxyClass implements CommonProxyClass {
 
 	}
 	
-	@SubscribeEvent
-	public void onPlayerLoggedOutEvent(ClientDisconnectionFromServerEvent e) {
-		System.out.println("deleting server options");
-		GrappleConfig.setserveroptions(null);
-	}
+
 
 
 	@SubscribeEvent
@@ -545,75 +540,13 @@ public class ClientProxyClass implements CommonProxyClass {
 		}
 	}
 	*/
-
+	@SubscribeEvent
+	public void onPlayerLoggedOutEvent(LoggedOutEvent e) {
+		GrappleConfig.setserveroptions(null);
+	}
+	
 	public String localize(String string) {
 		return I18n.get(string);
-	}
-
-	@Override
-	public void resetlaunchertime(int playerid) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void launchplayer(PlayerEntity player) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public boolean isSneaking(Entity entity) {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	@Override
-	public void openModifierScreen(TileEntityGrappleModifier tileent) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void startrocket(PlayerEntity player, GrappleCustomization custom) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void updateRocketRegen(double rocket_active_time, double rocket_refuel_ratio) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public double getRocketFunctioning() {
-		// TODO Auto-generated method stub
-		return 0;
-	}
-
-	@Override
-	public boolean iswallrunning(Entity entity, vec motion) {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	@Override
-	public boolean issliding(Entity entity, vec motion) {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	@Override
-	public void playSlideSound(Entity entity) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void playWallrunJumpSound(Entity entity) {
-		// TODO Auto-generated method stub
-		
 	}
 
 	@Override
@@ -621,7 +554,6 @@ public class ClientProxyClass implements CommonProxyClass {
 		msg.processMessage(ctx);
 	}
 
-	/*
 	@Override
 	public void updateRocketRegen(double rocket_active_time, double rocket_refuel_ratio) {
 		this.rocketDecreaseTick = 0.05 / 2.0 / rocket_active_time;
@@ -640,6 +572,7 @@ public class ClientProxyClass implements CommonProxyClass {
 		}
 	}
 	
+	/*
 	@Override
 	public boolean iswallrunning(Entity entity, vec motion) {
 		if (entity.collidedHorizontally && !entity.onGround && !entity.isSneaking()) {
@@ -671,7 +604,7 @@ public class ClientProxyClass implements CommonProxyClass {
 	boolean alreadyuseddoublejump = false;
 	
 	public void checkdoublejump() {
-		EntityPlayer player = Minecraft.getMinecraft().player;
+		PlayerEntity player = Minecraft.getMinecraft().player;
 		
 		if (player.onGround) {
 			tickssincelastonground = 0;
@@ -680,7 +613,7 @@ public class ClientProxyClass implements CommonProxyClass {
 			tickssincelastonground++;
 		}
 		
-//		if (grapplemod.controllers.containsKey(player.getEntityId()) && !(grapplemod.controllers.get(player.getEntityId()) instanceof airfrictionController)) {
+//		if (grapplemod.controllers.containsKey(player.getId()) && !(grapplemod.controllers.get(player.getId()) instanceof airfrictionController)) {
 //			tickssincelastonground = 0;
 //			alreadyuseddoublejump = false;
 //		}
@@ -692,10 +625,10 @@ public class ClientProxyClass implements CommonProxyClass {
 			if (tickssincelastonground > 3) {
 				if (!alreadyuseddoublejump) {
 					if (wearingdoublejumpenchant(player)) {
-						if (!grapplemod.controllers.containsKey(player.getEntityId())) {
-							this.createControl(grapplemod.AIRID, -1, player.getEntityId(), player.world, new vec(0,0,0), null, null);
+						if (!grapplemod.controllers.containsKey(player.getId())) {
+							this.createControl(grapplemod.AIRID, -1, player.getId(), player.world, new vec(0,0,0), null, null);
 						}
-						grappleController controller = grapplemod.controllers.get(player.getEntityId());
+						grappleController controller = grapplemod.controllers.get(player.getId());
 						if (controller instanceof airfrictionController) {
 							alreadyuseddoublejump = true;
 							controller.doublejump();
@@ -711,10 +644,10 @@ public class ClientProxyClass implements CommonProxyClass {
 	}
 
 	public boolean wearingdoublejumpenchant(Entity entity) {
-		if (entity instanceof EntityPlayer && ((EntityPlayer) entity).capabilities.isFlying) {
+		if (entity instanceof PlayerEntity && ((PlayerEntity) entity).capabilities.isFlying) {
 			return false;
 		}
-//		if (entity instanceof EntityPlayer && ((EntityPlayer) entity).isCreative()) {
+//		if (entity instanceof PlayerEntity && ((PlayerEntity) entity).isCreative()) {
 //			return false;
 //		}
 		
@@ -753,7 +686,7 @@ public class ClientProxyClass implements CommonProxyClass {
 			if (ClientProxyClass.isWearingSlidingEnchant(entity)) {
 //				System.out.println("check sliding: " + Double.toString(vec.motionvec(entity).removealong(new vec (0,1,0)).length()));
 				boolean was_sliding = false;
-				int id = entity.getEntityId();
+				int id = entity.getId();
 				if (grapplemod.controllers.containsKey(id)) {
 					grappleController controller = grapplemod.controllers.get(id);
 					if (controller instanceof airfrictionController) {
@@ -775,11 +708,11 @@ public class ClientProxyClass implements CommonProxyClass {
 
 	@SubscribeEvent
 	public void onKeyInputEvent(KeyInputEvent event) {
-		EntityPlayer player = Minecraft.getMinecraft().player;
+		PlayerEntity player = Minecraft.getMinecraft().player;
 		
 		grappleController controller = null;
-		if (grapplemod.controllers.containsKey(player.getEntityId())) {
-			controller = grapplemod.controllers.get(player.getEntityId());
+		if (grapplemod.controllers.containsKey(player.getId())) {
+			controller = grapplemod.controllers.get(player.getId());
 		}
 		
 		if (Minecraft.getMinecraft().gameSettings.keyBindJump.isKeyDown()) {
@@ -828,8 +761,8 @@ public class ClientProxyClass implements CommonProxyClass {
 	@SubscribeEvent
 	public void CameraSetup(CameraSetup event)
 	{
-		EntityPlayer player = Minecraft.getMinecraft().player;
-		int id = player.getEntityId();
+		PlayerEntity player = Minecraft.getMinecraft().player;
+		int id = player.getId();
 		int targetCameraTilt = 0;
 		if (grapplemod.controllers.containsKey(id)) {
 			grappleController controller = grapplemod.controllers.get(id);
@@ -923,7 +856,6 @@ public class ClientProxyClass implements CommonProxyClass {
 		return control;
 	}
 
-	/*
 	public void playSlideSound(Entity entity) {
 		entity.playSound(new SoundEvent(this.slideSoundLoc), GrappleConfig.client_options.slide_sound_volume, 1.0F);
 	}
@@ -936,5 +868,22 @@ public class ClientProxyClass implements CommonProxyClass {
 	public void playWallrunJumpSound(Entity entity) {
 		entity.playSound(new SoundEvent(this.doubleJumpSoundLoc), GrappleConfig.client_options.wallrunjump_sound_volume * 0.7F, 1.0F);
 	}
-	*/
+
+	@Override
+	public void openModifierScreen(TileEntityGrappleModifier tileent) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public boolean iswallrunning(Entity entity, vec motion) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean issliding(Entity entity, vec motion) {
+		// TODO Auto-generated method stub
+		return false;
+	}
 }

@@ -68,6 +68,7 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
+import net.minecraftforge.event.world.BlockEvent.BreakEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.fml.common.Mod;
@@ -338,18 +339,20 @@ public class grapplemod {
 	public void resetlaunchertime(int playerid) {
 	}
 
-	public void launchplayer(EntityPlayer player) {
+	public void launchplayer(PlayerEntity player) {
 	}
 	
 	public boolean isSneaking(Entity entity) {
 		return entity.isSneaking();
 	}
+	*/
+	
 	
     @SubscribeEvent
     public void onBlockBreak(BreakEvent event){
-    	EntityPlayer player = event.getPlayer();
+    	PlayerEntity player = event.getPlayer();
     	if (player != null) {
-	    	ItemStack stack = player.getHeldItemMainhand();
+	    	ItemStack stack = player.getItemInHand(Hand.MAIN_HAND);
 	    	if (stack != null) {
 	    		Item item = stack.getItem();
 	    		if (item instanceof grappleBow) {
@@ -359,10 +362,12 @@ public class grapplemod {
 	    	}
     	}
     	
-    	this.blockbreak(event);
+    	if (event.getWorld().isClientSide()) {
+        	grapplemod.proxy.blockbreak(event);
+    	}
     }
     
-    
+    /*
     public void blockbreak(BreakEvent event) {
     }
 
@@ -386,7 +391,7 @@ public class grapplemod {
 		return string;
 	}
 
-	public void startrocket(EntityPlayer player, GrappleCustomization custom) {
+	public void startrocket(PlayerEntity player, GrappleCustomization custom) {
 	}
 	
 	public void updateRocketRegen(double rocket_active_time, double rocket_refuel_ratio) {
@@ -424,24 +429,6 @@ public class grapplemod {
 		if (isconnected) {
 			HashSet<grappleArrow> arrows = grapplemod.allarrows.get(id);
 			for (grappleArrow arrow: arrows) {
-//				if (!arrow.isAddedToWorld()) {
-//					System.out.println("arrow unloaded");
-//					IChunkProvider chunkprovider = arrow.world.getChunkProvider();
-//					if (chunkprovider instanceof ChunkProviderServer) {
-//						ChunkProviderServer chunkproviderserver = (ChunkProviderServer) chunkprovider;
-//						chunkproviderserver.loadChunk(arrow.chunkCoordX, arrow.chunkCoordZ, new Runnable() {
-//							@Override
-//							public void run() {
-//								Entity newArrow = arrow.world.getEntityByID(arrow.getEntityId());
-//								if (newArrow == null) {
-//									System.out.println("Couldn't delete grappleArrow");
-//									return;
-//									}
-//								newArrow.setDead();
-//							}
-//						});
-//					}
-//				}
 				arrow.removeServer();
 			}
 			arrows.clear();
@@ -462,11 +449,6 @@ public class grapplemod {
 			grapplemod.sendtocorrectclient(new GrappleDetachMessage(id), id, entity.level);
 		}
 	}
-
-    /*
-	public void playWallrunJumpSound(Entity entity) {
-	}
-	*/
 	
 	/*
 	@Override
@@ -480,10 +462,10 @@ public class grapplemod {
 	
 	@SubscribeEvent
 	public void onPlayerLoggedInEvent(PlayerLoggedInEvent e) {
-		if (e.player instanceof EntityPlayerMP) {
-			grapplemod.network.sendTo(new LoggedInMessage(GrappleConfig.options), (EntityPlayerMP) e.player);
+		if (e.player instanceof PlayerEntityMP) {
+			grapplemod.network.sendTo(new LoggedInMessage(GrappleConfig.options), (PlayerEntityMP) e.player);
 		} else {
-			System.out.println("Not an EntityPlayerMP");
+			System.out.println("Not an PlayerEntityMP");
 		}
 	}
 	*/
@@ -800,7 +782,6 @@ public class grapplemod {
 		}
 	}
 
-	/*
 	public static void receiveEnderLaunch(int id, double x, double y, double z) {
 		grappleController controller = controllers.get(id);
 		if (controller != null) {
@@ -809,7 +790,6 @@ public class grapplemod {
 			System.out.println("Couldn't find controller");
 		}
 	}
-	*/
 	
 	public static void sendtocorrectclient(Object message, int playerid, World w) {
 		Entity entity = w.getEntity(playerid);
@@ -930,5 +910,9 @@ public class grapplemod {
 			return blockhit;
 		}
 		return null;
+	}
+	
+	public static long getTime(World w) {
+		return w.getGameTime();
 	}
 }
