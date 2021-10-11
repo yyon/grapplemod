@@ -111,6 +111,10 @@ public class vec {
     public vec rotate_pitch(double pitch) {
         return new vec(this.x, this.y * Math.cos(pitch) + this.z * Math.sin(pitch), this.z * Math.cos(pitch) - this.y * Math.sin(pitch));
     }
+    
+    public static vec fromAngles(double yaw, double pitch) {
+    	return new vec(Math.tan(-yaw), Math.tan(pitch), 1).normalize();
+    }
 	
 	public vec mult(double changefactor) {
 		return new vec(this.x * changefactor, this.y * changefactor, this.z * changefactor);
