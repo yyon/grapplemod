@@ -80,10 +80,6 @@ public class PlayerMovementMessage extends BaseMessageServer {
 
     public void processMessage(NetworkEvent.Context ctx) {
     	final ServerPlayerEntity referencedPlayer = ctx.getSender();
-        if (referencedPlayer == null) {
-          grapplemod.LOGGER.warn("EntityPlayerMP was null when KeypressMessage was received");
-          return;
-        }
         
 		if(referencedPlayer.getId() == this.entityId) {
 			new vec(this.x, this.y, this.z).setpos(referencedPlayer);

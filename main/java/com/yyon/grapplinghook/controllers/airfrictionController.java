@@ -46,7 +46,6 @@ public class airfrictionController extends grappleController {
 		if (entity == null) {return;}
 		
 		if (entity.getVehicle() != null) {
-			grapplemod.LOGGER.info("riding");
 			this.unattach();
 			this.updateServerPos();
 			return;

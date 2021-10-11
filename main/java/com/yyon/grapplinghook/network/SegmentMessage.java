@@ -1,5 +1,6 @@
 package com.yyon.grapplinghook.network;
 
+import com.yyon.grapplinghook.grapplemod;
 import com.yyon.grapplinghook.vec;
 import com.yyon.grapplinghook.controllers.SegmentHandler;
 import com.yyon.grapplinghook.entities.grappleArrow;
@@ -57,8 +58,8 @@ public class SegmentMessage extends BaseMessageClient {
     	this.add = buf.readBoolean();
     	this.index = buf.readInt();
     	this.pos = new vec(buf.readDouble(), buf.readDouble(), buf.readDouble());
-    	this.topfacing = Direction.from2DDataValue(buf.readInt());
-    	this.bottomfacing = Direction.from2DDataValue(buf.readInt());
+    	this.topfacing = buf.readEnum(Direction.class);
+    	this.bottomfacing = buf.readEnum(Direction.class);
     }
 
     public void encode(PacketBuffer buf) {
@@ -68,8 +69,8 @@ public class SegmentMessage extends BaseMessageClient {
     	buf.writeDouble(pos.x);
     	buf.writeDouble(pos.y);
     	buf.writeDouble(pos.z);
-    	buf.writeInt(this.topfacing.get2DDataValue());
-    	buf.writeInt(this.bottomfacing.get2DDataValue());
+    	buf.writeEnum(this.topfacing);
+    	buf.writeEnum(this.bottomfacing);
     }
 
     @OnlyIn(Dist.CLIENT)

@@ -13,12 +13,24 @@ public class vec {
 		this.x = x;
 		this.y = y;
 		this.z = z;
+		
+		this.checkNaN();
+	}
+	
+	public void checkNaN() {
+		if (Double.isNaN(x) || Double.isNaN(y) || Double.isNaN(z)) {
+			grapplemod.LOGGER.error("Error: vector contains NaN");
+			this.x = 0; this.y = 0; this.z = 0;
+//			throw new RuntimeException("hello");
+		}
 	}
 	
 	public vec(Vector3d vec3d) {
 		this.x = vec3d.x;
 		this.y = vec3d.y;
 		this.z = vec3d.z;
+		
+		this.checkNaN();
 	}
 	
 	public vec(vec vec) {
@@ -159,13 +171,7 @@ public class vec {
 	}
 	
 	public void print(){
-		System.out.print("<");
-		System.out.print(this.x);
-		System.out.print(",");
-		System.out.print(this.y);
-		System.out.print(",");
-		System.out.print(this.z);
-		System.out.print(">\n");
+		System.out.println(this.toString());
 	}
 	
 	public String toString() {
@@ -198,10 +204,14 @@ public class vec {
 	}
 	
 	public void setpos(Entity e) {
+		this.checkNaN();
+
 		e.setPos(this.x, this.y, this.z);
 	}
 	
 	public void setmotion(Entity e) {
+		this.checkNaN();
+		
 		e.setDeltaMovement(this.toVec3d());
 	}
 }

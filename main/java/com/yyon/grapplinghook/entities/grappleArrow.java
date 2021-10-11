@@ -143,12 +143,6 @@ public class grappleArrow extends ProjectileItemEntity implements IEntityAdditio
 		super.defineSynchedData();
 	}
 	
-//	public void remove(boolean keepData) {
-//		grapplemod.LOGGER.info("remove");
-//		throw new RuntimeException("hi");
-////		super.remove(keepData);
-//	}
-	
 	public void removeServer() {
 		this.remove();
 		this.shootingEntityID = 0;
@@ -452,8 +446,6 @@ public class grappleArrow extends ProjectileItemEntity implements IEntityAdditio
 		}
 		this.attached = true;
 		
-		grapplemod.LOGGER.info("serverAttach");
-
 		if (blockpos != null) {
 			if (!grapplemod.anyblocks) {
 				Block block = this.level.getBlockState(blockpos).getBlock();

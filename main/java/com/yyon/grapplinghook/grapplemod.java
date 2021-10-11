@@ -1,6 +1,5 @@
 package com.yyon.grapplinghook;
 
-import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Optional;
@@ -68,6 +67,7 @@ import net.minecraft.world.World;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.event.RegistryEvent;
+import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.fml.common.Mod;
@@ -414,11 +414,12 @@ public class grapplemod {
 
 	public void playSlideSound(Entity entity) {
 	}
+	*/
 	
     @SubscribeEvent
     public void onLivingDeath(LivingDeathEvent event) {
 		Entity entity = event.getEntity();
-		int id = entity.getEntityId();
+		int id = entity.getId();
 		boolean isconnected = grapplemod.allarrows.containsKey(id);
 		if (isconnected) {
 			HashSet<grappleArrow> arrows = grapplemod.allarrows.get(id);
@@ -458,10 +459,11 @@ public class grapplemod {
 				grappleBow.grapplearrows2.remove(entity);
 			}
 			
-			grapplemod.sendtocorrectclient(new GrappleDetachMessage(id), id, entity.world);
+			grapplemod.sendtocorrectclient(new GrappleDetachMessage(id), id, entity.level);
 		}
 	}
 
+    /*
 	public void playWallrunJumpSound(Entity entity) {
 	}
 	*/
@@ -770,7 +772,6 @@ public class grapplemod {
 	
 	public static void registerController(int entityId, grappleController controller) {
 		if (controllers.containsKey(entityId)) {
-			grapplemod.LOGGER.info("overriding registered controller");
 			controllers.get(entityId).unattach();
 		}
 		
@@ -922,7 +923,11 @@ public class grapplemod {
 	public static BlockRayTraceResult rayTraceBlocks(World world, vec from, vec to) {
 		RayTraceResult result = world.clip(new RayTraceContext(from.toVec3d(), to.toVec3d(), RayTraceContext.BlockMode.COLLIDER, RayTraceContext.FluidMode.NONE, null));
 		if (result != null && result instanceof BlockRayTraceResult) {
-			return (BlockRayTraceResult) result;
+			BlockRayTraceResult blockhit = (BlockRayTraceResult) result;
+			if (blockhit.getType() != RayTraceResult.Type.BLOCK) {
+				return null;
+			}
+			return blockhit;
 		}
 		return null;
 	}

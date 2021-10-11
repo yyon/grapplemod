@@ -304,7 +304,6 @@ public class ClientProxyClass implements CommonProxyClass {
 		PlayerEntity player = Minecraft.getInstance().player;
 		if (player != null) {
 			if (!Minecraft.getInstance().isPaused()) {
-
 				/*
 				if (this.iswallrunning(player, vec.motionvec(player))) {
 					if (!grapplemod.controllers.containsKey(player.getEntityId())) {
@@ -868,8 +867,6 @@ public class ClientProxyClass implements CommonProxyClass {
 
 	@Override
 	public grappleController createControl(int id, int arrowid, int entityid, World world, vec pos, BlockPos blockpos, GrappleCustomization custom) {
-		grapplemod.LOGGER.info("createControl");
-
 		grappleArrow arrow = null;
 		Entity arrowentity = world.getEntity(arrowid);
 		if (arrowentity != null && arrowentity instanceof grappleArrow) {
@@ -880,7 +877,6 @@ public class ClientProxyClass implements CommonProxyClass {
 		
 		grappleController currentcontroller = grapplemod.controllers.get(entityid);
 		if (currentcontroller != null && !(multi && currentcontroller.custom != null && currentcontroller.custom.doublehook)) {
-			grapplemod.LOGGER.info("existing controller");
 			currentcontroller.unattach();
 		}
 		

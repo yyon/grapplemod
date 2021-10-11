@@ -50,9 +50,6 @@ public class KeypressMessage extends BaseMessageServer {
 
     public void processMessage(NetworkEvent.Context ctx) {
     	final ServerPlayerEntity sendingPlayer = ctx.getSender();
-        if (sendingPlayer == null) {
-          grapplemod.LOGGER.warn("EntityPlayerMP was null when KeypressMessage was received");
-        }
         
 		grapplemod.receiveKeypress(sendingPlayer, this.key, this.isDown);
 	}

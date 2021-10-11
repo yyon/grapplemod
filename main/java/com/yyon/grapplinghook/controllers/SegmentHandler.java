@@ -164,8 +164,6 @@ public class SegmentHandler {
 	}
 	
 	public void removesegment(int index) {
-/*		System.out.println("removed segment");*/
-		
 		segments.remove(index);
 		segmentbottomsides.remove(index);
 		segmenttopsides.remove(index);
@@ -178,7 +176,7 @@ public class SegmentHandler {
 		}
 	}
 	
-	public void updatesegment(vec top, vec prevtop, vec bottom, vec prevbottom, int index, int numberrecursions) {
+	public void updatesegment(vec top, vec prevtop, vec bottom, vec prevbottom, int index, int numberrecursions) {		
 		BlockRayTraceResult bottomraytraceresult = grapplemod.rayTraceBlocks(this.world, bottom, top);
         
         // if rope hit block
@@ -424,7 +422,7 @@ public class SegmentHandler {
         segments.add(index, bendpoint);
         segmentbottomsides.add(index, bottomside);
         segmenttopsides.add(index, topside);
-
+        
         /*System.out.println("added segment");
 		this.print();*/
 		

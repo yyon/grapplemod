@@ -93,8 +93,8 @@ public class GrappleAttachMessage extends BaseMessageClient {
 		
 		for (int i = 1; i < size-1; i++) {
         	this.segments.add(new vec(buf.readDouble(), buf.readDouble(), buf.readDouble()));
-        	this.segmentbottomsides.add(Direction.from2DDataValue(buf.readInt()));
-        	this.segmenttopsides.add(Direction.from2DDataValue(buf.readInt()));
+        	this.segmentbottomsides.add(buf.readEnum(Direction.class));
+        	this.segmenttopsides.add(buf.readEnum(Direction.class));
         }
 		
 		segments.add(new vec(0, 0, 0));
@@ -120,15 +120,13 @@ public class GrappleAttachMessage extends BaseMessageClient {
         	buf.writeDouble(this.segments.get(i).x);
         	buf.writeDouble(this.segments.get(i).y);
         	buf.writeDouble(this.segments.get(i).z);
-        	buf.writeInt(this.segmentbottomsides.get(i).get2DDataValue());
-        	buf.writeInt(this.segmenttopsides.get(i).get2DDataValue());
+        	buf.writeEnum(this.segmentbottomsides.get(i));
+        	buf.writeEnum(this.segmenttopsides.get(i));
         }
     }
 
     @OnlyIn(Dist.CLIENT)
     public void processMessage(NetworkEvent.Context ctx) {
-		grapplemod.LOGGER.info("grappleAttachMessage");
-
 		World world = Minecraft.getInstance().level;
     	Entity grapple = world.getEntity(this.id);
     	if (grapple instanceof grappleArrow) {

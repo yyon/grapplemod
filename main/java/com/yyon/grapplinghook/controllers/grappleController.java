@@ -85,8 +85,6 @@ public class grappleController {
 	public GrappleCustomization custom = null;
 	
 	public grappleController(int arrowId, int entityId, World world, vec pos, int controllerid, GrappleCustomization custom) {
-		grapplemod.LOGGER.info("grappleController");
-
 		this.entityId = entityId;
 		this.world = world;
 //		this.pos = pos;
@@ -140,7 +138,7 @@ public class grappleController {
 			if (arrowentity != null && arrowentity.isAlive() && arrowentity instanceof grappleArrow) {
 				this.addArrow((grappleArrow)arrowentity);
 			} else {
-				grapplemod.LOGGER.info("no arrow");
+				grapplemod.LOGGER.warn("no arrow");
 				this.unattach();
 			}
 		}
@@ -151,8 +149,6 @@ public class grappleController {
 	}
 	
 	public void unattach() {
-		grapplemod.LOGGER.info("unattach");
-		
 		if (grapplemod.controllers.containsValue(this)) {
 			this.attached = false;
 			
@@ -172,7 +168,6 @@ public class grappleController {
 	public void doClientTick() {
 		if (this.attached) {
 			if (this.entity == null || !this.entity.isAlive()) {
-				grapplemod.LOGGER.info("no entity");
 				this.unattach();
 			} else {
 //				grapplemod.proxy.getplayermovement(this, this.entityId);
@@ -211,7 +206,6 @@ public class grappleController {
 			if(entity != null) {
 				if (true) {
 					if (entity.getVehicle() != null) {
-						grapplemod.LOGGER.info("riding");
 						this.unattach();						
 						this.updateServerPos();
 						return;
@@ -793,7 +787,6 @@ public class grappleController {
 			motion.setmotion(player);
 		}
 		
-		grapplemod.LOGGER.info("jump");
 		this.unattach();
 		
 		this.updateServerPos();
@@ -829,7 +822,7 @@ public class grappleController {
 	public vec dampenmotion(vec motion, vec forward) {
 		vec newmotion = motion.proj(forward);
 		double dampening = 0.05;
-		return new vec(newmotion.x*dampening + motion.x*(1-dampening), newmotion.y*dampening + motion.y*(1-dampening), newmotion.z*dampening + motion.z*(1-dampening));
+		return newmotion.mult(dampening).add(motion.mult(1-dampening));
 	}
 	
 	public void updateServerPos() {
@@ -839,7 +832,6 @@ public class grappleController {
 	// Vector stuff:
 	
 	public void receiveGrappleDetach() {
-		grapplemod.LOGGER.info("received detach message");
 		this.unattach();
 	}
 
