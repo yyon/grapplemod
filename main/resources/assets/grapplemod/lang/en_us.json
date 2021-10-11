@@ -42,9 +42,9 @@
     "key.rocket.desc": "Rocket",
     "key.slide.desc": "Slide",
 
-    "enchantment.wallrunenchantment": "Wall Running",
-    "enchantment.doublejumpenchantment": "Double Jump",
-    "enchantment.slidingenchantment": "Sliding",
+    "enchantment.grapplemod.wallrunenchantment": "Wall Running",
+    "enchantment.grapplemod.doublejumpenchantment": "Double Jump",
+    "enchantment.grapplemod.slidingenchantment": "Sliding",
 
     "itemGroup.tabGrapplemod": "Grappling Hook Mod",
 
@@ -149,6 +149,8 @@
     "grappletooltip.repelleritemoff.desc": " again - Turn off",
     "grappletooltip.repelleritemslow.desc": " - Slow down",
     "grappletooltip.repelleritemmove.desc": " - Move",
+    "grappletooltip.longfallbootsrecipe.desc": "Right click a Grappling Hook Modifier block with Feather Falling IV Diamond Boots to obtain",
+    "grappletooltip.longfallboots.desc": "Cancels fall damage when worn",
 
     "grapplemodifier.close.desc": "Close",
     "grapplemodifier.reset.desc": "Reset",

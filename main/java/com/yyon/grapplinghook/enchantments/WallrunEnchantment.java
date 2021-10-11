@@ -4,12 +4,12 @@ import com.yyon.grapplinghook.GrappleConfig;
 import com.yyon.grapplinghook.grapplemod;
 
 import net.minecraft.enchantment.Enchantment;
-import net.minecraft.inventory.EntityEquipmentSlot;
+import net.minecraft.enchantment.EnchantmentType;
+import net.minecraft.inventory.EquipmentSlotType;
 
 public class WallrunEnchantment extends Enchantment {
 	public WallrunEnchantment() {
-		super(grapplemod.getRarityFromInt(GrappleConfig.getconf().enchant_rarity_wallrun), grapplemod.GRAPPLEENCHANTS_FEET, new EntityEquipmentSlot[] {EntityEquipmentSlot.FEET});
-		this.setName("wallrunenchantment");
+		super(grapplemod.getRarityFromInt(GrappleConfig.getconf().enchant_rarity_wallrun), EnchantmentType.ARMOR_FEET, new EquipmentSlotType[] {EquipmentSlotType.FEET});
 	}
     public int getMinEnchantability(int enchantmentLevel)
     {

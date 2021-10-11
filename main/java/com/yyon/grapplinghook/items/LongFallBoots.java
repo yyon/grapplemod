@@ -1,12 +1,25 @@
 package com.yyon.grapplinghook.items;
 
+import java.util.List;
+
+import javax.annotation.Nullable;
+
+import com.yyon.grapplinghook.GrappleConfig;
 import com.yyon.grapplinghook.grapplemod;
 
+import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.inventory.EquipmentSlotType;
 import net.minecraft.item.ArmorItem;
 import net.minecraft.item.ArmorMaterial;
 import net.minecraft.item.Item;
-import net.minecraftforge.common.MinecraftForge;
+import net.minecraft.item.ItemGroup;
+import net.minecraft.item.ItemStack;
+import net.minecraft.util.NonNullList;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.StringTextComponent;
+import net.minecraft.world.World;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 
 /*
  * This file is part of GrappleMod.
@@ -33,68 +46,29 @@ public class LongFallBoots extends ArmorItem {
 	}
 	
 	/*
-	@SubscribeEvent
-	public void onLivingHurtEvent(LivingHurtEvent event) {
-		if (event.getEntity() != null && event.getEntity() instanceof EntityPlayer)
-		{
-			EntityPlayer player = (EntityPlayer)event.getEntity();
-			
-			for (ItemStack armor : player.getArmorInventoryList()) {
-			    if (armor != null && armor.getItem() instanceof LongFallBoots)
-			    {
-			    	if (event.getSource() == DamageSource.FLY_INTO_WALL) {
-			    		System.out.println("Flew into wall");
-						// this cancels the fall event so you take no damage
-						event.setCanceled(true);
-			    	}
-			    }
-			}
-		}
-	}
-	
-	@SubscribeEvent
-	public void onLivingFallEvent(LivingFallEvent event)
-	{
-		if (event.getEntity() != null && event.getEntity() instanceof EntityPlayer)
-		{
-			EntityPlayer player = (EntityPlayer)event.getEntity();
-			
-			for (ItemStack armor : player.getArmorInventoryList()) {
-			    if (armor != null && armor.getItem() instanceof LongFallBoots)
-			    {
-					// this cancels the fall event so you take no damage
-					event.setCanceled(true);
-			    }
-			}
-		}
-	}
-	
+	*/
 	@Override
-    @SideOnly(Side.CLIENT)
-	public void addInformation(ItemStack stack, World world, List<String> list, ITooltipFlag par4)
-	{
-		if (!stack.isItemEnchanted()) {
+	@OnlyIn(Dist.CLIENT)
+	public void appendHoverText(ItemStack stack, @Nullable World world, List<ITextComponent> list, ITooltipFlag par4) {
+		if (!stack.isEnchanted()) {
 			if (GrappleConfig.getconf().longfallbootsrecipe) {
-				list.add("Right click a Grappling Hook Modifier block with Feather Falling IV Diamond Boots to obtain");
+				list.add(new StringTextComponent(grapplemod.proxy.localize("grappletooltip.longfallbootsrecipe.desc")));
 			}
 		}
-		list.add("Cancels fall damage when worn");
+		list.add(new StringTextComponent(grapplemod.proxy.localize("grappletooltip.longfallboots.desc")));
 	}
 
 	@Override
-    public void getSubItems(CreativeTabs tab, NonNullList<ItemStack> items)
-    {
-        if (this.isInCreativeTab(tab))
-        {
-        	ItemStack stack = new ItemStack(this);
-            items.add(stack);
-            
-        	stack = new ItemStack(this);
-        	stack.addEnchantment(grapplemod.wallrunenchantment, 1);
-        	stack.addEnchantment(grapplemod.doublejumpenchantment, 1);
-        	stack.addEnchantment(grapplemod.slidingenchantment, 1);
-            items.add(stack);
-        }
-    }
-    */
+	public void fillItemCategory(ItemGroup tab, NonNullList<ItemStack> items) {
+			if (this.allowdedIn(tab)) {
+	        	ItemStack stack = new ItemStack(this);
+	            items.add(stack);
+	            
+	        	stack = new ItemStack(this);
+	        	stack.enchant(grapplemod.wallrunenchantment, 1);
+	        	stack.enchant(grapplemod.doublejumpenchantment, 1);
+	        	stack.enchant(grapplemod.slidingenchantment, 1);
+	            items.add(stack);
+			}
+	}
 }

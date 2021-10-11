@@ -4,12 +4,12 @@ import com.yyon.grapplinghook.GrappleConfig;
 import com.yyon.grapplinghook.grapplemod;
 
 import net.minecraft.enchantment.Enchantment;
-import net.minecraft.inventory.EntityEquipmentSlot;
+import net.minecraft.enchantment.EnchantmentType;
+import net.minecraft.inventory.EquipmentSlotType;
 
-public class SlidingEnchantment extends Enchantment {
-	public SlidingEnchantment() {
-		super(grapplemod.getRarityFromInt(GrappleConfig.getconf().enchant_rarity_sliding), grapplemod.GRAPPLEENCHANTS_FEET, new EntityEquipmentSlot[] {EntityEquipmentSlot.FEET});
-		this.setName("slidingenchantment");
+public class DoublejumpEnchantment extends Enchantment {
+	public DoublejumpEnchantment() {
+		super(grapplemod.getRarityFromInt(GrappleConfig.getconf().enchant_rarity_double_jump), EnchantmentType.ARMOR_FEET, new EquipmentSlotType[] {EquipmentSlotType.FEET});
 	}
     public int getMinEnchantability(int enchantmentLevel)
     {

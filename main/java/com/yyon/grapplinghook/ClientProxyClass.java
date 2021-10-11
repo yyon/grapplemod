@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.ConcurrentModificationException;
 import java.util.HashMap;
+import java.util.Map;
 
 import org.lwjgl.glfw.GLFW;
 
@@ -29,6 +30,8 @@ import net.minecraft.client.renderer.model.ModelResourceLocation;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.client.settings.KeyBinding;
 import net.minecraft.client.util.InputMappings;
+import net.minecraft.enchantment.Enchantment;
+import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
@@ -43,6 +46,8 @@ import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.world.World;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.ClientPlayerNetworkEvent.LoggedOutEvent;
+import net.minecraftforge.client.event.EntityViewRenderEvent.CameraSetup;
+import net.minecraftforge.client.event.InputEvent.KeyInputEvent;
 import net.minecraftforge.client.event.InputUpdateEvent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.TickEvent;
@@ -302,10 +307,9 @@ public class ClientProxyClass implements CommonProxyClass {
 		PlayerEntity player = Minecraft.getInstance().player;
 		if (player != null) {
 			if (!Minecraft.getInstance().isPaused()) {
-				/*
 				if (this.iswallrunning(player, vec.motionvec(player))) {
 					if (!grapplemod.controllers.containsKey(player.getId())) {
-						grappleController controller = this.createControl(grapplemod.AIRID, -1, player.getId(), player.world, new vec(0,0,0), null, null);
+						grappleController controller = this.createControl(grapplemod.AIRID, -1, player.getId(), player.level, new vec(0,0,0), null, null);
 						if (controller.getwalldirection() == null) {
 							controller.unattach();
 						}
@@ -320,7 +324,6 @@ public class ClientProxyClass implements CommonProxyClass {
 				this.checkdoublejump();
 				
 				this.checkslide(player);
-				*/
 				
 				this.rocketFuel += this.rocketIncreaseTick;
 				
@@ -565,18 +568,17 @@ public class ClientProxyClass implements CommonProxyClass {
 		}
 	}
 	
-	/*
 	@Override
 	public boolean iswallrunning(Entity entity, vec motion) {
-		if (entity.collidedHorizontally && !entity.onGround && !entity.isSneaking()) {
-			for (ItemStack stack : entity.getArmorInventoryList()) {
+		if (entity.horizontalCollision && !entity.isOnGround() && !entity.isCrouching()) {
+			for (ItemStack stack : entity.getArmorSlots()) {
 				if (stack != null) {
 					Map<Enchantment, Integer> enchantments = EnchantmentHelper.getEnchantments(stack);
 					if (enchantments.containsKey(grapplemod.wallrunenchantment)) {
 						if (enchantments.get(grapplemod.wallrunenchantment) >= 1) {
-							if (!key_jumpanddetach.isKeyDown() && !Minecraft.getMinecraft().gameSettings.keyBindJump.isKeyDown()) {
-								RayTraceResult raytraceresult = entity.world.rayTraceBlocks(entity.getPositionVector(), vec.positionvec(entity).add(new vec(0, -1, 0)).toVec3d(), false, true, false);
-								if (raytraceresult == null || raytraceresult.typeOfHit != RayTraceResult.Type.BLOCK) {
+							if (!key_jumpanddetach.isDown() && !Minecraft.getInstance().options.keyJump.isDown()) {
+								BlockRayTraceResult raytraceresult = grapplemod.rayTraceBlocks(entity.level, vec.positionvec(entity), vec.positionvec(entity).add(new vec(0, -1, 0)));
+								if (raytraceresult == null) {
 									double current_speed = Math.sqrt(Math.pow(motion.x, 2) + Math.pow(motion.z,  2));
 									if (current_speed >= GrappleConfig.getconf().wallrun_min_speed) {
 										return true;
@@ -597,9 +599,9 @@ public class ClientProxyClass implements CommonProxyClass {
 	boolean alreadyuseddoublejump = false;
 	
 	public void checkdoublejump() {
-		PlayerEntity player = Minecraft.getMinecraft().player;
+		PlayerEntity player = Minecraft.getInstance().player;
 		
-		if (player.onGround) {
+		if (player.isOnGround()) {
 			tickssincelastonground = 0;
 			alreadyuseddoublejump = false;
 		} else {
@@ -611,7 +613,7 @@ public class ClientProxyClass implements CommonProxyClass {
 //			alreadyuseddoublejump = false;
 //		}
 		
-		boolean isjumpbuttondown = Minecraft.getMinecraft().gameSettings.keyBindJump.isKeyDown();
+		boolean isjumpbuttondown = Minecraft.getInstance().options.keyJump.isDown();
 		
 		if (isjumpbuttondown && !prevjumpbutton && !player.isInWater()) {
 			
@@ -619,7 +621,7 @@ public class ClientProxyClass implements CommonProxyClass {
 				if (!alreadyuseddoublejump) {
 					if (wearingdoublejumpenchant(player)) {
 						if (!grapplemod.controllers.containsKey(player.getId())) {
-							this.createControl(grapplemod.AIRID, -1, player.getId(), player.world, new vec(0,0,0), null, null);
+							this.createControl(grapplemod.AIRID, -1, player.getId(), player.level, new vec(0,0,0), null, null);
 						}
 						grappleController controller = grapplemod.controllers.get(player.getId());
 						if (controller instanceof airfrictionController) {
@@ -637,14 +639,14 @@ public class ClientProxyClass implements CommonProxyClass {
 	}
 
 	public boolean wearingdoublejumpenchant(Entity entity) {
-		if (entity instanceof PlayerEntity && ((PlayerEntity) entity).capabilities.isFlying) {
+		if (entity instanceof PlayerEntity && ((PlayerEntity) entity).abilities.flying) {
 			return false;
 		}
 //		if (entity instanceof PlayerEntity && ((PlayerEntity) entity).isCreative()) {
 //			return false;
 //		}
 		
-		for (ItemStack stack : entity.getArmorInventoryList()) {
+		for (ItemStack stack : entity.getArmorSlots()) {
 			if (stack != null) {
 				Map<Enchantment, Integer> enchantments = EnchantmentHelper.getEnchantments(stack);
 				if (enchantments.containsKey(grapplemod.doublejumpenchantment)) {
@@ -658,7 +660,7 @@ public class ClientProxyClass implements CommonProxyClass {
 	}
 	
 	public static boolean isWearingSlidingEnchant(Entity entity) {
-		for (ItemStack stack : entity.getArmorInventoryList()) {
+		for (ItemStack stack : entity.getArmorSlots()) {
 			if (stack != null) {
 				Map<Enchantment, Integer> enchantments = EnchantmentHelper.getEnchantments(stack);
 				if (enchantments.containsKey(grapplemod.slidingenchantment)) {
@@ -675,7 +677,7 @@ public class ClientProxyClass implements CommonProxyClass {
 	public boolean issliding(Entity entity, vec motion) {
 		if (entity.isInWater()) {return false;}
 		
-		if (entity.onGround && key_slide.isKeyDown()) {
+		if (entity.isOnGround() && key_slide.isDown()) {
 			if (ClientProxyClass.isWearingSlidingEnchant(entity)) {
 //				System.out.println("check sliding: " + Double.toString(vec.motionvec(entity).removealong(new vec (0,1,0)).length()));
 				boolean was_sliding = false;
@@ -701,14 +703,14 @@ public class ClientProxyClass implements CommonProxyClass {
 
 	@SubscribeEvent
 	public void onKeyInputEvent(KeyInputEvent event) {
-		PlayerEntity player = Minecraft.getMinecraft().player;
+		PlayerEntity player = Minecraft.getInstance().player;
 		
 		grappleController controller = null;
 		if (grapplemod.controllers.containsKey(player.getId())) {
 			controller = grapplemod.controllers.get(player.getId());
 		}
 		
-		if (Minecraft.getMinecraft().gameSettings.keyBindJump.isKeyDown()) {
+		if (Minecraft.getInstance().options.keyJump.isDown()) {
 			if (controller != null) {
 				if (controller instanceof airfrictionController && ((airfrictionController) controller).was_sliding) {
 					controller.slidingJump();
@@ -716,9 +718,8 @@ public class ClientProxyClass implements CommonProxyClass {
 			}
 		}	
 
-		this.checkslide(Minecraft.getMinecraft().player);
+		this.checkslide(Minecraft.getInstance().player);
 	}
-	*/
 	
 	@SubscribeEvent
     public void onInputUpdate(InputUpdateEvent event) {
@@ -748,13 +749,12 @@ public class ClientProxyClass implements CommonProxyClass {
 		}
 	}
 	
-	/*
 	public float currentCameraTilt = 0;
 
 	@SubscribeEvent
 	public void CameraSetup(CameraSetup event)
 	{
-		PlayerEntity player = Minecraft.getMinecraft().player;
+		PlayerEntity player = Minecraft.getInstance().player;
 		int id = player.getId();
 		int targetCameraTilt = 0;
 		if (grapplemod.controllers.containsKey(id)) {
@@ -764,7 +764,7 @@ public class ClientProxyClass implements CommonProxyClass {
 				if (afcontroller.was_wallrunning) {
 					vec walldirection = afcontroller.getwalldirection();
 					if (walldirection != null) {
-						vec lookdirection = new vec(player.getLookVec());
+						vec lookdirection = vec.lookvec(player);
 						int dir = lookdirection.cross(walldirection).y > 0 ? 1 : -1;
 						targetCameraTilt = dir;
 					}
@@ -789,7 +789,6 @@ public class ClientProxyClass implements CommonProxyClass {
 		    event.setRoll(event.getRoll() + currentCameraTilt*GrappleConfig.client_options.wallrun_camera_tilt_degrees);
 		}
 	}
-	*/
 
 	@Override
 	public grappleController createControl(int id, int arrowid, int entityid, World world, vec pos, BlockPos blockpos, GrappleCustomization custom) {
@@ -866,17 +865,5 @@ public class ClientProxyClass implements CommonProxyClass {
 	public void openModifierScreen(TileEntityGrappleModifier tileent) {
 		// TODO Auto-generated method stub
 		
-	}
-
-	@Override
-	public boolean iswallrunning(Entity entity, vec motion) {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	@Override
-	public boolean issliding(Entity entity, vec motion) {
-		// TODO Auto-generated method stub
-		return false;
 	}
 }

@@ -10,6 +10,9 @@ import org.apache.logging.log4j.Logger;
 import com.yyon.grapplinghook.blocks.BlockGrappleModifier;
 import com.yyon.grapplinghook.blocks.TileEntityGrappleModifier;
 import com.yyon.grapplinghook.controllers.grappleController;
+import com.yyon.grapplinghook.enchantments.DoublejumpEnchantment;
+import com.yyon.grapplinghook.enchantments.SlidingEnchantment;
+import com.yyon.grapplinghook.enchantments.WallrunEnchantment;
 import com.yyon.grapplinghook.entities.grappleArrow;
 import com.yyon.grapplinghook.items.KeypressItem;
 import com.yyon.grapplinghook.items.LongFallBoots;
@@ -46,6 +49,8 @@ import com.yyon.grapplinghook.network.PlayerMovementMessage;
 import com.yyon.grapplinghook.network.SegmentMessage;
 
 import net.minecraft.block.Block;
+import net.minecraft.enchantment.Enchantment;
+import net.minecraft.enchantment.Enchantment.Rarity;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityClassification;
 import net.minecraft.entity.EntityType;
@@ -57,6 +62,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntityType;
+import net.minecraft.util.DamageSource;
 import net.minecraft.util.Hand;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
@@ -68,6 +74,8 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
+import net.minecraftforge.event.entity.living.LivingFallEvent;
+import net.minecraftforge.event.entity.living.LivingHurtEvent;
 import net.minecraftforge.event.world.BlockEvent.BreakEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.DistExecutor;
@@ -137,10 +145,10 @@ public class grapplemod {
     public static Item longfallboots;
     
 //    public static final EnumEnchantmentType GRAPPLEENCHANTS_FEET = EnumHelper.addEnchantmentType("GRAPPLEENCHANTS_FEET", (item) -> item instanceof ItemArmor && ((ItemArmor)item).armorType == EntityEquipmentSlot.FEET);
-//    
-//    public static WallrunEnchantment wallrunenchantment;
-//    public static DoublejumpEnchantment doublejumpenchantment;
-//    public static SlidingEnchantment slidingenchantment;
+    
+    public static WallrunEnchantment wallrunenchantment;
+    public static DoublejumpEnchantment doublejumpenchantment;
+    public static SlidingEnchantment slidingenchantment;
 
 //	public static Object instance;
 	
@@ -245,6 +253,8 @@ public class grapplemod {
 		keyBindSneak,
 		keyBindAttack
 	}
+	
+	public static EventHandlers eventHandlers = null;
 
 	@SubscribeEvent
 	public static void init(FMLCommonSetupEvent event) {
@@ -272,6 +282,8 @@ public class grapplemod {
 		network.registerMessage(id++, GrappleAttachPosMessage.class, GrappleAttachPosMessage::encode, GrappleAttachPosMessage::new, GrappleAttachPosMessage::onMessageReceived, Optional.of(NetworkDirection.PLAY_TO_CLIENT));
 		network.registerMessage(id++, SegmentMessage.class, SegmentMessage::encode, SegmentMessage::new, SegmentMessage::onMessageReceived, Optional.of(NetworkDirection.PLAY_TO_CLIENT));
 		network.registerMessage(id++, LoggedInMessage.class, LoggedInMessage::encode, LoggedInMessage::new, LoggedInMessage::onMessageReceived, Optional.of(NetworkDirection.PLAY_TO_CLIENT));
+		
+		grapplemod.eventHandlers = new EventHandlers();
 	}
 	
 	@SubscribeEvent
@@ -348,25 +360,6 @@ public class grapplemod {
 	*/
 	
 	
-    @SubscribeEvent
-    public void onBlockBreak(BreakEvent event){
-    	PlayerEntity player = event.getPlayer();
-    	if (player != null) {
-	    	ItemStack stack = player.getItemInHand(Hand.MAIN_HAND);
-	    	if (stack != null) {
-	    		Item item = stack.getItem();
-	    		if (item instanceof grappleBow) {
-	    			event.setCanceled(true);
-	    			return;
-	    		}
-	    	}
-    	}
-    	
-    	if (event.getWorld().isClientSide()) {
-        	grapplemod.proxy.blockbreak(event);
-    	}
-    }
-    
     /*
     public void blockbreak(BreakEvent event) {
     }
@@ -421,35 +414,7 @@ public class grapplemod {
 	}
 	*/
 	
-    @SubscribeEvent
-    public void onLivingDeath(LivingDeathEvent event) {
-		Entity entity = event.getEntity();
-		int id = entity.getId();
-		boolean isconnected = grapplemod.allarrows.containsKey(id);
-		if (isconnected) {
-			HashSet<grappleArrow> arrows = grapplemod.allarrows.get(id);
-			for (grappleArrow arrow: arrows) {
-				arrow.removeServer();
-			}
-			arrows.clear();
 
-			grapplemod.attached.remove(id);
-			
-			if (grapplemod.controllers.containsKey(id)) {
-				grapplemod.controllers.remove(id);
-			}
-			
-			if (grappleBow.grapplearrows1.containsKey(entity)) {
-				grappleBow.grapplearrows1.remove(entity);
-			}
-			if (grappleBow.grapplearrows2.containsKey(entity)) {
-				grappleBow.grapplearrows2.remove(entity);
-			}
-			
-			grapplemod.sendtocorrectclient(new GrappleDetachMessage(id), id, entity.level);
-		}
-	}
-	
 	/*
 	@Override
 	public void postInit(FMLPostInitializationEvent event) {
@@ -561,13 +526,19 @@ public class grapplemod {
 				};
 	}
 	
-	/*
 	@SubscribeEvent
-	public void registerEnchantments(RegistryEvent.Register<Enchantment> event) {
+	public static void registerEnchantments(final RegistryEvent.Register<Enchantment> event) {
+	    wallrunenchantment = new WallrunEnchantment();
+	    wallrunenchantment.setRegistryName("wallrunenchantment");
+	    doublejumpenchantment = new DoublejumpEnchantment();
+	    doublejumpenchantment.setRegistryName("doublejumpenchantment");
+	    slidingenchantment = new SlidingEnchantment();
+	    slidingenchantment.setRegistryName("slidingenchantment");
+	    
 	    event.getRegistry().registerAll(wallrunenchantment, doublejumpenchantment, slidingenchantment);
 
 	}
-	*/
+
 	public static Item registerItem(Item item, String itemName, final RegistryEvent.Register<Item> itemRegisterEvent) {
 		item.setRegistryName(itemName);
 		itemRegisterEvent.getRegistry().register(item);
@@ -891,14 +862,12 @@ public class grapplemod {
 		}
 	}
 
-	/*
 	public static Rarity getRarityFromInt(int rarity_int) {
 		Rarity[] rarities = (new Rarity[] {Rarity.VERY_RARE, Rarity.RARE, Rarity.UNCOMMON, Rarity.COMMON});
 		if (rarity_int < 0) {rarity_int = 0;}
 		if (rarity_int >= rarities.length) {rarity_int = rarities.length-1;}
 		return rarities[rarity_int];
 	}
-	*/
 	
 	public static BlockRayTraceResult rayTraceBlocks(World world, vec from, vec to) {
 		RayTraceResult result = world.clip(new RayTraceContext(from.toVec3d(), to.toVec3d(), RayTraceContext.BlockMode.COLLIDER, RayTraceContext.FluidMode.NONE, null));
@@ -915,4 +884,4 @@ public class grapplemod {
 	public static long getTime(World w) {
 		return w.getGameTime();
 	}
-}
+	}
