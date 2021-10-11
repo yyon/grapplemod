@@ -162,7 +162,7 @@ public class grappleBow extends Item implements KeypressItem {
   		
   		EntityLivingBase player = entityLiving;
   		
-  		vec anglevec = new vec(0,0,1).rotate_yaw(Math.toRadians(-angle)).rotate_pitch(Math.toRadians(verticalangle));
+  		vec anglevec = vec.fromAngles(Math.toRadians(-angle), Math.toRadians(verticalangle)); //new vec(0,0,1).rotate_yaw(Math.toRadians(angle)).rotate_pitch(Math.toRadians(verticalangle));
   		anglevec = anglevec.rotate_pitch(Math.toRadians(-player.rotationPitch));
   		anglevec = anglevec.rotate_yaw(Math.toRadians(player.rotationYaw));
         float velx = -MathHelper.sin((float) anglevec.getYaw() * 0.017453292F) * MathHelper.cos((float) anglevec.getPitch() * 0.017453292F);
@@ -205,7 +205,7 @@ public class grappleBow extends Item implements KeypressItem {
     	} else {
       		EntityLivingBase player = entityLiving;
       		
-      		vec anglevec = new vec(0,0,1).rotate_yaw(Math.toRadians(angle)).rotate_pitch(Math.toRadians(verticalangle));
+      		vec anglevec = vec.fromAngles(Math.toRadians(angle), Math.toRadians(verticalangle)); //new vec(0,0,1).rotate_yaw(Math.toRadians(angle)).rotate_pitch(Math.toRadians(verticalangle));
       		anglevec = anglevec.rotate_pitch(Math.toRadians(-player.rotationPitch));
       		anglevec = anglevec.rotate_yaw(Math.toRadians(player.rotationYaw));
 	        float velx = -MathHelper.sin((float) anglevec.getYaw() * 0.017453292F) * MathHelper.cos((float) anglevec.getPitch() * 0.017453292F);
