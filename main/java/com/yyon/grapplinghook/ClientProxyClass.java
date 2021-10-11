@@ -107,6 +107,8 @@ public class ClientProxyClass implements CommonProxyClass {
 
 	public ClientProxyClass() {
 	    MinecraftForge.EVENT_BUS.register(this);
+
+		crosshairrenderer = new crosshairRenderer();
 	}
 	
 	@SubscribeEvent
@@ -248,16 +250,7 @@ public class ClientProxyClass implements CommonProxyClass {
 	public static KeyBinding key_rocket = createkeybinding(new NonConflictingKeyBinding("key.rocket.desc", InputMappings.Type.MOUSE, GLFW.GLFW_MOUSE_BUTTON_1, "key.grapplemod.category"));
 	public static KeyBinding key_slide = createkeybinding(new NonConflictingKeyBinding("key.slide.desc", GLFW.GLFW_KEY_LEFT_SHIFT, "key.grapplemod.category"));
 
-	/*
 	public crosshairRenderer crosshairrenderer;
-	
-	@Override
-	public void postInit(FMLPostInitializationEvent event) {
-		super.postInit(event);
-		
-		crosshairrenderer = new crosshairRenderer();
-	}
-	*/
 	
 	private static class grappleArrowRenderFactory implements IRenderFactory<grappleArrow> {
 	    @Override
