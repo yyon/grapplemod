@@ -1,9 +1,13 @@
 package com.yyon.grapplinghook.network;
 
 import com.yyon.grapplinghook.GrappleCustomization;
+import com.yyon.grapplinghook.grapplemod;
+import com.yyon.grapplinghook.blocks.TileEntityGrappleModifier;
 
 import net.minecraft.network.PacketBuffer;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.World;
 import net.minecraftforge.fml.network.NetworkEvent;
 
 /*
@@ -44,14 +48,12 @@ public class GrappleModifierMessage extends BaseMessageServer {
     }
 
     public void processMessage(NetworkEvent.Context ctx) {
-    	/*
 		World w = ctx.getSender().level;
 		
 		TileEntity ent = w.getBlockEntity(this.pos);
-		
+
 		if (ent != null && ent instanceof TileEntityGrappleModifier) {
 			((TileEntityGrappleModifier) ent).setCustomizationServer(this.custom);
 		}
-		*/
     }
 }

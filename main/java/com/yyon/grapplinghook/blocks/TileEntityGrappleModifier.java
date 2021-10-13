@@ -7,6 +7,7 @@ import javax.annotation.Nullable;
 import com.yyon.grapplinghook.GrappleCustomization;
 import com.yyon.grapplinghook.grapplemod;
 import com.yyon.grapplinghook.grapplemod.upgradeCategories;
+import com.yyon.grapplinghook.network.GrappleModifierMessage;
 
 import net.minecraft.block.BlockState;
 import net.minecraft.nbt.CompoundNBT;
@@ -30,7 +31,7 @@ public class TileEntityGrappleModifier extends TileEntity {
 	
 	public void setCustomizationClient(GrappleCustomization customization) {
 		this.customization = customization;
-//		grapplemod.network.sendToServer(new GrappleModifierMessage(this.pos, this.customization));
+		grapplemod.network.sendToServer(new GrappleModifierMessage(this.worldPosition, this.customization));
 		this.sendUpdates();
 	}
 

@@ -440,7 +440,7 @@ public class grappleBow extends Item implements KeypressItem {
 			CompoundNBT nbt = custom.writeNBT();
 			
 			itemstack.setTag(nbt);
-    		
+
     		return custom;
     	}
     }
@@ -541,6 +541,12 @@ public class grappleBow extends Item implements KeypressItem {
 				list.add(new StringTextComponent(grapplemod.proxy.localize("grappletooltip.controlconfiguration.desc")));
 			}
 		}
+	}
+
+	public void setCustomOnServer(ItemStack helditemstack, GrappleCustomization custom, PlayerEntity player) {
+		CompoundNBT nbt = custom.writeNBT();
+		
+		helditemstack.setTag(nbt);
 	}
 
 	

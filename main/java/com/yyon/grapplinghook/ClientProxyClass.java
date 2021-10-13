@@ -111,8 +111,6 @@ public class ClientProxyClass implements CommonProxyClass {
 	public ResourceLocation slideSoundLoc = new ResourceLocation("grapplemod", "slide");
 
 	public ClientProxyClass() {
-	    MinecraftForge.EVENT_BUS.register(this);
-
 		crosshairrenderer = new crosshairRenderer();
 	}
 	
@@ -125,6 +123,8 @@ public class ClientProxyClass implements CommonProxyClass {
 		}
 		
 	    RenderingRegistry.registerEntityRenderingHandler(grapplemod.grappleArrowType, new grappleArrowRenderFactory());
+
+	    MinecraftForge.EVENT_BUS.register(grapplemod.proxy);
 	}
 
 	/*
@@ -292,10 +292,6 @@ public class ClientProxyClass implements CommonProxyClass {
 			BlockRayTraceResult bray = (BlockRayTraceResult) raytraceresult;
 			BlockPos pos = bray.getBlockPos();
 			BlockState state = player.level.getBlockState(pos);
-
-			if ((state.getBlock() == grapplemod.blockGrappleModifier)) {
-	        	grapplemod.network.sendToServer(new GrappleModifierMessage(pos, new GrappleCustomization()));
-			}
 			
 			return (state.getBlock() == grapplemod.blockGrappleModifier);
 		}
@@ -517,16 +513,17 @@ public class ClientProxyClass implements CommonProxyClass {
 //		}
 		return false;
 	}
+	*/
 	
 	@Override
 	public void openModifierScreen(TileEntityGrappleModifier tileent) {
-		Minecraft.getMinecraft().displayGuiScreen(new GuiModifier(tileent));
+		Minecraft.getInstance().setScreen(new GuiModifier(tileent));
 
 	}
 	
 
 
-
+	/*
 	@SubscribeEvent
 	public void clientTick(ClientTickEvent event) {
 		if (event.phase == TickEvent.Phase.END) {
@@ -703,6 +700,10 @@ public class ClientProxyClass implements CommonProxyClass {
 
 	@SubscribeEvent
 	public void onKeyInputEvent(KeyInputEvent event) {
+		if (!Minecraft.getInstance().isRunning()) {
+			return;
+		}
+		
 		PlayerEntity player = Minecraft.getInstance().player;
 		
 		grappleController controller = null;
@@ -723,6 +724,10 @@ public class ClientProxyClass implements CommonProxyClass {
 	
 	@SubscribeEvent
     public void onInputUpdate(InputUpdateEvent event) {
+		if (!Minecraft.getInstance().isRunning()) {
+			return;
+		}
+		
 		int id = Minecraft.getInstance().player.getId();
 		if (grapplemod.controllers.containsKey(id)) {
 			MovementInput input = event.getMovementInput();
@@ -752,8 +757,11 @@ public class ClientProxyClass implements CommonProxyClass {
 	public float currentCameraTilt = 0;
 
 	@SubscribeEvent
-	public void CameraSetup(CameraSetup event)
-	{
+	public void CameraSetup(CameraSetup event) {
+		if (!Minecraft.getInstance().isRunning()) {
+			return;
+		}
+		
 		PlayerEntity player = Minecraft.getInstance().player;
 		int id = player.getId();
 		int targetCameraTilt = 0;
@@ -859,11 +867,5 @@ public class ClientProxyClass implements CommonProxyClass {
 	@Override
 	public void playWallrunJumpSound(Entity entity) {
 		entity.playSound(new SoundEvent(this.doubleJumpSoundLoc), GrappleConfig.client_options.wallrunjump_sound_volume * 0.7F, 1.0F);
-	}
-
-	@Override
-	public void openModifierScreen(TileEntityGrappleModifier tileent) {
-		// TODO Auto-generated method stub
-		
 	}
 }

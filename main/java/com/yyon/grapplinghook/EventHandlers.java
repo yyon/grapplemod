@@ -26,7 +26,7 @@ public class EventHandlers {
 	}
 
 	@SubscribeEvent
-    public void onBlockBreak(BreakEvent event){
+    public void onBlockBreak(BreakEvent event) {
     	PlayerEntity player = event.getPlayer();
     	if (player != null) {
 	    	ItemStack stack = player.getItemInHand(Hand.MAIN_HAND);
@@ -75,8 +75,7 @@ public class EventHandlers {
 	
 	@SubscribeEvent
 	public void onLivingHurtEvent(LivingHurtEvent event) {
-		if (event.getEntity() != null && event.getEntity() instanceof PlayerEntity)
-		{
+		if (event.getEntity() != null && event.getEntity() instanceof PlayerEntity) {
 			PlayerEntity player = (PlayerEntity)event.getEntity();
 			
 			for (ItemStack armor : player.getArmorSlots()) {
@@ -92,10 +91,8 @@ public class EventHandlers {
 	}
 	
 	@SubscribeEvent
-	public void onLivingFallEvent(LivingFallEvent event)
-	{
-		if (event.getEntity() != null && event.getEntity() instanceof PlayerEntity)
-		{
+	public void onLivingFallEvent(LivingFallEvent event) {
+		if (event.getEntity() != null && event.getEntity() instanceof PlayerEntity) {
 			PlayerEntity player = (PlayerEntity)event.getEntity();
 			
 			for (ItemStack armor : player.getArmorSlots()) {
