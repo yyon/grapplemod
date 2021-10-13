@@ -12,6 +12,13 @@
 		}
 	],
 	"result": {
-		"item": "grapplemod:magnethook"
+		"item": "grapplemod:grapplinghook",
+		"nbt": {
+			"throwspeed": 3.5,
+			"maxlen": 60,
+
+			"attract": true,
+			"repel": true
+		}
 	}
 }

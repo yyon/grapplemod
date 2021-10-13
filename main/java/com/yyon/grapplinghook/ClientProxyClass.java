@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.ConcurrentModificationException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.annotation.Nullable;
@@ -39,10 +40,13 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.IItemPropertyGetter;
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemModelsProperties;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.crafting.RecipeManager;
 import net.minecraft.util.Hand;
 import net.minecraft.util.MovementInput;
+import net.minecraft.util.NonNullList;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.SoundEvent;
 import net.minecraft.util.math.BlockPos;
@@ -168,6 +172,7 @@ public class ClientProxyClass implements CommonProxyClass {
 		});
 		ItemModelsProperties.register(grapplemod.grapplebowitem, new ResourceLocation("attached"), new IItemPropertyGetter() {
 			public float call(ItemStack stack, @Nullable ClientWorld world, @Nullable LivingEntity entity) {
+				if (entity == null) {return 0;}
 				return grapplemod.attached.contains(entity.getId()) ? 1 : 0;
 			}
 		});
@@ -746,11 +751,10 @@ public class ClientProxyClass implements CommonProxyClass {
 
 	@SubscribeEvent
 	public void onKeyInputEvent(KeyInputEvent event) {
-		if (!Minecraft.getInstance().isRunning()) {
+		PlayerEntity player = Minecraft.getInstance().player;
+		if (!Minecraft.getInstance().isRunning() || player == null) {
 			return;
 		}
-		
-		PlayerEntity player = Minecraft.getInstance().player;
 		
 		grappleController controller = null;
 		if (grapplemod.controllers.containsKey(player.getId())) {
@@ -770,11 +774,12 @@ public class ClientProxyClass implements CommonProxyClass {
 	
 	@SubscribeEvent
     public void onInputUpdate(InputUpdateEvent event) {
-		if (!Minecraft.getInstance().isRunning()) {
+		PlayerEntity player = Minecraft.getInstance().player;
+		if (!Minecraft.getInstance().isRunning() || player == null) {
 			return;
 		}
 		
-		int id = Minecraft.getInstance().player.getId();
+		int id = player.getId();
 		if (grapplemod.controllers.containsKey(id)) {
 			MovementInput input = event.getMovementInput();
 			grappleController control = grapplemod.controllers.get(id);
@@ -804,11 +809,11 @@ public class ClientProxyClass implements CommonProxyClass {
 
 	@SubscribeEvent
 	public void CameraSetup(CameraSetup event) {
-		if (!Minecraft.getInstance().isRunning()) {
+		PlayerEntity player = Minecraft.getInstance().player;
+		if (!Minecraft.getInstance().isRunning() || player == null) {
 			return;
 		}
-		
-		PlayerEntity player = Minecraft.getInstance().player;
+
 		int id = player.getId();
 		int targetCameraTilt = 0;
 		if (grapplemod.controllers.containsKey(id)) {
@@ -913,5 +918,29 @@ public class ClientProxyClass implements CommonProxyClass {
 	@Override
 	public void playWallrunJumpSound(Entity entity) {
 		entity.playSound(new SoundEvent(this.doubleJumpSoundLoc), GrappleConfig.client_options.wallrunjump_sound_volume * 0.7F, 1.0F);
+	}
+	
+	List<ItemStack> grapplinghookvariants = null;
+
+	@Override
+	public void fillGrappleVariants(ItemGroup tab, NonNullList<ItemStack> items) {
+		if (Minecraft.getInstance().isRunning() == false || Minecraft.getInstance().player == null || Minecraft.getInstance().player.level == null || Minecraft.getInstance().player.level.getRecipeManager() == null) {
+			return;
+		}
+		
+		if (grapplinghookvariants == null) {
+			grapplinghookvariants = new ArrayList<ItemStack>();
+			RecipeManager recipemanager = Minecraft.getInstance().player.level.getRecipeManager();
+			recipemanager.getRecipeIds().filter(loc -> loc.getNamespace().equals(grapplemod.MODID)).forEach(loc -> {
+				ItemStack stack = recipemanager.byKey(loc).get().getResultItem();
+				if (stack.getItem() instanceof grappleBow) {
+					if (!grapplemod.grapplebowitem.getCustomization(stack).equals(new GrappleCustomization())) {
+						grapplinghookvariants.add(stack);
+					}
+				}
+			});
+		}
+		
+		items.addAll(grapplinghookvariants);
 	}
 }

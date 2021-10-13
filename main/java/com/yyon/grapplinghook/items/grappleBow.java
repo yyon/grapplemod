@@ -16,14 +16,15 @@ import com.yyon.grapplinghook.network.KeypressMessage;
 
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.util.ITooltipFlag;
-import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.util.NonNullList;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.SoundEvents;
 import net.minecraft.util.math.MathHelper;
@@ -455,7 +456,7 @@ public class grappleBow extends Item implements KeypressItem {
 	public void appendHoverText(ItemStack stack, @Nullable World world, List<ITextComponent> list, ITooltipFlag par4) {
 		GrappleCustomization custom = getCustomization(stack);
 		
-		if (Screen.hasControlDown()) {
+		if (Screen.hasShiftDown()) {
 			if (!custom.detachonkeyrelease) {
 				list.add(new StringTextComponent(ClientProxyClass.key_boththrow.getTranslatedKeyMessage().getString() + " " + grapplemod.proxy.localize("grappletooltip.throw.desc")));
 				list.add(new StringTextComponent(ClientProxyClass.key_boththrow.getTranslatedKeyMessage().getString() + " " + grapplemod.proxy.localize("grappletooltip.release.desc")));
@@ -502,7 +503,7 @@ public class grappleBow extends Item implements KeypressItem {
 				list.add(new StringTextComponent(ClientProxyClass.key_rightthrow.getTranslatedKeyMessage().getString() + " " + grapplemod.proxy.localize("grappletooltip.throwalt.desc")));
 			}
 		} else {
-			if (Screen.hasShiftDown()) {
+			if (Screen.hasControlDown()) {
 				for (String option : GrappleCustomization.booleanoptions) {
 					if (custom.isoptionvalid(option) && custom.getBoolean(option)) {
 						list.add(new StringTextComponent(grapplemod.proxy.localize(custom.getName(option))));
@@ -625,4 +626,14 @@ public class grappleBow extends Item implements KeypressItem {
 		return this.getCustomization(stack).attract || this.getCustomization(stack).repel;
 	}
 
+	@Override
+	public void fillItemCategory(ItemGroup tab, NonNullList<ItemStack> items) {
+			if (this.allowdedIn(tab)) {
+	        	ItemStack stack = new ItemStack(this);
+	            items.add(stack);
+	            if (grapplemod.proxy != null) {
+	            	grapplemod.proxy.fillGrappleVariants(tab, items);
+	            }
+			}
+	}
 }

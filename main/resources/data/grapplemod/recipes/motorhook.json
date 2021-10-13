@@ -5,16 +5,17 @@
 			"item": "grapplemod:grapplinghook"
 		}, 
 		{
-			"item": "grapplemod:grapplinghook"
-		}, 
-		{
 			"item": "grapplemod:motorupgradeitem"
-		},
-		{
-			"item": "grapplemod:rocketupgradeitem"
 		}
 	],
 	"result": {
-		"item": "grapplemod:rocketdoublemotorhook"
+		"item": "grapplemod:grapplinghook",
+		"nbt": {
+			"throwspeed": 3.5,
+			"maxlen": 60,
+
+			"motor": true,
+			"playermovementmult": 2
+		}
 	}
 }

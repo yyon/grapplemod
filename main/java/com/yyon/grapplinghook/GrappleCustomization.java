@@ -301,4 +301,18 @@ public class GrappleCustomization {
 		System.out.println("Unknown option");
 		return 0;
 	}
+	
+	public boolean equals(GrappleCustomization other) {
+		for (String option : booleanoptions) {
+			if (this.getBoolean(option) != other.getBoolean(option)) {
+				return false;
+			}
+		}
+		for (String option : doubleoptions) {
+			if (this.getDouble(option) != other.getDouble(option)) {
+				return false;
+			}
+		}
+		return true;
+	}
 }

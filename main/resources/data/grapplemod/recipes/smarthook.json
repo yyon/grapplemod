@@ -12,6 +12,14 @@
 		}
 	],
 	"result": {
-		"item": "grapplemod:smarthook"
+		"item": "grapplemod:grapplinghook",
+		"nbt": {
+			"throwspeed": 3.5,
+			"maxlen": 60,
+
+			"motor": true,
+			"smartmotor": true,
+			"playermovementmult": 2
+		}
 	}
 }

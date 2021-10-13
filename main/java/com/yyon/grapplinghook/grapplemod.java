@@ -19,13 +19,6 @@ import com.yyon.grapplinghook.items.LongFallBoots;
 import com.yyon.grapplinghook.items.grappleBow;
 import com.yyon.grapplinghook.items.launcherItem;
 import com.yyon.grapplinghook.items.repeller;
-import com.yyon.grapplinghook.items.alternategrapple.DoubleMotorHook;
-import com.yyon.grapplinghook.items.alternategrapple.EnderHook;
-import com.yyon.grapplinghook.items.alternategrapple.MagnetHook;
-import com.yyon.grapplinghook.items.alternategrapple.MotorHook;
-import com.yyon.grapplinghook.items.alternategrapple.RocketDoubleMotorHook;
-import com.yyon.grapplinghook.items.alternategrapple.RocketHook;
-import com.yyon.grapplinghook.items.alternategrapple.SmartHook;
 import com.yyon.grapplinghook.items.upgrades.BaseUpgradeItem;
 import com.yyon.grapplinghook.items.upgrades.DoubleUpgradeItem;
 import com.yyon.grapplinghook.items.upgrades.ForcefieldUpgradeItem;
@@ -115,13 +108,6 @@ public class grapplemod {
     public static final Logger LOGGER = LogManager.getLogger();
 
     public static grappleBow grapplebowitem;
-    public static MotorHook motorhookitem;
-    public static SmartHook smarthookitem;
-    public static DoubleMotorHook doublemotorhookitem;
-    public static RocketDoubleMotorHook rocketdoublemotorhookitem;
-    public static EnderHook enderhookitem;
-    public static MagnetHook magnethookitem;
-    public static RocketHook rockethookitem;
     public static launcherItem launcheritem;
     public static repeller repelleritem;
 
@@ -497,13 +483,6 @@ public class grapplemod {
 		return new Item[] {
 				grapplebowitem, 
 //				itemBlockGrappleModifier,
-				enderhookitem, 
-				magnethookitem,
-				rockethookitem,
-				motorhookitem, 
-				smarthookitem, 
-				doublemotorhookitem, 
-				rocketdoublemotorhookitem, 
 				launcheritem, 
 				repelleritem, 
 				longfallboots, 
@@ -543,20 +522,7 @@ public class grapplemod {
 	public static void onItemsRegistration(final RegistryEvent.Register<Item> itemRegisterEvent) {
 		grapplebowitem = new grappleBow();
 		registerItem(grapplebowitem, "grapplinghook", itemRegisterEvent);
-		motorhookitem = new MotorHook();
-		registerItem(motorhookitem, "motorhook", itemRegisterEvent);
-		smarthookitem = new SmartHook();
-		registerItem(smarthookitem, "smarthook", itemRegisterEvent);
-		doublemotorhookitem = new DoubleMotorHook();
-		registerItem(doublemotorhookitem, "doublemotorhook", itemRegisterEvent);
-		rocketdoublemotorhookitem = new RocketDoubleMotorHook();
-		registerItem(rocketdoublemotorhookitem, "rocketdoublemotorhook", itemRegisterEvent);
-		enderhookitem = new EnderHook();
-		registerItem(enderhookitem, "enderhook", itemRegisterEvent);
-		magnethookitem = new MagnetHook();
-		registerItem(magnethookitem, "magnethook", itemRegisterEvent);
-		rockethookitem = new RocketHook();
-		registerItem(rockethookitem, "rockethook", itemRegisterEvent);
+
 		launcheritem = new launcherItem();
 		registerItem(launcheritem, "launcheritem", itemRegisterEvent);
 		longfallboots = new LongFallBoots(ArmorMaterial.DIAMOND, 3);

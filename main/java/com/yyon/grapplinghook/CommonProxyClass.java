@@ -6,6 +6,9 @@ import com.yyon.grapplinghook.network.BaseMessageClient;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.ItemGroup;
+import net.minecraft.item.ItemStack;
+import net.minecraft.util.NonNullList;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.event.world.BlockEvent.BreakEvent;
@@ -50,4 +53,6 @@ public interface CommonProxyClass {
 	public void onMessageReceivedClient(BaseMessageClient baseMessage, Context ctx);
 
 	void blockbreak(BreakEvent event);
+
+	public void fillGrappleVariants(ItemGroup tab, NonNullList<ItemStack> items);
 }

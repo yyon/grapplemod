@@ -50,10 +50,6 @@ public class GrappleConfig {
 		public double default_rocket_vertical_angle = 0;
 		
 
-		// upgraded values for alternativegrapple items
-		public double upgraded_throwspeed = 3.5;
-		public double upgraded_maxlen = 60;
-
 		// rope
 		public double max_maxlen = 60;
 		// hook thrower

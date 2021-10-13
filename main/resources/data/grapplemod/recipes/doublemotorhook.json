@@ -1,0 +1,42 @@
+{
+	"type": "minecraft:crafting_shapeless",
+	"ingredients": [
+		{
+			"item": "grapplemod:grapplinghook"
+		}, 
+		{
+			"item": "grapplemod:grapplinghook"
+		}, 
+		{
+			"item": "grapplemod:motorupgradeitem"
+		}
+	],
+	"result": {
+		"item": "grapplemod:grapplinghook",
+		"nbt": {
+			"throwspeed": 3.5,
+			"maxlen": 60,
+
+			"doublehook": true,
+			"motor": true,
+			"motormaxspeed": 10,
+			"sticky": true,
+			
+			"hookgravity": 100,
+			"verticalthrowangle": 30,
+			"sneakingverticalthrowangle": 25,
+			"reelin": false,
+			
+			"motorwhencrouching": true,
+			
+			"smartdoublemotor": true,
+			
+			"angle": 25,
+			"sneakingangle": 0,
+			
+			"throwspeed": 20,
+			
+			"playermovementmult": 2
+		}
+	}
+}

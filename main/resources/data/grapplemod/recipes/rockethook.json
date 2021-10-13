@@ -9,6 +9,12 @@
 		}
 	],
 	"result": {
-		"item": "grapplemod:rockethook"
+		"item": "grapplemod:grapplinghook",
+		"nbt": {
+			"throwspeed": 3.5,
+			"maxlen": 60,
+
+			"rocket": true
+		}
 	}
 }
