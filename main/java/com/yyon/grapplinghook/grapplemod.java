@@ -62,7 +62,6 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntityType;
-import net.minecraft.util.DamageSource;
 import net.minecraft.util.Hand;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
@@ -73,10 +72,6 @@ import net.minecraft.world.World;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.event.RegistryEvent;
-import net.minecraftforge.event.entity.living.LivingDeathEvent;
-import net.minecraftforge.event.entity.living.LivingFallEvent;
-import net.minecraftforge.event.entity.living.LivingHurtEvent;
-import net.minecraftforge.event.world.BlockEvent.BreakEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.fml.common.Mod;
@@ -119,28 +114,28 @@ public class grapplemod {
 
     public static final Logger LOGGER = LogManager.getLogger();
 
-    public static Item grapplebowitem;
-    public static Item motorhookitem;
-    public static Item smarthookitem;
-    public static Item doublemotorhookitem;
-    public static Item rocketdoublemotorhookitem;
-    public static Item enderhookitem;
-    public static Item magnethookitem;
-    public static Item rockethookitem;
-    public static Item launcheritem;
-    public static Item repelleritem;
+    public static grappleBow grapplebowitem;
+    public static MotorHook motorhookitem;
+    public static SmartHook smarthookitem;
+    public static DoubleMotorHook doublemotorhookitem;
+    public static RocketDoubleMotorHook rocketdoublemotorhookitem;
+    public static EnderHook enderhookitem;
+    public static MagnetHook magnethookitem;
+    public static RocketHook rockethookitem;
+    public static launcherItem launcheritem;
+    public static repeller repelleritem;
 
-    public static Item baseupgradeitem;
-    public static Item doubleupgradeitem;
-    public static Item forcefieldupgradeitem;
-    public static Item magnetupgradeitem;
-    public static Item motorupgradeitem;
-    public static Item ropeupgradeitem;
-    public static Item staffupgradeitem;
-    public static Item swingupgradeitem;
-    public static Item throwupgradeitem;
-    public static Item limitsupgradeitem;
-    public static Item rocketupgradeitem;
+    public static BaseUpgradeItem baseupgradeitem;
+    public static DoubleUpgradeItem doubleupgradeitem;
+    public static ForcefieldUpgradeItem forcefieldupgradeitem;
+    public static MagnetUpgradeItem magnetupgradeitem;
+    public static MotorUpgradeItem motorupgradeitem;
+    public static RopeUpgradeItem ropeupgradeitem;
+    public static StaffUpgradeItem staffupgradeitem;
+    public static SwingUpgradeItem swingupgradeitem;
+    public static ThrowUpgradeItem throwupgradeitem;
+    public static LimitsUpgradeItem limitsupgradeitem;
+    public static RocketUpgradeItem rocketupgradeitem;
 
     public static Item longfallboots;
     
@@ -539,36 +534,57 @@ public class grapplemod {
 
 	}
 
-	public static Item registerItem(Item item, String itemName, final RegistryEvent.Register<Item> itemRegisterEvent) {
+	public static void registerItem(Item item, String itemName, final RegistryEvent.Register<Item> itemRegisterEvent) {
 		item.setRegistryName(itemName);
 		itemRegisterEvent.getRegistry().register(item);
-		return item;
 	}
 	
 	@SubscribeEvent
 	public static void onItemsRegistration(final RegistryEvent.Register<Item> itemRegisterEvent) {
-		grapplebowitem = registerItem(new grappleBow(), "grapplinghook", itemRegisterEvent);
-		motorhookitem = registerItem(new MotorHook(), "motorhook", itemRegisterEvent);
-		smarthookitem = registerItem(new SmartHook(), "smarthook", itemRegisterEvent);
-		doublemotorhookitem = registerItem(new DoubleMotorHook(), "doublemotorhook", itemRegisterEvent);
-		rocketdoublemotorhookitem = registerItem(new RocketDoubleMotorHook(), "rocketdoublemotorhook", itemRegisterEvent);
-		enderhookitem = registerItem(new EnderHook(), "enderhook", itemRegisterEvent);
-		magnethookitem = registerItem(new MagnetHook(), "magnethook", itemRegisterEvent);
-		rockethookitem = registerItem(new RocketHook(), "rockethook", itemRegisterEvent);
-		launcheritem = registerItem(new launcherItem(), "launcheritem", itemRegisterEvent);
-		longfallboots = registerItem(new LongFallBoots(ArmorMaterial.DIAMOND, 3), "longfallboots", itemRegisterEvent);
-		repelleritem = registerItem(new repeller(), "repeller", itemRegisterEvent);
-	    baseupgradeitem = registerItem(new BaseUpgradeItem(), "baseupgradeitem", itemRegisterEvent);
-	    doubleupgradeitem = registerItem(new DoubleUpgradeItem(), "doubleupgradeitem", itemRegisterEvent);
-	    forcefieldupgradeitem = registerItem(new ForcefieldUpgradeItem(), "forcefieldupgradeitem", itemRegisterEvent);
-	    magnetupgradeitem = registerItem(new MagnetUpgradeItem(), "magnetupgradeitem", itemRegisterEvent);
-	    motorupgradeitem = registerItem(new MotorUpgradeItem(), "motorupgradeitem", itemRegisterEvent);
-	    ropeupgradeitem = registerItem(new RopeUpgradeItem(), "ropeupgradeitem", itemRegisterEvent);
-	    staffupgradeitem = registerItem(new StaffUpgradeItem(), "staffupgradeitem", itemRegisterEvent);
-	    swingupgradeitem = registerItem(new SwingUpgradeItem(), "swingupgradeitem", itemRegisterEvent);
-	    throwupgradeitem = registerItem(new ThrowUpgradeItem(), "throwupgradeitem", itemRegisterEvent);
-	    limitsupgradeitem = registerItem(new LimitsUpgradeItem(), "limitsupgradeitem", itemRegisterEvent);
-	    rocketupgradeitem = registerItem(new RocketUpgradeItem(), "rocketupgradeitem", itemRegisterEvent);
+		grapplebowitem = new grappleBow();
+		registerItem(grapplebowitem, "grapplinghook", itemRegisterEvent);
+		motorhookitem = new MotorHook();
+		registerItem(motorhookitem, "motorhook", itemRegisterEvent);
+		smarthookitem = new SmartHook();
+		registerItem(smarthookitem, "smarthook", itemRegisterEvent);
+		doublemotorhookitem = new DoubleMotorHook();
+		registerItem(doublemotorhookitem, "doublemotorhook", itemRegisterEvent);
+		rocketdoublemotorhookitem = new RocketDoubleMotorHook();
+		registerItem(rocketdoublemotorhookitem, "rocketdoublemotorhook", itemRegisterEvent);
+		enderhookitem = new EnderHook();
+		registerItem(enderhookitem, "enderhook", itemRegisterEvent);
+		magnethookitem = new MagnetHook();
+		registerItem(magnethookitem, "magnethook", itemRegisterEvent);
+		rockethookitem = new RocketHook();
+		registerItem(rockethookitem, "rockethook", itemRegisterEvent);
+		launcheritem = new launcherItem();
+		registerItem(launcheritem, "launcheritem", itemRegisterEvent);
+		longfallboots = new LongFallBoots(ArmorMaterial.DIAMOND, 3);
+		registerItem(longfallboots, "longfallboots", itemRegisterEvent);
+		repelleritem = new repeller();
+		registerItem(repelleritem, "repeller", itemRegisterEvent);
+	    baseupgradeitem = new BaseUpgradeItem();
+		registerItem(baseupgradeitem, "baseupgradeitem", itemRegisterEvent);
+	    doubleupgradeitem = new DoubleUpgradeItem();
+		registerItem(doubleupgradeitem, "doubleupgradeitem", itemRegisterEvent);
+	    forcefieldupgradeitem = new ForcefieldUpgradeItem();
+		registerItem(forcefieldupgradeitem, "forcefieldupgradeitem", itemRegisterEvent);
+	    magnetupgradeitem = new MagnetUpgradeItem();
+		registerItem(magnetupgradeitem, "magnetupgradeitem", itemRegisterEvent);
+	    motorupgradeitem = new MotorUpgradeItem();
+		registerItem(motorupgradeitem, "motorupgradeitem", itemRegisterEvent);
+	    ropeupgradeitem = new RopeUpgradeItem();
+		registerItem(ropeupgradeitem, "ropeupgradeitem", itemRegisterEvent);
+	    staffupgradeitem = new StaffUpgradeItem();
+		registerItem(staffupgradeitem, "staffupgradeitem", itemRegisterEvent);
+	    swingupgradeitem = new SwingUpgradeItem();
+		registerItem(swingupgradeitem, "swingupgradeitem", itemRegisterEvent);
+	    throwupgradeitem = new ThrowUpgradeItem();
+		registerItem(throwupgradeitem, "throwupgradeitem", itemRegisterEvent);
+	    limitsupgradeitem = new LimitsUpgradeItem();
+		registerItem(limitsupgradeitem, "limitsupgradeitem", itemRegisterEvent);
+	    rocketupgradeitem = new RocketUpgradeItem();
+		registerItem(rocketupgradeitem, "rocketupgradeitem", itemRegisterEvent);
 
 		// We need to create a BlockItem so the player can carry this block in their hand and it can appear in the inventory
 		Item.Properties itemSimpleProperties = new Item.Properties()

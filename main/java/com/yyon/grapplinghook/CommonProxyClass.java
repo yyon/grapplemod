@@ -17,6 +17,8 @@ public interface CommonProxyClass {
 
 //	public void getplayermovement(grappleController control, int playerid);
 	
+	public void registerPropertyOverride();
+	
 	public void resetlaunchertime(int playerid);
 
 	public void launchplayer(PlayerEntity player);

@@ -16,6 +16,7 @@ import com.yyon.grapplinghook.network.KeypressMessage;
 
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.util.ITooltipFlag;
+import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -599,4 +600,29 @@ public class grappleBow extends Item implements KeypressItem {
 		return super.onDroppedByPlayer(item, player);
 	}
 	*/
+	
+	public boolean getPropertyRocket(ItemStack stack, World world, LivingEntity entity) {
+		return this.getCustomization(stack).rocket;
+	}
+
+	public boolean getPropertyDouble(ItemStack stack, World world, LivingEntity entity) {
+		return this.getCustomization(stack).doublehook;
+	}
+
+	public boolean getPropertyMotor(ItemStack stack, World world, LivingEntity entity) {
+		return this.getCustomization(stack).motor;
+	}
+
+	public boolean getPropertySmart(ItemStack stack, World world, LivingEntity entity) {
+		return this.getCustomization(stack).smartmotor;
+	}
+
+	public boolean getPropertyEnderstaff(ItemStack stack, World world, LivingEntity entity) {
+		return this.getCustomization(stack).enderstaff;
+	}
+
+	public boolean getPropertyMagnet(ItemStack stack, World world, LivingEntity entity) {
+		return this.getCustomization(stack).attract || this.getCustomization(stack).repel;
+	}
+
 }

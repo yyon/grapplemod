@@ -6,6 +6,8 @@ import java.util.ConcurrentModificationException;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.annotation.Nullable;
+
 import org.lwjgl.glfw.GLFW;
 
 import com.yyon.grapplinghook.blocks.TileEntityGrappleModifier;
@@ -18,7 +20,6 @@ import com.yyon.grapplinghook.items.KeypressItem;
 import com.yyon.grapplinghook.items.grappleBow;
 import com.yyon.grapplinghook.items.launcherItem;
 import com.yyon.grapplinghook.network.BaseMessageClient;
-import com.yyon.grapplinghook.network.GrappleModifierMessage;
 
 import net.minecraft.block.BlockState;
 import net.minecraft.client.GameSettings;
@@ -30,11 +31,15 @@ import net.minecraft.client.renderer.model.ModelResourceLocation;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.client.settings.KeyBinding;
 import net.minecraft.client.util.InputMappings;
+import net.minecraft.client.world.ClientWorld;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.IItemPropertyGetter;
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemModelsProperties;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Hand;
 import net.minecraft.util.MovementInput;
@@ -125,6 +130,47 @@ public class ClientProxyClass implements CommonProxyClass {
 	    RenderingRegistry.registerEntityRenderingHandler(grapplemod.grappleArrowType, new grappleArrowRenderFactory());
 
 	    MinecraftForge.EVENT_BUS.register(grapplemod.proxy);
+
+	    event.enqueueWork(grapplemod.proxy::registerPropertyOverride);
+	}
+	
+	@Override
+	public void registerPropertyOverride() {
+		ItemModelsProperties.register(grapplemod.grapplebowitem, new ResourceLocation("rocket"), new IItemPropertyGetter() {
+			public float call(ItemStack stack, @Nullable ClientWorld world, @Nullable LivingEntity entity) {
+				return grapplemod.grapplebowitem.getPropertyRocket(stack, world, entity) ? 1 : 0;
+			}
+		});
+		ItemModelsProperties.register(grapplemod.grapplebowitem, new ResourceLocation("double"), new IItemPropertyGetter() {
+			public float call(ItemStack stack, @Nullable ClientWorld world, @Nullable LivingEntity entity) {
+				return grapplemod.grapplebowitem.getPropertyDouble(stack, world, entity) ? 1 : 0;
+			}
+		});
+		ItemModelsProperties.register(grapplemod.grapplebowitem, new ResourceLocation("motor"), new IItemPropertyGetter() {
+			public float call(ItemStack stack, @Nullable ClientWorld world, @Nullable LivingEntity entity) {
+				return grapplemod.grapplebowitem.getPropertyMotor(stack, world, entity) ? 1 : 0;
+			}
+		});
+		ItemModelsProperties.register(grapplemod.grapplebowitem, new ResourceLocation("smart"), new IItemPropertyGetter() {
+			public float call(ItemStack stack, @Nullable ClientWorld world, @Nullable LivingEntity entity) {
+				return grapplemod.grapplebowitem.getPropertySmart(stack, world, entity) ? 1 : 0;
+			}
+		});
+		ItemModelsProperties.register(grapplemod.grapplebowitem, new ResourceLocation("enderstaff"), new IItemPropertyGetter() {
+			public float call(ItemStack stack, @Nullable ClientWorld world, @Nullable LivingEntity entity) {
+				return grapplemod.grapplebowitem.getPropertyEnderstaff(stack, world, entity) ? 1 : 0;
+			}
+		});
+		ItemModelsProperties.register(grapplemod.grapplebowitem, new ResourceLocation("magnet"), new IItemPropertyGetter() {
+			public float call(ItemStack stack, @Nullable ClientWorld world, @Nullable LivingEntity entity) {
+				return grapplemod.grapplebowitem.getPropertyMagnet(stack, world, entity) ? 1 : 0;
+			}
+		});
+		ItemModelsProperties.register(grapplemod.grapplebowitem, new ResourceLocation("attached"), new IItemPropertyGetter() {
+			public float call(ItemStack stack, @Nullable ClientWorld world, @Nullable LivingEntity entity) {
+				return grapplemod.attached.contains(entity.getId()) ? 1 : 0;
+			}
+		});
 	}
 
 	/*
