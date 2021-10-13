@@ -1,6 +1,7 @@
 package com.yyon.grapplinghook.entities;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.IVertexBuilder;
 import com.yyon.grapplinghook.vec;
 import com.yyon.grapplinghook.controllers.SegmentHandler;
@@ -225,7 +226,7 @@ public class RenderGrappleArrow<T extends grappleArrow> extends EntityRenderer<T
             vec corner1 = corners[size];
             vec corner2 = corners[(size + 1) % 4];
 
-        	vec normal = corner1.add(corner2).normalize();
+        	vec normal = new vec(0,1,0);// corner1.add(corner2).normalize();
             
             for (int square_num = 0; square_num < number_squares; square_num++)
             {
