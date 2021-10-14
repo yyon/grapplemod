@@ -341,25 +341,12 @@ public class grappleArrow extends ProjectileItemEntity implements IEntityAdditio
 					blockhit = (BlockRayTraceResult) movingobjectposition;
 				}
 				
-				if (grapplemod.anyignoresblocks && blockhit != null) {
+				if (blockhit != null) {
 					BlockPos blockpos = blockhit.getBlockPos();
 					if (blockpos != null) {
 						Block block = this.level.getBlockState(blockpos).getBlock();
-						if (grapplemod.grapplingignoresblocks.contains(block)) {
-							System.out.println("ignore block");
-					        onHit(grapplemod.rayTraceBlocks(this.level, vec3d, vec3d1));
-					        return;
-						}
-					}
-				}
-				
-				if (grapplemod.anybreakblocks && blockhit != null) {
-					BlockPos blockpos = blockhit.getBlockPos();
-					if (blockpos != null) {
-						Block block = this.level.getBlockState(blockpos).getBlock();
-						if (grapplemod.grapplingbreaksblocks.contains(block)) {
+						if (grapplemod.breaksblock(block)) {
 							this.level.destroyBlock(blockpos, true);
-							System.out.println("break block");
 					        onHit(grapplemod.rayTraceBlocks(this.level, vec3d, vec3d1));
 					        return;
 						}
@@ -408,14 +395,11 @@ public class grappleArrow extends ProjectileItemEntity implements IEntityAdditio
 		this.attached = true;
 		
 		if (blockpos != null) {
-			if (!grapplemod.anyblocks) {
-				Block block = this.level.getBlockState(blockpos).getBlock();
+			Block block = this.level.getBlockState(blockpos).getBlock();
 
-				if ((!grapplemod.removeblocks && !grapplemod.grapplingblocks.contains(block))
-						|| (grapplemod.removeblocks && grapplemod.grapplingblocks.contains(block))) {
-					this.removeServer();
-					return;
-				}
+			if (!grapplemod.attachesblock(block)) {
+				this.removeServer();
+				return;
 			}
 		}
 		
@@ -519,9 +503,7 @@ public class grappleArrow extends ProjectileItemEntity implements IEntityAdditio
     		boolean isblock = false;
 	    	BlockState blockstate = this.level.getBlockState(pos);
 	    	Block b = blockstate.getBlock();
-			if (!grapplemod.anyblocks && ((!grapplemod.removeblocks && !grapplemod.grapplingblocks.contains(b))
-						|| (grapplemod.removeblocks && grapplemod.grapplingblocks.contains(b)))) {
-			} else {
+			if (!grapplemod.attachesblock(b)) {
 		    	if (!(b.isAir(blockstate, this.level, pos))) {
 			    	VoxelShape BB = blockstate.getCollisionShape(this.level, pos);
 			    	if (BB != null && !BB.isEmpty()) {

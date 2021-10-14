@@ -204,7 +204,6 @@ public class GrappleConfig implements ConfigData {
 		public double airstrafe_acceleration = 0.015;
 		
 		public String grappleBreakBlocks = "none";
-		public String grappleIgnoreBlocks = "minecraft:tallgrass,minecraft:double_plant";
 	}
 	
     @ConfigEntry.Gui.CollapsibleObject

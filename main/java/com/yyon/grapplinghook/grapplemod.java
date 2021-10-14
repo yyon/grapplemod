@@ -143,13 +143,11 @@ public class grapplemod {
 	public static int REPELID = controllerid++;
 	public static int AIRID = controllerid++;
 		
-	public static boolean anyblocks = true;
-	public static HashSet<Block> grapplingblocks;
-	public static boolean removeblocks = false;
-	public static HashSet<Block> grapplingbreaksblocks;
-	public static boolean anybreakblocks = false;
-	public static HashSet<Block> grapplingignoresblocks;
-	public static boolean anyignoresblocks = false;
+	private static boolean anyblocks = true;
+	private static HashSet<Block> grapplingblocks;
+	private static boolean removeblocks = false;
+	private static HashSet<Block> grapplingbreaksblocks;
+	private static boolean anybreakblocks = false;
 	
 	public static Block blockGrappleModifier;
 	public static BlockItem itemBlockGrappleModifier;
@@ -332,11 +330,40 @@ public class grapplemod {
 		grapplingbreaksblocks = stringToBlocks(GrappleConfig.getconf().grappleBreakBlocks);
 		anybreakblocks = grapplingbreaksblocks.size() != 0;
 		
-		grapplingignoresblocks = stringToBlocks(GrappleConfig.getconf().grappleIgnoreBlocks);
-		anyignoresblocks = grapplingignoresblocks.size() != 0;
-		
 	}
-	
+
+	private static String prevGrapplingBlocks = null;
+	private static String prevGrapplingNonBlocks = null;
+	public static boolean attachesblock(Block block) {
+		if (!GrappleConfig.getconf().grapplingBlocks.equals(prevGrapplingBlocks) || !GrappleConfig.getconf().grapplingNonBlocks.equals(prevGrapplingNonBlocks)) {
+			updateGrapplingBlocks();
+		}
+		
+		if (anyblocks) {
+			return true;
+		}
+		
+		boolean inlist = grapplingblocks.contains(block);
+		
+		if (removeblocks) {
+			return !inlist;
+		} else {
+			return inlist;
+		}
+	}
+
+	private static String prevGrapplingBreakBlocks = null;
+	public static boolean breaksblock(Block block) {
+		if (!GrappleConfig.getconf().grappleBreakBlocks.equals(prevGrapplingBreakBlocks)) {
+			updateGrapplingBlocks();
+		}
+		
+		if (!anybreakblocks) {
+			return false;
+		}
+		
+		return grapplingbreaksblocks.contains(block);
+	}
 	public static Item[] getAllItems() {
 		return new Item[] {
 				grapplebowitem,
@@ -436,131 +463,6 @@ public class grapplemod {
 		}
 		allarrows.put(id, new HashSet<grappleArrow>());
 	}
-
-	/*
-	@EventHandler
-	public void preInit(FMLPreInitializationEvent event){
-		grapplebowitem = new grappleBow();
-		grapplebowitem.setRegistryName("grapplinghook");
-		motorhookitem = new MotorHook();
-		motorhookitem.setRegistryName("motorhook");
-		smarthookitem = new SmartHook();
-		smarthookitem.setRegistryName("smarthook");
-		doublemotorhookitem = new DoubleMotorHook();
-		doublemotorhookitem.setRegistryName("doublemotorhook");
-		rocketdoublemotorhookitem = new RocketDoubleMotorHook();
-		rocketdoublemotorhookitem.setRegistryName("rocketdoublemotorhook");
-		enderhookitem = new EnderHook();
-		enderhookitem.setRegistryName("enderhook");
-		magnethookitem = new MagnetHook();
-		magnethookitem.setRegistryName("magnethook");
-		rockethookitem = new RocketHook();
-		rockethookitem.setRegistryName("rockethook");
-		launcheritem = new launcherItem();
-		launcheritem.setRegistryName("launcheritem");
-		longfallboots = new LongFallBoots(ItemArmor.ArmorMaterial.DIAMOND, 3);
-		longfallboots.setRegistryName("longfallboots");
-		repelleritem = new repeller();
-		repelleritem.setRegistryName("repeller");
-	    baseupgradeitem = new BaseUpgradeItem();
-	    baseupgradeitem.setRegistryName("baseupgradeitem");
-	    doubleupgradeitem = new DoubleUpgradeItem();
-	    doubleupgradeitem.setRegistryName("doubleupgradeitem");
-	    doubleupgradeitem.setContainerItem(doubleupgradeitem);
-	    forcefieldupgradeitem = new ForcefieldUpgradeItem();
-	    forcefieldupgradeitem.setRegistryName("forcefieldupgradeitem");
-	    forcefieldupgradeitem.setContainerItem(forcefieldupgradeitem);
-	    magnetupgradeitem = new MagnetUpgradeItem();
-	    magnetupgradeitem.setRegistryName("magnetupgradeitem");
-	    magnetupgradeitem.setContainerItem(magnetupgradeitem);
-	    motorupgradeitem = new MotorUpgradeItem();
-	    motorupgradeitem.setRegistryName("motorupgradeitem");
-	    motorupgradeitem.setContainerItem(motorupgradeitem);
-	    ropeupgradeitem = new RopeUpgradeItem();
-	    ropeupgradeitem.setRegistryName("ropeupgradeitem");
-	    ropeupgradeitem.setContainerItem(ropeupgradeitem);
-	    staffupgradeitem = new StaffUpgradeItem();
-	    staffupgradeitem.setRegistryName("staffupgradeitem");
-	    staffupgradeitem.setContainerItem(staffupgradeitem);
-	    swingupgradeitem = new SwingUpgradeItem();
-	    swingupgradeitem.setRegistryName("swingupgradeitem");
-	    swingupgradeitem.setContainerItem(swingupgradeitem);
-	    throwupgradeitem = new ThrowUpgradeItem();
-	    throwupgradeitem.setRegistryName("throwupgradeitem");
-	    throwupgradeitem.setContainerItem(throwupgradeitem);
-	    limitsupgradeitem = new LimitsUpgradeItem();
-	    limitsupgradeitem.setRegistryName("limitsupgradeitem");
-	    limitsupgradeitem.setContainerItem(limitsupgradeitem);
-	    rocketupgradeitem = new RocketUpgradeItem();
-	    rocketupgradeitem.setRegistryName("rocketupgradeitem");
-	    rocketupgradeitem.setContainerItem(rocketupgradeitem);
-	    
-	    wallrunenchantment = new WallrunEnchantment();
-	    wallrunenchantment.setRegistryName("wallrunenchantment");
-	    doublejumpenchantment = new DoublejumpEnchantment();
-	    doublejumpenchantment.setRegistryName("doublejumpenchantment");
-	    slidingenchantment = new SlidingEnchantment();
-	    slidingenchantment.setRegistryName("slidingenchantment");
-	    
-//		System.out.println(grapplebowitem);
-		
-		resourceLocation = new ResourceLocation(grapplemod.MODID, "grapplemod");
-		
-		registerEntity(grappleArrow.class, "grappleArrow");
-		
-		network = NetworkRegistry.INSTANCE.newSimpleChannel("grapplemodchannel");
-		byte id = 0;
-		network.registerMessage(PlayerMovementMessage.Handler.class, PlayerMovementMessage.class, id++, Side.SERVER);
-		network.registerMessage(GrappleAttachMessage.Handler.class, GrappleAttachMessage.class, id++, Side.CLIENT);
-		network.registerMessage(GrappleEndMessage.Handler.class, GrappleEndMessage.class, id++, Side.SERVER);
-		network.registerMessage(GrappleDetachMessage.Handler.class, GrappleDetachMessage.class, id++, Side.CLIENT);
-		network.registerMessage(DetachSingleHookMessage.Handler.class, DetachSingleHookMessage.class, id++, Side.CLIENT);
-		network.registerMessage(GrappleAttachPosMessage.Handler.class, GrappleAttachPosMessage.class, id++, Side.CLIENT);
-		network.registerMessage(SegmentMessage.Handler.class, SegmentMessage.class, id++, Side.CLIENT);
-		network.registerMessage(GrappleModifierMessage.Handler.class, GrappleModifierMessage.class, id++, Side.SERVER);
-		network.registerMessage(LoggedInMessage.Handler.class, LoggedInMessage.class, id++, Side.CLIENT);
-		network.registerMessage(KeypressMessage.Handler.class, KeypressMessage.class, id++, Side.SERVER);
-		
-		blockGrappleModifier = (BlockGrappleModifier)(new BlockGrappleModifier().setUnlocalizedName("block_grapple_modifier"));
-		blockGrappleModifier.setHardness(10F);
-		blockGrappleModifier.setRegistryName("block_grapple_modifier");
-	    ForgeRegistries.BLOCKS.register(blockGrappleModifier);
-
-	    itemBlockGrappleModifier = new ItemBlock(blockGrappleModifier);
-	    itemBlockGrappleModifier.setRegistryName(blockGrappleModifier.getRegistryName());
-
-	    // Each of your tile entities needs to be registered with a name that is unique to your mod.
-		GameRegistry.registerTileEntity(TileEntityGrappleModifier.class, new ResourceLocation(grapplemod.MODID, "tile_entity_grapple_modifier"));
-	
-	    MinecraftForge.EVENT_BUS.register(this);
-	    
-		proxy.preInit(event);
-		
-		tabGrapplemod.setRelevantEnchantmentTypes(GRAPPLEENCHANTS_FEET);
-	}
-	*/
-	
-	/*
-	@EventHandler
-	public void Init(FMLInitializationEvent event) {
-		proxy.init(event, this);
-	}
-	
-	@EventHandler
-	public void postInit(FMLPostInitializationEvent event) {
-		proxy.postInit(event);
-		
-		grapplemod.updateGrapplingBlocks();
-	}
-	*/
-	
-	/*
-	int entityID = 0;
-	public void registerEntity(Class<? extends Entity> entityClass, String name)
-	{
-		EntityRegistry.registerModEntity(resourceLocation, entityClass, name, entityID++, this, 900, 1, true);
-	}
-	*/
 	
 	public static void registerController(int entityId, grappleController controller) {
 		if (controllers.containsKey(entityId)) {
@@ -609,14 +511,6 @@ public class grapplemod {
 			System.out.println("ERROR! couldn't find player");
 		}
 	}
-	
-	/*
-	public static void removesubarrow(int id) {
-		HashSet<Integer> arrowIds = new HashSet<Integer>();
-		arrowIds.add(id);
-		grapplemod.network.sendToServer(new GrappleEndMessage(-1, arrowIds));
-	}
-	*/
 
 	public static void receiveGrappleEnd(int id, World world, HashSet<Integer> arrowIds) {
 		if (grapplemod.attached.contains(id)) {
@@ -723,4 +617,4 @@ public class grapplemod {
 	public static long getTime(World w) {
 		return w.getGameTime();
 	}
-	}
+}

@@ -113,6 +113,5 @@ public class LoggedInMessage extends BaseMessageClient {
     @OnlyIn(Dist.CLIENT)
     public void processMessage(NetworkEvent.Context ctx) {
     	GrappleConfig.setserveroptions(this.conf);
-    	grapplemod.updateGrapplingBlocks();
     }
 }
