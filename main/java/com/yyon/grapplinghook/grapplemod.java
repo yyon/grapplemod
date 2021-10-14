@@ -534,36 +534,6 @@ public class grapplemod {
   		
   		grapplemod.removeallmultihookarrows(id);
 	}
-	
-	/*
-	public static NBTTagCompound getstackcompound(ItemStack stack, String key) {
-		if (!stack.hasTagCompound()) {
-			stack.setTagCompound(new NBTTagCompound());
-		}
-		NBTTagCompound basecompound = stack.getTagCompound();
-        if (basecompound.hasKey(key, 10))
-        {
-            return basecompound.getCompoundTag(key);
-        }
-        else
-        {
-            NBTTagCompound nbttagcompound = new NBTTagCompound();
-            stack.setTagInfo(key, nbttagcompound);
-            return nbttagcompound;
-        }
-	}
-	
-
-	@SubscribeEvent
-	public void onConfigChanged(ConfigChangedEvent.OnConfigChangedEvent eventArgs) {
-	    if(eventArgs.getModID().equals("grapplemod")){
-			System.out.println("grapplemod config updated");
-			ConfigManager.sync("grapplemod", INSTANCE);
-			
-			grapplemod.updateGrapplingBlocks();
-		}
-	}
-	*/
 
 	public static void receiveKeypress(PlayerEntity player, KeypressItem.Keys key, boolean isDown) {
 		if (player != null) {

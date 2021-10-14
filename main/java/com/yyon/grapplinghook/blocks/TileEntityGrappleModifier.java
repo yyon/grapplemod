@@ -41,9 +41,6 @@ public class TileEntityGrappleModifier extends TileEntity {
 	}
 
 	private void sendUpdates() {
-//		this.world.notifyBlockUpdate(pos, this.world.getBlockState(this.pos), this.world.getBlockState(this.pos), 3);
-//		markDirty();
-//		this.level.markAndNotifyBlock(this.worldPosition, null, getBlockState(), getBlockState(), 3, 0);
 		this.setChanged();
 	}
 	

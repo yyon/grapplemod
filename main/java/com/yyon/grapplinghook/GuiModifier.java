@@ -176,9 +176,6 @@ public class GuiModifier extends Screen {
 	      RenderSystem.enableBlend();
 	      RenderSystem.defaultBlendFunc();
 	      RenderSystem.enableDepthTest();
-//	      this.blit(p_230431_1_, this.x, this.y, 0, 46 + i * 20, this.width / 2, this.height);
-//	      this.blit(p_230431_1_, this.x + this.width / 2, this.y, 200 - this.width / 2, 46 + i * 20, this.width / 2, this.height);
-//	      this.renderBg(p_230431_1_, minecraft, p_230431_2_, p_230431_3_);
 	      int j = this.getFGColor();
 	      int lineno = 0;
 	      for (String s : this.getMessage().getString().split("\n")) {
@@ -296,9 +293,6 @@ public class GuiModifier extends Screen {
 		String desc = grapplemod.proxy.localize(this.customization.getDescription(option));
 		GuiSlider slider = new GuiSlider(10 + this.guiLeft, posy + this.guiTop, this.xSize - 20, 20, new StringTextComponent(text), min, max, d, option, new StringTextComponent(desc));
 		
-//		slider.displayString = text + ": " + Double.toString(d);
-//		slider.precision = 1;
-		
 		posy += 25;
 		this.addButton(slider);
 		options.put(slider, option);
@@ -367,28 +361,6 @@ public class GuiModifier extends Screen {
 		super.onClose();
 	}
 	
-	/*
-	public void updateOptions() {
-		for (Widget b : this.options.keySet()) {
-			this.updateOption(b);
-		}
-	}
-	
-	public void updateOption(Widget b) {
-		if (b instanceof GuiCheckBox) {
-			boolean checked = ((GuiCheckBox) b).isChecked();
-			String option = options.get(b);
-			customization.setBoolean(option, checked);
-		} else if (b instanceof GuiSlider) {
-			double d = ((GuiSlider) b).getValue();
-			d = Math.floor(d * 10 + 0.5) / 10;
-			String option = options.get(b);
-			customization.setDouble(option, d);
-		}
-		this.updateEnabled();
-	}
-	*/
-	
 	public void updateEnabled() {
 		for (Widget b : this.options.keySet()) {
 			String option = this.options.get(b);
@@ -429,122 +401,4 @@ public class GuiModifier extends Screen {
 		}
 		return 0;
 	}
-	
-	/*
-	@Override
-    public void updateScreen() {
-		if (buttonpressed != null) {
-			Button b = buttonpressed;
-			buttonpressed = null;
-			
-			if (b.id == 1) {
-				Minecraft.getMinecraft().player.closeScreen();
-				return;
-			} else if (b.id == 2) {
-				this.customization = new GrappleCustomization();
-			} else if (b.id == 3) {
-				showinghelpscreen = false;
-				this.updateOptions();
-				clearscreen();
-				mainscreen();
-			} else if (b.id == 4) {
-				showinghelpscreen = true;
-				clearscreen();
-				helpscreen();
-			} else if (options.containsKey(b)) {
-				this.updateOption(b);
-			} else {
-				int categoryid = b.id - 99;
-				grapplemod.upgradeCategories category = grapplemod.upgradeCategories.fromInt(categoryid);
-
-				clearscreen();
-
-				boolean unlocked = this.tileent.isUnlocked(category) || Minecraft.getMinecraft().player.capabilities.isCreativeMode;
-
-				if (unlocked) {
-					showCategoryScreen(category);
-				} else {
-					notAllowedScreen(category);
-				}
-			}
-		}
-		
-		super.updateScreen();
-    }
-    */
-
-	/*
-	@Override
-	protected void actionPerformed(Button b) {
-		buttonpressed = b;
-		
-		try {
-			super.actionPerformed(b);
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}
-	*/
-
-	/*
-	@Override
-	public void drawScreen(int mouseX, int mouseY, float partialTicks) {
-		if (fontRenderer == null) {
-			return;
-		}
-		
-		// background
-		Minecraft.getMinecraft().getTextureManager().bindTexture(texture);
-		GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
-		drawTexturedModalRect(guiLeft, guiTop, 0, 0, xSize, ySize);
-
-		GlStateManager.translate(guiLeft, guiTop, 0.0F);
-
-		if (this.category != null) {
-			if (!this.allowed) {
-				fontRenderer.drawString(grapplemod.proxy.localize("grapplemodifier.unlock1.desc"), 10, 10, Color.darkGray.getRGB());
-				fontRenderer.drawString(this.category.description, 10, 25, Color.darkGray.getRGB());
-				fontRenderer.drawString(grapplemod.proxy.localize("grapplemodifier.unlock2.desc"), 10, 40, Color.darkGray.getRGB());
-				fontRenderer.drawString(grapplemod.proxy.localize("grapplemodifier.unlock3.desc"), 10, 55, Color.darkGray.getRGB());
-				fontRenderer.drawString(new ItemStack(this.category.getItem()).getDisplayName(), 10, 70,
-						Color.darkGray.getRGB());
-				fontRenderer.drawString(grapplemod.proxy.localize("grapplemodifier.unlock4.desc"), 10, 85, Color.darkGray.getRGB());
-			} else {
-
-			}
-		} else {
-			if (showinghelpscreen) {
-				String helptext =  grapplemod.proxy.localize("grapplemodifier.help.desc");
-				int linenum = 0;
-				for (String line : helptext.split(Pattern.quote("\\n"))) {
-					fontRenderer.drawString(line, 10, 10 + 15 * linenum, Color.darkGray.getRGB());
-					linenum++;
-				}
-			} else {
-				fontRenderer.drawString(grapplemod.proxy.localize("grapplemodifier.apply.desc"), 10, this.ySize - 20 - 10 - 10, Color.darkGray.getRGB());
-			}
-		}
-		
-		GlStateManager.translate(-guiLeft, -guiTop, 0.0F);
-
-		GlStateManager.disableRescaleNormal();
-		RenderHelper.disableStandardItemLighting();
-		GlStateManager.disableLighting();
-		GlStateManager.disableDepth();
-
-		super.drawScreen(mouseX, mouseY, partialTicks);
-
-		GlStateManager.enableLighting();
-		GlStateManager.enableDepth();
-		GlStateManager.enableRescaleNormal();
-		RenderHelper.enableStandardItemLighting();
-		
-		for (Button b : this.tooltips.keySet()) {
-			if (mouseX >= b.x && mouseY >= b.y && mouseX <= b.x + b.width && mouseY <= b.y + b.height) {
-				this.drawHoveringText(this.tooltips.get(b), mouseX, mouseY);
-			}
-		}
-	}
-	*/
 }

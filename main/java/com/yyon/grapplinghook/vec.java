@@ -1,8 +1,6 @@
 package com.yyon.grapplinghook;
 
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.vector.Vector3d;
 
 public class vec {
@@ -45,8 +43,6 @@ public class vec {
 	}
 	
 	public static vec positionvec(Entity e) {
-//		if(Loader.isModLoaded("valkyrienwarfare"))
-//			return positionship(e);
 		return new vec(e.position());
 	}
 	
@@ -57,22 +53,6 @@ public class vec {
 	public static double lerp(double frac, double from, double to) {
 		return (from * (1-frac)) + (to * frac);
 	}
-	
-	/*
-	@Optional.Method(modid = "valkyrienwarfare")
-	private static vec positionship(Entity e) {
-		BlockPos pos = new BlockPos((int)e.posX, (int)e.posY, (int)e.posZ);
-		if(valkyrienwarfare.deprecated_api.ValkyrienWarfareHooks.isBlockPartOfShip(e.world, pos)) {
-			valkyrienwarfare.math.Vector vs = new valkyrienwarfare.math.Vector(e.posX, e.posY, e.posZ);
-			valkyrienwarfare.physics.management.PhysicsWrapperEntity pe = valkyrienwarfare.deprecated_api.ValkyrienWarfareHooks.getShipEntityManagingPos(e.world, pos);
-			valkyrienwarfare.math.Vector vw = valkyrienwarfare.deprecated_api.ValkyrienWarfareHooks.getPositionInRealFromShip(e.world, pe, vs);
-			return new vec(vw.X, vw.Y, vw.Z);
-		}
-		else {
-			return new vec(e.posX, e.posY, e.posZ);
-		}
-	}
-	*/
 	
 	public static vec motionvec(Entity e) {
 		return new vec(e.getDeltaMovement());

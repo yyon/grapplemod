@@ -4,6 +4,7 @@ import me.shedaniel.autoconfig.AutoConfig;
 import me.shedaniel.autoconfig.ConfigData;
 import me.shedaniel.autoconfig.annotation.Config;
 import me.shedaniel.autoconfig.annotation.ConfigEntry;
+import net.minecraft.block.Block;
 
 //import net.minecraftforge.common.config.Config;
 //@Config(modid="grapplemod", name="grappling_hook", category="")

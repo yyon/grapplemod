@@ -228,7 +228,7 @@ public class grappleArrow extends ProjectileItemEntity implements IEntityAdditio
 		}
 		
 		// magnet attraction
-		if (this.customization.attract && vec.positionvec(this).sub(vec.positionvec(this.shootingEntity)).length() > this.customization.attractradius) {
+		if (!this.attached && this.customization.attract && vec.positionvec(this).sub(vec.positionvec(this.shootingEntity)).length() > this.customization.attractradius) {
 	    	if (this.shootingEntity == null) {return;}
 	    	if (!this.foundblock) {
 	    		if (!this.level.isClientSide) {
@@ -238,29 +238,31 @@ public class grappleArrow extends ProjectileItemEntity implements IEntityAdditio
 		    			if (prevpos != null) {
 			    			HashMap<BlockPos, Boolean> checkedset = new HashMap<BlockPos, Boolean>();
 			    			vec vector = pos.sub(prevpos);
-			    			vec normvector = vector.normalize();
-			    			for (int i = 0; i < vector.length(); i++) {
-			    				double dist = prevpos.sub(playerpos).length();
-			    				int radius = (int) dist / 4;
-			    				BlockPos found = this.check(prevpos, checkedset);
-			    				if (found != null) {
-//			    					if (wasinair) {
-							    		vec distvec = new vec(found.getX(), found.getY(), found.getZ());
-							    		distvec.sub_ip(prevpos);
-							    		if (distvec.length() < radius) {
-					    					this.setPosAndOldPos(prevpos.x, prevpos.y, prevpos.z);
-					    					pos = prevpos;
-					    					
-					    					magnetblock = found;
-					    					
-					    					break;
-							    		}
-//			    					}
-			    				} else {
-			    					wasinair = true;
-			    				}
-			    				
-			    				prevpos.add_ip(normvector);
+			    			if (vector.length() > 0) {
+				    			vec normvector = vector.normalize();
+				    			for (int i = 0; i < vector.length(); i++) {
+				    				double dist = prevpos.sub(playerpos).length();
+				    				int radius = (int) dist / 4;
+				    				BlockPos found = this.check(prevpos, checkedset);
+				    				if (found != null) {
+//				    					if (wasinair) {
+								    		vec distvec = new vec(found.getX(), found.getY(), found.getZ());
+								    		distvec.sub_ip(prevpos);
+								    		if (distvec.length() < radius) {
+						    					this.setPosAndOldPos(prevpos.x, prevpos.y, prevpos.z);
+						    					pos = prevpos;
+						    					
+						    					magnetblock = found;
+						    					
+						    					break;
+								    		}
+//				    					}
+				    				} else {
+				    					wasinair = true;
+				    				}
+				    				
+				    				prevpos.add_ip(normvector);
+				    			}
 			    			}
 		    			}
 	    			}
