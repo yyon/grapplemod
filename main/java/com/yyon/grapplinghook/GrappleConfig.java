@@ -195,7 +195,7 @@ public class GrappleConfig implements ConfigData {
 		
 		public boolean dont_override_movement_in_air = false;
 		
-		public double dont_doublejump_if_falling_faster_than = 999999999.0;
+		public double dont_doublejump_if_falling_faster_than = 99999999.0;
 		public double rope_jump_cooldown_s = 0;
 		public double climb_speed = 0.3;
 		

@@ -144,10 +144,14 @@ public class grappleBow extends Item implements KeypressItem {
 		    		return;
 				}
 				
+				stack.hurtAndBreak(1, (ServerPlayerEntity) player, (p) -> {});
+				if (stack.getDamageValue() <= 0) {
+					return;
+				}
+				
 				boolean threw = throwLeft(stack, player.level, player, ismainhand);
 
 				if (threw) {
-					stack.hurt(1, this.random, (ServerPlayerEntity) player);
 			        player.level.playSound((PlayerEntity) null, player.position().x, player.position().y, player.position().z, SoundEvents.ARROW_SHOOT, SoundCategory.NEUTRAL, 1.0F, 1.0F / (this.random.nextFloat() * 0.4F + 1.2F) + 2.0F * 0.5F);
 				}
 			} else if (key == KeypressItem.Keys.THROWRIGHT) {
@@ -158,9 +162,13 @@ public class grappleBow extends Item implements KeypressItem {
 		    		return;
 				}
 				
+				stack.hurtAndBreak(1, (ServerPlayerEntity) player, (p) -> {});
+				if (stack.getDamageValue() <= 0) {
+					return;
+				}
+				
 				throwRight(stack, player.level, player, ismainhand);
 
-				stack.hurt(1, this.random, (ServerPlayerEntity) player);
 		        player.level.playSound((PlayerEntity) null, player.position().x, player.position().y, player.position().z, SoundEvents.ARROW_SHOOT, SoundCategory.NEUTRAL, 1.0F, 1.0F / (this.random.nextFloat() * 0.4F + 1.2F) + 2.0F * 0.5F);
 			}
 		}
@@ -199,6 +207,11 @@ public class grappleBow extends Item implements KeypressItem {
     		return;
 		}
 
+		stack.hurtAndBreak(1, (ServerPlayerEntity) entityLiving, (p) -> {});
+		if (stack.getDamageValue() <= 0) {
+			return;
+		}
+
     	GrappleCustomization custom = this.getCustomization(stack);
   		double angle = custom.angle;
   		double verticalangle = custom.verticalthrowangle;
@@ -212,7 +225,6 @@ public class grappleBow extends Item implements KeypressItem {
     	}
 		throwRight(stack, worldIn, entityLiving, righthand);
 
-		stack.hurt(1, this.random, (ServerPlayerEntity) entityLiving);
 		entityLiving.level.playSound((PlayerEntity) null, entityLiving.position().x, entityLiving.position().y, entityLiving.position().z, SoundEvents.ARROW_SHOOT, SoundCategory.NEUTRAL, 1.0F, 1.0F / (this.random.nextFloat() * 0.4F + 1.2F) + 2.0F * 0.5F);
 	}
 	
@@ -373,16 +385,20 @@ public class grappleBow extends Item implements KeypressItem {
 	}
     
     public GrappleCustomization getCustomization(ItemStack itemstack) {
-    	if (itemstack.hasTag()) {
+    	CompoundNBT tag = itemstack.getOrCreateTag();
+    	
+    	if (tag.contains("custom")) {
         	GrappleCustomization custom = new GrappleCustomization();
-    		custom.loadNBT(itemstack.getTag());
+    		custom.loadNBT(tag.getCompound("custom"));
         	return custom;
     	} else {
+    		grapplemod.LOGGER.info("default");
     		GrappleCustomization custom = this.getDefaultCustomization();
 
 			CompoundNBT nbt = custom.writeNBT();
 			
-			itemstack.setTag(nbt);
+			tag.put("custom", nbt);
+			itemstack.setTag(tag);
 
     		return custom;
     	}
@@ -490,9 +506,12 @@ public class grappleBow extends Item implements KeypressItem {
 	}
 
 	public void setCustomOnServer(ItemStack helditemstack, GrappleCustomization custom, PlayerEntity player) {
+		CompoundNBT tag = helditemstack.getOrCreateTag();
 		CompoundNBT nbt = custom.writeNBT();
 		
-		helditemstack.setTag(nbt);
+		tag.put("custom", nbt);
+		
+		helditemstack.setTag(tag);
 	}
 
 	

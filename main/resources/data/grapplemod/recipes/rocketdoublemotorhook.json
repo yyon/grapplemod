@@ -16,8 +16,7 @@
 	],
 	"result": {
 		"item": "grapplemod:grapplinghook",
-		"nbt": {
-			"throwspeed": 3.5,
+		"nbt": { "custom": {
 			"maxlen": 60,
 
 			"doublehook": true,
@@ -43,6 +42,6 @@
 			"throwspeed": 20,
 			
 			"playermovementmult": 2
-		}
+		}}
 	}
 }

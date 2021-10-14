@@ -13,12 +13,12 @@
 	],
 	"result": {
 		"item": "grapplemod:grapplinghook",
-		"nbt": {
+		"nbt": { "custom": {
 			"throwspeed": 3.5,
 			"maxlen": 60,
 
 			"attract": true,
 			"repel": true
-		}
+		}}
 	}
 }
