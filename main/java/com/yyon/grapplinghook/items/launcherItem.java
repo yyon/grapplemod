@@ -7,10 +7,12 @@ import javax.annotation.Nullable;
 import org.spongepowered.asm.mixin.MixinEnvironment.Side;
 
 import com.yyon.grapplinghook.CommonProxyClass;
+import com.yyon.grapplinghook.GrappleConfig;
 import com.yyon.grapplinghook.grapplemod;
 
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ActionResult;
@@ -44,24 +46,8 @@ public class launcherItem extends Item {
 	
 	public launcherItem() {
 		super(new Item.Properties().stacksTo(1).tab(grapplemod.tabGrapplemod));
-//		super();
-//		maxStackSize = 1;
-//		setFull3D();
-//		setUnlocalizedName("launcheritem");
-//		
-//		this.setMaxDamage(500);
-//		
-//		setCreativeTab(grapplemod.tabGrapplemod);
-		
-//		MinecraftForge.EVENT_BUS.register(this);
 	}
 	
-//	@Override
-//	public int getMaxItemUseDuration(ItemStack par1ItemStack)
-//	{
-//		return 72000;
-//	}
-
 	public void dorightclick(ItemStack stack, World worldIn, PlayerEntity player) {
 		if (worldIn.isClientSide) {
 			grapplemod.proxy.launchplayer(player);
@@ -72,26 +58,9 @@ public class launcherItem extends Item {
     public ActionResult<ItemStack> use(World worldIn, PlayerEntity playerIn, Hand hand) {
     	ItemStack stack = playerIn.getItemInHand(hand);
         this.dorightclick(stack, worldIn, playerIn);
-        
+
     	return ActionResult.success(stack);
 	}
-    
-    /*
-    @Override
-	public ActionResult<ItemStack> onItemRightClick(World worldIn, PlayerEntity entityLiving, Hand hand)
-	{
-    	ItemStack stack = entityLiving.getItemInHand(hand);
-    	this.dorightclick(stack, worldIn, entityLiving);
-        
-    	return ActionResult.success(stack);
-    }
-    */
-
-//    @Override
-//    public EnumAction getItemUseAction(ItemStack par1ItemStack)
-//	{
-//		return EnumAction.NONE;
-//	}
     
 	@Override
 	@OnlyIn(Dist.CLIENT)

@@ -7,6 +7,7 @@ import java.util.Arrays;
 import java.util.Comparator;
 
 import com.yyon.grapplinghook.GrappleConfig;
+import com.yyon.grapplinghook.grapplemod;
 
 import net.minecraft.network.PacketBuffer;
 import net.minecraftforge.api.distmarker.Dist;
@@ -112,5 +113,6 @@ public class LoggedInMessage extends BaseMessageClient {
     @OnlyIn(Dist.CLIENT)
     public void processMessage(NetworkEvent.Context ctx) {
     	GrappleConfig.setserveroptions(this.conf);
+    	grapplemod.updateGrapplingBlocks();
     }
 }

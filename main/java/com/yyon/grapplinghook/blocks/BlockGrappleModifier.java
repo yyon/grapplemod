@@ -39,7 +39,7 @@ import net.minecraft.world.World;
 public class BlockGrappleModifier extends Block {
 
 	public BlockGrappleModifier() {
-		super(Block.Properties.of(Material.STONE));
+		super(Block.Properties.of(Material.STONE).strength(1.5f));
 	}
 
 	@Override

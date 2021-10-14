@@ -73,7 +73,7 @@ import net.minecraftforge.fml.network.NetworkDirection;
 import net.minecraftforge.fml.network.NetworkRegistry;
 import net.minecraftforge.fml.network.PacketDistributor;
 import net.minecraftforge.fml.network.simple.SimpleChannel;
-import net.minecraftforge.fml.server.ServerLifecycleHooks;
+import net.minecraftforge.registries.ForgeRegistries;
 
 /*
  * This file is part of GrappleMod.
@@ -283,32 +283,6 @@ public class grapplemod {
 	    entityTypeRegisterEvent.getRegistry().register(grappleArrowType);
 	}
 	
-
-	/*
-	@Override
-	public void postInit(FMLPostInitializationEvent event) {
-		super.postInit(event);
-		
-		if (GrappleConfig.getconf().override_allowflight) {
-			FMLCommonHandler.instance().getMinecraftServerInstance().setAllowFlight(true);
-		}
-	}
-	
-	@SubscribeEvent
-	public void onPlayerLoggedInEvent(PlayerLoggedInEvent e) {
-		if (e.player instanceof PlayerEntityMP) {
-			grapplemod.network.sendTo(new LoggedInMessage(GrappleConfig.options), (PlayerEntityMP) e.player);
-		} else {
-			System.out.println("Not an PlayerEntityMP");
-		}
-	}
-	*/
-	
-//	@EventHandler
-//	public void load(FMLInitializationEvent event){
-//	}
-
-	/*
 	public static HashSet<Block> stringToBlocks(String s) {
 		HashSet<Block> blocks = new HashSet<Block>();
 		
@@ -331,7 +305,7 @@ public class grapplemod {
 	    		name = str;
 	    	}
 	    	
-	    	Block b = Block.REGISTRY.getObject(new ResourceLocation(modid, name));
+	    	Block b = ForgeRegistries.BLOCKS.getValue(new ResourceLocation(modid, name));
 	    	
 	    	blocks.add(b);
 	    }
@@ -365,12 +339,10 @@ public class grapplemod {
 		anyignoresblocks = grapplingignoresblocks.size() != 0;
 		
 	}
-	*/
 	
 	public static Item[] getAllItems() {
 		return new Item[] {
-				grapplebowitem, 
-//				itemBlockGrappleModifier,
+				grapplebowitem,
 				launcheritem, 
 				repelleritem, 
 				longfallboots, 

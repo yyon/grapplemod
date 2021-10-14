@@ -6,9 +6,11 @@ import com.yyon.grapplinghook.entities.grappleArrow;
 import com.yyon.grapplinghook.items.LongFallBoots;
 import com.yyon.grapplinghook.items.grappleBow;
 import com.yyon.grapplinghook.network.GrappleDetachMessage;
+import com.yyon.grapplinghook.network.LoggedInMessage;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.DamageSource;
@@ -17,9 +19,11 @@ import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.event.entity.living.LivingFallEvent;
 import net.minecraftforge.event.entity.living.LivingHurtEvent;
+import net.minecraftforge.event.entity.player.PlayerEvent.PlayerLoggedInEvent;
 import net.minecraftforge.event.world.BlockEvent.BreakEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.event.server.FMLServerStartedEvent;
+import net.minecraftforge.fml.network.PacketDistributor;
 
 public class EventHandlers {
 	public EventHandlers() {
@@ -110,6 +114,15 @@ public class EventHandlers {
 	public void onServerStart(FMLServerStartedEvent event) {
 		if (GrappleConfig.getconf().override_allowflight) {
 			event.getServer().setFlightAllowed(true);
+		}
+	}
+	
+	@SubscribeEvent
+	public void onPlayerLoggedInEvent(PlayerLoggedInEvent e) {
+		if (e.getPlayer() instanceof ServerPlayerEntity) {
+			grapplemod.network.send(PacketDistributor.PLAYER.with(() -> (ServerPlayerEntity) e.getPlayer()), new LoggedInMessage(GrappleConfig.options));
+		} else {
+			System.out.println("Not an PlayerEntityMP");
 		}
 	}
 }

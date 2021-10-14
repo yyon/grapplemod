@@ -41,12 +41,8 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 public class LongFallBoots extends ArmorItem {
 	public LongFallBoots(ArmorMaterial material, int type) {
 	    super(material, EquipmentSlotType.FEET, new Item.Properties().stacksTo(1).tab(grapplemod.tabGrapplemod));
-
-//	    MinecraftForge.EVENT_BUS.register(this);
 	}
 	
-	/*
-	*/
 	@Override
 	@OnlyIn(Dist.CLIENT)
 	public void appendHoverText(ItemStack stack, @Nullable World world, List<ITextComponent> list, ITooltipFlag par4) {

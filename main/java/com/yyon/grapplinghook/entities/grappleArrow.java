@@ -25,6 +25,7 @@ import net.minecraft.network.IPacket;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.Direction;
 import net.minecraft.util.Direction.Axis;
+import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BlockRayTraceResult;
 import net.minecraft.util.math.EntityRayTraceResult;
@@ -300,61 +301,21 @@ public class grappleArrow extends ProjectileItemEntity implements IEntityAdditio
             this.xRotO = this.xRot;
         }
 	}
-	
-	/*
+
 	@Override
-	@SideOnly(Side.CLIENT)
-	public boolean isInRangeToRender3d(double x, double y, double z) {
+	public boolean shouldRenderAtSqrDistance(double p_70112_1_) {
 		return true;
 	}
 
 	@Override
-	@SideOnly(Side.CLIENT)
-	public boolean isInRangeToRenderDist(double distance) {
+	public boolean shouldRender(double p_145770_1_, double p_145770_3_, double p_145770_5_) {
 		return true;
 	}
-
-	public final int RenderBoundingBoxSize = 999;
-	@Override
-	@SideOnly(Side.CLIENT)
-	public AxisAlignedBB getRenderBoundingBox() {
-		AxisAlignedBB bb = this.segmenthandler.getBoundingBox(vec.positionvec(this), vec.positionvec(this.shootingEntity).add(new vec(0, this.shootingEntity.getEyeHeight(), 0)));
-//		bb = bb.union(this.shootingEntity.getEntityBoundingBox());
-//		AxisAlignedBB shooting_bb = this.shootingEntity.getRenderBoundingBox();
-//		bb = bb.expand(shooting_bb.minX, shooting_bb.minY, shooting_bb.minZ);
-//		bb = bb.expand(shooting_bb.maxX, shooting_bb.maxY, shooting_bb.maxZ);
-//		System.out.println(bb);
-//		bb.grow(1);
-		return bb;
-//		return new AxisAlignedBB(this.posX - RenderBoundingBoxSize, this.posY - RenderBoundingBoxSize, this.posZ - RenderBoundingBoxSize, 
-//				this.posX + RenderBoundingBoxSize, this.posY + RenderBoundingBoxSize, this.posZ + RenderBoundingBoxSize);
-	}
-
-//	@Override
-//	public AxisAlignedBB getEntityBoundingBox() {
-//		return this.segmenthandler.getBoundingBox(vec.positionvec(this), vec.positionvec(this.shootingEntity).add(new vec(0, this.shootingEntity.getEyeHeight(), 0)));
-//	}
-
-	public void setPosition(double x, double y, double z) {
-		if (this.thispos != null) {
-			x = this.thispos.x;
-			y = this.thispos.y;
-			z = this.thispos.z;
-		}
-		super.setPosition(x, y, z);
-	}
-	
-	
-	
-	public void remove() {
-		this.setDead();
-	}
 	
 	@Override
-	public String toString() {
-		return super.toString() + String.valueOf(System.identityHashCode(this)) + "]";
+	public AxisAlignedBB getBoundingBoxForCulling() {
+		return this.segmenthandler.getBoundingBox(vec.positionvec(this), vec.positionvec(this.shootingEntity).add(new vec(0, this.shootingEntity.getEyeHeight(), 0)));
 	}
-	*/
 
 	@Override
 	protected void onHit(RayTraceResult movingobjectposition) {

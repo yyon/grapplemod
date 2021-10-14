@@ -23,29 +23,8 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 public class repeller extends Item {
 	public repeller() {
 		super(new Item.Properties().stacksTo(1).tab(grapplemod.tabGrapplemod));
-
-		/*
-		super();
-		maxStackSize = 1;
-		setFull3D();
-		setUnlocalizedName("repeller");
-		
-		this.setMaxDamage(500);
-		
-		setCreativeTab(grapplemod.tabGrapplemod);
-		*/
-		
-//		MinecraftForge.EVENT_BUS.register(this);
 	}
 	
-	/*
-	@Override
-	public int getMaxItemUseDuration(ItemStack par1ItemStack)
-	{
-		return 72000;
-	}
-	*/
-
 	public void dorightclick(ItemStack stack, World worldIn, PlayerEntity player) {
 		if (worldIn.isClientSide) {
 			int playerid = player.getId();
@@ -57,15 +36,6 @@ public class repeller extends Item {
 			}
 		}
 	}
-
-//    @Override
-//	public ActionResult<ItemStack> onItemRightClick(World worldIn, EntityPlayer playerIn, EnumHand hand)
-//    {
-//    	ItemStack itemStackIn = playerIn.getHeldItem(hand);
-//        this.dorightclick(itemStackIn, worldIn, playerIn);
-//        
-//        return new ActionResult<ItemStack>(EnumActionResult.SUCCESS, itemStackIn);
-//    }
 
     @Override
     public ActionResult<ItemStack> use(World worldIn, PlayerEntity playerIn, Hand hand) {
