@@ -6,6 +6,7 @@ import java.util.List;
 import javax.annotation.Nullable;
 
 import com.yyon.grapplinghook.ClientProxyClass;
+import com.yyon.grapplinghook.GrappleConfig;
 import com.yyon.grapplinghook.GrappleCustomization;
 import com.yyon.grapplinghook.grapplemod;
 import com.yyon.grapplinghook.vec;
@@ -14,6 +15,7 @@ import com.yyon.grapplinghook.network.DetachSingleHookMessage;
 import com.yyon.grapplinghook.network.GrappleDetachMessage;
 import com.yyon.grapplinghook.network.KeypressMessage;
 
+import net.minecraft.block.BlockState;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.Entity;
@@ -23,10 +25,12 @@ import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.SoundEvents;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
@@ -57,16 +61,7 @@ public class grappleBow extends Item implements KeypressItem {
 	public static HashMap<Entity, grappleArrow> grapplearrows2 = new HashMap<Entity, grappleArrow>();
 	
 	public grappleBow() {
-		super(new Item.Properties().stacksTo(1).tab(grapplemod.tabGrapplemod));
-//		maxStackSize = 1;
-//		setFull3D();
-//		setUnlocalizedName("grapplinghook");
-//		
-//		this.setMaxDamage(GrappleConfig.getconf().default_durability);
-//		
-//		setCreativeTab(grapplemod.tabGrapplemod);
-		
-//		MinecraftForge.EVENT_BUS.register(this);
+		super(new Item.Properties().stacksTo(1).tab(grapplemod.tabGrapplemod).durability(GrappleConfig.getconf().default_durability));
 	}
 
 	public boolean hasArrow(Entity entity) {
@@ -98,71 +93,31 @@ public class grappleBow extends Item implements KeypressItem {
 			}
 		}
 		return null;
-	}	
-	
-	/*
-    @Override
-	public int getMaxItemUseDuration(ItemStack par1ItemStack)
-	{
-		return 72000;
 	}
-	
-	
-	@Override
-	public boolean getIsRepairable(ItemStack toRepair, ItemStack repair) {
-        ItemStack mat = new ItemStack(Items.LEATHER, 1);
-        if (mat != null && net.minecraftforge.oredict.OreDictionary.itemMatches(mat, repair, false)) return true;
-        return super.getIsRepairable(toRepair, repair);
-	}
-
-
-	
-	public void dorightclick(ItemStack stack, World worldIn, LivingEntity entityLiving, boolean righthand) {
-        if (!worldIn.isRemote) {
-    	}
-	}
-	
-
-    
-    @Override
-    public ActionResult<ItemStack> onItemRightClick(World worldIn, EntityPlayer entityLiving, EnumHand hand)
-    {
-    	ItemStack stack = entityLiving.getHeldItem(hand);
-        if (!worldIn.isRemote) {
-	        this.dorightclick(stack, worldIn, entityLiving, hand == EnumHand.MAIN_HAND);
-        }
-        entityLiving.setActiveHand(hand);
-        return new ActionResult<ItemStack>(EnumActionResult.SUCCESS, stack);
-    }
-	
 
 	@Override
-	public void onPlayerStoppedUsing(ItemStack stack, World worldIn,
-			LivingEntity entityLiving, int timeLeft) {
-		if (!worldIn.isRemote) {
-//			stack.getSubCompound("grapplemod", true).setBoolean("extended", (this.getArrow(entityLiving, worldIn) != null));
-		}
-		super.onPlayerStoppedUsing(stack, worldIn, entityLiving, timeLeft);
-	}
-	*/
-
-	/**
-	 * returns the action that specifies what animation to play when the items is being used
-	 */
-	/*
-    @Override
-	public EnumAction getItemUseAction(ItemStack par1ItemStack)
-	{
-		return EnumAction.NONE;
+	public boolean isValidRepairItem(ItemStack stack, ItemStack repair) {
+        if (repair != null && repair.getItem().equals(Items.LEATHER)) return true;
+        return super.isValidRepairItem(stack, repair);
 	}
 
-    @Override
-    public boolean onLeftClickEntity(ItemStack stack, EntityPlayer player, Entity entity)
-    {
+
+	@Override
+    public boolean onLeftClickEntity(ItemStack stack, PlayerEntity player, Entity entity) {
     	return true;
     }
-    */
     
+	@Override
+	public boolean onBlockStartBreak(ItemStack itemstack, BlockPos pos, PlayerEntity player) {
+		return true;
+	}
+	
+	@Override
+	public boolean canAttackBlock(BlockState p_195938_1_, World p_195938_2_, BlockPos p_195938_3_,
+			PlayerEntity p_195938_4_) {
+		return false;
+	}
+
 	@Override
 	public void onCustomKeyDown(ItemStack stack, PlayerEntity player, KeypressItem.Keys key, boolean ismainhand) {
 		if (player.level.isClientSide) {
@@ -416,20 +371,6 @@ public class grappleBow extends Item implements KeypressItem {
 		grapplemod.addarrow(entityLiving.getId(), arrow);
 		return arrow;
 	}
-	
-	/*
-    @Override
-    public boolean hitEntity(ItemStack stack, LivingEntity target, LivingEntity attacker)
-    {
-    	return true;
-    }
-   
-    @Override
-    public boolean onBlockStartBreak(ItemStack itemstack, BlockPos k, EntityPlayer player)
-    {
-      return true;
-    }
-    */
     
     public GrappleCustomization getCustomization(ItemStack itemstack) {
     	if (itemstack.hasTag()) {
@@ -502,6 +443,9 @@ public class grappleBow extends Item implements KeypressItem {
 			} else {
 				list.add(new StringTextComponent(ClientProxyClass.key_rightthrow.getTranslatedKeyMessage().getString() + " " + grapplemod.proxy.localize("grappletooltip.throwalt.desc")));
 			}
+			if (custom.reelin) {
+				list.add(new StringTextComponent(grapplemod.proxy.getkeyname(grapplemod.keys.keyBindSneak) + " " + grapplemod.proxy.localize("grappletooltip.reelin.desc")));
+			}
 		} else {
 			if (Screen.hasControlDown()) {
 				for (String option : GrappleCustomization.booleanoptions) {
@@ -552,31 +496,10 @@ public class grappleBow extends Item implements KeypressItem {
 	}
 
 	
-    /*
 	@Override
-    @SideOnly(Side.CLIENT)
-    public ItemStack getDefaultInstance()
-    {
-        ItemStack stack = new ItemStack(this);
-        this.getCustomization(stack);
-        return stack;
-    }
-	
-	@Override
-    public void getSubItems(CreativeTabs tab, NonNullList<ItemStack> items)
-    {
-        if (this.isInCreativeTab(tab))
-        {
-        	ItemStack stack = new ItemStack(this);
-        	this.getCustomization(stack);
-            items.add(stack);
-        }
-    }
-	
-	@Override
-	public boolean onDroppedByPlayer(ItemStack item, EntityPlayer player) {
+	public boolean onDroppedByPlayer(ItemStack item, PlayerEntity player) {
 		int id = player.getId();
-		grapplemod.sendtocorrectclient(new GrappleDetachMessage(id), id, player.world);
+		grapplemod.sendtocorrectclient(new GrappleDetachMessage(id), id, player.level);
 		
 		if (grapplemod.attached.contains(id)) {
 			grapplemod.attached.remove(id);
@@ -600,7 +523,6 @@ public class grappleBow extends Item implements KeypressItem {
 		
 		return super.onDroppedByPlayer(item, player);
 	}
-	*/
 	
 	public boolean getPropertyRocket(ItemStack stack, World world, LivingEntity entity) {
 		return this.getCustomization(stack).rocket;

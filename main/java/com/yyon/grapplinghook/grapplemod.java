@@ -73,6 +73,7 @@ import net.minecraftforge.fml.network.NetworkDirection;
 import net.minecraftforge.fml.network.NetworkRegistry;
 import net.minecraftforge.fml.network.PacketDistributor;
 import net.minecraftforge.fml.network.simple.SimpleChannel;
+import net.minecraftforge.fml.server.ServerLifecycleHooks;
 
 /*
  * This file is part of GrappleMod.
@@ -125,18 +126,13 @@ public class grapplemod {
 
     public static Item longfallboots;
     
-//    public static final EnumEnchantmentType GRAPPLEENCHANTS_FEET = EnumHelper.addEnchantmentType("GRAPPLEENCHANTS_FEET", (item) -> item instanceof ItemArmor && ((ItemArmor)item).armorType == EntityEquipmentSlot.FEET);
-    
     public static WallrunEnchantment wallrunenchantment;
     public static DoublejumpEnchantment doublejumpenchantment;
     public static SlidingEnchantment slidingenchantment;
 
-//	public static Object instance;
-	
 	public static SimpleChannel network;    // used to transmit your network messages
 	public static final ResourceLocation simpleChannelRL = new ResourceLocation("grapplemod", "channel");
-//	public static SimpleNetworkWrapper network;
-//	
+
 	public static HashMap<Integer, grappleController> controllers = new HashMap<Integer, grappleController>(); // client side
 	public static HashMap<BlockPos, grappleController> controllerpos = new HashMap<BlockPos, grappleController>();
 	public static HashSet<Integer> attached = new HashSet<Integer>(); // server side	
@@ -243,16 +239,6 @@ public class grapplemod {
 	            version -> true,
 	            version -> true);
 		int id = 0;
-//		network.registerMessage(PlayerMovementMessage.Handler.class, PlayerMovementMessage.class, id++, Side.SERVER);
-//		network.registerMessage(GrappleAttachMessage.Handler.class, GrappleAttachMessage.class, id++, Side.CLIENT);
-//		network.registerMessage(GrappleEndMessage.Handler.class, GrappleEndMessage.class, id++, Side.SERVER);
-//		network.registerMessage(GrappleDetachMessage.Handler.class, GrappleDetachMessage.class, id++, Side.CLIENT);
-//		network.registerMessage(DetachSingleHookMessage.Handler.class, DetachSingleHookMessage.class, id++, Side.CLIENT);
-//		network.registerMessage(GrappleAttachPosMessage.Handler.class, GrappleAttachPosMessage.class, id++, Side.CLIENT);
-//		network.registerMessage(SegmentMessage.Handler.class, SegmentMessage.class, id++, Side.CLIENT);
-//		network.registerMessage(GrappleModifierMessage.Handler.class, GrappleModifierMessage.class, id++, Side.SERVER);
-//		network.registerMessage(LoggedInMessage.Handler.class, LoggedInMessage.class, id++, Side.CLIENT);
-//		network.registerMessage(KeypressMessage.Handler.class, KeypressMessage.class, id++, Side.SERVER);
 		network.registerMessage(id++, PlayerMovementMessage.class, PlayerMovementMessage::encode, PlayerMovementMessage::new, PlayerMovementMessage::onMessageReceived, Optional.of(NetworkDirection.PLAY_TO_SERVER));
 		network.registerMessage(id++, GrappleEndMessage.class, GrappleEndMessage::encode, GrappleEndMessage::new, GrappleEndMessage::onMessageReceived, Optional.of(NetworkDirection.PLAY_TO_SERVER));
 		network.registerMessage(id++, GrappleModifierMessage.class, GrappleModifierMessage::encode, GrappleModifierMessage::new, GrappleModifierMessage::onMessageReceived, Optional.of(NetworkDirection.PLAY_TO_SERVER));
@@ -265,6 +251,7 @@ public class grapplemod {
 		network.registerMessage(id++, LoggedInMessage.class, LoggedInMessage::encode, LoggedInMessage::new, LoggedInMessage::onMessageReceived, Optional.of(NetworkDirection.PLAY_TO_CLIENT));
 		
 		grapplemod.eventHandlers = new EventHandlers();
+
 	}
 	
 	@SubscribeEvent
@@ -295,105 +282,6 @@ public class grapplemod {
 		grappleArrowType.setRegistryName("grapplemod:grapplearrow");
 	    entityTypeRegisterEvent.getRegistry().register(grappleArrowType);
 	}
-
-	/*
-	public void preInit(FMLPreInitializationEvent event) {
-	    MinecraftForge.EVENT_BUS.register(this);
-
-		capturePosition = ObfuscationReflectionHelper.findMethod(NetHandlerPlayServer.class, "func_184342_d", Void.class);
-    	if (capturePosition == null) {
-    		System.out.println("Error: could not access capturePosition function");
-    	}
-}
-
-	public void init(FMLInitializationEvent event, grapplemod grapplemod) {
-		
-	}
-	
-	public void postInit(FMLPostInitializationEvent event) {
-	}
-	
-	public void sendplayermovementmessage(grappleArrow grappleArrow, int playerid, int arrowid) {
-	}
-
-	public void getplayermovement(grappleController control, int playerid) {
-	}
-	
-//	@SubscribeEvent
-//	public void onLivingFallEvent(LivingFallEvent event)
-//	{
-//		if (event.getEntity() != null && grapplemod.attached.contains(event.getEntity().getEntityId()))
-//		{
-//			event.setCanceled(true);
-//		}
-//	}
-	
-	
-	public void resetlaunchertime(int playerid) {
-	}
-
-	public void launchplayer(PlayerEntity player) {
-	}
-	
-	public boolean isSneaking(Entity entity) {
-		return entity.isSneaking();
-	}
-	*/
-	
-	
-    /*
-    public void blockbreak(BreakEvent event) {
-    }
-
-    @SubscribeEvent
-    public void onLivingHurt(LivingHurtEvent event) {
-    	if (event.getSource() == DamageSource.IN_WALL) {
-    		if (grapplemod.attached.contains(event.getEntity().getEntityId())) {
-    			event.setCanceled(true);
-    		}
-    	}
-    }
-    
-	public String getkeyname(CommonProxyClass.keys keyenum) {
-		return null;
-	}
-
-	public void openModifierScreen(TileEntityGrappleModifier tileent) {
-	}
-	
-	public String localize(String string) {
-		return string;
-	}
-
-	public void startrocket(PlayerEntity player, GrappleCustomization custom) {
-	}
-	
-	public void updateRocketRegen(double rocket_active_time, double rocket_refuel_ratio) {
-	}
-
-	public double getRocketFunctioning() {
-		return 0;
-	}
-
-	public boolean iswallrunning(Entity entity, vec motion) {
-		return false;
-	}
-	
-	public boolean issliding(Entity entity, vec motion) {
-		return false;
-	}
-	
-	public Method getCapturePositionMethod() {
-		return capturePosition;
-	}
-	
-	public grappleController createControl(int id, int arrowid, int entityid, World world, vec pos, BlockPos blockpos, GrappleCustomization custom) {
-		return null;
-	}
-
-	public void playSlideSound(Entity entity) {
-	}
-	*/
 	
 
 	/*

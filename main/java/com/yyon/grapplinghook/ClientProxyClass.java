@@ -81,24 +81,6 @@ public class ClientProxyClass implements CommonProxyClass {
 	
 	public static long prev_rope_jump_time = 0;
 	
-	/*
-	@Override
-	public void preInit(FMLPreInitializationEvent event) {
-		super.preInit(event);
-		RenderingRegistry.registerEntityRenderingHandler(grappleArrow.class, new IRenderFactory<grappleArrow>() {
-			@Override
-			public Render<? super grappleArrow> createRenderFor(
-					RenderManager manager) {
-				return new RenderGrappleArrow<grappleArrow>(manager, Items.IRON_PICKAXE, Minecraft.getMinecraft().getRenderItem());
-			}
-		});
-		
-	    ModelResourceLocation itemModelResourceLocation = new ModelResourceLocation("grapplemod:block_grapple_modifier", "inventory");
-	    final int DEFAULT_ITEM_SUBTYPE = 0;
-		ModelLoader.setCustomModelResourceLocation(grapplemod.itemBlockGrappleModifier, DEFAULT_ITEM_SUBTYPE, itemModelResourceLocation);
-	}
-	*/
-	
 	public ModelResourceLocation grapplinghookloc = new ModelResourceLocation("grapplemod:grapplinghook", "inventory");
 	public ModelResourceLocation hookshotloc = new ModelResourceLocation("grapplemod:hookshot", "inventory");
 	public ModelResourceLocation smarthookloc = new ModelResourceLocation("grapplemod:smarthook", "inventory");
@@ -177,114 +159,6 @@ public class ClientProxyClass implements CommonProxyClass {
 			}
 		});
 	}
-
-	/*
-	private void setgrapplebowtextures(Item item, final ModelResourceLocation notinusetexture, final ModelResourceLocation inusetexture) {
-		ModelLoader.setCustomMeshDefinition(item, new ItemMeshDefinition() {
-			@Override
-			public ModelResourceLocation getModelLocation(ItemStack stack) {
-		    	if (ClientProxyClass.isactive(stack)) {
-		    		return inusetexture;
-		    	}
-		    	return notinusetexture;
-			}
-		});
-		ModelBakery.registerItemVariants(item, notinusetexture);
-		ModelBakery.registerItemVariants(item, inusetexture);
-	}
-	*/
-	
-	/*
-	private void registerItemModels() {
-//		setgrapplebowtextures(grapplemod.grapplebowitem, grapplinghookloc, ropeloc);
-		registerItemModel(grapplemod.launcheritem);
-		registerItemModel(grapplemod.longfallboots);
-		setgrapplebowtextures(grapplemod.repelleritem, repellerloc, repelleronloc);
-		registerItemModel(grapplemod.baseupgradeitem);
-		registerItemModel(grapplemod.doubleupgradeitem);
-		registerItemModel(grapplemod.forcefieldupgradeitem);
-		registerItemModel(grapplemod.magnetupgradeitem);
-		registerItemModel(grapplemod.motorupgradeitem);
-		registerItemModel(grapplemod.ropeupgradeitem);
-		registerItemModel(grapplemod.staffupgradeitem);
-		registerItemModel(grapplemod.swingupgradeitem);
-		registerItemModel(grapplemod.throwupgradeitem);
-		registerItemModel(grapplemod.limitsupgradeitem);
-		registerItemModel(grapplemod.rocketupgradeitem);
-		
-		ItemMeshDefinition itemmeshdefinition = new ItemMeshDefinition() {
-			@Override
-			public ModelResourceLocation getModelLocation(ItemStack stack) {
-				boolean active = !ClientProxyClass.isactive(stack);
-		    	if (stack.hasTagCompound()) {
-		    		NBTTagCompound compound = stack.getTagCompound();
-		    		if (compound.getBoolean("rocket")) {
-		    			if (compound.getBoolean("doublehook")) {
-		    				return active ? odmloc : odmropeloc;
-		    			} else {
-		    				return active ? rocketloc : rocketropeloc;
-		    			}
-		    		}
-		    		if (compound.getBoolean("motor")) {
-		    			if (compound.getBoolean("doublehook")) {
-		    				return active ? multihookloc : multihookropeloc;
-		    			}
-		    			if (compound.getBoolean("smartmotor")) {
-		    				return active ? smarthookloc : smarthookropeloc;
-		    			}
-		    			return active ? hookshotloc : hookshotropeloc;
-		    		}
-		    		if (compound.getBoolean("enderstaff")) {
-		    			return active ? enderhookloc : ropeloc;
-		    		}
-		    		if (compound.getBoolean("repel") || compound.getBoolean("attract")) {
-		    			return active ? magnetbowloc : ropeloc;
-		    		}
-		    	}
-
-		    	return active ? grapplinghookloc : ropeloc;
-			}
-		};
-		
-		ModelLoader.setCustomMeshDefinition(grapplemod.grapplebowitem, itemmeshdefinition);
-		ModelLoader.setCustomMeshDefinition(grapplemod.motorhookitem, itemmeshdefinition);
-		ModelLoader.setCustomMeshDefinition(grapplemod.smarthookitem, itemmeshdefinition);
-		ModelLoader.setCustomMeshDefinition(grapplemod.doublemotorhookitem, itemmeshdefinition);
-		ModelLoader.setCustomMeshDefinition(grapplemod.rocketdoublemotorhookitem, itemmeshdefinition);
-		ModelLoader.setCustomMeshDefinition(grapplemod.enderhookitem, itemmeshdefinition);
-		ModelLoader.setCustomMeshDefinition(grapplemod.magnethookitem, itemmeshdefinition);
-		ModelLoader.setCustomMeshDefinition(grapplemod.rockethookitem, itemmeshdefinition);
-		for (ResourceLocation loc : new ResourceLocation[] {multihookloc, multihookropeloc, smarthookloc, smarthookropeloc, hookshotloc, hookshotropeloc, enderhookloc, magnetbowloc, grapplinghookloc, ropeloc, odmloc, odmropeloc, rocketloc, rocketropeloc}) {
-			ModelBakery.registerItemVariants(grapplemod.grapplebowitem, loc);
-			ModelBakery.registerItemVariants(grapplemod.motorhookitem, loc);
-			ModelBakery.registerItemVariants(grapplemod.smarthookitem, loc);
-			ModelBakery.registerItemVariants(grapplemod.doublemotorhookitem, loc);
-			ModelBakery.registerItemVariants(grapplemod.rocketdoublemotorhookitem, loc);
-			ModelBakery.registerItemVariants(grapplemod.enderhookitem, loc);
-			ModelBakery.registerItemVariants(grapplemod.magnethookitem, loc);
-			ModelBakery.registerItemVariants(grapplemod.rockethookitem, loc);
-		}
-	}
-	*/
-
-	/*
-	@SubscribeEvent
-	public void registerAllModels(final ModelRegistryEvent event) {
-		System.out.println("REGISTERING ALL MODELS!!!!!!!!!!!!!");
-		this.registerItemModels();
-	}
-	
-	private void registerItemModel(Item item) {
-		registerItemModel(item, item.getRegistryName().toString());
-	}
-
-	private void registerItemModel(Item item, String modelLocation) {
-		final ModelResourceLocation fullModelLocation = new ModelResourceLocation(modelLocation, "inventory");
-//		ModelBakery.registerItemVariants(item, fullModelLocation); // Ensure the custom model is loaded and prevent the default model from being loaded
-		ModelLoader.setCustomModelResourceLocation(item, 0, fullModelLocation);
-	}
-	*/
-	
 	
 	public static ArrayList<KeyBinding> keyBindings = new ArrayList<KeyBinding>();
 	
@@ -497,7 +371,7 @@ public class ClientProxyClass implements CommonProxyClass {
 		}
 	}
 	
-	@Override
+	@SubscribeEvent
     public void blockbreak(BreakEvent event) {
 		if (event.getPos() != null) {
 			if (grapplemod.controllerpos.containsKey(event.getPos())) {
@@ -572,18 +446,6 @@ public class ClientProxyClass implements CommonProxyClass {
 
 	}
 	
-
-
-	/*
-	@SubscribeEvent
-	public void clientTick(ClientTickEvent event) {
-		if (event.phase == TickEvent.Phase.END) {
-//			if (keyBindings[0].isKeyDown()) {
-//				System.out.println("Down");
-//			}
-		}
-	}
-	*/
 	@SubscribeEvent
 	public void onPlayerLoggedOutEvent(LoggedOutEvent e) {
 		GrappleConfig.setserveroptions(null);
@@ -656,11 +518,6 @@ public class ClientProxyClass implements CommonProxyClass {
 			tickssincelastonground++;
 		}
 		
-//		if (grapplemod.controllers.containsKey(player.getId()) && !(grapplemod.controllers.get(player.getId()) instanceof airfrictionController)) {
-//			tickssincelastonground = 0;
-//			alreadyuseddoublejump = false;
-//		}
-		
 		boolean isjumpbuttondown = Minecraft.getInstance().options.keyJump.isDown();
 		
 		if (isjumpbuttondown && !prevjumpbutton && !player.isInWater()) {
@@ -690,9 +547,6 @@ public class ClientProxyClass implements CommonProxyClass {
 		if (entity instanceof PlayerEntity && ((PlayerEntity) entity).abilities.flying) {
 			return false;
 		}
-//		if (entity instanceof PlayerEntity && ((PlayerEntity) entity).isCreative()) {
-//			return false;
-//		}
 		
 		for (ItemStack stack : entity.getArmorSlots()) {
 			if (stack != null) {
@@ -727,7 +581,6 @@ public class ClientProxyClass implements CommonProxyClass {
 		
 		if (entity.isOnGround() && key_slide.isDown()) {
 			if (ClientProxyClass.isWearingSlidingEnchant(entity)) {
-//				System.out.println("check sliding: " + Double.toString(vec.motionvec(entity).removealong(new vec (0,1,0)).length()));
 				boolean was_sliding = false;
 				int id = entity.getId();
 				if (grapplemod.controllers.containsKey(id)) {

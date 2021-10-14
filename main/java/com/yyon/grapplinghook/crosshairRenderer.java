@@ -74,22 +74,6 @@ public class crosshairRenderer {
             	double l = ((double) h/2) / Math.tan(fov/2);
             	
             	if (!((verticalangle == 0) && (!custom.doublehook || angle == 0))) {
-	//				float partialticks = event.getPartialTicks();
-					
-            		/*
-                    GlStateManager._clear(256, true);
-                    GlStateManager._matrixMode(5889);
-                    GlStateManager._loadIdentity();
-                    GlStateManager._ortho(0.0D, w, h, 0.0D, 1000.0D, 3000.0D);
-                    GlStateManager._matrixMode(5888);
-                    GlStateManager._loadIdentity();
-                    GlStateManager._translatef(0.0F, 0.0F, -2000.0F);
-//			        mc.entityRenderer.setupOverlayRendering();
-			        RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
-		//	        mc.getTextureManager().bindTexture(Gui.ICONS);
-			        RenderSystem.enableBlend();
-			        */
-			        
 	            	int offset = (int) (Math.tan(angle) * l);
 	            	int verticaloffset = (int) (-Math.tan(verticalangle) * l);
 	            	
@@ -97,23 +81,11 @@ public class crosshairRenderer {
 	                if (angle != 0) {
 		            	drawCrosshair(mStack, w / 2 - offset, h / 2 + verticaloffset);
 	                }
-
-	                /*
-	            	RenderSystem.blendFuncSeparate(GlStateManager.SourceFactor.ONE_MINUS_DST_COLOR, GlStateManager.DestFactor.ONE_MINUS_SRC_COLOR, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
-	            	RenderSystem.enableAlphaTest();
-	                this.drawTexturedModalRect(w / 2 - 7 + offset, h / 2 - 7 + verticaloffset, 0, 0, 16, 16);
-	                if (angle != 0) {
-		                this.drawTexturedModalRect(w / 2 - 7 - offset, h / 2 - 7 + verticaloffset, 0, 0, 16, 16);
-	                }
-//	                */
 		        }
             	
             	if (custom.rocket && custom.rocket_vertical_angle != 0) {
 	            	int verticaloffset = (int) (-Math.tan(Math.toRadians(custom.rocket_vertical_angle)) * l);
 	            	drawCrosshair(mStack, w / 2, h / 2 + verticaloffset);
-//	            	RenderSystem.blendFuncSeparate(GlStateManager.SourceFactor.ONE_MINUS_DST_COLOR, GlStateManager.DestFactor.ONE_MINUS_SRC_COLOR, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
-//	            	RenderSystem.enableAlphaTest();
-//	                this.drawTexturedModalRect(w / 2 - 7, h / 2 - 7 + verticaloffset, 0, 0, 16, 16);
             	}
 			}
 
@@ -127,70 +99,23 @@ public class crosshairRenderer {
 	    		int totalbarlength = w / 8;
 	    		
 		        RenderSystem.pushMatrix();
-//		        mc.entityRenderer.setupOverlayRendering();
-//		        GlStateManager.color(0.5F, 1.0F, 1.0F, 0.5F);
-	//	        mc.getTextureManager().bindTexture(Gui.ICONS);
-//		        GlStateManager.enableBlend();
-//	            GlStateManager.tryBlendFuncSeparate(GlStateManager.SourceFactor.ONE_MINUS_DST_COLOR, GlStateManager.DestFactor.ONE_MINUS_SRC_COLOR, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
-//	            GlStateManager.enableAlpha();
-
 		        RenderSystem.disableLighting();
 		        RenderSystem.disableDepthTest();
 		        RenderSystem.disableTexture();
-//				GlStateManager.enableBlend();
-//				GlStateManager.enableAlpha();
-
-				//	            GlStateManager.tryBlendFuncSeparate(GlStateManager.SourceFactor.ONE_MINUS_DST_COLOR, GlStateManager.DestFactor.ONE_MINUS_SRC_COLOR, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
-				
+		        
 	            this.drawRect(w / 2 - totalbarlength / 2, h * 3 / 4, totalbarlength, 2, 50, 100);
 	            this.drawRect(w / 2 - totalbarlength / 2, h * 3 / 4, (int) (totalbarlength * rocketFuel), 2, 200, 255);
-	            
-//				GlStateManager.disableBlend();
-//				GlStateManager.disableAlpha();
-	            RenderSystem.enableTexture();
-//				GlStateManager.enableLighting();
-//				GlStateManager.enableDepth();
 
+	            RenderSystem.enableTexture();
 	            RenderSystem.popMatrix();
-//	            GlStateManager.disableAlpha();
-//	            GlStateManager.disableBlend();
 	    	}
 		}
 	}
 	
     private void drawCrosshair(MatrixStack mStack, int x, int y) {
-//        RenderSystem.pushMatrix();
-//        RenderSystem.translatef(x, y, (float)Minecraft.getInstance().gui.getBlitOffset());
-//        ActiveRenderInfo activerenderinfo = Minecraft.getInstance().gameRenderer.getMainCamera();
-//        RenderSystem.rotatef(activerenderinfo.getXRot(), -1.0F, 0.0F, 0.0F);
-//        RenderSystem.rotatef(activerenderinfo.getYRot(), 0.0F, 1.0F, 0.0F);
-//        RenderSystem.scalef(-1.0F, -1.0F, -1.0F);
-//        RenderSystem.renderCrosshair(10);
-//        RenderSystem.popMatrix();
-//    	grapplemod.LOGGER.info("crosshair: " + Integer.toString(x) + ", " + Integer.toString(y));
         RenderSystem.blendFuncSeparate(GlStateManager.SourceFactor.ONE_MINUS_DST_COLOR, GlStateManager.DestFactor.ONE_MINUS_SRC_COLOR, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
         int i = 15;
         Minecraft.getInstance().gui.blit(mStack, (int) (x - (15.0F/2)), (int) (y - (15.0F/2)), 0, 0, 15, 15);
-        /*
-        if (Minecraft.getInstance().options.attackIndicator == AttackIndicatorStatus.CROSSHAIR) {
-           float f = Minecraft.getInstance().player.getAttackStrengthScale(0.0F);
-           boolean flag = false;
-           if (Minecraft.getInstance().crosshairPickEntity != null && Minecraft.getInstance().crosshairPickEntity instanceof LivingEntity && f >= 1.0F) {
-              flag = Minecraft.getInstance().player.getCurrentItemAttackStrengthDelay() > 5.0F;
-              flag = flag & Minecraft.getInstance().crosshairPickEntity.isAlive();
-           }
-
-           int j = x - 7 + 16;
-           int k = y - 8;
-           if (flag) {
-        	   Minecraft.getInstance().gui.blit(mStack, k, j, 68, 94, 16, 16);
-           } else if (f < 1.0F) {
-              int l = (int)(f * 17.0F);
-              Minecraft.getInstance().gui.blit(mStack, k, j, 36, 94, 16, 4);
-              Minecraft.getInstance().gui.blit(mStack, k, j, 52, 94, l, 4);
-           }
-        }
-        */
 	}
 
 	public void drawTexturedModalRect(int x, int y, int textureX, int textureY, int width, int height)

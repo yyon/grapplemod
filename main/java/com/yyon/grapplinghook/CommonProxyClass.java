@@ -16,10 +16,6 @@ import net.minecraftforge.fml.network.NetworkEvent.Context;
 
 public interface CommonProxyClass {
 
-//	public void sendplayermovementmessage(grappleArrow grappleArrow, int playerid, int arrowid);
-
-//	public void getplayermovement(grappleController control, int playerid);
-	
 	public void registerPropertyOverride();
 	
 	public void resetlaunchertime(int playerid);
