@@ -1180,7 +1180,7 @@ public class grappleController {
 			this.motion.add_ip(wallfric);
 
 			ticks_since_last_wallrun_sound_effect++;
-			if (ticks_since_last_wallrun_sound_effect > GrappleConfig.client_options.wallrun_sound_effect_time_s * 20 * GrappleConfig.getconf().wallrun_max_speed / (vel + 0.00000001)) {
+			if (ticks_since_last_wallrun_sound_effect > GrappleConfig.getclientconf().wallrun_sound_effect_time_s * 20 * GrappleConfig.getconf().wallrun_max_speed / (vel + 0.00000001)) {
 				if (wallrun_raytrace_result != null) {
 					BlockPos blockpos = wallrun_raytrace_result.getBlockPos();
 					
@@ -1189,7 +1189,7 @@ public class grappleController {
 					
 			        SoundType soundtype = blockIn.getSoundType(blockState, world, blockpos, this.entity);
 
-		            this.entity.playSound(soundtype.getStepSound(), soundtype.getVolume() * 0.30F * GrappleConfig.client_options.wallrun_sound_volume, soundtype.getPitch());
+		            this.entity.playSound(soundtype.getStepSound(), soundtype.getVolume() * 0.30F * GrappleConfig.getclientconf().wallrun_sound_volume, soundtype.getPitch());
 					ticks_since_last_wallrun_sound_effect = 0;
 				}
 			}

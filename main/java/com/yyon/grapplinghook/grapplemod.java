@@ -231,7 +231,7 @@ public class grapplemod {
 		keyBindAttack
 	}
 	
-	public static EventHandlers eventHandlers = null;
+	public static EventHandlers eventHandlers = new EventHandlers();;
 
 	@SubscribeEvent
 	public static void init(FMLCommonSetupEvent event) {
@@ -249,9 +249,6 @@ public class grapplemod {
 		network.registerMessage(id++, GrappleAttachPosMessage.class, GrappleAttachPosMessage::encode, GrappleAttachPosMessage::new, GrappleAttachPosMessage::onMessageReceived, Optional.of(NetworkDirection.PLAY_TO_CLIENT));
 		network.registerMessage(id++, SegmentMessage.class, SegmentMessage::encode, SegmentMessage::new, SegmentMessage::onMessageReceived, Optional.of(NetworkDirection.PLAY_TO_CLIENT));
 		network.registerMessage(id++, LoggedInMessage.class, LoggedInMessage::encode, LoggedInMessage::new, LoggedInMessage::onMessageReceived, Optional.of(NetworkDirection.PLAY_TO_CLIENT));
-		
-		grapplemod.eventHandlers = new EventHandlers();
-
 	}
 	
 	@SubscribeEvent

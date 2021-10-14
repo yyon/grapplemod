@@ -56,3 +56,9 @@ A mod which adds grappling hooks.
     versionRange="[1.16.5,1.17)"
     ordering="NONE"
     side="BOTH"
+[[dependencies.grapplemod]]
+    modId="cloth-config"
+    mandatory=true
+    versionRange="[4.11, 5)"
+    ordering="NONE"
+    side="BOTH"

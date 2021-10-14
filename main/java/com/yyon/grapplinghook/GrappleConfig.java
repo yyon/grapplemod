@@ -1,8 +1,14 @@
 package com.yyon.grapplinghook;
 
+import me.shedaniel.autoconfig.AutoConfig;
+import me.shedaniel.autoconfig.ConfigData;
+import me.shedaniel.autoconfig.annotation.Config;
+import me.shedaniel.autoconfig.annotation.ConfigEntry;
+
 //import net.minecraftforge.common.config.Config;
 //@Config(modid="grapplemod", name="grappling_hook", category="")
-public class GrappleConfig {
+@Config(name = "grapplemod")
+public class GrappleConfig implements ConfigData {
 	public static class Config {
 		// rope
 		public double default_maxlen = 30;
@@ -201,8 +207,10 @@ public class GrappleConfig {
 		public String grappleIgnoreBlocks = "minecraft:tallgrass,minecraft:double_plant";
 	}
 	
-	public static Config options = new Config(); // local options
+    @ConfigEntry.Gui.CollapsibleObject
+    public Config options = new Config(); // local options
 	
+    @ConfigEntry.Gui.Excluded
 	private static Config server_options = null;
 	
 	public static class ClientConfig {
@@ -215,11 +223,12 @@ public class GrappleConfig {
 		public float wallrunjump_sound_volume = 1.0F;
 	}
 	
-	public static ClientConfig client_options = new ClientConfig(); // client-only options, don't need to sync with server
+    @ConfigEntry.Gui.CollapsibleObject
+	public ClientConfig client_options = new ClientConfig(); // client-only options, don't need to sync with server
 
 	public static Config getconf() {
 		if (server_options == null) {
-			return options;
+			return AutoConfig.getConfigHolder(GrappleConfig.class).getConfig().options;
 		} else {
 			return server_options;
 		}
@@ -227,5 +236,9 @@ public class GrappleConfig {
 	
 	public static void setserveroptions(Config newserveroptions) {
 		server_options = newserveroptions;
+	}
+	
+	public static ClientConfig getclientconf() {
+		return AutoConfig.getConfigHolder(GrappleConfig.class).getConfig().client_options;
 	}
 }

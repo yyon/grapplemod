@@ -8,6 +8,8 @@ import com.yyon.grapplinghook.items.grappleBow;
 import com.yyon.grapplinghook.network.GrappleDetachMessage;
 import com.yyon.grapplinghook.network.LoggedInMessage;
 
+import me.shedaniel.autoconfig.AutoConfig;
+import me.shedaniel.autoconfig.serializer.Toml4jConfigSerializer;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
@@ -22,12 +24,16 @@ import net.minecraftforge.event.entity.living.LivingHurtEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent.PlayerLoggedInEvent;
 import net.minecraftforge.event.world.BlockEvent.BreakEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.ExtensionPoint;
+import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.event.server.FMLServerStartedEvent;
 import net.minecraftforge.fml.network.PacketDistributor;
 
 public class EventHandlers {
 	public EventHandlers() {
 	    MinecraftForge.EVENT_BUS.register(this);
+
+		AutoConfig.register(GrappleConfig.class, Toml4jConfigSerializer<GrappleConfig>::new);
 	}
 
 	@SubscribeEvent
@@ -120,7 +126,7 @@ public class EventHandlers {
 	@SubscribeEvent
 	public void onPlayerLoggedInEvent(PlayerLoggedInEvent e) {
 		if (e.getPlayer() instanceof ServerPlayerEntity) {
-			grapplemod.network.send(PacketDistributor.PLAYER.with(() -> (ServerPlayerEntity) e.getPlayer()), new LoggedInMessage(GrappleConfig.options));
+			grapplemod.network.send(PacketDistributor.PLAYER.with(() -> (ServerPlayerEntity) e.getPlayer()), new LoggedInMessage(GrappleConfig.getconf()));
 		} else {
 			System.out.println("Not an PlayerEntityMP");
 		}

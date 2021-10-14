@@ -22,10 +22,13 @@ import com.yyon.grapplinghook.items.grappleBow;
 import com.yyon.grapplinghook.items.launcherItem;
 import com.yyon.grapplinghook.network.BaseMessageClient;
 
+import me.shedaniel.autoconfig.AutoConfig;
+import me.shedaniel.autoconfig.gui.registry.GuiRegistry;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.GameSettings;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.player.ClientPlayerEntity;
+import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.EntityRendererManager;
 import net.minecraft.client.renderer.model.ModelResourceLocation;
@@ -62,6 +65,8 @@ import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.world.BlockEvent.BreakEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.ExtensionPoint;
+import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.client.registry.ClientRegistry;
 import net.minecraftforge.fml.client.registry.IRenderFactory;
 import net.minecraftforge.fml.client.registry.RenderingRegistry;
@@ -118,7 +123,13 @@ public class ClientProxyClass implements CommonProxyClass {
 	    MinecraftForge.EVENT_BUS.register(grapplemod.proxy);
 
 	    event.enqueueWork(grapplemod.proxy::registerPropertyOverride);
-	}
+	    
+	    GuiRegistry registry = AutoConfig.getGuiRegistry(GrappleConfig.class);
+
+		ModLoadingContext.get().registerExtensionPoint(
+                ExtensionPoint.CONFIGGUIFACTORY,
+                () -> ((ClientProxyClass) grapplemod.proxy)::onConfigScreen);
+}
 	
 	@Override
 	public void registerPropertyOverride() {
@@ -687,7 +698,7 @@ public class ClientProxyClass implements CommonProxyClass {
 		if (currentCameraTilt != targetCameraTilt) {
 			float cameraDiff = targetCameraTilt - currentCameraTilt;
 			if (cameraDiff != 0) {
-				float anim_s = GrappleConfig.client_options.wallrun_camera_animation_s;
+				float anim_s = GrappleConfig.getclientconf().wallrun_camera_animation_s;
 				float speed = (anim_s == 0) ? 9999 :  1.0f / (anim_s * 20.0f);
 				if (speed > Math.abs(cameraDiff)) {
 					currentCameraTilt = targetCameraTilt;
@@ -698,7 +709,7 @@ public class ClientProxyClass implements CommonProxyClass {
 		}
 		
 		if (currentCameraTilt != 0) {
-		    event.setRoll(event.getRoll() + currentCameraTilt*GrappleConfig.client_options.wallrun_camera_tilt_degrees);
+		    event.setRoll(event.getRoll() + currentCameraTilt*GrappleConfig.getclientconf().wallrun_camera_tilt_degrees);
 		}
 	}
 
@@ -761,16 +772,16 @@ public class ClientProxyClass implements CommonProxyClass {
 	}
 
 	public void playSlideSound(Entity entity) {
-		entity.playSound(new SoundEvent(this.slideSoundLoc), GrappleConfig.client_options.slide_sound_volume, 1.0F);
+		entity.playSound(new SoundEvent(this.slideSoundLoc), GrappleConfig.getclientconf().slide_sound_volume, 1.0F);
 	}
 
 	private void playDoubleJumpSound(Entity entity) {
-		entity.playSound(new SoundEvent(this.doubleJumpSoundLoc), GrappleConfig.client_options.doublejump_sound_volume * 0.7F, 1.0F);
+		entity.playSound(new SoundEvent(this.doubleJumpSoundLoc), GrappleConfig.getclientconf().doublejump_sound_volume * 0.7F, 1.0F);
 	}
 
 	@Override
 	public void playWallrunJumpSound(Entity entity) {
-		entity.playSound(new SoundEvent(this.doubleJumpSoundLoc), GrappleConfig.client_options.wallrunjump_sound_volume * 0.7F, 1.0F);
+		entity.playSound(new SoundEvent(this.doubleJumpSoundLoc), GrappleConfig.getclientconf().wallrunjump_sound_volume * 0.7F, 1.0F);
 	}
 	
 	List<ItemStack> grapplinghookvariants = null;
@@ -795,5 +806,9 @@ public class ClientProxyClass implements CommonProxyClass {
 		}
 		
 		items.addAll(grapplinghookvariants);
+	}
+	
+	public Screen onConfigScreen(Minecraft mc, Screen screen) {
+		return AutoConfig.getConfigScreen(GrappleConfig.class, screen).get();
 	}
 }
