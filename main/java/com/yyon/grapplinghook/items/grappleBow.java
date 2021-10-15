@@ -145,7 +145,7 @@ public class grappleBow extends Item implements KeypressItem {
 				}
 				
 				stack.hurtAndBreak(1, (ServerPlayerEntity) player, (p) -> {});
-				if (stack.getDamageValue() <= 0) {
+				if (stack.getCount() <= 0) {
 					return;
 				}
 				
@@ -163,7 +163,7 @@ public class grappleBow extends Item implements KeypressItem {
 				}
 				
 				stack.hurtAndBreak(1, (ServerPlayerEntity) player, (p) -> {});
-				if (stack.getDamageValue() <= 0) {
+				if (stack.getCount() <= 0) {
 					return;
 				}
 				
@@ -208,7 +208,7 @@ public class grappleBow extends Item implements KeypressItem {
 		}
 
 		stack.hurtAndBreak(1, (ServerPlayerEntity) entityLiving, (p) -> {});
-		if (stack.getDamageValue() <= 0) {
+		if (stack.getCount() <= 0) {
 			return;
 		}
 
