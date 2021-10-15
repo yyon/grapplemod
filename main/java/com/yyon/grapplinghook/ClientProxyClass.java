@@ -169,6 +169,12 @@ public class ClientProxyClass implements CommonProxyClass {
 				return grapplemod.attached.contains(entity.getId()) ? 1 : 0;
 			}
 		});
+		ItemModelsProperties.register(grapplemod.repelleritem, new ResourceLocation("attached"), new IItemPropertyGetter() {
+			public float call(ItemStack stack, @Nullable ClientWorld world, @Nullable LivingEntity entity) {
+				if (entity == null) {return 0;}
+				return (grapplemod.controllers.containsKey(entity.getId()) && grapplemod.controllers.get(entity.getId()) instanceof repelController) ? 1 : 0;
+			}
+		});
 	}
 	
 	public static ArrayList<KeyBinding> keyBindings = new ArrayList<KeyBinding>();

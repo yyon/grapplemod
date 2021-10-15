@@ -152,7 +152,8 @@
     "grappletooltip.repelleritemmove.desc": " - Move",
     "grappletooltip.longfallbootsrecipe.desc": "Right click a Grappling Hook Modifier block with Feather Falling IV Diamond Boots to obtain",
     "grappletooltip.longfallboots.desc": "Cancels fall damage when worn",
-	"grappletooltip.reelin.desc": "- Reel in hook (if hook is not attached to surface)";
+	"grappletooltip.reelin.desc": "- Reel in hook (if hook is not attached to surface)",
+	"grappletooltip.negate.desc": "No",
 
     "grapplemodifier.close.desc": "Close",
     "grapplemodifier.reset.desc": "Reset",

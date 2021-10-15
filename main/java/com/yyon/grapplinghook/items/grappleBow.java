@@ -464,12 +464,12 @@ public class grappleBow extends Item implements KeypressItem {
 		} else {
 			if (Screen.hasControlDown()) {
 				for (String option : GrappleCustomization.booleanoptions) {
-					if (custom.isoptionvalid(option) && custom.getBoolean(option)) {
-						list.add(new StringTextComponent(grapplemod.proxy.localize(custom.getName(option))));
+					if (custom.isoptionvalid(option) && custom.getBoolean(option) != GrappleCustomization.DEFAULT.getBoolean(option)) {
+						list.add(new StringTextComponent((custom.getBoolean(option) ? "" : grapplemod.proxy.localize("grappletooltip.negate.desc") + " ") + grapplemod.proxy.localize(custom.getName(option))));
 					}
 				}
 				for (String option : GrappleCustomization.doubleoptions) {
-					if (custom.isoptionvalid(option)) {
+					if (custom.isoptionvalid(option) && (custom.getDouble(option) != GrappleCustomization.DEFAULT.getDouble(option))) {
 						list.add(new StringTextComponent(grapplemod.proxy.localize(custom.getName(option)) + ": " + Math.floor(custom.getDouble(option) * 100) / 100));
 					}
 				}

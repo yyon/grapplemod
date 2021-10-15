@@ -315,4 +315,6 @@ public class GrappleCustomization {
 		}
 		return true;
 	}
+	
+	public static GrappleCustomization DEFAULT = new GrappleCustomization();
 }
