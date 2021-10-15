@@ -392,7 +392,6 @@ public class grappleBow extends Item implements KeypressItem {
     		custom.loadNBT(tag.getCompound("custom"));
         	return custom;
     	} else {
-    		grapplemod.LOGGER.info("default");
     		GrappleCustomization custom = this.getDefaultCustomization();
 
 			CompoundNBT nbt = custom.writeNBT();

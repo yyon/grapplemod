@@ -21,7 +21,7 @@
 			"motormaxspeed": 10,
 			"sticky": true,
 			
-			"hookgravity": 100,
+			"hookgravity": 50,
 			"verticalthrowangle": 30,
 			"sneakingverticalthrowangle": 25,
 			"reelin": false,

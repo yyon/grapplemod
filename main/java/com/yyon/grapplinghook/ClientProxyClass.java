@@ -536,15 +536,17 @@ public class ClientProxyClass implements CommonProxyClass {
 			if (tickssincelastonground > 3) {
 				if (!alreadyuseddoublejump) {
 					if (wearingdoublejumpenchant(player)) {
-						if (!grapplemod.controllers.containsKey(player.getId())) {
-							this.createControl(grapplemod.AIRID, -1, player.getId(), player.level, new vec(0,0,0), null, null);
+						if (!grapplemod.controllers.containsKey(player.getId()) || grapplemod.controllers.get(player.getId()) instanceof airfrictionController) {
+							if (!grapplemod.controllers.containsKey(player.getId())) {
+								this.createControl(grapplemod.AIRID, -1, player.getId(), player.level, new vec(0,0,0), null, null);
+							}
+							grappleController controller = grapplemod.controllers.get(player.getId());
+							if (controller instanceof airfrictionController) {
+								alreadyuseddoublejump = true;
+								controller.doublejump();
+							}
+							this.playDoubleJumpSound(controller.entity);
 						}
-						grappleController controller = grapplemod.controllers.get(player.getId());
-						if (controller instanceof airfrictionController) {
-							alreadyuseddoublejump = true;
-							controller.doublejump();
-						}
-						this.playDoubleJumpSound(controller.entity);
 					}
 				}
 			}

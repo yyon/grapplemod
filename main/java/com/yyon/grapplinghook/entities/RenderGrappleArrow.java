@@ -120,7 +120,7 @@ public class RenderGrappleArrow<T extends grappleArrow> extends EntityRenderer<T
 			// base hand offset (no swing, when facing +Z)
 			double d7 = this.entityRenderDispatcher.options.fov;
 			d7 = d7 / 100.0D;
-			hand_offset = new vec((double) hand_right * -0.38D * d7, -0.1D * d7, 0.38D);
+			hand_offset = new vec((double) hand_right * -0.46D * d7, -0.18D * d7, 0.38D);
 			// apply swing
 			hand_offset = hand_offset.rotate_pitch(-f1 * 0.7F);
 			hand_offset = hand_offset.rotate_yaw(-f1 * 0.5F);

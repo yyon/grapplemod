@@ -480,8 +480,6 @@ public class grapplemod {
 		grappleController controller = controllers.get(id);
 		if (controller != null) {
 			controller.receiveGrappleDetach();
-		} else {
-			System.out.println("Couldn't find controller");
 		}
 	}
 	
@@ -489,8 +487,6 @@ public class grapplemod {
 		grappleController controller = controllers.get(id);
 		if (controller != null) {
 			controller.receiveGrappleDetachHook(hookid);
-		} else {
-			System.out.println("Couldn't find controller");
 		}
 	}
 
