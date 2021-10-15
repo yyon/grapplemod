@@ -349,7 +349,7 @@ public class ClientProxyClass implements CommonProxyClass {
 			prevtime = 0;
 		}
 		long timer = grapplemod.getTime(player.level) - prevtime;
-		if (timer > GrappleConfig.getconf().ender_staff_recharge) {
+		if (timer > GrappleConfig.getconf().enderstaff.ender_staff_recharge) {
 			if ((player.getItemInHand(Hand.MAIN_HAND)!=null && (player.getItemInHand(Hand.MAIN_HAND).getItem() instanceof launcherItem || player.getItemInHand(Hand.MAIN_HAND).getItem() instanceof grappleBow)) || (player.getItemInHand(Hand.OFF_HAND)!=null && (player.getItemInHand(Hand.OFF_HAND).getItem() instanceof launcherItem || player.getItemInHand(Hand.OFF_HAND).getItem() instanceof grappleBow))) {
 				enderlaunchtimer.put(player.getId(), grapplemod.getTime(player.level));
 				
@@ -366,7 +366,7 @@ public class ClientProxyClass implements CommonProxyClass {
 					player.setOnGround(false);
 					this.createControl(grapplemod.AIRID, -1, player.getId(), player.level, new vec(0,0,0), null, custom);
 				}
-				facing.mult_ip(GrappleConfig.getconf().ender_staff_strength);
+				facing.mult_ip(GrappleConfig.getconf().enderstaff.ender_staff_strength);
 				grapplemod.receiveEnderLaunch(player.getId(), facing.x, facing.y, facing.z);
 			}
 		}
@@ -507,7 +507,7 @@ public class ClientProxyClass implements CommonProxyClass {
 								BlockRayTraceResult raytraceresult = grapplemod.rayTraceBlocks(entity.level, vec.positionvec(entity), vec.positionvec(entity).add(new vec(0, -1, 0)));
 								if (raytraceresult == null) {
 									double current_speed = Math.sqrt(Math.pow(motion.x, 2) + Math.pow(motion.z,  2));
-									if (current_speed >= GrappleConfig.getconf().wallrun_min_speed) {
+									if (current_speed >= GrappleConfig.getconf().enchantments.wallrun.wallrun_min_speed) {
 										return true;
 									}
 								}
@@ -612,7 +612,7 @@ public class ClientProxyClass implements CommonProxyClass {
 					}
 				}
 				double speed = motion.removealong(new vec (0,1,0)).length();
-				if (speed > GrappleConfig.getconf().sliding_end_min_speed && (was_sliding || speed > GrappleConfig.getconf().sliding_min_speed)) {
+				if (speed > GrappleConfig.getconf().enchantments.slide.sliding_end_min_speed && (was_sliding || speed > GrappleConfig.getconf().enchantments.slide.sliding_min_speed)) {
 					return true;
 				}
 			}
@@ -706,7 +706,7 @@ public class ClientProxyClass implements CommonProxyClass {
 		if (currentCameraTilt != targetCameraTilt) {
 			float cameraDiff = targetCameraTilt - currentCameraTilt;
 			if (cameraDiff != 0) {
-				float anim_s = GrappleConfig.getclientconf().wallrun_camera_animation_s;
+				float anim_s = GrappleConfig.getclientconf().camera.wallrun_camera_animation_s;
 				float speed = (anim_s == 0) ? 9999 :  1.0f / (anim_s * 20.0f);
 				if (speed > Math.abs(cameraDiff)) {
 					currentCameraTilt = targetCameraTilt;
@@ -717,7 +717,7 @@ public class ClientProxyClass implements CommonProxyClass {
 		}
 		
 		if (currentCameraTilt != 0) {
-		    event.setRoll(event.getRoll() + currentCameraTilt*GrappleConfig.getclientconf().wallrun_camera_tilt_degrees);
+		    event.setRoll(event.getRoll() + currentCameraTilt*GrappleConfig.getclientconf().camera.wallrun_camera_tilt_degrees);
 		}
 	}
 
@@ -780,16 +780,16 @@ public class ClientProxyClass implements CommonProxyClass {
 	}
 
 	public void playSlideSound(Entity entity) {
-		entity.playSound(new SoundEvent(this.slideSoundLoc), GrappleConfig.getclientconf().slide_sound_volume, 1.0F);
+		entity.playSound(new SoundEvent(this.slideSoundLoc), GrappleConfig.getclientconf().sounds.slide_sound_volume, 1.0F);
 	}
 
 	private void playDoubleJumpSound(Entity entity) {
-		entity.playSound(new SoundEvent(this.doubleJumpSoundLoc), GrappleConfig.getclientconf().doublejump_sound_volume * 0.7F, 1.0F);
+		entity.playSound(new SoundEvent(this.doubleJumpSoundLoc), GrappleConfig.getclientconf().sounds.doublejump_sound_volume * 0.7F, 1.0F);
 	}
 
 	@Override
 	public void playWallrunJumpSound(Entity entity) {
-		entity.playSound(new SoundEvent(this.doubleJumpSoundLoc), GrappleConfig.getclientconf().wallrunjump_sound_volume * 0.7F, 1.0F);
+		entity.playSound(new SoundEvent(this.doubleJumpSoundLoc), GrappleConfig.getclientconf().sounds.wallrunjump_sound_volume * 0.7F, 1.0F);
 	}
 	
 	List<ItemStack> grapplinghookvariants = null;

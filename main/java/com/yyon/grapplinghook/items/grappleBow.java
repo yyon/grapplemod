@@ -61,7 +61,7 @@ public class grappleBow extends Item implements KeypressItem {
 	public static HashMap<Entity, grappleArrow> grapplearrows2 = new HashMap<Entity, grappleArrow>();
 	
 	public grappleBow() {
-		super(new Item.Properties().stacksTo(1).tab(grapplemod.tabGrapplemod).durability(GrappleConfig.getconf().default_durability));
+		super(new Item.Properties().stacksTo(1).tab(grapplemod.tabGrapplemod).durability(GrappleConfig.getconf().grapplinghook.other.default_durability));
 	}
 
 	public boolean hasArrow(Entity entity) {

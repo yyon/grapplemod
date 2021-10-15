@@ -47,7 +47,7 @@ public class LongFallBoots extends ArmorItem {
 	@OnlyIn(Dist.CLIENT)
 	public void appendHoverText(ItemStack stack, @Nullable World world, List<ITextComponent> list, ITooltipFlag par4) {
 		if (!stack.isEnchanted()) {
-			if (GrappleConfig.getconf().longfallbootsrecipe) {
+			if (GrappleConfig.getconf().longfallboots.longfallbootsrecipe) {
 				list.add(new StringTextComponent(grapplemod.proxy.localize("grappletooltip.longfallbootsrecipe.desc")));
 			}
 		}

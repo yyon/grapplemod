@@ -160,20 +160,35 @@ public class GrappleConfig implements ConfigData {
 			@ConfigEntry.Gui.CollapsibleObject
 			public Blocks blocks = new Blocks();
 			public static class Blocks {
-				
+				public String grapplingBlocks = "any";
+				public String grapplingNonBlocks = "none";
+				public String grappleBreakBlocks = "none";
 			}
 			
 			@ConfigEntry.Gui.CollapsibleObject
 			public Other other = new Other();
 			public static class Other {
-				
+				public boolean hookaffectsentities = true;
+				public double rope_snap_buffer = 5;
+				public int default_durability = 500;
+				public double rope_jump_power = 1;
+				public boolean rope_jump_at_angle = false;
+				public double rope_jump_cooldown_s = 0;
+				public double climb_speed = 0.3;
 			}
 		}
 		
 		@ConfigEntry.Gui.CollapsibleObject
 		public LongFallBoots longfallboots = new LongFallBoots();
 		public static class LongFallBoots {
-			
+			public boolean longfallbootsrecipe = true;
+		}
+		
+		@ConfigEntry.Gui.CollapsibleObject
+		public EnderStaff enderstaff = new EnderStaff();
+		public static class EnderStaff {
+			public double ender_staff_strength = 1.5;
+			public int ender_staff_recharge = 100;
 		}
 		
 		@ConfigEntry.Gui.CollapsibleObject
@@ -182,76 +197,44 @@ public class GrappleConfig implements ConfigData {
 			@ConfigEntry.Gui.CollapsibleObject
 			public Wallrun wallrun = new Wallrun();
 			public static class Wallrun {
-				
+				public double wall_jump_up = 0.7;
+				public double wall_jump_side = 0.4;
+				public double max_wallrun_time = 3;
+				public double wallrun_speed = 0.1;
+				public double wallrun_max_speed = 0.7;
+				public double wallrun_drag = 0.05;
+				public double wallrun_min_speed = 0;
+				public int enchant_rarity_wallrun = 0;
 			}
 			
 			@ConfigEntry.Gui.CollapsibleObject
 			public DoubleJump doublejump = new DoubleJump();
 			public static class DoubleJump {
-				
+				public double doublejumpforce = 0.8;
+				public boolean doublejump_relative_to_falling = false;
+				public double dont_doublejump_if_falling_faster_than = 99999999.0;
+				public int enchant_rarity_double_jump = 0;
 			}
 			
 			@ConfigEntry.Gui.CollapsibleObject
 			public Slide slide = new Slide();
 			public static class Slide {
-				
+				public double slidingjumpforce =  0.6;
+				public double sliding_friction = 1 / 150F;
+				public double sliding_min_speed = 0.15;
+				public double sliding_end_min_speed = 0.01;
+				public int enchant_rarity_sliding = 0;
 			}
 		}
 		
 		@ConfigEntry.Gui.CollapsibleObject
 		public Other other = new Other();
 		public static class Other {
-			
+			public boolean override_allowflight = true;
+			public double airstrafe_max_speed = 0.7;
+			public double airstrafe_acceleration = 0.015;
+			public boolean dont_override_movement_in_air = false;
 		}
-		
-		public String grapplingBlocks = "any";
-		public String grapplingNonBlocks = "none";
-
-		
-		public boolean longfallbootsrecipe = true;
-		
-		public boolean hookaffectsentities = true;
-
-		// ender staff
-		public double ender_staff_strength = 1.5;
-		public int ender_staff_recharge = 100;
-		
-		public double wall_jump_up = 0.7;
-		public double wall_jump_side = 0.4;
-		
-		public double max_wallrun_time = 3;
-		
-		public double doublejumpforce = 0.8;
-		public double slidingjumpforce =  0.6;
-		public double wallrun_speed = 0.1;
-		public double wallrun_max_speed = 0.7;
-		public double wallrun_drag = 0.05;
-		public double wallrun_min_speed = 0;
-		public double sliding_friction = 1 / 150F;
-		public boolean override_allowflight = true;
-		
-		public double airstrafe_max_speed = 0.7;
-		
-		public double rope_snap_buffer = 5;
-		public int default_durability = 500;
-		public double rope_jump_power = 1;
-		public boolean rope_jump_at_angle = false;
-		public double sliding_min_speed = 0.15;
-		public double sliding_end_min_speed = 0.01;
-		public boolean doublejump_relative_to_falling = false;
-		
-		public boolean dont_override_movement_in_air = false;
-		
-		public double dont_doublejump_if_falling_faster_than = 99999999.0;
-		public double rope_jump_cooldown_s = 0;
-		public double climb_speed = 0.3;
-		
-		public int enchant_rarity_double_jump = 0;
-		public int enchant_rarity_sliding = 0;
-		public int enchant_rarity_wallrun = 0;
-		public double airstrafe_acceleration = 0.015;
-		
-		public String grappleBreakBlocks = "none";
 	}
 	
     @ConfigEntry.Gui.CollapsibleObject
@@ -261,13 +244,22 @@ public class GrappleConfig implements ConfigData {
 	private static Config server_options = null;
 	
 	public static class ClientConfig {
-		public double wallrun_sound_effect_time_s = 0.35;
-		public float wallrun_camera_tilt_degrees = 5;
-		public float wallrun_camera_animation_s = 0.5f;
-		public float wallrun_sound_volume = 1.0F;
-		public float doublejump_sound_volume = 1.0F;
-		public float slide_sound_volume = 1.0F;
-		public float wallrunjump_sound_volume = 1.0F;
+		@ConfigEntry.Gui.CollapsibleObject
+		public Camera camera = new Camera();
+		public static class Camera {
+			public float wallrun_camera_tilt_degrees = 5;
+			public float wallrun_camera_animation_s = 0.5f;
+		}
+		
+		@ConfigEntry.Gui.CollapsibleObject
+		public Sounds sounds = new Sounds();
+		public static class Sounds {
+			public double wallrun_sound_effect_time_s = 0.35;
+			public float wallrun_sound_volume = 1.0F;
+			public float doublejump_sound_volume = 1.0F;
+			public float slide_sound_volume = 1.0F;
+			public float wallrunjump_sound_volume = 1.0F;
+		}
 	}
 	
     @ConfigEntry.Gui.CollapsibleObject

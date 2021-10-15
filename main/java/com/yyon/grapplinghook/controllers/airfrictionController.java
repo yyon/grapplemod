@@ -53,7 +53,7 @@ public class airfrictionController extends grappleController {
 
 		vec additionalmotion = new vec(0,0,0);
 		
-		if (GrappleConfig.getconf().dont_override_movement_in_air && !entity.isOnGround() && !was_sliding && !was_wallrunning && !was_rocket && !first_tick_since_created) {
+		if (GrappleConfig.getconf().other.dont_override_movement_in_air && !entity.isOnGround() && !was_sliding && !was_wallrunning && !was_rocket && !first_tick_since_created) {
 			motion = vec.motionvec(entity);
 			this.unattach();
 			return;
@@ -102,25 +102,25 @@ public class airfrictionController extends grappleController {
 						motion = motion.removealong(this.walldirection);
 					}
 
-					vec new_movement = this.playermovement.changelen(GrappleConfig.getconf().wallrun_speed*1.5);
+					vec new_movement = this.playermovement.changelen(GrappleConfig.getconf().enchantments.wallrun.wallrun_speed*1.5);
 					if (this.walldirection != null) {
 						new_movement = new_movement.removealong(this.walldirection);
 					}
-					if (new_movement.length() > GrappleConfig.getconf().wallrun_speed) {
-						new_movement.changelen_ip(GrappleConfig.getconf().wallrun_speed);
+					if (new_movement.length() > GrappleConfig.getconf().enchantments.wallrun.wallrun_speed) {
+						new_movement.changelen_ip(GrappleConfig.getconf().enchantments.wallrun.wallrun_speed);
 					}
 					motion.add_ip(new_movement);
 					vec current_motion_along = this.motion.removealong(new vec(0,1,0));
 					if (this.walldirection != null) {
 						current_motion_along = current_motion_along.removealong(this.walldirection);
 					}
-					if (current_motion_along.length() > GrappleConfig.getconf().wallrun_max_speed) {
-						this.motion.changelen_ip(GrappleConfig.getconf().wallrun_max_speed);
+					if (current_motion_along.length() > GrappleConfig.getconf().enchantments.wallrun.wallrun_max_speed) {
+						this.motion.changelen_ip(GrappleConfig.getconf().enchantments.wallrun.wallrun_max_speed);
 					}
 					additionalmotion.add_ip(wallrun_press_against_wall());
 				} else {
-					double max_motion = GrappleConfig.getconf().airstrafe_max_speed;
-					double accel = GrappleConfig.getconf().airstrafe_acceleration;
+					double max_motion = GrappleConfig.getconf().other.airstrafe_max_speed;
+					double accel = GrappleConfig.getconf().other.airstrafe_acceleration;
 					vec motion_horizontal = motion.removealong(new vec(0,1,0));
 					double prev_motion = motion_horizontal.length();
 					vec new_motion_horizontal = motion_horizontal.add(this.playermovement.changelen(accel));

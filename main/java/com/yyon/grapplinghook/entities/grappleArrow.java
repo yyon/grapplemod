@@ -333,7 +333,7 @@ public class grappleArrow extends ProjectileItemEntity implements IEntityAdditio
 				vec vec3d = vec.positionvec(this);
 		        vec vec3d1 = vec3d.add(vec.motionvec(this));
 
-				if (movingobjectposition instanceof EntityRayTraceResult && !GrappleConfig.getconf().hookaffectsentities) {
+				if (movingobjectposition instanceof EntityRayTraceResult && !GrappleConfig.getconf().grapplinghook.other.hookaffectsentities) {
 					onHit(grapplemod.rayTraceBlocks(this.level, vec3d, vec3d1));
 			        return;
 				}

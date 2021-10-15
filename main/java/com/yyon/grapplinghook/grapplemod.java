@@ -309,9 +309,9 @@ public class grapplemod {
 	}
 	
 	public static void updateGrapplingBlocks() {
-		String s = GrappleConfig.getconf().grapplingBlocks;
+		String s = GrappleConfig.getconf().grapplinghook.blocks.grapplingBlocks;
 		if (s.equals("any") || s.equals("")) {
-			s = GrappleConfig.getconf().grapplingNonBlocks;
+			s = GrappleConfig.getconf().grapplinghook.blocks.grapplingNonBlocks;
 			if (s.equals("none") || s.equals("")) {
 				anyblocks = true;
 			} else {
@@ -327,7 +327,7 @@ public class grapplemod {
 			grapplingblocks = stringToBlocks(s);
 		}
 		
-		grapplingbreaksblocks = stringToBlocks(GrappleConfig.getconf().grappleBreakBlocks);
+		grapplingbreaksblocks = stringToBlocks(GrappleConfig.getconf().grapplinghook.blocks.grappleBreakBlocks);
 		anybreakblocks = grapplingbreaksblocks.size() != 0;
 		
 	}
@@ -335,7 +335,7 @@ public class grapplemod {
 	private static String prevGrapplingBlocks = null;
 	private static String prevGrapplingNonBlocks = null;
 	public static boolean attachesblock(Block block) {
-		if (!GrappleConfig.getconf().grapplingBlocks.equals(prevGrapplingBlocks) || !GrappleConfig.getconf().grapplingNonBlocks.equals(prevGrapplingNonBlocks)) {
+		if (!GrappleConfig.getconf().grapplinghook.blocks.grapplingBlocks.equals(prevGrapplingBlocks) || !GrappleConfig.getconf().grapplinghook.blocks.grapplingNonBlocks.equals(prevGrapplingNonBlocks)) {
 			updateGrapplingBlocks();
 		}
 		
@@ -354,7 +354,7 @@ public class grapplemod {
 
 	private static String prevGrapplingBreakBlocks = null;
 	public static boolean breaksblock(Block block) {
-		if (!GrappleConfig.getconf().grappleBreakBlocks.equals(prevGrapplingBreakBlocks)) {
+		if (!GrappleConfig.getconf().grapplinghook.blocks.grappleBreakBlocks.equals(prevGrapplingBreakBlocks)) {
 			updateGrapplingBlocks();
 		}
 		

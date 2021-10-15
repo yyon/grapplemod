@@ -118,7 +118,7 @@ public class EventHandlers {
 
 	@SubscribeEvent
 	public void onServerStart(FMLServerStartedEvent event) {
-		if (GrappleConfig.getconf().override_allowflight) {
+		if (GrappleConfig.getconf().other.override_allowflight) {
 			event.getServer().setFlightAllowed(true);
 		}
 	}

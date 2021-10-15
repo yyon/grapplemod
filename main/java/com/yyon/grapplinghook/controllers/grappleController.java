@@ -287,7 +287,7 @@ public class grappleController {
 						if (oldspherevec.length() < remaininglength) {
 						} else {
 							if (!motor) {
-								if (oldspherevec.length() - remaininglength > GrappleConfig.getconf().rope_snap_buffer) {
+								if (oldspherevec.length() - remaininglength > GrappleConfig.getconf().grapplinghook.other.rope_snap_buffer) {
 									// if rope is too long, the rope snaps
 									
 									this.unattach();
@@ -316,7 +316,7 @@ public class grappleController {
 									
 								} else {
 									double timer = grapplemod.getTime(this.entity.level) - ClientProxyClass.prev_rope_jump_time;
-									if (timer > GrappleConfig.getconf().rope_jump_cooldown_s * 20.0) {
+									if (timer > GrappleConfig.getconf().grapplinghook.other.rope_jump_cooldown_s * 20.0) {
 										doJump = true;
 										jumpSpeed = this.getJumpPower(player, spherevec, arrow);
 									}
@@ -352,12 +352,12 @@ public class grappleController {
 //												additionalmotion.add_ip(spherevec.changelen_ip(playerforward));
 //												this.r = dist;
 												arrow.r = dist + distToAnchor;
-												arrow.r -= playerforward*GrappleConfig.getconf().climb_speed;
+												arrow.r -= playerforward*GrappleConfig.getconf().grapplinghook.other.climb_speed;
 												if (arrow.r < distToAnchor) {
 													arrow.r = dist + distToAnchor;
 												}
 												
-												vec additionalmovementdown = spherevec.changelen(-playerforward * GrappleConfig.getconf().climb_speed).proj(new vec(0,1,0));
+												vec additionalmovementdown = spherevec.changelen(-playerforward * GrappleConfig.getconf().grapplinghook.other.climb_speed).proj(new vec(0,1,0));
 												if (additionalmovementdown.y < 0) {
 													additionalmotion.add_ip(additionalmovementdown);
 												}
@@ -611,8 +611,8 @@ public class grappleController {
 						if (jumpSpeed <= 0) {
 							jumpSpeed = 0;
 						}
-						if (jumpSpeed > GrappleConfig.getconf().rope_jump_power) {
-							jumpSpeed = GrappleConfig.getconf().rope_jump_power;
+						if (jumpSpeed > GrappleConfig.getconf().grapplinghook.other.rope_jump_power) {
+							jumpSpeed = GrappleConfig.getconf().grapplinghook.other.rope_jump_power;
 						}
 						this.doJump(entity, jumpSpeed, averagemotiontowards, min_spherevec_dist);
 						ClientProxyClass.prev_rope_jump_time = grapplemod.getTime(this.entity.level);
@@ -755,7 +755,7 @@ public class grappleController {
 	}
 
 	private double getJumpPower(Entity player, double jumppower) {
-		double maxjump = GrappleConfig.getconf().rope_jump_power;
+		double maxjump = GrappleConfig.getconf().grapplinghook.other.rope_jump_power;
 		if (ongroundtimer > 0) { // on ground: jump normally
 			ongroundtimer = 20;
 			return 0;
@@ -775,7 +775,7 @@ public class grappleController {
 	
 	public void doJump(Entity player, double jumppower, vec averagemotiontowards, double min_spherevec_dist) {
 		if (jumppower > 0) {
-			if (GrappleConfig.getconf().rope_jump_at_angle && min_spherevec_dist > 1) {
+			if (GrappleConfig.getconf().grapplinghook.other.rope_jump_at_angle && min_spherevec_dist > 1) {
 				motion.add_ip(averagemotiontowards.changelen(jumppower));
 			} else {
 				if (jumppower > player.getDeltaMovement().y + jumppower) {
@@ -793,9 +793,9 @@ public class grappleController {
 	}
 	
 	public double getJumpPower(Entity player, vec spherevec, grappleArrow arrow) {
-		double maxjump = GrappleConfig.getconf().rope_jump_power;
+		double maxjump = GrappleConfig.getconf().grapplinghook.other.rope_jump_power;
 		vec jump = new vec(0, maxjump, 0);
-		if (spherevec != null && !GrappleConfig.getconf().rope_jump_at_angle) {
+		if (spherevec != null && !GrappleConfig.getconf().grapplinghook.other.rope_jump_at_angle) {
 			jump = jump.proj(spherevec);
 		}
 		double jumppower = jump.y;
@@ -809,7 +809,7 @@ public class grappleController {
 
 		jumppower = this.getJumpPower(player, jumppower);
 		
-		double current_speed = GrappleConfig.getconf().rope_jump_at_angle ? -motion.dist_along(spherevec) : motion.y;
+		double current_speed = GrappleConfig.getconf().grapplinghook.other.rope_jump_at_angle ? -motion.dist_along(spherevec) : motion.y;
 		if (current_speed > 0) {
 			jumppower = jumppower - current_speed;
 		}
@@ -1104,7 +1104,7 @@ public class grappleController {
 	
 	public boolean iswallrunning() {
 		double current_speed = Math.sqrt(Math.pow(this.motion.x, 2) + Math.pow(this.motion.z,  2));
-		if (current_speed < GrappleConfig.getconf().wallrun_min_speed) {
+		if (current_speed < GrappleConfig.getconf().enchantments.wallrun.wallrun_min_speed) {
 			isonwall = false;
 			return false;
 		}
@@ -1113,7 +1113,7 @@ public class grappleController {
 			tickswallrunning += 1;
 		}
 		
-		if (tickswallrunning < GrappleConfig.getconf().max_wallrun_time * 40) {
+		if (tickswallrunning < GrappleConfig.getconf().enchantments.wallrun.max_wallrun_time * 40) {
 			if (!(playersneak)) {
 				// continue wallrun
 				if (isonwall && !this.entity.isOnGround() && this.entity.horizontalCollision) {
@@ -1165,7 +1165,7 @@ public class grappleController {
 			}
 
 			// drag
-			double dragforce = GrappleConfig.getconf().wallrun_drag;
+			double dragforce = GrappleConfig.getconf().enchantments.wallrun.wallrun_drag;
 			
 			double vel = this.motion.length();
 //			dragforce = vel*vel * dragforce;
@@ -1180,7 +1180,7 @@ public class grappleController {
 			this.motion.add_ip(wallfric);
 
 			ticks_since_last_wallrun_sound_effect++;
-			if (ticks_since_last_wallrun_sound_effect > GrappleConfig.getclientconf().wallrun_sound_effect_time_s * 20 * GrappleConfig.getconf().wallrun_max_speed / (vel + 0.00000001)) {
+			if (ticks_since_last_wallrun_sound_effect > GrappleConfig.getclientconf().sounds.wallrun_sound_effect_time_s * 20 * GrappleConfig.getconf().enchantments.wallrun.wallrun_max_speed / (vel + 0.00000001)) {
 				if (wallrun_raytrace_result != null) {
 					BlockPos blockpos = wallrun_raytrace_result.getBlockPos();
 					
@@ -1189,7 +1189,7 @@ public class grappleController {
 					
 			        SoundType soundtype = blockIn.getSoundType(blockState, world, blockpos, this.entity);
 
-		            this.entity.playSound(soundtype.getStepSound(), soundtype.getVolume() * 0.30F * GrappleConfig.getclientconf().wallrun_sound_volume, soundtype.getPitch());
+		            this.entity.playSound(soundtype.getStepSound(), soundtype.getVolume() * 0.30F * GrappleConfig.getclientconf().sounds.wallrun_sound_volume, soundtype.getPitch());
 					ticks_since_last_wallrun_sound_effect = 0;
 				}
 			}
@@ -1200,9 +1200,9 @@ public class grappleController {
 		isjumping = isjumping && !playerjump; // only jump once when key is first pressed
 		playerjump = ClientProxyClass.key_jumpanddetach.isDown() && isonwall;
 		if (isjumping && wallrun) {
-			vec jump = new vec(0, GrappleConfig.getconf().wall_jump_up, 0);
+			vec jump = new vec(0, GrappleConfig.getconf().enchantments.wallrun.wall_jump_up, 0);
 			if (walldirection != null) {
-				jump.add_ip(walldirection.mult(-GrappleConfig.getconf().wall_jump_side));
+				jump.add_ip(walldirection.mult(-GrappleConfig.getconf().enchantments.wallrun.wall_jump_side));
 			}
 			motion.add_ip(jump);
 			
@@ -1223,18 +1223,18 @@ public class grappleController {
 	}
 
 	public void doublejump() {
-		if (-this.motion.y > GrappleConfig.getconf().dont_doublejump_if_falling_faster_than) {
+		if (-this.motion.y > GrappleConfig.getconf().enchantments.doublejump.dont_doublejump_if_falling_faster_than) {
 			return;
 		}
-		if (this.motion.y < 0 && !GrappleConfig.getconf().doublejump_relative_to_falling) {
+		if (this.motion.y < 0 && !GrappleConfig.getconf().enchantments.doublejump.doublejump_relative_to_falling) {
 			this.motion.y = 0;
 		}
-		this.motion.y += GrappleConfig.getconf().doublejumpforce;
+		this.motion.y += GrappleConfig.getconf().enchantments.doublejump.doublejumpforce;
 		motion.setmotion(this.entity);
 	}
 	
 	public void applySlidingFriction() {
-		double dragforce = GrappleConfig.getconf().sliding_friction;
+		double dragforce = GrappleConfig.getconf().enchantments.slide.sliding_friction;
 		
 //		double vel = this.motion.length();
 //		dragforce = vel*vel * dragforce;
@@ -1247,6 +1247,6 @@ public class grappleController {
 	}
 
 	public void slidingJump() {
-		this.motion.y = GrappleConfig.getconf().slidingjumpforce;
+		this.motion.y = GrappleConfig.getconf().enchantments.slide.slidingjumpforce;
 	}
 }

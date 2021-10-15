@@ -9,7 +9,7 @@ import net.minecraft.inventory.EquipmentSlotType;
 
 public class WallrunEnchantment extends Enchantment {
 	public WallrunEnchantment() {
-		super(grapplemod.getRarityFromInt(GrappleConfig.getconf().enchant_rarity_wallrun), EnchantmentType.ARMOR_FEET, new EquipmentSlotType[] {EquipmentSlotType.FEET});
+		super(grapplemod.getRarityFromInt(GrappleConfig.getconf().enchantments.wallrun.enchant_rarity_wallrun), EnchantmentType.ARMOR_FEET, new EquipmentSlotType[] {EquipmentSlotType.FEET});
 	}
     public int getMinEnchantability(int enchantmentLevel)
     {

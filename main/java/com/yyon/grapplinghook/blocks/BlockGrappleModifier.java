@@ -106,7 +106,7 @@ public class BlockGrappleModifier extends Block {
 			}
 		} else if (helditem == Items.DIAMOND_BOOTS) {
 			if (!worldIn.isClientSide) {
-				if (GrappleConfig.getconf().longfallbootsrecipe) {
+				if (GrappleConfig.getconf().longfallboots.longfallbootsrecipe) {
 					boolean gaveitem = false;
 					if (helditemstack.isEnchanted()) {
 						Map<Enchantment, Integer> enchantments = EnchantmentHelper.getEnchantments(helditemstack);
