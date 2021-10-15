@@ -8,61 +8,110 @@ public class GrappleCustomization {
 	public static final String[] doubleoptions = new String[] {"maxlen", "hookgravity", "throwspeed", "motormaxspeed", "motoracceleration", "playermovementmult", "repelforce", "attractradius", "angle", "sneakingangle", "verticalthrowangle", "sneakingverticalthrowangle", "rocket_force", "rocket_active_time", "rocket_refuel_ratio", "rocket_vertical_angle"};
 	
 	// rope
-	public double maxlen = GrappleConfig.getconf().default_maxlen;
-	public boolean phaserope = GrappleConfig.getconf().default_phaserope;
-	public boolean climbkey = GrappleConfig.getconf().default_climbkey;
-	public boolean sticky = GrappleConfig.getconf().default_sticky;
+	public double maxlen;
+	public boolean phaserope;
+	public boolean climbkey;
+	public boolean sticky;
 
 	// hook thrower
-	public double hookgravity = GrappleConfig.getconf().default_hookgravity;
-	public double throwspeed = GrappleConfig.getconf().default_throwspeed;
-	public boolean reelin = GrappleConfig.getconf().default_reelin;
-	public double verticalthrowangle = GrappleConfig.getconf().default_verticalthrowangle;
-	public double sneakingverticalthrowangle = GrappleConfig.getconf().default_sneakingverticalthrowangle;
-	public boolean detachonkeyrelease = GrappleConfig.getconf().default_detachonkeyrelease;
+	public double hookgravity;
+	public double throwspeed;
+	public boolean reelin;
+	public double verticalthrowangle;
+	public double sneakingverticalthrowangle;
+	public boolean detachonkeyrelease;
 
 	// motor
-	public boolean motor = GrappleConfig.getconf().default_motor;
-	public double motormaxspeed = GrappleConfig.getconf().default_motormaxspeed;
-	public double motoracceleration = GrappleConfig.getconf().default_motoracceleration;
-	public boolean motorwhencrouching = GrappleConfig.getconf().default_motorwhencrouching;
-	public boolean motorwhennotcrouching = GrappleConfig.getconf().default_motorwhennotcrouching;
-	public boolean smartmotor = GrappleConfig.getconf().default_smartmotor;
-	public boolean motordampener = GrappleConfig.getconf().default_motordampener;
-	public boolean pullbackwards = GrappleConfig.getconf().default_pullbackwards;
+	public boolean motor;
+	public double motormaxspeed;
+	public double motoracceleration;
+	public boolean motorwhencrouching;
+	public boolean motorwhennotcrouching;
+	public boolean smartmotor;
+	public boolean motordampener;
+	public boolean pullbackwards;
 	
 	// swing speed
-	public double playermovementmult = GrappleConfig.getconf().default_playermovementmult;
+	public double playermovementmult;
 
 	// ender staff
-	public boolean enderstaff = GrappleConfig.getconf().default_enderstaff;
+	public boolean enderstaff;
 
 	// forcefield
-	public boolean repel = GrappleConfig.getconf().default_repel;
-	public double repelforce = GrappleConfig.getconf().default_repelforce;
+	public boolean repel;
+	public double repelforce;
 	
 	// hook magnet
-	public boolean attract = GrappleConfig.getconf().default_attract;
-	public double attractradius = GrappleConfig.getconf().default_attractradius;
+	public boolean attract;
+	public double attractradius;
 	
 	// double hook
-	public boolean doublehook = GrappleConfig.getconf().default_doublehook;
-	public boolean smartdoublemotor = GrappleConfig.getconf().default_smartdoublemotor;
-	public double angle = GrappleConfig.getconf().default_angle;
-	public double sneakingangle = GrappleConfig.getconf().default_sneakingangle;
-	public boolean oneropepull = GrappleConfig.getconf().default_oneropepull;
+	public boolean doublehook;
+	public boolean smartdoublemotor;
+	public double angle;
+	public double sneakingangle;
+	public boolean oneropepull;
 	
 	// rocket
-	public boolean rocket = GrappleConfig.getconf().default_rocketenabled;
-	public double rocket_force = GrappleConfig.getconf().default_rocket_force;
-	public double rocket_active_time = GrappleConfig.getconf().default_rocket_active_time;
-	public double rocket_refuel_ratio = GrappleConfig.getconf().default_rocket_refuel_ratio;
-	public double rocket_vertical_angle = GrappleConfig.getconf().default_rocket_vertical_angle;
+	public boolean rocket;
+	public double rocket_force;
+	public double rocket_active_time;
+	public double rocket_refuel_ratio;
+	public double rocket_vertical_angle;
 	
 	public GrappleCustomization() {
-		
+		for (String option : booleanoptions) {
+			GrappleConfig.Config.GrapplingHook.Custom.BooleanCustomizationOption optionconfig = getBooleanConfig(option);
+			this.setBoolean(option, optionconfig.default_value);
+		}
+		for (String option : doubleoptions) {
+			GrappleConfig.Config.GrapplingHook.Custom.DoubleCustomizationOption optionconfig = getDoubleConfig(option);
+			this.setDouble(option, optionconfig.default_value);
+		}
 	}
 	
+	public GrappleConfig.Config.GrapplingHook.Custom.BooleanCustomizationOption getBooleanConfig(String option) {
+		if (option.equals("phaserope")) {return GrappleConfig.getconf().grapplinghook.custom.rope.phaserope;}
+		else if (option.equals("motor")) {return GrappleConfig.getconf().grapplinghook.custom.motor.motor;}
+		else if (option.equals("motorwhencrouching")) {return GrappleConfig.getconf().grapplinghook.custom.motor.motorwhencrouching;}
+		else if (option.equals("motorwhennotcrouching")) {return GrappleConfig.getconf().grapplinghook.custom.motor.motorwhennotcrouching;}
+		else if (option.equals("smartmotor")) {return GrappleConfig.getconf().grapplinghook.custom.motor.smartmotor;}
+		else if (option.equals("enderstaff")) {return GrappleConfig.getconf().grapplinghook.custom.enderstaff.enderstaff;}
+		else if (option.equals("repel")) {return GrappleConfig.getconf().grapplinghook.custom.forcefield.repel;}
+		else if (option.equals("attract")) {return GrappleConfig.getconf().grapplinghook.custom.magnet.attract;}
+		else if (option.equals("doublehook")) {return GrappleConfig.getconf().grapplinghook.custom.doublehook.doublehook;}
+		else if (option.equals("smartdoublemotor")) {return GrappleConfig.getconf().grapplinghook.custom.doublehook.smartdoublemotor;}
+		else if (option.equals("motordampener")) {return GrappleConfig.getconf().grapplinghook.custom.motor.motordampener;}
+		else if (option.equals("reelin")) {return GrappleConfig.getconf().grapplinghook.custom.hookthrower.reelin;}
+		else if (option.equals("pullbackwards")) {return GrappleConfig.getconf().grapplinghook.custom.motor.pullbackwards;}
+		else if (option.equals("oneropepull")) {return GrappleConfig.getconf().grapplinghook.custom.doublehook.oneropepull;}
+		else if (option.equals("climbkey")) {return GrappleConfig.getconf().grapplinghook.custom.rope.climbkey;}
+		else if (option.equals("sticky")) {return GrappleConfig.getconf().grapplinghook.custom.rope.sticky;}
+		else if (option.equals("detachonkeyrelease")) {return GrappleConfig.getconf().grapplinghook.custom.hookthrower.detachonkeyrelease;}
+		else if (option.equals("rocket")) {return GrappleConfig.getconf().grapplinghook.custom.rocket.rocketenabled;}
+		return null;
+	}
+
+	public GrappleConfig.Config.GrapplingHook.Custom.DoubleCustomizationOption getDoubleConfig(String option) {
+		if (option.equals("maxlen")) {return GrappleConfig.getconf().grapplinghook.custom.rope.maxlen;}
+		else if (option.equals("hookgravity")) {return GrappleConfig.getconf().grapplinghook.custom.hookthrower.hookgravity;}
+		else if (option.equals("throwspeed")) {return GrappleConfig.getconf().grapplinghook.custom.hookthrower.throwspeed;}
+		else if (option.equals("motormaxspeed")) {return GrappleConfig.getconf().grapplinghook.custom.motor.motormaxspeed;}
+		else if (option.equals("motoracceleration")) {return GrappleConfig.getconf().grapplinghook.custom.motor.motoracceleration;}
+		else if (option.equals("playermovementmult")) {return GrappleConfig.getconf().grapplinghook.custom.swing.playermovementmult;}
+		else if (option.equals("repelforce")) {return GrappleConfig.getconf().grapplinghook.custom.forcefield.repelforce;}
+		else if (option.equals("attractradius")) {return GrappleConfig.getconf().grapplinghook.custom.magnet.attractradius;}
+		else if (option.equals("angle")) {return GrappleConfig.getconf().grapplinghook.custom.doublehook.angle;}
+		else if (option.equals("sneakingangle")) {return GrappleConfig.getconf().grapplinghook.custom.doublehook.sneakingangle;}
+		else if (option.equals("verticalthrowangle")) {return GrappleConfig.getconf().grapplinghook.custom.hookthrower.verticalthrowangle;}
+		else if (option.equals("sneakingverticalthrowangle")) {return GrappleConfig.getconf().grapplinghook.custom.hookthrower.sneakingverticalthrowangle;}
+		else if (option.equals("rocket_force")) {return GrappleConfig.getconf().grapplinghook.custom.rocket.rocket_force;}
+		else if (option.equals("rocket_active_time")) {return GrappleConfig.getconf().grapplinghook.custom.rocket.rocket_active_time;}
+		else if (option.equals("rocket_refuel_ratio")) {return GrappleConfig.getconf().grapplinghook.custom.rocket.rocket_refuel_ratio;}
+		else if (option.equals("rocket_vertical_angle")) {return GrappleConfig.getconf().grapplinghook.custom.rocket.rocket_vertical_angle;}
+		return null;
+	}
+
 	public CompoundNBT writeNBT() {
 		CompoundNBT compound = new CompoundNBT();
 		for (String option : booleanoptions) {
@@ -236,70 +285,21 @@ public class GrappleCustomization {
 	}
 	
 	public double getMax(String option, int upgrade) {
-		if (option.equals("maxlen")) {return upgrade == 1 ? GrappleConfig.getconf().max_upgrade_maxlen : GrappleConfig.getconf().max_maxlen;}
-		else if (option.equals("hookgravity")) {return upgrade == 1 ? GrappleConfig.getconf().max_upgrade_hookgravity : GrappleConfig.getconf().max_hookgravity;}
-		else if (option.equals("throwspeed")) {return upgrade == 1 ? GrappleConfig.getconf().max_upgrade_throwspeed : GrappleConfig.getconf().max_throwspeed;}
-		else if (option.equals("motormaxspeed")) {return upgrade == 1 ? GrappleConfig.getconf().max_upgrade_motormaxspeed : GrappleConfig.getconf().max_motormaxspeed;}
-		else if (option.equals("motoracceleration")) {return upgrade == 1 ? GrappleConfig.getconf().max_upgrade_motoracceleration : GrappleConfig.getconf().max_motoracceleration;}
-		else if (option.equals("playermovementmult")) {return upgrade == 1 ? GrappleConfig.getconf().max_upgrade_playermovementmult : GrappleConfig.getconf().max_playermovementmult;}
-		else if (option.equals("repelforce")) {return upgrade == 1 ? GrappleConfig.getconf().max_upgrade_repelforce : GrappleConfig.getconf().max_repelforce;}
-		else if (option.equals("attractradius")) {return upgrade == 1 ? GrappleConfig.getconf().max_upgrade_attractradius : GrappleConfig.getconf().max_attractradius;}
-		else if (option.equals("angle")) {return upgrade == 1 ? GrappleConfig.getconf().max_upgrade_angle : GrappleConfig.getconf().max_angle;}
-		else if (option.equals("sneakingangle")) {return upgrade == 1 ? GrappleConfig.getconf().max_upgrade_sneakingangle : GrappleConfig.getconf().max_sneakingangle;}
-		else if (option.equals("verticalthrowangle")) {return upgrade == 1 ? GrappleConfig.getconf().max_upgrade_verticalthrowangle : GrappleConfig.getconf().max_verticalthrowangle;}
-		else if (option.equals("sneakingverticalthrowangle")) {return upgrade == 1 ? GrappleConfig.getconf().max_upgrade_sneakingverticalthrowangle : GrappleConfig.getconf().max_sneakingverticalthrowangle;}
-		else if (option.equals("rocket_force")) {return upgrade == 1 ? GrappleConfig.getconf().max_upgrade_rocket_force: GrappleConfig.getconf().max_rocket_force;}
-		else if (option.equals("rocket_active_time")) {return upgrade == 1 ? GrappleConfig.getconf().max_upgrade_rocket_active_time : GrappleConfig.getconf().max_rocket_active_time;}
-		else if (option.equals("rocket_refuel_ratio")) {return upgrade == 1 ? GrappleConfig.getconf().max_upgrade_rocket_refuel_ratio : GrappleConfig.getconf().max_rocket_refuel_ratio;}
-		else if (option.equals("rocket_vertical_angle")) {return upgrade == 1 ? GrappleConfig.getconf().max_upgrade_rocket_vertical_angle : GrappleConfig.getconf().max_rocket_vertical_angle;}
-		System.out.println("Option doesn't exist: " + option);
-		return 0;
+		GrappleConfig.Config.GrapplingHook.Custom.DoubleCustomizationOption configoption = this.getDoubleConfig(option);
+		return upgrade == 1 ? configoption.max_upgraded : configoption.max;
 	}
 	
 	public double getMin(String option, int upgrade) {
-		if (option.equals("hookgravity")) {return upgrade == 1 ? GrappleConfig.getconf().min_upgrade_hookgravity : GrappleConfig.getconf().min_hookgravity;}
-		if (option.equals("rocket_refuel_ratio")) {return upgrade == 1 ? GrappleConfig.getconf().min_upgrade_rocket_refuel_ratio : GrappleConfig.getconf().min_rocket_refuel_ratio;}
-		
-		return 0;
+		GrappleConfig.Config.GrapplingHook.Custom.DoubleCustomizationOption configoption = this.getDoubleConfig(option);
+		return upgrade == 1 ? configoption.min_upgraded : configoption.min;
 	}
 	
 	public int optionEnabled(String option) {
-		if (option.equals("maxlen")) {return GrappleConfig.getconf().enable_maxlen;}
-		else if (option.equals("phaserope")) {return GrappleConfig.getconf().enable_phaserope;}
-		else if (option.equals("hookgravity")) {return GrappleConfig.getconf().enable_hookgravity;}
-		else if (option.equals("throwspeed")) {return GrappleConfig.getconf().enable_throwspeed;}
-		else if (option.equals("reelin")) {return GrappleConfig.getconf().enable_reelin;}
-		else if (option.equals("verticalthrowangle")) {return GrappleConfig.getconf().enable_verticalthrowangle;}
-		else if (option.equals("motor")) {return GrappleConfig.getconf().enable_motor;}
-		else if (option.equals("motormaxspeed")) {return GrappleConfig.getconf().enable_motormaxspeed;}
-		else if (option.equals("motoracceleration")) {return GrappleConfig.getconf().enable_motoracceleration;}
-		else if (option.equals("motorwhencrouching")) {return GrappleConfig.getconf().enable_motorwhencrouching;}
-		else if (option.equals("motorwhennotcrouching")) {return GrappleConfig.getconf().enable_motorwhennotcrouching;}
-		else if (option.equals("smartmotor")) {return GrappleConfig.getconf().enable_smartmotor;}
-		else if (option.equals("motordampener")) {return GrappleConfig.getconf().enable_motordampener;}
-		else if (option.equals("pullbackwards")) {return GrappleConfig.getconf().enable_pullbackwards;}
-		else if (option.equals("playermovementmult")) {return GrappleConfig.getconf().enable_playermovementmult;}
-		else if (option.equals("enderstaff")) {return GrappleConfig.getconf().enable_enderstaff;}
-		else if (option.equals("repel")) {return GrappleConfig.getconf().enable_repel;}
-		else if (option.equals("repelforce")) {return GrappleConfig.getconf().enable_repelforce;}
-		else if (option.equals("attract")) {return GrappleConfig.getconf().enable_attract;}
-		else if (option.equals("attractradius")) {return GrappleConfig.getconf().enable_attractradius;}
-		else if (option.equals("doublehook")) {return GrappleConfig.getconf().enable_doublehook;}
-		else if (option.equals("smartdoublemotor")) {return GrappleConfig.getconf().enable_smartdoublemotor;}
-		else if (option.equals("angle")) {return GrappleConfig.getconf().enable_angle;}
-		else if (option.equals("sneakingangle")) {return GrappleConfig.getconf().enable_sneakingangle;}
-		else if (option.equals("oneropepull")) {return GrappleConfig.getconf().enable_oneropepull;}
-		else if (option.equals("sneakingverticalthrowangle")) {return GrappleConfig.getconf().enable_sneakingverticalthrowangle;}
-		else if (option.equals("climbkey")) {return GrappleConfig.getconf().enable_climbkey;}
-		else if (option.equals("sticky")) {return GrappleConfig.getconf().enable_sticky;}
-		else if (option.equals("detachonkeyrelease")) {return GrappleConfig.getconf().enable_detachonkeyrelease;}
-		else if (option.equals("rocket")) {return GrappleConfig.getconf().enable_rocket;}
-		else if (option.equals("rocket_force")) {return GrappleConfig.getconf().enable_rocket_force;}
-		else if (option.equals("rocket_active_time")) {return GrappleConfig.getconf().enable_rocket_active_time;}
-		else if (option.equals("rocket_refuel_ratio")) {return GrappleConfig.getconf().enable_rocket_refuel_ratio;}
-		else if (option.equals("rocket_vertical_angle")) {return GrappleConfig.getconf().enable_rocket_vertical_angle;}
-		System.out.println("Unknown option");
-		return 0;
+		GrappleConfig.Config.GrapplingHook.Custom.BooleanCustomizationOption configoption = this.getBooleanConfig(option);
+		if (configoption != null) {
+			return configoption.enabled;
+		}
+		return this.getDoubleConfig(option).enabled;
 	}
 	
 	public boolean equals(GrappleCustomization other) {

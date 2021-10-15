@@ -4,161 +4,208 @@ import me.shedaniel.autoconfig.AutoConfig;
 import me.shedaniel.autoconfig.ConfigData;
 import me.shedaniel.autoconfig.annotation.Config;
 import me.shedaniel.autoconfig.annotation.ConfigEntry;
-import net.minecraft.block.Block;
 
-//import net.minecraftforge.common.config.Config;
 //@Config(modid="grapplemod", name="grappling_hook", category="")
 @Config(name = "grapplemod")
 public class GrappleConfig implements ConfigData {
 	public static class Config {
-		// rope
-		public double default_maxlen = 30;
-		public boolean default_phaserope = false;
-		public boolean default_climbkey = true;
-		public boolean default_sticky = false;
-		// hook thrower
-		public double default_hookgravity = 1F;
-		public double default_throwspeed = 2F;
-		public boolean default_reelin = true;
-		public double default_verticalthrowangle = 0F;
-		public double default_sneakingverticalthrowangle = 0F;
-		public boolean default_detachonkeyrelease = false;
-		// motor
-		public boolean default_motor = false;
-		public double default_motormaxspeed = 4;
-		public double default_motoracceleration = 0.2;
-		public boolean default_motorwhencrouching = false;
-		public boolean default_motorwhennotcrouching = true;
-		public boolean default_smartmotor = false;
-		public boolean default_motordampener = false;
-		public boolean default_pullbackwards = true;
-		// swing speed
-		public double default_playermovementmult = 1;
-		// ender staff
-		public boolean default_enderstaff = false;
-		// forcefield
-		public boolean default_repel = false;
-		public double default_repelforce = 1;
-		// hook magnet
-		public boolean default_attract = false;
-		public double default_attractradius = 3;
-		// double hook
-		public boolean default_doublehook = false;
-		public boolean default_smartdoublemotor = true;
-		public double default_angle = 20;
-		public double default_sneakingangle = 10;
-		public boolean default_oneropepull = false;
-		// rocket
-		public boolean default_rocketenabled = false;
-		public double default_rocket_force = 1;
-		public double default_rocket_active_time = 0.5;
-		public double default_rocket_refuel_ratio = 15;
-		public double default_rocket_vertical_angle = 0;
+		@ConfigEntry.Gui.CollapsibleObject
+		public GrapplingHook grapplinghook = new GrapplingHook();
+		public static class GrapplingHook {
+			@ConfigEntry.Gui.CollapsibleObject
+			public Custom custom = new Custom();
+			public static class Custom {
+				public static class DoubleCustomizationOption {
+					public double default_value;
+					public int enabled;
+					public double max;
+					public double max_upgraded;
+					public double min;
+					public double min_upgraded;
+					
+					public DoubleCustomizationOption(double default_value, int enabled, double max, double max_upgraded) {
+						this.default_value = default_value; this.enabled = enabled; this.max = max; this.max_upgraded = max_upgraded;
+						this.min = 0; this.min_upgraded = 0;
+					}
+					
+					public DoubleCustomizationOption(double default_value, int enabled, double max, double max_upgraded, double min, double min_upgraded) {
+						this(default_value, enabled, max, max_upgraded);
+						this.min = min; this.min_upgraded = min_upgraded;
+					}
+				}
+				public static class BooleanCustomizationOption {
+					public boolean default_value;
+					public int enabled;
+					
+					public BooleanCustomizationOption(boolean default_value, int enabled) {
+						this.default_value = default_value; this.enabled = enabled;
+					}
+				}
+				
+				@ConfigEntry.Gui.CollapsibleObject
+				public Rope rope = new Rope();
+				public static class Rope {
+					@ConfigEntry.Gui.CollapsibleObject
+					public DoubleCustomizationOption maxlen = new DoubleCustomizationOption(30, 0, 60, 200);
+					@ConfigEntry.Gui.CollapsibleObject
+					public BooleanCustomizationOption phaserope = new BooleanCustomizationOption(false, 0);
+					@ConfigEntry.Gui.CollapsibleObject
+					public BooleanCustomizationOption climbkey = new BooleanCustomizationOption(true, 0);
+					@ConfigEntry.Gui.CollapsibleObject
+					public BooleanCustomizationOption sticky = new BooleanCustomizationOption(false, 0);
+				}
+				
+				@ConfigEntry.Gui.CollapsibleObject
+				public HookThrower hookthrower = new HookThrower();
+				public static class HookThrower {
+					@ConfigEntry.Gui.CollapsibleObject
+					public DoubleCustomizationOption hookgravity = new DoubleCustomizationOption(1F, 0, 100, 100, 1, 0);
+					@ConfigEntry.Gui.CollapsibleObject
+					public DoubleCustomizationOption throwspeed = new DoubleCustomizationOption(2F, 0, 5, 20);
+					@ConfigEntry.Gui.CollapsibleObject
+					public BooleanCustomizationOption reelin = new BooleanCustomizationOption(true, 0);
+					@ConfigEntry.Gui.CollapsibleObject
+					public DoubleCustomizationOption verticalthrowangle = new DoubleCustomizationOption(0F, 0, 45, 90);
+					@ConfigEntry.Gui.CollapsibleObject
+					public DoubleCustomizationOption sneakingverticalthrowangle = new DoubleCustomizationOption(0F, 0, 45, 90);
+					@ConfigEntry.Gui.CollapsibleObject
+					public BooleanCustomizationOption detachonkeyrelease = new BooleanCustomizationOption(false, 0);
+				}
+				
+				@ConfigEntry.Gui.CollapsibleObject
+				public Motor motor = new Motor();
+				public static class Motor {
+					@ConfigEntry.Gui.CollapsibleObject
+					public BooleanCustomizationOption motor = new BooleanCustomizationOption(false, 0);
+					@ConfigEntry.Gui.CollapsibleObject
+					public DoubleCustomizationOption motormaxspeed = new DoubleCustomizationOption(4, 0, 4, 10);
+					@ConfigEntry.Gui.CollapsibleObject
+					public DoubleCustomizationOption motoracceleration = new DoubleCustomizationOption(0.2, 0, 0.2, 1);
+					@ConfigEntry.Gui.CollapsibleObject
+					public BooleanCustomizationOption motorwhencrouching = new BooleanCustomizationOption(false, 0);
+					@ConfigEntry.Gui.CollapsibleObject
+					public BooleanCustomizationOption motorwhennotcrouching = new BooleanCustomizationOption(true, 0);
+					@ConfigEntry.Gui.CollapsibleObject
+					public BooleanCustomizationOption smartmotor = new BooleanCustomizationOption(false, 0);
+					@ConfigEntry.Gui.CollapsibleObject
+					public BooleanCustomizationOption motordampener = new BooleanCustomizationOption(false, 1);
+					@ConfigEntry.Gui.CollapsibleObject
+					public BooleanCustomizationOption pullbackwards = new BooleanCustomizationOption(true, 0);
+				}
+				
+				@ConfigEntry.Gui.CollapsibleObject
+				public Swing swing = new Swing();
+				public static class Swing {
+					@ConfigEntry.Gui.CollapsibleObject
+					public DoubleCustomizationOption playermovementmult = new DoubleCustomizationOption(1, 0, 2, 5);
+				}
+				
+				@ConfigEntry.Gui.CollapsibleObject
+				public EnderStaff enderstaff = new EnderStaff();
+				public static class EnderStaff {
+					@ConfigEntry.Gui.CollapsibleObject
+					public BooleanCustomizationOption enderstaff = new BooleanCustomizationOption(false, 0);
+				}
+				
+				@ConfigEntry.Gui.CollapsibleObject
+				public Forcefield forcefield = new Forcefield();
+				public static class Forcefield {
+					@ConfigEntry.Gui.CollapsibleObject
+					public BooleanCustomizationOption repel = new BooleanCustomizationOption(false, 0);
+					@ConfigEntry.Gui.CollapsibleObject
+					public DoubleCustomizationOption repelforce = new DoubleCustomizationOption(1, 0, 1, 5);
+				}
+				
+				@ConfigEntry.Gui.CollapsibleObject
+				public Magnet magnet = new Magnet();
+				public static class Magnet {
+					@ConfigEntry.Gui.CollapsibleObject
+					public BooleanCustomizationOption attract = new BooleanCustomizationOption(false, 0);
+					@ConfigEntry.Gui.CollapsibleObject
+					public DoubleCustomizationOption attractradius = new DoubleCustomizationOption(3, 0, 3, 10);
+				}
+				
+				@ConfigEntry.Gui.CollapsibleObject
+				public DoubleHook doublehook = new DoubleHook();
+				public static class DoubleHook {
+					@ConfigEntry.Gui.CollapsibleObject
+					public BooleanCustomizationOption doublehook = new BooleanCustomizationOption(false, 0);
+					@ConfigEntry.Gui.CollapsibleObject
+					public BooleanCustomizationOption smartdoublemotor = new BooleanCustomizationOption(true, 0);
+					@ConfigEntry.Gui.CollapsibleObject
+					public DoubleCustomizationOption angle = new DoubleCustomizationOption(20, 0, 45, 90);
+					@ConfigEntry.Gui.CollapsibleObject
+					public DoubleCustomizationOption sneakingangle = new DoubleCustomizationOption(10, 0, 45, 90);
+					@ConfigEntry.Gui.CollapsibleObject
+					public BooleanCustomizationOption oneropepull = new BooleanCustomizationOption(false, 0);
+				}
+				
+				@ConfigEntry.Gui.CollapsibleObject
+				public Rocket rocket = new Rocket();
+				public static class Rocket {
+					@ConfigEntry.Gui.CollapsibleObject
+					public BooleanCustomizationOption rocketenabled = new BooleanCustomizationOption(false, 0);
+					@ConfigEntry.Gui.CollapsibleObject
+					public DoubleCustomizationOption rocket_force = new DoubleCustomizationOption(1, 0, 1, 5);
+					@ConfigEntry.Gui.CollapsibleObject
+					public DoubleCustomizationOption rocket_active_time = new DoubleCustomizationOption(0.5, 0, 0.5, 20);
+					@ConfigEntry.Gui.CollapsibleObject
+					public DoubleCustomizationOption rocket_refuel_ratio = new DoubleCustomizationOption(15, 0, 30, 30, 15, 1);
+					@ConfigEntry.Gui.CollapsibleObject
+					public DoubleCustomizationOption rocket_vertical_angle = new DoubleCustomizationOption(0, 0, 90, 90);
+				}
+			}
+			
+			
+			@ConfigEntry.Gui.CollapsibleObject
+			public Blocks blocks = new Blocks();
+			public static class Blocks {
+				
+			}
+			
+			@ConfigEntry.Gui.CollapsibleObject
+			public Other other = new Other();
+			public static class Other {
+				
+			}
+		}
 		
-
-		// rope
-		public double max_maxlen = 60;
-		// hook thrower
-		public double max_hookgravity = 100;
-		public double max_throwspeed = 5;
-		public double max_verticalthrowangle = 45;
-		public double max_sneakingverticalthrowangle = 45;
-		// motor
-		public double max_motormaxspeed = 4;
-		public double max_motoracceleration = 0.2;
-		// swing speed
-		public double max_playermovementmult = 2;
-		// forcefield
-		public double max_repelforce = 1;
-		// hook magnet
-		public double max_attractradius = 3;
-		// double hook
-		public double max_angle = 45;
-		public double max_sneakingangle = 45;
+		@ConfigEntry.Gui.CollapsibleObject
+		public LongFallBoots longfallboots = new LongFallBoots();
+		public static class LongFallBoots {
+			
+		}
 		
+		@ConfigEntry.Gui.CollapsibleObject
+		public Enchantments enchantments = new Enchantments();
+		public static class Enchantments {
+			@ConfigEntry.Gui.CollapsibleObject
+			public Wallrun wallrun = new Wallrun();
+			public static class Wallrun {
+				
+			}
+			
+			@ConfigEntry.Gui.CollapsibleObject
+			public DoubleJump doublejump = new DoubleJump();
+			public static class DoubleJump {
+				
+			}
+			
+			@ConfigEntry.Gui.CollapsibleObject
+			public Slide slide = new Slide();
+			public static class Slide {
+				
+			}
+		}
 		
-		// rope
-		public double max_upgrade_maxlen = 200;
-		// hook thrower
-		public double max_upgrade_hookgravity = 100;
-		public double max_upgrade_throwspeed = 20;
-		public double max_upgrade_verticalthrowangle = 90;
-		public double max_upgrade_sneakingverticalthrowangle = 90;
-		// motorversion
-		public double max_upgrade_motormaxspeed = 10;
-		public double max_upgrade_motoracceleration = 1;
-		// swing speed
-		public double max_upgrade_playermovementmult = 5;
-		// forcefield
-		public double max_upgrade_repelforce = 5;
-		// hook magnet
-		public double max_upgrade_attractradius = 10;
-		// double hook
-		public double max_upgrade_angle = 90;
-		public double max_upgrade_sneakingangle = 90;
-		// rocket
-		public double max_rocket_active_time = 0.5;
-		public double max_upgrade_rocket_active_time = 20;
-		public double max_rocket_force = 1;
-		public double max_upgrade_rocket_force = 5;
-
-		public double min_rocket_refuel_ratio = 15;
-		public double min_upgrade_rocket_refuel_ratio = 1;
-		public double max_rocket_refuel_ratio = 30;
-		public double max_upgrade_rocket_refuel_ratio = 30;
-
-		public double min_hookgravity = 1;
-		public double min_upgrade_hookgravity = 0;
-		
-		public double max_upgrade_rocket_vertical_angle = 90;
-		public double max_rocket_vertical_angle = 90;
+		@ConfigEntry.Gui.CollapsibleObject
+		public Other other = new Other();
+		public static class Other {
+			
+		}
 		
 		public String grapplingBlocks = "any";
 		public String grapplingNonBlocks = "none";
-		
-		// rope
-		public int enable_maxlen = 0;
-		public int enable_phaserope = 0;
-		public int enable_climbkey = 0;
-		public int enable_sticky = 0;
-		// hook thrower
-		public int enable_hookgravity = 0;
-		public int enable_throwspeed = 0;
-		public int enable_reelin = 0;
-		public int enable_verticalthrowangle = 0;
-		public int enable_sneakingverticalthrowangle = 0;
-		public int enable_detachonkeyrelease = 0;
-		// motor
-		public int enable_motor = 0;
-		public int enable_motormaxspeed = 0;
-		public int enable_motoracceleration = 0;
-		public int enable_motorwhencrouching = 0;
-		public int enable_motorwhennotcrouching = 0;
-		public int enable_smartmotor = 0;
-		public int enable_motordampener = 1;
-		public int enable_pullbackwards = 0;
-		// swing speed
-		public int enable_playermovementmult = 0;
-		// ender staff
-		public int enable_enderstaff = 0;
-		// forcefield
-		public int enable_repel = 0;
-		public int enable_repelforce = 0;
-		// hook magnet
-		public int enable_attract = 0;
-		public int enable_attractradius = 0;
-		// double hook
-		public int enable_doublehook = 0;
-		public int enable_smartdoublemotor = 0;
-		public int enable_angle = 0;
-		public int enable_sneakingangle = 0;
-		public int enable_oneropepull = 0;
-		// rocket
-		public int enable_rocket = 0;
-		public int enable_rocket_force = 0;
-		public int enable_rocket_active_time = 0;
-		public int enable_rocket_refuel_ratio = 0;
-		public int enable_rocket_vertical_angle = 0;
 
 		
 		public boolean longfallbootsrecipe = true;
