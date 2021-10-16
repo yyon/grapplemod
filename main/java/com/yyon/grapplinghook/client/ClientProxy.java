@@ -1,12 +1,19 @@
-package com.yyon.grapplinghook;
+package com.yyon.grapplinghook.client;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import com.yyon.grapplinghook.blocks.TileEntityGrappleModifier;
-import com.yyon.grapplinghook.controllers.grappleController;
-import com.yyon.grapplinghook.items.grappleBow;
+import com.yyon.grapplinghook.grapplemod;
+import com.yyon.grapplinghook.blocks.modifierblock.GuiModifier;
+import com.yyon.grapplinghook.blocks.modifierblock.TileEntityGrappleModifier;
+import com.yyon.grapplinghook.common.CommonSetup;
+import com.yyon.grapplinghook.config.GrappleConfig;
+import com.yyon.grapplinghook.controllers.GrappleController;
+import com.yyon.grapplinghook.items.GrapplehookItem;
 import com.yyon.grapplinghook.network.BaseMessageClient;
+import com.yyon.grapplinghook.utils.GrappleCustomization;
+import com.yyon.grapplinghook.utils.GrapplemodUtils;
+import com.yyon.grapplinghook.utils.Vec;
 
 import me.shedaniel.autoconfig.AutoConfig;
 import net.minecraft.client.GameSettings;
@@ -26,11 +33,11 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.network.NetworkEvent.Context;
 
-public class ClientProxyClass extends CommonProxyClass {
+public class ClientProxy extends ClientProxyInterface {
 	public ResourceLocation doubleJumpSoundLoc = new ResourceLocation("grapplemod", "doublejump");
 	public ResourceLocation slideSoundLoc = new ResourceLocation("grapplemod", "slide");
 
-	public ClientProxyClass() {
+	public ClientProxy() {
 	}
 	
 	@Override
@@ -121,7 +128,7 @@ public class ClientProxyClass extends CommonProxyClass {
 			RecipeManager recipemanager = Minecraft.getInstance().player.level.getRecipeManager();
 			recipemanager.getRecipeIds().filter(loc -> loc.getNamespace().equals(grapplemod.MODID)).forEach(loc -> {
 				ItemStack stack = recipemanager.byKey(loc).get().getResultItem();
-				if (stack.getItem() instanceof grappleBow) {
+				if (stack.getItem() instanceof GrapplehookItem) {
 					if (!CommonSetup.grapplebowitem.getCustomization(stack).equals(new GrappleCustomization())) {
 						grapplinghookvariants.add(stack);
 					}
@@ -157,40 +164,40 @@ public class ClientProxyClass extends CommonProxyClass {
 	}
 
 	@Override
-	public boolean iswallrunning(Entity entity, vec motion) {
+	public boolean iswallrunning(Entity entity, Vec motion) {
 		return ClientControllerManager.instance.iswallrunning(entity, motion);
 	}
 
 	@Override
-	public boolean issliding(Entity entity, vec motion) {
+	public boolean issliding(Entity entity, Vec motion) {
 		return ClientControllerManager.instance.issliding(entity, motion);
 	}
 
 	@Override
-	public grappleController createControl(int id, int arrowid, int entityid, World world, vec pos, BlockPos blockpos,
+	public GrappleController createControl(int id, int arrowid, int entityid, World world, Vec pos, BlockPos blockpos,
 			GrappleCustomization custom) {
 		return ClientControllerManager.instance.createControl(id, arrowid, entityid, world, pos, blockpos, custom);
 	}
 
 	@Override
 	public boolean isKeyDown(grapplekeys key) {
-		if (key == CommonProxyClass.grapplekeys.key_boththrow) {return ClientSetup.key_boththrow.isDown();}
-		else if (key == CommonProxyClass.grapplekeys.key_leftthrow) {return ClientSetup.key_leftthrow.isDown();}
-		else if (key == CommonProxyClass.grapplekeys.key_rightthrow) {return ClientSetup.key_rightthrow.isDown();}
-		else if (key == CommonProxyClass.grapplekeys.key_motoronoff) {return ClientSetup.key_motoronoff.isDown();}
-		else if (key == CommonProxyClass.grapplekeys.key_jumpanddetach) {return ClientSetup.key_jumpanddetach.isDown();}
-		else if (key == CommonProxyClass.grapplekeys.key_slow) {return ClientSetup.key_slow.isDown();}
-		else if (key == CommonProxyClass.grapplekeys.key_climb) {return ClientSetup.key_climb.isDown();}
-		else if (key == CommonProxyClass.grapplekeys.key_climbup) {return ClientSetup.key_climbup.isDown();}
-		else if (key == CommonProxyClass.grapplekeys.key_climbdown) {return ClientSetup.key_climbdown.isDown();}
-		else if (key == CommonProxyClass.grapplekeys.key_enderlaunch) {return ClientSetup.key_enderlaunch.isDown();}
-		else if (key == CommonProxyClass.grapplekeys.key_rocket) {return ClientSetup.key_rocket.isDown();}
-		else if (key == CommonProxyClass.grapplekeys.key_slide) {return ClientSetup.key_slide.isDown();}
+		if (key == ClientProxyInterface.grapplekeys.key_boththrow) {return ClientSetup.key_boththrow.isDown();}
+		else if (key == ClientProxyInterface.grapplekeys.key_leftthrow) {return ClientSetup.key_leftthrow.isDown();}
+		else if (key == ClientProxyInterface.grapplekeys.key_rightthrow) {return ClientSetup.key_rightthrow.isDown();}
+		else if (key == ClientProxyInterface.grapplekeys.key_motoronoff) {return ClientSetup.key_motoronoff.isDown();}
+		else if (key == ClientProxyInterface.grapplekeys.key_jumpanddetach) {return ClientSetup.key_jumpanddetach.isDown();}
+		else if (key == ClientProxyInterface.grapplekeys.key_slow) {return ClientSetup.key_slow.isDown();}
+		else if (key == ClientProxyInterface.grapplekeys.key_climb) {return ClientSetup.key_climb.isDown();}
+		else if (key == ClientProxyInterface.grapplekeys.key_climbup) {return ClientSetup.key_climbup.isDown();}
+		else if (key == ClientProxyInterface.grapplekeys.key_climbdown) {return ClientSetup.key_climbdown.isDown();}
+		else if (key == ClientProxyInterface.grapplekeys.key_enderlaunch) {return ClientSetup.key_enderlaunch.isDown();}
+		else if (key == ClientProxyInterface.grapplekeys.key_rocket) {return ClientSetup.key_rocket.isDown();}
+		else if (key == ClientProxyInterface.grapplekeys.key_slide) {return ClientSetup.key_slide.isDown();}
 		return false;
 	}
 
 	@Override
-	public grappleController unregisterController(int entityId) {
+	public GrappleController unregisterController(int entityId) {
 		return ClientControllerManager.unregisterController(entityId);
 	}
 

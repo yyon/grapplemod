@@ -3,9 +3,9 @@ package com.yyon.grapplinghook.items.upgrades;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 
-import com.yyon.grapplinghook.CommonSetup;
-import com.yyon.grapplinghook.GrappleCustomization;
 import com.yyon.grapplinghook.grapplemod;
+import com.yyon.grapplinghook.common.CommonSetup;
+import com.yyon.grapplinghook.utils.GrappleCustomization;
 
 import net.minecraft.item.Item;
 import net.minecraftforge.fml.common.ObfuscationReflectionHelper;

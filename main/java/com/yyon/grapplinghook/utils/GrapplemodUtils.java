@@ -1,4 +1,6 @@
-package com.yyon.grapplinghook;
+package com.yyon.grapplinghook.utils;
+
+import com.yyon.grapplinghook.common.CommonSetup;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.ServerPlayerEntity;
@@ -21,7 +23,7 @@ public class GrapplemodUtils {
 		}
 	}
 
-	public static BlockRayTraceResult rayTraceBlocks(World world, vec from, vec to) {
+	public static BlockRayTraceResult rayTraceBlocks(World world, Vec from, Vec to) {
 		RayTraceResult result = world.clip(new RayTraceContext(from.toVec3d(), to.toVec3d(), RayTraceContext.BlockMode.COLLIDER, RayTraceContext.FluidMode.NONE, null));
 		if (result != null && result instanceof BlockRayTraceResult) {
 			BlockRayTraceResult blockhit = (BlockRayTraceResult) result;

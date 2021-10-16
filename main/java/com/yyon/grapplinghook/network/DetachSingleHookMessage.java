@@ -1,6 +1,6 @@
 package com.yyon.grapplinghook.network;
 
-import com.yyon.grapplinghook.ClientControllerManager;
+import com.yyon.grapplinghook.client.ClientControllerManager;
 
 import net.minecraft.network.PacketBuffer;
 import net.minecraftforge.api.distmarker.Dist;

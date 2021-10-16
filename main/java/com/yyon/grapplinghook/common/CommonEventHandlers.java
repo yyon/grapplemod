@@ -1,12 +1,15 @@
-package com.yyon.grapplinghook;
+package com.yyon.grapplinghook.common;
 
 import java.util.HashSet;
 
-import com.yyon.grapplinghook.entities.grappleArrow;
+import com.yyon.grapplinghook.config.GrappleConfig;
+import com.yyon.grapplinghook.entities.grapplearrow.GrapplehookEntity;
 import com.yyon.grapplinghook.items.LongFallBoots;
-import com.yyon.grapplinghook.items.grappleBow;
+import com.yyon.grapplinghook.items.GrapplehookItem;
 import com.yyon.grapplinghook.network.GrappleDetachMessage;
 import com.yyon.grapplinghook.network.LoggedInMessage;
+import com.yyon.grapplinghook.server.ServerControllerManager;
+import com.yyon.grapplinghook.utils.GrapplemodUtils;
 
 import me.shedaniel.autoconfig.AutoConfig;
 import me.shedaniel.autoconfig.serializer.Toml4jConfigSerializer;
@@ -27,8 +30,8 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.event.server.FMLServerStartedEvent;
 import net.minecraftforge.fml.network.PacketDistributor;
 
-public class EventHandlers {
-	public EventHandlers() {
+public class CommonEventHandlers {
+	public CommonEventHandlers() {
 	    MinecraftForge.EVENT_BUS.register(this);
 
 		AutoConfig.register(GrappleConfig.class, Toml4jConfigSerializer<GrappleConfig>::new);
@@ -41,7 +44,7 @@ public class EventHandlers {
 	    	ItemStack stack = player.getItemInHand(Hand.MAIN_HAND);
 	    	if (stack != null) {
 	    		Item item = stack.getItem();
-	    		if (item instanceof grappleBow) {
+	    		if (item instanceof GrapplehookItem) {
 	    			event.setCanceled(true);
 	    			return;
 	    		}
@@ -56,19 +59,19 @@ public class EventHandlers {
     		int id = entity.getId();
     		boolean isconnected = ServerControllerManager.allarrows.containsKey(id);
     		if (isconnected) {
-    			HashSet<grappleArrow> arrows = ServerControllerManager.allarrows.get(id);
-    			for (grappleArrow arrow: arrows) {
+    			HashSet<GrapplehookEntity> arrows = ServerControllerManager.allarrows.get(id);
+    			for (GrapplehookEntity arrow: arrows) {
     				arrow.removeServer();
     			}
     			arrows.clear();
 
     			ServerControllerManager.attached.remove(id);
     			
-    			if (grappleBow.grapplearrows1.containsKey(entity)) {
-    				grappleBow.grapplearrows1.remove(entity);
+    			if (GrapplehookItem.grapplearrows1.containsKey(entity)) {
+    				GrapplehookItem.grapplearrows1.remove(entity);
     			}
-    			if (grappleBow.grapplearrows2.containsKey(entity)) {
-    				grappleBow.grapplearrows2.remove(entity);
+    			if (GrapplehookItem.grapplearrows2.containsKey(entity)) {
+    				GrapplehookItem.grapplearrows2.remove(entity);
     			}
     			
     			GrapplemodUtils.sendtocorrectclient(new GrappleDetachMessage(id), id, entity.level);

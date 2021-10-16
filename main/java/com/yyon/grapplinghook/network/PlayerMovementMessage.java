@@ -4,7 +4,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
 import com.yyon.grapplinghook.grapplemod;
-import com.yyon.grapplinghook.vec;
+import com.yyon.grapplinghook.utils.Vec;
 
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.network.PacketBuffer;
@@ -82,8 +82,8 @@ public class PlayerMovementMessage extends BaseMessageServer {
     	final ServerPlayerEntity referencedPlayer = ctx.getSender();
         
 		if(referencedPlayer.getId() == this.entityId) {
-			new vec(this.x, this.y, this.z).setpos(referencedPlayer);
-			new vec(this.mx, this.my, this.mz).setmotion(referencedPlayer);
+			new Vec(this.x, this.y, this.z).setpos(referencedPlayer);
+			new Vec(this.mx, this.my, this.mz).setmotion(referencedPlayer);
 
 			referencedPlayer.connection.resetPosition();
 			

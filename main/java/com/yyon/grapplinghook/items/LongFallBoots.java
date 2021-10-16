@@ -4,9 +4,9 @@ import java.util.List;
 
 import javax.annotation.Nullable;
 
-import com.yyon.grapplinghook.CommonProxyClass;
-import com.yyon.grapplinghook.CommonSetup;
-import com.yyon.grapplinghook.GrappleConfig;
+import com.yyon.grapplinghook.client.ClientProxyInterface;
+import com.yyon.grapplinghook.common.CommonSetup;
+import com.yyon.grapplinghook.config.GrappleConfig;
 
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.inventory.EquipmentSlotType;
@@ -49,10 +49,10 @@ public class LongFallBoots extends ArmorItem {
 	public void appendHoverText(ItemStack stack, @Nullable World world, List<ITextComponent> list, ITooltipFlag par4) {
 		if (!stack.isEnchanted()) {
 			if (GrappleConfig.getconf().longfallboots.longfallbootsrecipe) {
-				list.add(new StringTextComponent(CommonProxyClass.proxy.localize("grappletooltip.longfallbootsrecipe.desc")));
+				list.add(new StringTextComponent(ClientProxyInterface.proxy.localize("grappletooltip.longfallbootsrecipe.desc")));
 			}
 		}
-		list.add(new StringTextComponent(CommonProxyClass.proxy.localize("grappletooltip.longfallboots.desc")));
+		list.add(new StringTextComponent(ClientProxyInterface.proxy.localize("grappletooltip.longfallboots.desc")));
 	}
 
 	@Override

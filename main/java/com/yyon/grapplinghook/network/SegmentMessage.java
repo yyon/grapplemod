@@ -1,9 +1,9 @@
 package com.yyon.grapplinghook.network;
 
 import com.yyon.grapplinghook.grapplemod;
-import com.yyon.grapplinghook.vec;
-import com.yyon.grapplinghook.controllers.SegmentHandler;
-import com.yyon.grapplinghook.entities.grappleArrow;
+import com.yyon.grapplinghook.entities.grapplearrow.SegmentHandler;
+import com.yyon.grapplinghook.entities.grapplearrow.GrapplehookEntity;
+import com.yyon.grapplinghook.utils.Vec;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
@@ -36,7 +36,7 @@ public class SegmentMessage extends BaseMessageClient {
 	public int id;
 	public boolean add;
 	public int index;
-	public vec pos;
+	public Vec pos;
 	public Direction topfacing;
 	public Direction bottomfacing;
 
@@ -44,7 +44,7 @@ public class SegmentMessage extends BaseMessageClient {
     	super(buf);
     }
 
-    public SegmentMessage(int id, boolean add, int index, vec pos, Direction topfacing, Direction bottomfacing) {
+    public SegmentMessage(int id, boolean add, int index, Vec pos, Direction topfacing, Direction bottomfacing) {
     	this.id = id;
     	this.add = add;
     	this.index = index;
@@ -57,7 +57,7 @@ public class SegmentMessage extends BaseMessageClient {
     	this.id = buf.readInt();
     	this.add = buf.readBoolean();
     	this.index = buf.readInt();
-    	this.pos = new vec(buf.readDouble(), buf.readDouble(), buf.readDouble());
+    	this.pos = new Vec(buf.readDouble(), buf.readDouble(), buf.readDouble());
     	this.topfacing = buf.readEnum(Direction.class);
     	this.bottomfacing = buf.readEnum(Direction.class);
     }
@@ -81,8 +81,8 @@ public class SegmentMessage extends BaseMessageClient {
     		return;
     	}
     	
-    	if (grapple instanceof grappleArrow) {
-    		SegmentHandler segmenthandler = ((grappleArrow) grapple).segmenthandler;
+    	if (grapple instanceof GrapplehookEntity) {
+    		SegmentHandler segmenthandler = ((GrapplehookEntity) grapple).segmenthandler;
     		if (this.add) {
     			segmenthandler.actuallyaddsegment(this.index, this.pos, this.bottomfacing, this.topfacing);
     		} else {

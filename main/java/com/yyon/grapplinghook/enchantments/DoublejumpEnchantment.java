@@ -1,7 +1,7 @@
 package com.yyon.grapplinghook.enchantments;
 
-import com.yyon.grapplinghook.GrappleConfig;
-import com.yyon.grapplinghook.GrappleConfigUtils;
+import com.yyon.grapplinghook.config.GrappleConfig;
+import com.yyon.grapplinghook.config.GrappleConfigUtils;
 
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentType;

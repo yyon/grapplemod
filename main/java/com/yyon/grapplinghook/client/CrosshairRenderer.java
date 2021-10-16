@@ -1,11 +1,13 @@
-package com.yyon.grapplinghook;
+package com.yyon.grapplinghook.client;
 
 import org.lwjgl.opengl.GL11;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.yyon.grapplinghook.items.grappleBow;
+import com.yyon.grapplinghook.common.CommonSetup;
+import com.yyon.grapplinghook.items.GrapplehookItem;
+import com.yyon.grapplinghook.utils.GrappleCustomization;
 
 import net.minecraft.client.GameSettings;
 import net.minecraft.client.MainWindow;
@@ -24,12 +26,12 @@ import net.minecraftforge.client.event.RenderGameOverlayEvent.ElementType;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 
-public class crosshairRenderer {
+public class CrosshairRenderer {
 	public Minecraft mc;
 	
 	float zLevel = -90.0F;
 	
-	public crosshairRenderer() {
+	public CrosshairRenderer() {
 	    MinecraftForge.EVENT_BUS.register(this);
 	    this.mc = Minecraft.getInstance();
 	}
@@ -46,14 +48,14 @@ public class crosshairRenderer {
 		if (event.getType() == ElementType.CROSSHAIRS) {
 			ClientPlayerEntity player = this.mc.player;
 			ItemStack bow = null;
-			if ((player.getItemInHand(Hand.MAIN_HAND) != null && player.getItemInHand(Hand.MAIN_HAND).getItem() instanceof grappleBow)) {
+			if ((player.getItemInHand(Hand.MAIN_HAND) != null && player.getItemInHand(Hand.MAIN_HAND).getItem() instanceof GrapplehookItem)) {
 				bow = player.getItemInHand(Hand.MAIN_HAND);
-			} else if ((player.getItemInHand(Hand.OFF_HAND) != null && player.getItemInHand(Hand.OFF_HAND).getItem() instanceof grappleBow)) {
+			} else if ((player.getItemInHand(Hand.OFF_HAND) != null && player.getItemInHand(Hand.OFF_HAND).getItem() instanceof GrapplehookItem)) {
 				bow = player.getItemInHand(Hand.OFF_HAND);
 			}
 			
 			if (bow != null) {
-				GrappleCustomization custom = ((grappleBow) CommonSetup.grapplebowitem).getCustomization(bow);
+				GrappleCustomization custom = ((GrapplehookItem) CommonSetup.grapplebowitem).getCustomization(bow);
             	double angle = Math.toRadians(custom.angle);//((grappleBow) grapplemod.grapplebowitem).getAngle(player, bow));
             	double verticalangle = Math.toRadians(custom.verticalthrowangle);
             	if (player.isCrouching()) {

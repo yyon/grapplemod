@@ -1,12 +1,12 @@
 package com.yyon.grapplinghook.controllers;
 
-import com.yyon.grapplinghook.vec;
+import com.yyon.grapplinghook.utils.Vec;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.world.World;
 
-public class repelController extends grappleController {
-	public repelController(int arrowId, int entityId, World world, vec pos, int id) {
+public class ForcefieldController extends GrappleController {
+	public ForcefieldController(int arrowId, int entityId, World world, Vec pos, int id) {
 		super(arrowId, entityId, world, pos, id, null);
 		
 		this.playermovementmult = 1;
@@ -22,7 +22,7 @@ public class repelController extends grappleController {
 					this.normalCollisions(true);
 //					this.applyAirFriction();
 					
-					vec playerpos = vec.positionvec(entity);
+					Vec playerpos = Vec.positionvec(entity);
 					
 //					double dist = oldspherevec.length();
 					
@@ -31,9 +31,9 @@ public class repelController extends grappleController {
 					}
 					applyPlayerMovement();
 					
-					vec blockpush = check_repel(playerpos, entity.level);
+					Vec blockpush = check_repel(playerpos, entity.level);
 					blockpush.mult_ip(0.5);
-					blockpush = new vec(blockpush.x*0.5, blockpush.y*2, blockpush.z*0.5);
+					blockpush = new Vec(blockpush.x*0.5, blockpush.y*2, blockpush.z*0.5);
 					this.motion.add_ip(blockpush);
 					
 					if (!entity.isOnGround()) {

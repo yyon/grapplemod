@@ -1,9 +1,12 @@
-package com.yyon.grapplinghook;
+package com.yyon.grapplinghook.client;
 
-import com.yyon.grapplinghook.controllers.airfrictionController;
-import com.yyon.grapplinghook.controllers.grappleController;
-import com.yyon.grapplinghook.controllers.repelController;
+import com.yyon.grapplinghook.common.CommonSetup;
+import com.yyon.grapplinghook.config.GrappleConfig;
+import com.yyon.grapplinghook.controllers.AirfrictionController;
+import com.yyon.grapplinghook.controllers.GrappleController;
+import com.yyon.grapplinghook.controllers.ForcefieldController;
 import com.yyon.grapplinghook.items.KeypressItem;
+import com.yyon.grapplinghook.utils.Vec;
 
 import net.minecraft.block.BlockState;
 import net.minecraft.client.Minecraft;
@@ -74,7 +77,7 @@ public class ClientEventHandlers {
     public void blockbreak(BreakEvent event) {
 		if (event.getPos() != null) {
 			if (ClientControllerManager.controllerpos.containsKey(event.getPos())) {
-				grappleController control = ClientControllerManager.controllerpos.get(event.getPos());
+				GrappleController control = ClientControllerManager.controllerpos.get(event.getPos());
 
 				control.unattach();
 				
@@ -95,14 +98,14 @@ public class ClientEventHandlers {
 			return;
 		}
 		
-		grappleController controller = null;
+		GrappleController controller = null;
 		if (ClientControllerManager.controllers.containsKey(player.getId())) {
 			controller = ClientControllerManager.controllers.get(player.getId());
 		}
 		
 		if (Minecraft.getInstance().options.keyJump.isDown()) {
 			if (controller != null) {
-				if (controller instanceof airfrictionController && ((airfrictionController) controller).was_sliding) {
+				if (controller instanceof AirfrictionController && ((AirfrictionController) controller).was_sliding) {
 					controller.slidingJump();
 				}
 			}
@@ -121,12 +124,12 @@ public class ClientEventHandlers {
 		int id = player.getId();
 		if (ClientControllerManager.controllers.containsKey(id)) {
 			MovementInput input = event.getMovementInput();
-			grappleController control = ClientControllerManager.controllers.get(id);
+			GrappleController control = ClientControllerManager.controllers.get(id);
 			control.receivePlayerMovementMessage(input.leftImpulse, input.forwardImpulse, input.jumping, input.shiftKeyDown);
 			
 			boolean overrideMovement = true;
 			if (Minecraft.getInstance().player.isOnGround()) {
-				if (!(control instanceof airfrictionController) && !(control instanceof repelController)) {
+				if (!(control instanceof AirfrictionController) && !(control instanceof ForcefieldController)) {
 					overrideMovement = false;
 				}
 			}
@@ -156,13 +159,13 @@ public class ClientEventHandlers {
 		int id = player.getId();
 		int targetCameraTilt = 0;
 		if (ClientControllerManager.controllers.containsKey(id)) {
-			grappleController controller = ClientControllerManager.controllers.get(id);
-			if (controller instanceof airfrictionController) {
-				airfrictionController afcontroller = (airfrictionController) controller;
+			GrappleController controller = ClientControllerManager.controllers.get(id);
+			if (controller instanceof AirfrictionController) {
+				AirfrictionController afcontroller = (AirfrictionController) controller;
 				if (afcontroller.was_wallrunning) {
-					vec walldirection = afcontroller.getwalldirection();
+					Vec walldirection = afcontroller.getwalldirection();
 					if (walldirection != null) {
-						vec lookdirection = vec.lookvec(player);
+						Vec lookdirection = Vec.lookvec(player);
 						int dir = lookdirection.cross(walldirection).y > 0 ? 1 : -1;
 						targetCameraTilt = dir;
 					}

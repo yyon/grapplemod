@@ -1,8 +1,8 @@
 package com.yyon.grapplinghook.network;
 
-import com.yyon.grapplinghook.GrappleCustomization;
 import com.yyon.grapplinghook.grapplemod;
-import com.yyon.grapplinghook.blocks.TileEntityGrappleModifier;
+import com.yyon.grapplinghook.blocks.modifierblock.TileEntityGrappleModifier;
+import com.yyon.grapplinghook.utils.GrappleCustomization;
 
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.tileentity.TileEntity;

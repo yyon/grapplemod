@@ -1,4 +1,4 @@
-package com.yyon.grapplinghook;
+package com.yyon.grapplinghook.config;
 
 import me.shedaniel.autoconfig.AutoConfig;
 import me.shedaniel.autoconfig.ConfigData;

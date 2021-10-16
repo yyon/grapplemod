@@ -2,11 +2,11 @@ package com.yyon.grapplinghook.network;
 
 import java.util.LinkedList;
 
-import com.yyon.grapplinghook.CommonProxyClass;
-import com.yyon.grapplinghook.GrappleCustomization;
-import com.yyon.grapplinghook.vec;
-import com.yyon.grapplinghook.controllers.SegmentHandler;
-import com.yyon.grapplinghook.entities.grappleArrow;
+import com.yyon.grapplinghook.client.ClientProxyInterface;
+import com.yyon.grapplinghook.entities.grapplearrow.SegmentHandler;
+import com.yyon.grapplinghook.entities.grapplearrow.GrapplehookEntity;
+import com.yyon.grapplinghook.utils.GrappleCustomization;
+import com.yyon.grapplinghook.utils.Vec;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
@@ -44,7 +44,7 @@ public class GrappleAttachMessage extends BaseMessageClient {
 	public int controlid;
 	public int entityid;
 	public BlockPos blockpos;
-	public LinkedList<vec> segments;
+	public LinkedList<Vec> segments;
 	public LinkedList<Direction> segmenttopsides;
 	public LinkedList<Direction> segmentbottomsides;
 	public GrappleCustomization custom;
@@ -53,7 +53,7 @@ public class GrappleAttachMessage extends BaseMessageClient {
     	super(buf);
     }
 
-    public GrappleAttachMessage(int id, double x, double y, double z, int controlid, int entityid, BlockPos blockpos, LinkedList<vec> segments, LinkedList<Direction> segmenttopsides, LinkedList<Direction> segmentbottomsides, GrappleCustomization custom) {
+    public GrappleAttachMessage(int id, double x, double y, double z, int controlid, int entityid, BlockPos blockpos, LinkedList<Vec> segments, LinkedList<Direction> segmenttopsides, LinkedList<Direction> segmentbottomsides, GrappleCustomization custom) {
     	this.id = id;
         this.x = x;
         this.y = y;
@@ -83,21 +83,21 @@ public class GrappleAttachMessage extends BaseMessageClient {
         this.custom.readFromBuf(buf);
         
         int size = buf.readInt();
-        this.segments = new LinkedList<vec>();
+        this.segments = new LinkedList<Vec>();
         this.segmentbottomsides = new LinkedList<Direction>();
         this.segmenttopsides = new LinkedList<Direction>();
 
-		segments.add(new vec(0, 0, 0));
+		segments.add(new Vec(0, 0, 0));
 		segmentbottomsides.add(null);
 		segmenttopsides.add(null);
 		
 		for (int i = 1; i < size-1; i++) {
-        	this.segments.add(new vec(buf.readDouble(), buf.readDouble(), buf.readDouble()));
+        	this.segments.add(new Vec(buf.readDouble(), buf.readDouble(), buf.readDouble()));
         	this.segmentbottomsides.add(buf.readEnum(Direction.class));
         	this.segmenttopsides.add(buf.readEnum(Direction.class));
         }
 		
-		segments.add(new vec(0, 0, 0));
+		segments.add(new Vec(0, 0, 0));
 		segmentbottomsides.add(null);
 		segmenttopsides.add(null);
     }
@@ -129,18 +129,18 @@ public class GrappleAttachMessage extends BaseMessageClient {
     public void processMessage(NetworkEvent.Context ctx) {
 		World world = Minecraft.getInstance().level;
     	Entity grapple = world.getEntity(this.id);
-    	if (grapple instanceof grappleArrow) {
-        	((grappleArrow) grapple).clientAttach(this.x, this.y, this.z);
-        	SegmentHandler segmenthandler = ((grappleArrow) grapple).segmenthandler;
+    	if (grapple instanceof GrapplehookEntity) {
+        	((GrapplehookEntity) grapple).clientAttach(this.x, this.y, this.z);
+        	SegmentHandler segmenthandler = ((GrapplehookEntity) grapple).segmenthandler;
         	segmenthandler.segments = this.segments;
         	segmenthandler.segmentbottomsides = this.segmentbottomsides;
         	segmenthandler.segmenttopsides = this.segmenttopsides;
         	
         	Entity player = world.getEntity(this.entityid);
-        	segmenthandler.forceSetPos(new vec(this.x, this.y, this.z), vec.positionvec(player));
+        	segmenthandler.forceSetPos(new Vec(this.x, this.y, this.z), Vec.positionvec(player));
     	} else {
     	}
     	            	
-    	CommonProxyClass.proxy.createControl(this.controlid, this.id, this.entityid, world, new vec(this.x, this.y, this.z), this.blockpos, this.custom);
+    	ClientProxyInterface.proxy.createControl(this.controlid, this.id, this.entityid, world, new Vec(this.x, this.y, this.z), this.blockpos, this.custom);
     }
 }

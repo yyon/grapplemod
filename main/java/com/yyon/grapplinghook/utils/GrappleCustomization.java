@@ -1,4 +1,7 @@
-package com.yyon.grapplinghook;
+package com.yyon.grapplinghook.utils;
+
+import com.yyon.grapplinghook.common.CommonSetup;
+import com.yyon.grapplinghook.config.GrappleConfig;
 
 import io.netty.buffer.ByteBuf;
 import net.minecraft.item.Item;

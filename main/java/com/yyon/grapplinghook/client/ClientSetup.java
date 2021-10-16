@@ -1,4 +1,4 @@
-package com.yyon.grapplinghook;
+package com.yyon.grapplinghook.client;
 
 import java.util.ArrayList;
 
@@ -6,10 +6,12 @@ import javax.annotation.Nullable;
 
 import org.lwjgl.glfw.GLFW;
 
-import com.yyon.grapplinghook.controllers.airfrictionController;
-import com.yyon.grapplinghook.controllers.repelController;
-import com.yyon.grapplinghook.entities.RenderGrappleArrow;
-import com.yyon.grapplinghook.entities.grappleArrow;
+import com.yyon.grapplinghook.common.CommonSetup;
+import com.yyon.grapplinghook.config.GrappleConfig;
+import com.yyon.grapplinghook.controllers.AirfrictionController;
+import com.yyon.grapplinghook.controllers.ForcefieldController;
+import com.yyon.grapplinghook.entities.grapplearrow.RenderGrappleArrow;
+import com.yyon.grapplinghook.entities.grapplearrow.GrapplehookEntity;
 
 import me.shedaniel.autoconfig.AutoConfig;
 import me.shedaniel.autoconfig.gui.registry.GuiRegistry;
@@ -40,7 +42,7 @@ public class ClientSetup {
 	public ClientSetup() {
 	}
 
-	public crosshairRenderer crosshairrenderer;
+	public CrosshairRenderer crosshairrenderer;
 	public ClientEventHandlers clienteventhandlers;
 	public ClientControllerManager clientcontrollermanager;
 	
@@ -70,9 +72,9 @@ public class ClientSetup {
 	    instance.onClientSetup();
 	}
 	
-	private static class grappleArrowRenderFactory implements IRenderFactory<grappleArrow> {
+	private static class grappleArrowRenderFactory implements IRenderFactory<GrapplehookEntity> {
 	    @Override
-	    public EntityRenderer<? super grappleArrow> createRenderFor(EntityRendererManager manager) {
+	    public EntityRenderer<? super GrapplehookEntity> createRenderFor(EntityRendererManager manager) {
 	      return new RenderGrappleArrow<>(manager, CommonSetup.grapplebowitem);
 	    	
 	    }
@@ -91,11 +93,11 @@ public class ClientSetup {
 
 		ModLoadingContext.get().registerExtensionPoint(
                 ExtensionPoint.CONFIGGUIFACTORY,
-                () -> ((ClientProxyClass) CommonProxyClass.proxy)::onConfigScreen);
+                () -> ((ClientProxy) ClientProxyInterface.proxy)::onConfigScreen);
 		
 	    this.registerPropertyOverride();
 	    
-		crosshairrenderer = new crosshairRenderer();
+		crosshairrenderer = new CrosshairRenderer();
 		clientcontrollermanager = new ClientControllerManager();
 		clienteventhandlers = new ClientEventHandlers();
 	}
@@ -134,13 +136,13 @@ public class ClientSetup {
 		ItemModelsProperties.register(CommonSetup.grapplebowitem, new ResourceLocation("attached"), new IItemPropertyGetter() {
 			public float call(ItemStack stack, @Nullable ClientWorld world, @Nullable LivingEntity entity) {
 				if (entity == null) {return 0;}
-				return (ClientControllerManager.controllers.containsKey(entity.getId()) && !(ClientControllerManager.controllers.get(entity.getId()) instanceof airfrictionController)) ? 1 : 0;
+				return (ClientControllerManager.controllers.containsKey(entity.getId()) && !(ClientControllerManager.controllers.get(entity.getId()) instanceof AirfrictionController)) ? 1 : 0;
 			}
 		});
 		ItemModelsProperties.register(CommonSetup.repelleritem, new ResourceLocation("attached"), new IItemPropertyGetter() {
 			public float call(ItemStack stack, @Nullable ClientWorld world, @Nullable LivingEntity entity) {
 				if (entity == null) {return 0;}
-				return (ClientControllerManager.controllers.containsKey(entity.getId()) && ClientControllerManager.controllers.get(entity.getId()) instanceof repelController) ? 1 : 0;
+				return (ClientControllerManager.controllers.containsKey(entity.getId()) && ClientControllerManager.controllers.get(entity.getId()) instanceof ForcefieldController) ? 1 : 0;
 			}
 		});
 	}

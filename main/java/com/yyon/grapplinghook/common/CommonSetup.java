@@ -1,17 +1,17 @@
-package com.yyon.grapplinghook;
+package com.yyon.grapplinghook.common;
 
 import java.util.Optional;
 
-import com.yyon.grapplinghook.blocks.BlockGrappleModifier;
-import com.yyon.grapplinghook.blocks.TileEntityGrappleModifier;
+import com.yyon.grapplinghook.blocks.modifierblock.BlockGrappleModifier;
+import com.yyon.grapplinghook.blocks.modifierblock.TileEntityGrappleModifier;
 import com.yyon.grapplinghook.enchantments.DoublejumpEnchantment;
 import com.yyon.grapplinghook.enchantments.SlidingEnchantment;
 import com.yyon.grapplinghook.enchantments.WallrunEnchantment;
-import com.yyon.grapplinghook.entities.grappleArrow;
+import com.yyon.grapplinghook.entities.grapplearrow.GrapplehookEntity;
 import com.yyon.grapplinghook.items.LongFallBoots;
-import com.yyon.grapplinghook.items.grappleBow;
-import com.yyon.grapplinghook.items.launcherItem;
-import com.yyon.grapplinghook.items.repeller;
+import com.yyon.grapplinghook.items.GrapplehookItem;
+import com.yyon.grapplinghook.items.EnderStaffItem;
+import com.yyon.grapplinghook.items.ForcefieldItem;
 import com.yyon.grapplinghook.items.upgrades.BaseUpgradeItem;
 import com.yyon.grapplinghook.items.upgrades.DoubleUpgradeItem;
 import com.yyon.grapplinghook.items.upgrades.ForcefieldUpgradeItem;
@@ -57,9 +57,9 @@ import net.minecraftforge.fml.network.simple.SimpleChannel;
 
 @Mod.EventBusSubscriber(bus=Mod.EventBusSubscriber.Bus.MOD)
 public class CommonSetup {
-    public static grappleBow grapplebowitem;
-    public static launcherItem launcheritem;
-    public static repeller repelleritem;
+    public static GrapplehookItem grapplebowitem;
+    public static EnderStaffItem launcheritem;
+    public static ForcefieldItem repelleritem;
 
     public static BaseUpgradeItem baseupgradeitem;
     public static DoubleUpgradeItem doubleupgradeitem;
@@ -94,7 +94,7 @@ public class CommonSetup {
 	      }
 	};
 	
-	public static EventHandlers eventHandlers = new EventHandlers();;
+	public static CommonEventHandlers eventHandlers = new CommonEventHandlers();;
 
 	@SubscribeEvent
 	public static void init(FMLCommonSetupEvent event) {
@@ -130,11 +130,11 @@ public class CommonSetup {
 		event.getRegistry().register(tileEntityGrappleModifierType);
 	}
 
-	public static EntityType<grappleArrow> grappleArrowType;
+	public static EntityType<GrapplehookEntity> grappleArrowType;
 	
 	@SubscribeEvent
 	public static void onEntityTypeRegistration(RegistryEvent.Register<EntityType<?>> entityTypeRegisterEvent) {
-		grappleArrowType = EntityType.Builder.<grappleArrow>of(grappleArrow::new, EntityClassification.MISC)
+		grappleArrowType = EntityType.Builder.<GrapplehookEntity>of(GrapplehookEntity::new, EntityClassification.MISC)
 	            .sized(0.25F, 0.25F)
 	            .build("grapplemod:grapplearrow");
 		grappleArrowType.setRegistryName("grapplemod:grapplearrow");
@@ -181,14 +181,14 @@ public class CommonSetup {
 	
 	@SubscribeEvent
 	public static void onItemsRegistration(final RegistryEvent.Register<Item> itemRegisterEvent) {
-		grapplebowitem = new grappleBow();
+		grapplebowitem = new GrapplehookItem();
 		registerItem(grapplebowitem, "grapplinghook", itemRegisterEvent);
 
-		launcheritem = new launcherItem();
+		launcheritem = new EnderStaffItem();
 		registerItem(launcheritem, "launcheritem", itemRegisterEvent);
 		longfallboots = new LongFallBoots(ArmorMaterial.DIAMOND, 3);
 		registerItem(longfallboots, "longfallboots", itemRegisterEvent);
-		repelleritem = new repeller();
+		repelleritem = new ForcefieldItem();
 		registerItem(repelleritem, "repeller", itemRegisterEvent);
 	    baseupgradeitem = new BaseUpgradeItem();
 		registerItem(baseupgradeitem, "baseupgradeitem", itemRegisterEvent);

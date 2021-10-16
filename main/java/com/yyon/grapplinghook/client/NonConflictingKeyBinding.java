@@ -1,4 +1,4 @@
-package com.yyon.grapplinghook;
+package com.yyon.grapplinghook.client;
 
 import net.minecraft.client.settings.KeyBinding;
 import net.minecraft.client.util.InputMappings;

@@ -2,7 +2,7 @@ package com.yyon.grapplinghook.network;
 
 import java.util.HashSet;
 
-import com.yyon.grapplinghook.ServerControllerManager;
+import com.yyon.grapplinghook.server.ServerControllerManager;
 
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.network.PacketBuffer;

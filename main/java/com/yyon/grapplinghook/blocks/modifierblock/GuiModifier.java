@@ -1,10 +1,12 @@
-package com.yyon.grapplinghook;
+package com.yyon.grapplinghook.blocks.modifierblock;
 
 import java.util.HashMap;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.yyon.grapplinghook.blocks.TileEntityGrappleModifier;
+import com.yyon.grapplinghook.client.ClientProxyInterface;
+import com.yyon.grapplinghook.utils.GrappleCustomization;
+import com.yyon.grapplinghook.utils.GrappleCustomization.upgradeCategories;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
@@ -42,7 +44,7 @@ public class GuiModifier extends Screen {
 	boolean showinghelpscreen = false;
 
 	public GuiModifier(TileEntityGrappleModifier tileent) {
-		super(new StringTextComponent(CommonProxyClass.proxy.localize("grapplemodifier.title.desc")));
+		super(new StringTextComponent(ClientProxyInterface.proxy.localize("grapplemodifier.title.desc")));
 
 		this.tileent = tileent;
 		customization = tileent.customization;
@@ -86,13 +88,13 @@ public class GuiModifier extends Screen {
 	}
 	public void mainscreen() {
 		this.addButton(new Button(this.guiLeft + 10, this.guiTop + this.ySize - 20 - 10,
-			50, 20, new StringTextComponent(CommonProxyClass.proxy.localize("grapplemodifier.close.desc")), new IPressable() {
+			50, 20, new StringTextComponent(ClientProxyInterface.proxy.localize("grapplemodifier.close.desc")), new IPressable() {
 				public void onPress(Button p_onPress_1_) {
 					onClose();
 				}
 			}));
 		this.addButton(new Button(this.guiLeft + this.xSize - 50 - 10, this.guiTop + this.ySize - 20 - 10,
-			50, 20, new StringTextComponent(CommonProxyClass.proxy.localize("grapplemodifier.reset.desc")), new IPressable() {
+			50, 20, new StringTextComponent(ClientProxyInterface.proxy.localize("grapplemodifier.reset.desc")), new IPressable() {
 				public void onPress(Button p_onPress_1_) {
 					customization = new GrappleCustomization();
 					showinghelpscreen = false;
@@ -101,7 +103,7 @@ public class GuiModifier extends Screen {
 				}
 			}));
 		this.addButton(new Button(this.guiLeft + 10 + 75, this.guiTop + this.ySize - 20 - 10,
-			50, 20, new StringTextComponent(CommonProxyClass.proxy.localize("grapplemodifier.helpbutton.desc")), new IPressable() {
+			50, 20, new StringTextComponent(ClientProxyInterface.proxy.localize("grapplemodifier.helpbutton.desc")), new IPressable() {
 				public void onPress(Button p_onPress_1_) {
 					showinghelpscreen = true;
 					clearscreen();
@@ -124,7 +126,7 @@ public class GuiModifier extends Screen {
 			}
 		}
 
-		this.addButton(new TextWidget(new StringTextComponent(CommonProxyClass.proxy.localize("grapplemodifier.apply.desc")), this.guiLeft + 10, this.guiTop + this.ySize - 20 - 10 - 10));
+		this.addButton(new TextWidget(new StringTextComponent(ClientProxyInterface.proxy.localize("grapplemodifier.apply.desc")), this.guiLeft + 10, this.guiTop + this.ySize - 20 - 10 - 10));
 	}
 
 	class BackgroundWidget extends Widget {
@@ -186,21 +188,21 @@ public class GuiModifier extends Screen {
 	}
 
 	public void notAllowedScreen(GrappleCustomization.upgradeCategories category) {
-		this.addButton(new Button(this.guiLeft + 10, this.guiTop + this.ySize - 20 - 10, 50, 20, new StringTextComponent(CommonProxyClass.proxy.localize("grapplemodifier.back.desc")), new PressBack()));
+		this.addButton(new Button(this.guiLeft + 10, this.guiTop + this.ySize - 20 - 10, 50, 20, new StringTextComponent(ClientProxyInterface.proxy.localize("grapplemodifier.back.desc")), new PressBack()));
 		this.category = category;
 		this.allowed = false;
-		this.addButton(new TextWidget(new StringTextComponent(CommonProxyClass.proxy.localize("grapplemodifier.unlock1.desc")), this.guiLeft + 10, this.guiTop + 10));
+		this.addButton(new TextWidget(new StringTextComponent(ClientProxyInterface.proxy.localize("grapplemodifier.unlock1.desc")), this.guiLeft + 10, this.guiTop + 10));
 		this.addButton(new TextWidget(new StringTextComponent(this.category.description), 10, 25));
-		this.addButton(new TextWidget(new StringTextComponent(CommonProxyClass.proxy.localize("grapplemodifier.unlock2.desc")), this.guiLeft + 10, this.guiTop + 40));
-		this.addButton(new TextWidget(new StringTextComponent(CommonProxyClass.proxy.localize("grapplemodifier.unlock3.desc")), this.guiLeft + 10, this.guiTop + 55));
+		this.addButton(new TextWidget(new StringTextComponent(ClientProxyInterface.proxy.localize("grapplemodifier.unlock2.desc")), this.guiLeft + 10, this.guiTop + 40));
+		this.addButton(new TextWidget(new StringTextComponent(ClientProxyInterface.proxy.localize("grapplemodifier.unlock3.desc")), this.guiLeft + 10, this.guiTop + 55));
 		this.addButton(new TextWidget(new ItemStack(this.category.getItem()).getDisplayName(), this.guiLeft + 10, this.guiTop + 70));
-		this.addButton(new TextWidget(new StringTextComponent(CommonProxyClass.proxy.localize("grapplemodifier.unlock4.desc")), this.guiLeft + 10, this.guiTop + 85));
+		this.addButton(new TextWidget(new StringTextComponent(ClientProxyInterface.proxy.localize("grapplemodifier.unlock4.desc")), this.guiLeft + 10, this.guiTop + 85));
 	}
 
 	public void helpscreen() {
-		this.addButton(new Button(this.guiLeft + 10, this.guiTop + this.ySize - 20 - 10, 50, 20, new StringTextComponent(CommonProxyClass.proxy.localize("grapplemodifier.back.desc")), new PressBack()));
+		this.addButton(new Button(this.guiLeft + 10, this.guiTop + this.ySize - 20 - 10, 50, 20, new StringTextComponent(ClientProxyInterface.proxy.localize("grapplemodifier.back.desc")), new PressBack()));
 
-		this.addButton(new TextWidget(new StringTextComponent(CommonProxyClass.proxy.localize("grapplemodifier.help.desc")), this.guiLeft + 10, this.guiTop + 10));
+		this.addButton(new TextWidget(new StringTextComponent(ClientProxyInterface.proxy.localize("grapplemodifier.help.desc")), this.guiLeft + 10, this.guiTop + 10));
 		
 	}
 	
@@ -235,8 +237,8 @@ public class GuiModifier extends Screen {
 	}
 
 	public void addCheckbox(String option) {
-		String text = CommonProxyClass.proxy.localize(this.customization.getName(option));
-		String desc = CommonProxyClass.proxy.localize(this.customization.getDescription(option));
+		String text = ClientProxyInterface.proxy.localize(this.customization.getName(option));
+		String desc = ClientProxyInterface.proxy.localize(this.customization.getDescription(option));
 		GuiCheckbox checkbox = new GuiCheckbox(10 + this.guiLeft, posy + this.guiTop, this.xSize - 20, 20, new StringTextComponent(text), customization.getBoolean(option), option, new StringTextComponent(desc));
 		posy += 20;
 		this.addButton(checkbox);
@@ -289,8 +291,8 @@ public class GuiModifier extends Screen {
 		double max = customization.getMax(option, this.getLimits());
 		double min = customization.getMin(option, this.getLimits());
 		
-		String text = CommonProxyClass.proxy.localize(this.customization.getName(option));
-		String desc = CommonProxyClass.proxy.localize(this.customization.getDescription(option));
+		String text = ClientProxyInterface.proxy.localize(this.customization.getName(option));
+		String desc = ClientProxyInterface.proxy.localize(this.customization.getDescription(option));
 		GuiSlider slider = new GuiSlider(10 + this.guiLeft, posy + this.guiTop, this.xSize - 20, 20, new StringTextComponent(text), min, max, d, option, new StringTextComponent(desc));
 		
 		posy += 25;
@@ -299,7 +301,7 @@ public class GuiModifier extends Screen {
 	}
 
 	public void showCategoryScreen(GrappleCustomization.upgradeCategories category) {
-		this.addButton(new Button(this.guiLeft + 10, this.guiTop + this.ySize - 20 - 10, 50, 20, new StringTextComponent(CommonProxyClass.proxy.localize("grapplemodifier.back.desc")), new PressBack()));
+		this.addButton(new Button(this.guiLeft + 10, this.guiTop + this.ySize - 20 - 10, 50, 20, new StringTextComponent(ClientProxyInterface.proxy.localize("grapplemodifier.back.desc")), new PressBack()));
 		this.category = category;
 		this.allowed = true;
 
@@ -366,20 +368,20 @@ public class GuiModifier extends Screen {
 			String option = this.options.get(b);
 			boolean enabled = true;
 			
-			String desc = CommonProxyClass.proxy.localize(this.customization.getDescription(option));
+			String desc = ClientProxyInterface.proxy.localize(this.customization.getDescription(option));
 			
 			if (this.customization.isoptionvalid(option)) {
 			} else {
-				desc = CommonProxyClass.proxy.localize("grapplemodifier.incompatability.desc") + "\n" + desc;
+				desc = ClientProxyInterface.proxy.localize("grapplemodifier.incompatability.desc") + "\n" + desc;
 				enabled = false;
 			}
 			
 			int level = this.customization.optionEnabled(option);
 			if (this.getLimits() < level) {
 				if (level == 1) {
-					desc = CommonProxyClass.proxy.localize("grapplemodifier.limits.desc") + "\n" + desc;
+					desc = ClientProxyInterface.proxy.localize("grapplemodifier.limits.desc") + "\n" + desc;
 				} else {
-					desc = CommonProxyClass.proxy.localize("grapplemodifier.locked.desc") + "\n" + desc;
+					desc = ClientProxyInterface.proxy.localize("grapplemodifier.locked.desc") + "\n" + desc;
 				}
 				enabled = false;
 			}

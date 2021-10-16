@@ -4,8 +4,8 @@ import java.util.List;
 
 import javax.annotation.Nullable;
 
-import com.yyon.grapplinghook.CommonProxyClass;
-import com.yyon.grapplinghook.CommonSetup;
+import com.yyon.grapplinghook.client.ClientProxyInterface;
+import com.yyon.grapplinghook.common.CommonSetup;
 
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.player.PlayerEntity;
@@ -36,15 +36,15 @@ import net.minecraftforge.api.distmarker.OnlyIn;
     along with GrappleMod.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-public class launcherItem extends Item {
+public class EnderStaffItem extends Item {
 	
-	public launcherItem() {
+	public EnderStaffItem() {
 		super(new Item.Properties().stacksTo(1).tab(CommonSetup.tabGrapplemod));
 	}
 	
 	public void dorightclick(ItemStack stack, World worldIn, PlayerEntity player) {
 		if (worldIn.isClientSide) {
-			CommonProxyClass.proxy.launchplayer(player);
+			ClientProxyInterface.proxy.launchplayer(player);
 		}
 	}
 	
@@ -59,9 +59,9 @@ public class launcherItem extends Item {
 	@Override
 	@OnlyIn(Dist.CLIENT)
 	public void appendHoverText(ItemStack stack, @Nullable World world, List<ITextComponent> list, ITooltipFlag par4) {
-		list.add(new StringTextComponent(CommonProxyClass.proxy.localize("grappletooltip.launcheritem.desc")));
+		list.add(new StringTextComponent(ClientProxyInterface.proxy.localize("grappletooltip.launcheritem.desc")));
 		list.add(new StringTextComponent(""));
-		list.add(new StringTextComponent(CommonProxyClass.proxy.localize("grappletooltip.launcheritemaim.desc")));
-		list.add(new StringTextComponent(CommonProxyClass.proxy.getkeyname(CommonProxyClass.mckeys.keyBindUseItem) + CommonProxyClass.proxy.localize("grappletooltip.launcheritemcontrols.desc")));
+		list.add(new StringTextComponent(ClientProxyInterface.proxy.localize("grappletooltip.launcheritemaim.desc")));
+		list.add(new StringTextComponent(ClientProxyInterface.proxy.getkeyname(ClientProxyInterface.mckeys.keyBindUseItem) + ClientProxyInterface.proxy.localize("grappletooltip.launcheritemcontrols.desc")));
 	}
 }

@@ -1,9 +1,9 @@
 package com.yyon.grapplinghook.controllers;
 
-import com.yyon.grapplinghook.CommonProxyClass;
-import com.yyon.grapplinghook.GrappleConfig;
-import com.yyon.grapplinghook.GrappleCustomization;
-import com.yyon.grapplinghook.vec;
+import com.yyon.grapplinghook.client.ClientProxyInterface;
+import com.yyon.grapplinghook.config.GrappleConfig;
+import com.yyon.grapplinghook.utils.GrappleCustomization;
+import com.yyon.grapplinghook.utils.Vec;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
@@ -26,7 +26,7 @@ import net.minecraft.world.World;
     along with GrappleMod.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-public class airfrictionController extends grappleController {
+public class AirfrictionController extends GrappleController {
 	public final double playermovementmult = 0.5;
 	
 	public int ignoregroundcounter = 0;
@@ -35,7 +35,7 @@ public class airfrictionController extends grappleController {
 	public boolean was_rocket = false;
 	public boolean first_tick_since_created = true;
 	
-	public airfrictionController(int arrowId, int entityId, World world, vec pos, int id, GrappleCustomization custom) {
+	public AirfrictionController(int arrowId, int entityId, World world, Vec pos, int id, GrappleCustomization custom) {
 		super(arrowId, entityId, world, pos, id, custom);
 	}
 	
@@ -51,16 +51,16 @@ public class airfrictionController extends grappleController {
 			return;
 		}
 
-		vec additionalmotion = new vec(0,0,0);
+		Vec additionalmotion = new Vec(0,0,0);
 		
 		if (GrappleConfig.getconf().other.dont_override_movement_in_air && !entity.isOnGround() && !was_sliding && !was_wallrunning && !was_rocket && !first_tick_since_created) {
-			motion = vec.motionvec(entity);
+			motion = Vec.motionvec(entity);
 			this.unattach();
 			return;
 		}
 
 		if (this.attached) {
-			boolean issliding = CommonProxyClass.proxy.issliding(entity, motion);
+			boolean issliding = ClientProxyInterface.proxy.issliding(entity, motion);
 			
 			if (issliding && !was_sliding) {
 				playSlideSound();
@@ -81,7 +81,7 @@ public class airfrictionController extends grappleController {
 			boolean doesrocket = false;
 			if (this.custom != null) {
 				if (this.custom.rocket) {
-					vec rocket = this.rocket(entity);
+					Vec rocket = this.rocket(entity);
 					this.motion.add_ip(rocket);
 					if (rocket.length() > 0) {
 						doesrocket = true;
@@ -97,12 +97,12 @@ public class airfrictionController extends grappleController {
 
 			if (!issliding && !was_sliding) {
 				if (wallrun) {
-					motion = motion.removealong(new vec(0,1,0));
+					motion = motion.removealong(new Vec(0,1,0));
 					if (this.walldirection != null) {
 						motion = motion.removealong(this.walldirection);
 					}
 
-					vec new_movement = this.playermovement.changelen(GrappleConfig.getconf().enchantments.wallrun.wallrun_speed*1.5);
+					Vec new_movement = this.playermovement.changelen(GrappleConfig.getconf().enchantments.wallrun.wallrun_speed*1.5);
 					if (this.walldirection != null) {
 						new_movement = new_movement.removealong(this.walldirection);
 					}
@@ -110,7 +110,7 @@ public class airfrictionController extends grappleController {
 						new_movement.changelen_ip(GrappleConfig.getconf().enchantments.wallrun.wallrun_speed);
 					}
 					motion.add_ip(new_movement);
-					vec current_motion_along = this.motion.removealong(new vec(0,1,0));
+					Vec current_motion_along = this.motion.removealong(new Vec(0,1,0));
 					if (this.walldirection != null) {
 						current_motion_along = current_motion_along.removealong(this.walldirection);
 					}
@@ -121,9 +121,9 @@ public class airfrictionController extends grappleController {
 				} else {
 					double max_motion = GrappleConfig.getconf().other.airstrafe_max_speed;
 					double accel = GrappleConfig.getconf().other.airstrafe_acceleration;
-					vec motion_horizontal = motion.removealong(new vec(0,1,0));
+					Vec motion_horizontal = motion.removealong(new Vec(0,1,0));
 					double prev_motion = motion_horizontal.length();
-					vec new_motion_horizontal = motion_horizontal.add(this.playermovement.changelen(accel));
+					Vec new_motion_horizontal = motion_horizontal.add(this.playermovement.changelen(accel));
 					double angle = motion_horizontal.angle(new_motion_horizontal);
 					if (new_motion_horizontal.length() > max_motion && new_motion_horizontal.length() > prev_motion) {
 						double ninety_deg = Math.PI / 2;
@@ -145,13 +145,13 @@ public class airfrictionController extends grappleController {
 				}
 			}
 			
-			vec gravity = new vec(0, -0.05, 0);
+			Vec gravity = new Vec(0, -0.05, 0);
 
 			if (!wallrun) {
 				motion.add_ip(gravity);
 			}
 
-			vec newmotion;
+			Vec newmotion;
 			
 			newmotion = motion.add(additionalmotion);
 			
@@ -171,7 +171,7 @@ public class airfrictionController extends grappleController {
 								this.unattach();
 							}
 						} else {
-							motion = vec.motionvec(entity);
+							motion = Vec.motionvec(entity);
 						}
 					}
 				}
@@ -196,6 +196,6 @@ public class airfrictionController extends grappleController {
 	}
 	
 	public void playSlideSound() {
-		CommonProxyClass.proxy.playSlideSound(this.entity);
+		ClientProxyInterface.proxy.playSlideSound(this.entity);
 	}
 }

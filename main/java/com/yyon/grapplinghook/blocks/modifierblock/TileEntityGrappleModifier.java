@@ -1,13 +1,13 @@
-package com.yyon.grapplinghook.blocks;
+package com.yyon.grapplinghook.blocks.modifierblock;
 
 import java.util.HashMap;
 
 import javax.annotation.Nullable;
 
-import com.yyon.grapplinghook.CommonSetup;
-import com.yyon.grapplinghook.GrappleCustomization;
-import com.yyon.grapplinghook.GrappleCustomization.upgradeCategories;
+import com.yyon.grapplinghook.common.CommonSetup;
 import com.yyon.grapplinghook.network.GrappleModifierMessage;
+import com.yyon.grapplinghook.utils.GrappleCustomization;
+import com.yyon.grapplinghook.utils.GrappleCustomization.upgradeCategories;
 
 import net.minecraft.block.BlockState;
 import net.minecraft.nbt.CompoundNBT;

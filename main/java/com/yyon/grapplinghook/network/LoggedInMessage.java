@@ -6,8 +6,8 @@ import java.nio.charset.Charset;
 import java.util.Arrays;
 import java.util.Comparator;
 
-import com.yyon.grapplinghook.GrappleConfig;
 import com.yyon.grapplinghook.grapplemod;
+import com.yyon.grapplinghook.config.GrappleConfig;
 
 import net.minecraft.network.PacketBuffer;
 import net.minecraftforge.api.distmarker.Dist;

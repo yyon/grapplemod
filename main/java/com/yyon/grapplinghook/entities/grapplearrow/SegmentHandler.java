@@ -1,12 +1,11 @@
-package com.yyon.grapplinghook.controllers;
+package com.yyon.grapplinghook.entities.grapplearrow;
 
 import java.util.LinkedList;
 
-import com.yyon.grapplinghook.CommonSetup;
-import com.yyon.grapplinghook.GrapplemodUtils;
-import com.yyon.grapplinghook.vec;
-import com.yyon.grapplinghook.entities.grappleArrow;
+import com.yyon.grapplinghook.common.CommonSetup;
 import com.yyon.grapplinghook.network.SegmentMessage;
+import com.yyon.grapplinghook.utils.GrapplemodUtils;
+import com.yyon.grapplinghook.utils.Vec;
 
 import net.minecraft.util.Direction;
 import net.minecraft.util.math.AxisAlignedBB;
@@ -18,20 +17,20 @@ import net.minecraftforge.fml.network.PacketDistributor;
 
 public class SegmentHandler {
 
-	public LinkedList<vec> segments;
+	public LinkedList<Vec> segments;
 	public LinkedList<Direction> segmentbottomsides;
 	public LinkedList<Direction> segmenttopsides;
 	public World world;
-	public grappleArrow arrow;
+	public GrapplehookEntity arrow;
 	
-	vec prevhookpos = null;
-	vec prevplayerpos = null;;
+	Vec prevhookpos = null;
+	Vec prevplayerpos = null;;
 	
 	final double bendoffset = 0.05;
 	final double intoblock = 0.05;
 	
-	public SegmentHandler(World w, grappleArrow arrow, vec hookpos, vec playerpos) {
-		segments = new LinkedList<vec>();
+	public SegmentHandler(World w, GrapplehookEntity arrow, Vec hookpos, Vec playerpos) {
+		segments = new LinkedList<Vec>();
 		segments.add(hookpos);
 		segments.add(playerpos);
 		segmentbottomsides = new LinkedList<Direction>();
@@ -42,30 +41,30 @@ public class SegmentHandler {
 		segmenttopsides.add(null);
 		this.world = w;
 		this.arrow = arrow;
-		this.prevhookpos = new vec(hookpos);
-		this.prevplayerpos = new vec(playerpos);
+		this.prevhookpos = new Vec(hookpos);
+		this.prevplayerpos = new Vec(playerpos);
 		
 //		System.out.println("segments:");
 //		hookpos.print();
 //		playerpos.print();
 	}
 	
-	public void forceSetPos(vec hookpos, vec playerpos) {
-		this.prevhookpos = new vec(hookpos);
-		this.prevplayerpos = new vec(playerpos);
-    	this.segments.set(0, new vec(hookpos));
-    	this.segments.set(this.segments.size() - 1, new vec(playerpos));
+	public void forceSetPos(Vec hookpos, Vec playerpos) {
+		this.prevhookpos = new Vec(hookpos);
+		this.prevplayerpos = new Vec(playerpos);
+    	this.segments.set(0, new Vec(hookpos));
+    	this.segments.set(this.segments.size() - 1, new Vec(playerpos));
 	}
 	
 	double ropelen;
 	
-	public void updatepos(vec hookpos, vec playerpos, double ropelen) {
+	public void updatepos(Vec hookpos, Vec playerpos, double ropelen) {
 		segments.set(0, hookpos);
 		segments.set(segments.size() - 1, playerpos);
 		this.ropelen = ropelen;
 	}
 	
-	public void update(vec hookpos, vec playerpos, double ropelen, boolean movinghook) {
+	public void update(Vec hookpos, Vec playerpos, double ropelen, boolean movinghook) {
 		if (prevhookpos == null) {
 	        prevhookpos = hookpos;
 	        prevplayerpos = playerpos;
@@ -76,7 +75,7 @@ public class SegmentHandler {
 		this.ropelen = ropelen;
 		
 		
-		vec closest = segments.get(segments.size()-2);
+		Vec closest = segments.get(segments.size()-2);
 		
 		while (true) {
 			if (segments.size() == 2) {
@@ -87,12 +86,12 @@ public class SegmentHandler {
 			closest = segments.get(index);
 			Direction bottomside = segmentbottomsides.get(index);
 			Direction topside = segmenttopsides.get(index);
-			vec ropevec = playerpos.sub(closest);
+			Vec ropevec = playerpos.sub(closest);
 			
-			vec beforepoint = segments.get(index-1);
+			Vec beforepoint = segments.get(index-1);
 			
-			vec edgevec = getnormal(bottomside).cross(getnormal(topside));
-			vec planenormal = beforepoint.sub(closest).cross(edgevec);
+			Vec edgevec = getnormal(bottomside).cross(getnormal(topside));
+			Vec planenormal = beforepoint.sub(closest).cross(edgevec);
 //			planenormal = getnormal(bottomside).add(getnormal(topside)).proj(planenormal);
 			
 //			System.out.println(ropevec.dot(planenormal));
@@ -104,7 +103,7 @@ public class SegmentHandler {
 			}
 		}
 		
-		vec farthest = segments.get(1);
+		Vec farthest = segments.get(1);
 		
 		if (movinghook) {
 			while (true) {
@@ -116,12 +115,12 @@ public class SegmentHandler {
 				farthest = segments.get(index);
 				Direction bottomside = segmentbottomsides.get(index);
 				Direction topside = segmenttopsides.get(index);
-				vec ropevec = farthest.sub(hookpos);
+				Vec ropevec = farthest.sub(hookpos);
 				
-				vec beforepoint = segments.get(index+1);
+				Vec beforepoint = segments.get(index+1);
 				
-				vec edgevec = getnormal(bottomside).cross(getnormal(topside));
-				vec planenormal = beforepoint.sub(farthest).cross(edgevec);
+				Vec edgevec = getnormal(bottomside).cross(getnormal(topside));
+				Vec planenormal = beforepoint.sub(farthest).cross(edgevec);
 //				planenormal = getnormal(bottomside).add(getnormal(topside)).proj(planenormal);
 				
 //				System.out.println(ropevec.dot(planenormal));
@@ -145,14 +144,14 @@ public class SegmentHandler {
 		
 		if (movinghook) {
 			farthest = segments.get(1);
-			vec prevfarthest = farthest;
+			Vec prevfarthest = farthest;
 			if (segments.size() == 2) {
 				prevfarthest = prevplayerpos;
 			}
 			updatesegment(hookpos, prevhookpos, farthest, prevfarthest, 1, 0);
 		}
 		
-		vec prevclosest = closest;
+		Vec prevclosest = closest;
 		if (segments.size() == 2) {
 			prevclosest = prevhookpos;
 		}
@@ -169,14 +168,14 @@ public class SegmentHandler {
 		segmenttopsides.remove(index);
 
 		if (!this.world.isClientSide) {
-			SegmentMessage addmessage = new SegmentMessage(this.arrow.getId(), false, index, new vec(0, 0, 0), Direction.DOWN, Direction.DOWN);
-			vec playerpoint = vec.positionvec(this.arrow.shootingEntity);
+			SegmentMessage addmessage = new SegmentMessage(this.arrow.getId(), false, index, new Vec(0, 0, 0), Direction.DOWN, Direction.DOWN);
+			Vec playerpoint = Vec.positionvec(this.arrow.shootingEntity);
 			CommonSetup.network.send(PacketDistributor.TRACKING_CHUNK.with(() -> world.getChunkAt(new BlockPos(playerpoint.x, playerpoint.y, playerpoint.z))), addmessage);
 //			grapplemod.network.sendToAllAround(addmessage, new TargetPoint(this.world.provider.getDimension(), playerpoint.x, playerpoint.y, playerpoint.z, 100));
 		}
 	}
 	
-	public void updatesegment(vec top, vec prevtop, vec bottom, vec prevbottom, int index, int numberrecursions) {		
+	public void updatesegment(Vec top, Vec prevtop, Vec bottom, Vec prevbottom, int index, int numberrecursions) {		
 		BlockRayTraceResult bottomraytraceresult = GrapplemodUtils.rayTraceBlocks(this.world, bottom, top);
         
         // if rope hit block
@@ -187,12 +186,12 @@ public class SegmentHandler {
         	}
         	
 //        	System.out.println(bottomraytraceresult.typeOfHit);
-            vec bottomhitvec = new vec(bottomraytraceresult.getLocation());
+            Vec bottomhitvec = new Vec(bottomraytraceresult.getLocation());
 /*            this.arrow.debugpos = bottomhitvec;
             this.arrow.debugpos2 = bottom;
             this.arrow.debugpos3 = top;*/
             Direction bottomside = bottomraytraceresult.getDirection();
-            vec bottomnormal = this.getnormal(bottomside);
+            Vec bottomnormal = this.getnormal(bottomside);
             
             // calculate where bottomhitvec was along the rope in the previous tick
 //            double ropelen = top.sub(bottom).length();
@@ -211,29 +210,29 @@ public class SegmentHandler {
             
             // the rope must have hit the corner on the plane across the edge of the block
             // and is bounded by the quadrilateral top, prevtop, prevbottom, bottom
-            vec cornerbound1 = bottomhitvec.add(bottomnormal.changelen(-intoblock));
+            Vec cornerbound1 = bottomhitvec.add(bottomnormal.changelen(-intoblock));
             
 //            vec cornerbound2 = null;
 //            double cornerlinedist = Double.POSITIVE_INFINITY;
             
-            vec bound_option1 = line_plane_intersection(prevtop, prevbottom, cornerbound1, bottomnormal);
+            Vec bound_option1 = line_plane_intersection(prevtop, prevbottom, cornerbound1, bottomnormal);
 /*            if (cornerbound1.sub(bound_option1).length() < cornerlinedist) {
             	cornerbound2 = bound_option1;
             	cornerlinedist = cornerbound1.sub(bound_option1).length();
             }*/
-            vec bound_option2 = line_plane_intersection(top, prevtop, cornerbound1, bottomnormal);
+            Vec bound_option2 = line_plane_intersection(top, prevtop, cornerbound1, bottomnormal);
 /*            if (cornerbound1.sub(bound_option2).length() < cornerlinedist) {
             	cornerbound2 = bound_option2;
             	cornerlinedist = cornerbound1.sub(bound_option2).length();
             }*/
-            vec bound_option3 = line_plane_intersection(prevbottom, bottom, cornerbound1, bottomnormal);
+            Vec bound_option3 = line_plane_intersection(prevbottom, bottom, cornerbound1, bottomnormal);
 /*            if (cornerbound1.sub(bound_option3).length() < cornerlinedist) {
             	cornerbound2 = bound_option3;
             	cornerlinedist = cornerbound1.sub(bound_option3).length();
             }*/
             
 //            if (cornerbound2 != null) {
-            for (vec cornerbound2 : new vec[] {bound_option1, bound_option2, bound_option3}) {
+            for (Vec cornerbound2 : new Vec[] {bound_option1, bound_option2, bound_option3}) {
             	if (cornerbound2 == null) {
             		continue;
             	}
@@ -241,7 +240,7 @@ public class SegmentHandler {
             	// the corner must be in the line (cornerbound2, cornerbound1)
             	BlockRayTraceResult cornerraytraceresult = GrapplemodUtils.rayTraceBlocks(this.world, cornerbound2, cornerbound1);
                 if (cornerraytraceresult != null) {
-                	vec cornerhitpos = new vec(cornerraytraceresult.getLocation());
+                	Vec cornerhitpos = new Vec(cornerraytraceresult.getLocation());
                 	Direction cornerside = cornerraytraceresult.getDirection();
                 	
                 	if (cornerside == bottomside || 
@@ -251,10 +250,10 @@ public class SegmentHandler {
                 		continue;
                 	} else {
                 		// add a bend around the corner
-                		vec actualcorner = cornerhitpos.add(bottomnormal.changelen(intoblock));
-                		vec bend = actualcorner.add(bottomnormal.changelen(bendoffset)).add(getnormal(cornerside).changelen(bendoffset));
-                		vec topropevec = bend.sub(top);
-                		vec bottomropevec = bend.sub(bottom);
+                		Vec actualcorner = cornerhitpos.add(bottomnormal.changelen(intoblock));
+                		Vec bend = actualcorner.add(bottomnormal.changelen(bendoffset)).add(getnormal(cornerside).changelen(bendoffset));
+                		Vec topropevec = bend.sub(top);
+                		Vec bottomropevec = bend.sub(bottom);
                 		
                 		// ignore bends that are too close to another bend
                 		if (topropevec.length() < 0.05) {
@@ -283,7 +282,7 @@ public class SegmentHandler {
                 		double newropelen = topropevec.length() + bottomropevec.length();
                 		
                 		double prevtoptobend = topropevec.length() * prevropelen / newropelen;
-                		vec prevbend = prevtop.add(prevbottom.sub(prevtop).changelen(prevtoptobend));
+                		Vec prevbend = prevtop.add(prevbottom.sub(prevtop).changelen(prevtoptobend));
                 		
                 		if (numberrecursions < 10) {
                     		updatesegment(top, prevtop, bend, prevbend, index, numberrecursions+1);
@@ -342,11 +341,11 @@ public class SegmentHandler {
         }
 	}
 	
-	public vec line_plane_intersection(vec linepoint1, vec linepoint2, vec planepoint, vec planenormal) {
+	public Vec line_plane_intersection(Vec linepoint1, Vec linepoint2, Vec planepoint, Vec planenormal) {
 		// calculate the intersection of a line and a plane
 		// formula: https://en.wikipedia.org/wiki/Line%E2%80%93plane_intersection#Algebraic_form
 		
-		vec linevec = linepoint2.sub(linepoint1);
+		Vec linevec = linepoint2.sub(linepoint1);
 		
 		if (linevec.dot(planenormal) == 0) {
 			return null;
@@ -356,9 +355,9 @@ public class SegmentHandler {
 		return linepoint1.add(linevec.mult(d));
 	}
 	
-	public vec getnormal(Direction facing) {
+	public Vec getnormal(Direction facing) {
 		Vector3i facingvec = facing.getNormal();
-		return new vec(facingvec.getX(), facingvec.getY(), facingvec.getZ());
+		return new Vec(facingvec.getX(), facingvec.getY(), facingvec.getZ());
 	}
 	
 	public boolean hookpastbend(double ropelen) {
@@ -366,7 +365,7 @@ public class SegmentHandler {
 	}
 	
 	public BlockPos getbendblock(int index) {
-		vec bendpos = this.segments.get(index);
+		Vec bendpos = this.segments.get(index);
 		bendpos.add_ip(this.getnormal(this.segmentbottomsides.get(index)).changelen(-this.intoblock * 2));
 		bendpos.add_ip(this.getnormal(this.segmenttopsides.get(index)).changelen(-this.intoblock * 2));
 		return new BlockPos(bendpos.x, bendpos.y, bendpos.z);
@@ -418,7 +417,7 @@ public class SegmentHandler {
 		}
 	}*/
 	
-	public void actuallyaddsegment(int index, vec bendpoint, Direction bottomside, Direction topside) {
+	public void actuallyaddsegment(int index, Vec bendpoint, Direction bottomside, Direction topside) {
         segments.add(index, bendpoint);
         segmentbottomsides.add(index, bottomside);
         segmenttopsides.add(index, topside);
@@ -428,7 +427,7 @@ public class SegmentHandler {
 		
 		if (!this.world.isClientSide) {
 			SegmentMessage addmessage = new SegmentMessage(this.arrow.getId(), true, index, bendpoint, topside, bottomside);
-			vec playerpoint = vec.positionvec(this.arrow.shootingEntity);
+			Vec playerpoint = Vec.positionvec(this.arrow.shootingEntity);
 			CommonSetup.network.send(PacketDistributor.TRACKING_CHUNK.with(() -> world.getChunkAt(new BlockPos(playerpoint.x, playerpoint.y, playerpoint.z))), addmessage);
 //			grapplemod.network.sendToAllAround(addmessage, new TargetPoint(this.world.provider.getDimension(), playerpoint.x, playerpoint.y, playerpoint.z, 100));
 		}
@@ -446,7 +445,7 @@ public class SegmentHandler {
 		}
 	}
 	
-	public vec getclosest(vec hookpos) {
+	public Vec getclosest(Vec hookpos) {
 		segments.set(0, hookpos);
 		
 		return segments.get(segments.size() - 2);
@@ -461,7 +460,7 @@ public class SegmentHandler {
 		return dist;
 	}
 	
-	public vec getfarthest() {
+	public Vec getfarthest() {
 		return segments.get(1);
 	}
 	
@@ -474,7 +473,7 @@ public class SegmentHandler {
 		return dist;
 	}
 	
-	public double getDist(vec hookpos, vec playerpos) {
+	public double getDist(Vec hookpos, Vec playerpos) {
 		segments.set(0, hookpos);
 		segments.set(segments.size() - 1, playerpos);
 		double dist = 0;
@@ -485,12 +484,12 @@ public class SegmentHandler {
 		return dist;
 	}
 	
-	public AxisAlignedBB getBoundingBox(vec hookpos, vec playerpos) {
+	public AxisAlignedBB getBoundingBox(Vec hookpos, Vec playerpos) {
 		this.updatepos(hookpos, playerpos, this.ropelen);
-		vec minvec = new vec(hookpos);
-		vec maxvec = new vec(hookpos);
+		Vec minvec = new Vec(hookpos);
+		Vec maxvec = new Vec(hookpos);
 		for (int i = 1; i < segments.size(); i++) {
-			vec segpos = segments.get(i);
+			Vec segpos = segments.get(i);
 			if (segpos.x < minvec.x) {
 				minvec.x = segpos.x;
 			} else if (segpos.x > maxvec.x) {

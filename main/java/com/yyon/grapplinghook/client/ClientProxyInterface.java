@@ -1,8 +1,10 @@
-package com.yyon.grapplinghook;
+package com.yyon.grapplinghook.client;
 
-import com.yyon.grapplinghook.blocks.TileEntityGrappleModifier;
-import com.yyon.grapplinghook.controllers.grappleController;
+import com.yyon.grapplinghook.blocks.modifierblock.TileEntityGrappleModifier;
+import com.yyon.grapplinghook.controllers.GrappleController;
 import com.yyon.grapplinghook.network.BaseMessageClient;
+import com.yyon.grapplinghook.utils.GrappleCustomization;
+import com.yyon.grapplinghook.utils.Vec;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -14,8 +16,8 @@ import net.minecraft.world.World;
 import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.fml.network.NetworkEvent.Context;
 
-public abstract class CommonProxyClass {
-	public static CommonProxyClass proxy = DistExecutor.unsafeRunForDist(() -> ClientProxyClass::new, () -> () -> null);
+public abstract class ClientProxyInterface {
+	public static ClientProxyInterface proxy = DistExecutor.unsafeRunForDist(() -> ClientProxy::new, () -> () -> null);
 
 	public abstract void resetlaunchertime(int playerid);
 
@@ -43,11 +45,11 @@ public abstract class CommonProxyClass {
 
 	public abstract double getRocketFunctioning();
 
-	public abstract boolean iswallrunning(Entity entity, vec motion);
+	public abstract boolean iswallrunning(Entity entity, Vec motion);
 	
-	public abstract boolean issliding(Entity entity, vec motion);
+	public abstract boolean issliding(Entity entity, Vec motion);
 		
-	public abstract grappleController createControl(int id, int arrowid, int entityid, World world, vec pos, BlockPos blockpos, GrappleCustomization custom);
+	public abstract GrappleController createControl(int id, int arrowid, int entityid, World world, Vec pos, BlockPos blockpos, GrappleCustomization custom);
 
 	public abstract void playSlideSound(Entity entity);
 	
@@ -75,7 +77,7 @@ public abstract class CommonProxyClass {
 	}
 	public abstract boolean isKeyDown(grapplekeys key);
 
-	public abstract grappleController unregisterController(int entityId);
+	public abstract GrappleController unregisterController(int entityId);
 
 	public abstract double getTimeSinceLastRopeJump(World world);
 

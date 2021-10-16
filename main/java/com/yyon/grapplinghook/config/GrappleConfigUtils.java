@@ -1,4 +1,4 @@
-package com.yyon.grapplinghook;
+package com.yyon.grapplinghook.config;
 
 import java.util.HashSet;
 
