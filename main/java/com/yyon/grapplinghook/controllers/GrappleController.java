@@ -200,7 +200,7 @@ public class GrappleController {
 						// vectors along rope
 						Vec anchor = hookEntity.segmentHandler.getClosest(hookPos);
 						double distToAnchor = hookEntity.segmentHandler.getDistToAnchor();
-						double remaininglength = hookEntity.r - distToAnchor;
+						double remaininglength = motor ? this.custom.maxlen : hookEntity.r - distToAnchor;
 						
 						Vec oldspherevec = playerpos.sub(anchor);
 						Vec spherevec = oldspherevec.changeLen(remaininglength);
@@ -217,17 +217,15 @@ public class GrappleController {
 						// snap to rope length
 						if (oldspherevec.length() < remaininglength) {
 						} else {
-							if (!motor) {
-								if (oldspherevec.length() - remaininglength > GrappleConfig.getConf().grapplinghook.other.rope_snap_buffer) {
-									// if rope is too long, the rope snaps
-									
-									this.unattach();
-									
-									this.updateServerPos();
-									return;
-								} else {
-									additionalmotion = spherechange;
-								}
+							if (oldspherevec.length() - remaininglength > GrappleConfig.getConf().grapplinghook.other.rope_snap_buffer) {
+								// if rope is too long, the rope snaps
+								
+								this.unattach();
+								
+								this.updateServerPos();
+								return;
+							} else {
+								additionalmotion = spherechange;
 							}
 						}
 						
@@ -296,7 +294,7 @@ public class GrappleController {
 						}
 						
 						// swing along max rope length
-						if (anchor.sub(playerpos.add(motion)).length() > remaininglength && !motor) { // moving away
+						if (anchor.sub(playerpos.add(motion)).length() > remaininglength) { // moving away
 							motion = motion.removeAlong(spherevec);
 						}
 					}
