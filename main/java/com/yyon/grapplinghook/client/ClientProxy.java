@@ -210,4 +210,26 @@ public class ClientProxy extends ClientProxyInterface {
 	public void resetRopeJumpTime(World world) {
 		ClientControllerManager.prev_rope_jump_time = GrapplemodUtils.getTime(world);
 	}
+
+	@Override
+	public boolean isKeyDown(mckeys keyenum) {
+		if (keyenum == mckeys.keyBindAttack) {
+			return Minecraft.getInstance().options.keyAttack.isDown();
+		} else if (keyenum == mckeys.keyBindBack) {
+			return Minecraft.getInstance().options.keyDown.isDown();
+		} else if (keyenum == mckeys.keyBindForward) {
+			return Minecraft.getInstance().options.keyUp.isDown();
+		} else if (keyenum == mckeys.keyBindJump) {
+			return Minecraft.getInstance().options.keyJump.isDown();
+		} else if (keyenum == mckeys.keyBindLeft) {
+			return Minecraft.getInstance().options.keyLeft.isDown();
+		} else if (keyenum == mckeys.keyBindRight) {
+			return Minecraft.getInstance().options.keyRight.isDown();
+		} else if (keyenum == mckeys.keyBindSneak) {
+			return Minecraft.getInstance().options.keyShift.isDown();
+		} else if (keyenum == mckeys.keyBindUseItem) {
+			return Minecraft.getInstance().options.keyUse.isDown();
+		}
+		return false;
+	}
 }

@@ -82,4 +82,6 @@ public abstract class ClientProxyInterface {
 	public abstract double getTimeSinceLastRopeJump(World world);
 
 	public abstract void resetRopeJumpTime(World level);
+
+	public abstract boolean isKeyDown(mckeys keybindjump);
 }

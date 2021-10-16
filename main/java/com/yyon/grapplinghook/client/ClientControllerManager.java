@@ -1,6 +1,5 @@
 package com.yyon.grapplinghook.client;
 
-import java.util.Collection;
 import java.util.ConcurrentModificationException;
 import java.util.HashMap;
 import java.util.Map;
@@ -8,12 +7,11 @@ import java.util.Map;
 import com.yyon.grapplinghook.common.CommonSetup;
 import com.yyon.grapplinghook.config.GrappleConfig;
 import com.yyon.grapplinghook.controllers.AirfrictionController;
-import com.yyon.grapplinghook.controllers.GrappleController;
 import com.yyon.grapplinghook.controllers.ForcefieldController;
+import com.yyon.grapplinghook.controllers.GrappleController;
 import com.yyon.grapplinghook.entities.grapplearrow.GrapplehookEntity;
-import com.yyon.grapplinghook.items.KeypressItem;
-import com.yyon.grapplinghook.items.GrapplehookItem;
 import com.yyon.grapplinghook.items.EnderStaffItem;
+import com.yyon.grapplinghook.items.GrapplehookItem;
 import com.yyon.grapplinghook.utils.GrappleCustomization;
 import com.yyon.grapplinghook.utils.GrapplemodUtils;
 import com.yyon.grapplinghook.utils.Vec;
@@ -47,14 +45,14 @@ public class ClientControllerManager {
 	
 	public void onClientTick(PlayerEntity player) {
 		if (this.iswallrunning(player, Vec.motionvec(player))) {
-			if (!this.controllers.containsKey(player.getId())) {
+			if (!controllers.containsKey(player.getId())) {
 				GrappleController controller = this.createControl(GrapplemodUtils.AIRID, -1, player.getId(), player.level, new Vec(0,0,0), null, null);
 				if (controller.getwalldirection() == null) {
 					controller.unattach();
 				}
 			}
 			
-			if (this.controllers.containsKey(player.getId())) {
+			if (controllers.containsKey(player.getId())) {
 				tickssincelastonground = 0;
 				alreadyuseddoublejump = false;
 			}
@@ -67,8 +65,7 @@ public class ClientControllerManager {
 		this.rocketFuel += this.rocketIncreaseTick;
 		
 		try {
-			Collection<GrappleController> controllers = this.controllers.values();
-			for (GrappleController controller : controllers) {
+			for (GrappleController controller : controllers.values()) {
 				controller.doClientTick();
 			}
 		} catch (ConcurrentModificationException e) {
@@ -88,7 +85,7 @@ public class ClientControllerManager {
 	}
 
 	public void checkslide(PlayerEntity player) {
-		if (ClientSetup.key_slide.isDown() && !this.controllers.containsKey(player.getId()) && this.issliding(player, Vec.motionvec(player))) {
+		if (ClientSetup.key_slide.isDown() && !controllers.containsKey(player.getId()) && this.issliding(player, Vec.motionvec(player))) {
 			this.createControl(GrapplemodUtils.AIRID, -1, player.getId(), player.level, new Vec(0,0,0), null, null);
 		}
 	}
@@ -114,12 +111,12 @@ public class ClientControllerManager {
 	        		custom = ((GrapplehookItem) player.getItemInHand(Hand.OFF_HAND).getItem()).getCustomization(player.getItemInHand(Hand.OFF_HAND));
 	        	}
 	        	
-				if (!this.controllers.containsKey(player.getId())) {
+				if (!controllers.containsKey(player.getId())) {
 					player.setOnGround(false);
 					this.createControl(GrapplemodUtils.AIRID, -1, player.getId(), player.level, new Vec(0,0,0), null, custom);
 				}
 				facing.mult_ip(GrappleConfig.getconf().enderstaff.ender_staff_strength);
-				this.receiveEnderLaunch(player.getId(), facing.x, facing.y, facing.z);
+				receiveEnderLaunch(player.getId(), facing.x, facing.y, facing.z);
 			}
 		}
 	}
@@ -193,11 +190,11 @@ public class ClientControllerManager {
 			if (tickssincelastonground > 3) {
 				if (!alreadyuseddoublejump) {
 					if (wearingdoublejumpenchant(player)) {
-						if (!this.controllers.containsKey(player.getId()) || this.controllers.get(player.getId()) instanceof AirfrictionController) {
-							if (!this.controllers.containsKey(player.getId())) {
+						if (!controllers.containsKey(player.getId()) || controllers.get(player.getId()) instanceof AirfrictionController) {
+							if (!controllers.containsKey(player.getId())) {
 								this.createControl(GrapplemodUtils.AIRID, -1, player.getId(), player.level, new Vec(0,0,0), null, null);
 							}
-							GrappleController controller = this.controllers.get(player.getId());
+							GrappleController controller = controllers.get(player.getId());
 							if (controller instanceof AirfrictionController) {
 								alreadyuseddoublejump = true;
 								controller.doublejump();
@@ -252,8 +249,8 @@ public class ClientControllerManager {
 			if (isWearingSlidingEnchant(entity)) {
 				boolean was_sliding = false;
 				int id = entity.getId();
-				if (this.controllers.containsKey(id)) {
-					GrappleController controller = this.controllers.get(id);
+				if (controllers.containsKey(id)) {
+					GrappleController controller = controllers.get(id);
 					if (controller instanceof AirfrictionController) {
 						AirfrictionController afc = (AirfrictionController) controller;
 						if (afc.was_sliding) {
@@ -281,7 +278,7 @@ public class ClientControllerManager {
 		
 		boolean multi = (custom != null) && (custom.doublehook);
 		
-		GrappleController currentcontroller = this.controllers.get(entityid);
+		GrappleController currentcontroller = controllers.get(entityid);
 		if (currentcontroller != null && !(multi && currentcontroller.custom != null && currentcontroller.custom.doublehook)) {
 			currentcontroller.unattach();
 		}
@@ -293,7 +290,7 @@ public class ClientControllerManager {
 			if (!multi) {
 				control = new GrappleController(arrowid, entityid, world, pos, id, custom);
 			} else {
-				control = this.controllers.get(entityid);
+				control = controllers.get(entityid);
 				boolean created = false;
 				if (control != null && control.getClass().equals(GrappleController.class)) {
 					GrappleController c = (GrappleController) control;

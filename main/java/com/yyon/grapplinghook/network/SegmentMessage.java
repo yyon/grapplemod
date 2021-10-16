@@ -1,8 +1,7 @@
 package com.yyon.grapplinghook.network;
 
-import com.yyon.grapplinghook.grapplemod;
-import com.yyon.grapplinghook.entities.grapplearrow.SegmentHandler;
 import com.yyon.grapplinghook.entities.grapplearrow.GrapplehookEntity;
+import com.yyon.grapplinghook.entities.grapplearrow.SegmentHandler;
 import com.yyon.grapplinghook.utils.Vec;
 
 import net.minecraft.client.Minecraft;

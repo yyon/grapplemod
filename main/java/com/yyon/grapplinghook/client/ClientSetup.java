@@ -89,8 +89,6 @@ public class ClientSetup {
 		
 	    RenderingRegistry.registerEntityRenderingHandler(CommonSetup.grappleArrowType, new grappleArrowRenderFactory());
 
-	    GuiRegistry registry = AutoConfig.getGuiRegistry(GrappleConfig.class);
-
 		ModLoadingContext.get().registerExtensionPoint(
                 ExtensionPoint.CONFIGGUIFACTORY,
                 () -> ((ClientProxy) ClientProxyInterface.proxy)::onConfigScreen);

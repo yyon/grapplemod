@@ -668,7 +668,7 @@ public class GrappleController {
 
 	public void normalCollisions(boolean refreshmotion) {
 		// stop if collided with object
-		Vec pos = Vec.positionvec(this.entity);
+//		Vec pos = Vec.positionvec(this.entity);
 		if (entity.horizontalCollision) {
 //			if (refreshmotion || prevcollision) {
 				if (entity.getDeltaMovement().x == 0) {
@@ -743,7 +743,7 @@ public class GrappleController {
 		if (entity.isOnGround() || ongroundtimer > 0) {
 			if (refreshmotion) {
 				this.motion = Vec.motionvec(entity);
-				if (Minecraft.getInstance().options.keyJump.isDown()) {
+				if (ClientProxyInterface.proxy.isKeyDown(ClientProxyInterface.mckeys.keyBindJump)) {
 					this.motion.y += 0.05;
 				}
 			}

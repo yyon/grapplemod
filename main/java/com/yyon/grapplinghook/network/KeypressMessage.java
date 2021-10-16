@@ -1,6 +1,5 @@
 package com.yyon.grapplinghook.network;
 
-import com.yyon.grapplinghook.grapplemod;
 import com.yyon.grapplinghook.items.KeypressItem;
 
 import net.minecraft.entity.player.ServerPlayerEntity;

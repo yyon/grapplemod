@@ -5,7 +5,6 @@ import java.util.function.Supplier;
 import com.yyon.grapplinghook.grapplemod;
 import com.yyon.grapplinghook.client.ClientProxyInterface;
 
-import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.network.PacketBuffer;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;

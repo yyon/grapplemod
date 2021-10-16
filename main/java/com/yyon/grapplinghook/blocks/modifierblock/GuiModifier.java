@@ -6,7 +6,6 @@ import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.yyon.grapplinghook.client.ClientProxyInterface;
 import com.yyon.grapplinghook.utils.GrappleCustomization;
-import com.yyon.grapplinghook.utils.GrappleCustomization.upgradeCategories;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
@@ -174,7 +173,6 @@ public class GuiModifier extends Screen {
 	      FontRenderer fontrenderer = minecraft.font;
 	      minecraft.getTextureManager().bind(WIDGETS_LOCATION);
 	      RenderSystem.color4f(1.0F, 1.0F, 1.0F, this.alpha);
-	      int i = this.getYImage(this.isHovered());
 	      RenderSystem.enableBlend();
 	      RenderSystem.defaultBlendFunc();
 	      RenderSystem.enableDepthTest();

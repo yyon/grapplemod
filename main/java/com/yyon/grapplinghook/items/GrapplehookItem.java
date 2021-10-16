@@ -155,7 +155,7 @@ public class GrapplehookItem extends Item implements KeypressItem {
 				boolean threw = throwLeft(stack, player.level, player, ismainhand);
 
 				if (threw) {
-			        player.level.playSound((PlayerEntity) null, player.position().x, player.position().y, player.position().z, SoundEvents.ARROW_SHOOT, SoundCategory.NEUTRAL, 1.0F, 1.0F / (this.random.nextFloat() * 0.4F + 1.2F) + 2.0F * 0.5F);
+			        player.level.playSound((PlayerEntity) null, player.position().x, player.position().y, player.position().z, SoundEvents.ARROW_SHOOT, SoundCategory.NEUTRAL, 1.0F, 1.0F / (Item.random.nextFloat() * 0.4F + 1.2F) + 2.0F * 0.5F);
 				}
 			} else if (key == KeypressItem.Keys.THROWRIGHT) {
 				GrapplehookEntity arrow2 = getArrowRight(player);
@@ -172,7 +172,7 @@ public class GrapplehookItem extends Item implements KeypressItem {
 				
 				throwRight(stack, player.level, player, ismainhand);
 
-		        player.level.playSound((PlayerEntity) null, player.position().x, player.position().y, player.position().z, SoundEvents.ARROW_SHOOT, SoundCategory.NEUTRAL, 1.0F, 1.0F / (this.random.nextFloat() * 0.4F + 1.2F) + 2.0F * 0.5F);
+		        player.level.playSound((PlayerEntity) null, player.position().x, player.position().y, player.position().z, SoundEvents.ARROW_SHOOT, SoundCategory.NEUTRAL, 1.0F, 1.0F / (Item.random.nextFloat() * 0.4F + 1.2F) + 2.0F * 0.5F);
 			}
 		}
 	}
@@ -217,10 +217,10 @@ public class GrapplehookItem extends Item implements KeypressItem {
 
     	GrappleCustomization custom = this.getCustomization(stack);
   		double angle = custom.angle;
-  		double verticalangle = custom.verticalthrowangle;
+//  		double verticalangle = custom.verticalthrowangle;
   		if (entityLiving.isCrouching()) {
   			angle = custom.sneakingangle;
-  			verticalangle = custom.sneakingverticalthrowangle;
+//  			verticalangle = custom.sneakingverticalthrowangle;
   		}
 
     	if (!(!custom.doublehook || angle == 0)) {
@@ -228,7 +228,7 @@ public class GrapplehookItem extends Item implements KeypressItem {
     	}
 		throwRight(stack, worldIn, entityLiving, righthand);
 
-		entityLiving.level.playSound((PlayerEntity) null, entityLiving.position().x, entityLiving.position().y, entityLiving.position().z, SoundEvents.ARROW_SHOOT, SoundCategory.NEUTRAL, 1.0F, 1.0F / (this.random.nextFloat() * 0.4F + 1.2F) + 2.0F * 0.5F);
+		entityLiving.level.playSound((PlayerEntity) null, entityLiving.position().x, entityLiving.position().y, entityLiving.position().z, SoundEvents.ARROW_SHOOT, SoundCategory.NEUTRAL, 1.0F, 1.0F / (Item.random.nextFloat() * 0.4F + 1.2F) + 2.0F * 0.5F);
 	}
 	
 	public boolean throwLeft(ItemStack stack, World worldIn, LivingEntity entityLiving, boolean righthand) {
@@ -322,7 +322,7 @@ public class GrapplehookItem extends Item implements KeypressItem {
 		GrapplemodUtils.sendtocorrectclient(new GrappleDetachMessage(id), entityLiving.getId(), entityLiving.level);
 
 		if (ServerControllerManager.attached.contains(id)) {
-			ServerControllerManager.attached.remove(new Integer(id));
+			ServerControllerManager.attached.remove(id);
 		}
 	}
 	
@@ -345,7 +345,7 @@ public class GrapplehookItem extends Item implements KeypressItem {
 		}
 		
 		if (ServerControllerManager.attached.contains(id)) {
-			ServerControllerManager.attached.remove(new Integer(id));
+			ServerControllerManager.attached.remove(id);
 		}
 	}
 	
@@ -368,7 +368,7 @@ public class GrapplehookItem extends Item implements KeypressItem {
 		}
 		
 		if (ServerControllerManager.attached.contains(id)) {
-			ServerControllerManager.attached.remove(new Integer(id));
+			ServerControllerManager.attached.remove(id);
 		}
 	}
 	
