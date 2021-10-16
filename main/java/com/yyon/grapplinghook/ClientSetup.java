@@ -6,6 +6,7 @@ import javax.annotation.Nullable;
 
 import org.lwjgl.glfw.GLFW;
 
+import com.yyon.grapplinghook.controllers.airfrictionController;
 import com.yyon.grapplinghook.controllers.repelController;
 import com.yyon.grapplinghook.entities.RenderGrappleArrow;
 import com.yyon.grapplinghook.entities.grappleArrow;
@@ -72,7 +73,7 @@ public class ClientSetup {
 	private static class grappleArrowRenderFactory implements IRenderFactory<grappleArrow> {
 	    @Override
 	    public EntityRenderer<? super grappleArrow> createRenderFor(EntityRendererManager manager) {
-	      return new RenderGrappleArrow<>(manager, grapplemod.grapplebowitem);
+	      return new RenderGrappleArrow<>(manager, CommonSetup.grapplebowitem);
 	    	
 	    }
 	}
@@ -84,13 +85,13 @@ public class ClientSetup {
 		    ClientRegistry.registerKeyBinding(keyBindings.get(i));
 		}
 		
-	    RenderingRegistry.registerEntityRenderingHandler(grapplemod.grappleArrowType, new grappleArrowRenderFactory());
+	    RenderingRegistry.registerEntityRenderingHandler(CommonSetup.grappleArrowType, new grappleArrowRenderFactory());
 
 	    GuiRegistry registry = AutoConfig.getGuiRegistry(GrappleConfig.class);
 
 		ModLoadingContext.get().registerExtensionPoint(
                 ExtensionPoint.CONFIGGUIFACTORY,
-                () -> ((ClientProxyClass) grapplemod.proxy)::onConfigScreen);
+                () -> ((ClientProxyClass) CommonProxyClass.proxy)::onConfigScreen);
 		
 	    this.registerPropertyOverride();
 	    
@@ -100,46 +101,46 @@ public class ClientSetup {
 	}
 	
 	public void registerPropertyOverride() {
-		ItemModelsProperties.register(grapplemod.grapplebowitem, new ResourceLocation("rocket"), new IItemPropertyGetter() {
+		ItemModelsProperties.register(CommonSetup.grapplebowitem, new ResourceLocation("rocket"), new IItemPropertyGetter() {
 			public float call(ItemStack stack, @Nullable ClientWorld world, @Nullable LivingEntity entity) {
-				return grapplemod.grapplebowitem.getPropertyRocket(stack, world, entity) ? 1 : 0;
+				return CommonSetup.grapplebowitem.getPropertyRocket(stack, world, entity) ? 1 : 0;
 			}
 		});
-		ItemModelsProperties.register(grapplemod.grapplebowitem, new ResourceLocation("double"), new IItemPropertyGetter() {
+		ItemModelsProperties.register(CommonSetup.grapplebowitem, new ResourceLocation("double"), new IItemPropertyGetter() {
 			public float call(ItemStack stack, @Nullable ClientWorld world, @Nullable LivingEntity entity) {
-				return grapplemod.grapplebowitem.getPropertyDouble(stack, world, entity) ? 1 : 0;
+				return CommonSetup.grapplebowitem.getPropertyDouble(stack, world, entity) ? 1 : 0;
 			}
 		});
-		ItemModelsProperties.register(grapplemod.grapplebowitem, new ResourceLocation("motor"), new IItemPropertyGetter() {
+		ItemModelsProperties.register(CommonSetup.grapplebowitem, new ResourceLocation("motor"), new IItemPropertyGetter() {
 			public float call(ItemStack stack, @Nullable ClientWorld world, @Nullable LivingEntity entity) {
-				return grapplemod.grapplebowitem.getPropertyMotor(stack, world, entity) ? 1 : 0;
+				return CommonSetup.grapplebowitem.getPropertyMotor(stack, world, entity) ? 1 : 0;
 			}
 		});
-		ItemModelsProperties.register(grapplemod.grapplebowitem, new ResourceLocation("smart"), new IItemPropertyGetter() {
+		ItemModelsProperties.register(CommonSetup.grapplebowitem, new ResourceLocation("smart"), new IItemPropertyGetter() {
 			public float call(ItemStack stack, @Nullable ClientWorld world, @Nullable LivingEntity entity) {
-				return grapplemod.grapplebowitem.getPropertySmart(stack, world, entity) ? 1 : 0;
+				return CommonSetup.grapplebowitem.getPropertySmart(stack, world, entity) ? 1 : 0;
 			}
 		});
-		ItemModelsProperties.register(grapplemod.grapplebowitem, new ResourceLocation("enderstaff"), new IItemPropertyGetter() {
+		ItemModelsProperties.register(CommonSetup.grapplebowitem, new ResourceLocation("enderstaff"), new IItemPropertyGetter() {
 			public float call(ItemStack stack, @Nullable ClientWorld world, @Nullable LivingEntity entity) {
-				return grapplemod.grapplebowitem.getPropertyEnderstaff(stack, world, entity) ? 1 : 0;
+				return CommonSetup.grapplebowitem.getPropertyEnderstaff(stack, world, entity) ? 1 : 0;
 			}
 		});
-		ItemModelsProperties.register(grapplemod.grapplebowitem, new ResourceLocation("magnet"), new IItemPropertyGetter() {
+		ItemModelsProperties.register(CommonSetup.grapplebowitem, new ResourceLocation("magnet"), new IItemPropertyGetter() {
 			public float call(ItemStack stack, @Nullable ClientWorld world, @Nullable LivingEntity entity) {
-				return grapplemod.grapplebowitem.getPropertyMagnet(stack, world, entity) ? 1 : 0;
+				return CommonSetup.grapplebowitem.getPropertyMagnet(stack, world, entity) ? 1 : 0;
 			}
 		});
-		ItemModelsProperties.register(grapplemod.grapplebowitem, new ResourceLocation("attached"), new IItemPropertyGetter() {
+		ItemModelsProperties.register(CommonSetup.grapplebowitem, new ResourceLocation("attached"), new IItemPropertyGetter() {
 			public float call(ItemStack stack, @Nullable ClientWorld world, @Nullable LivingEntity entity) {
 				if (entity == null) {return 0;}
-				return grapplemod.attached.contains(entity.getId()) ? 1 : 0;
+				return (ClientControllerManager.controllers.containsKey(entity.getId()) && !(ClientControllerManager.controllers.get(entity.getId()) instanceof airfrictionController)) ? 1 : 0;
 			}
 		});
-		ItemModelsProperties.register(grapplemod.repelleritem, new ResourceLocation("attached"), new IItemPropertyGetter() {
+		ItemModelsProperties.register(CommonSetup.repelleritem, new ResourceLocation("attached"), new IItemPropertyGetter() {
 			public float call(ItemStack stack, @Nullable ClientWorld world, @Nullable LivingEntity entity) {
 				if (entity == null) {return 0;}
-				return (grapplemod.controllers.containsKey(entity.getId()) && grapplemod.controllers.get(entity.getId()) instanceof repelController) ? 1 : 0;
+				return (ClientControllerManager.controllers.containsKey(entity.getId()) && ClientControllerManager.controllers.get(entity.getId()) instanceof repelController) ? 1 : 0;
 			}
 		});
 	}

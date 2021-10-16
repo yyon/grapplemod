@@ -2,8 +2,8 @@ package com.yyon.grapplinghook.network;
 
 import java.util.LinkedList;
 
+import com.yyon.grapplinghook.CommonProxyClass;
 import com.yyon.grapplinghook.GrappleCustomization;
-import com.yyon.grapplinghook.grapplemod;
 import com.yyon.grapplinghook.vec;
 import com.yyon.grapplinghook.controllers.SegmentHandler;
 import com.yyon.grapplinghook.entities.grappleArrow;
@@ -141,6 +141,6 @@ public class GrappleAttachMessage extends BaseMessageClient {
     	} else {
     	}
     	            	
-    	grapplemod.proxy.createControl(this.controlid, this.id, this.entityid, world, new vec(this.x, this.y, this.z), this.blockpos, this.custom);
+    	CommonProxyClass.proxy.createControl(this.controlid, this.id, this.entityid, world, new vec(this.x, this.y, this.z), this.blockpos, this.custom);
     }
 }

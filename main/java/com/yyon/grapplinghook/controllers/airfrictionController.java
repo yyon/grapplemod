@@ -1,8 +1,8 @@
 package com.yyon.grapplinghook.controllers;
 
+import com.yyon.grapplinghook.CommonProxyClass;
 import com.yyon.grapplinghook.GrappleConfig;
 import com.yyon.grapplinghook.GrappleCustomization;
-import com.yyon.grapplinghook.grapplemod;
 import com.yyon.grapplinghook.vec;
 
 import net.minecraft.entity.Entity;
@@ -60,7 +60,7 @@ public class airfrictionController extends grappleController {
 		}
 
 		if (this.attached) {
-			boolean issliding = grapplemod.proxy.issliding(entity, motion);
+			boolean issliding = CommonProxyClass.proxy.issliding(entity, motion);
 			
 			if (issliding && !was_sliding) {
 				playSlideSound();
@@ -196,6 +196,6 @@ public class airfrictionController extends grappleController {
 	}
 	
 	public void playSlideSound() {
-		grapplemod.proxy.playSlideSound(this.entity);
+		CommonProxyClass.proxy.playSlideSound(this.entity);
 	}
 }

@@ -4,9 +4,13 @@ import java.util.HashMap;
 
 import javax.annotation.Nonnull;
 
+import com.yyon.grapplinghook.CommonProxyClass;
+import com.yyon.grapplinghook.CommonSetup;
 import com.yyon.grapplinghook.GrappleConfig;
+import com.yyon.grapplinghook.GrappleConfigUtils;
 import com.yyon.grapplinghook.GrappleCustomization;
-import com.yyon.grapplinghook.grapplemod;
+import com.yyon.grapplinghook.GrapplemodUtils;
+import com.yyon.grapplinghook.ServerControllerManager;
 import com.yyon.grapplinghook.vec;
 import com.yyon.grapplinghook.controllers.SegmentHandler;
 import com.yyon.grapplinghook.network.GrappleAttachMessage;
@@ -64,7 +68,7 @@ public class grappleArrow extends ProjectileItemEntity implements IEntityAdditio
 
 	public grappleArrow(World world, LivingEntity shooter,
 			boolean righthand, GrappleCustomization customization, boolean isdouble) {
-		super(grapplemod.grappleArrowType, shooter.position().x, shooter.position().y + shooter.getEyeHeight(), shooter.position().z, world);
+		super(CommonSetup.grappleArrowType, shooter.position().x, shooter.position().y + shooter.getEyeHeight(), shooter.position().z, world);
 		
 		this.shootingEntity = shooter;
 		this.shootingEntityID = this.shootingEntity.getId();
@@ -334,7 +338,7 @@ public class grappleArrow extends ProjectileItemEntity implements IEntityAdditio
 		        vec vec3d1 = vec3d.add(vec.motionvec(this));
 
 				if (movingobjectposition instanceof EntityRayTraceResult && !GrappleConfig.getconf().grapplinghook.other.hookaffectsentities) {
-					onHit(grapplemod.rayTraceBlocks(this.level, vec3d, vec3d1));
+					onHit(GrapplemodUtils.rayTraceBlocks(this.level, vec3d, vec3d1));
 			        return;
 				}
 				
@@ -347,9 +351,9 @@ public class grappleArrow extends ProjectileItemEntity implements IEntityAdditio
 					BlockPos blockpos = blockhit.getBlockPos();
 					if (blockpos != null) {
 						Block block = this.level.getBlockState(blockpos).getBlock();
-						if (grapplemod.breaksblock(block)) {
+						if (GrappleConfigUtils.breaksblock(block)) {
 							this.level.destroyBlock(blockpos, true);
-					        onHit(grapplemod.rayTraceBlocks(this.level, vec3d, vec3d1));
+					        onHit(GrapplemodUtils.rayTraceBlocks(this.level, vec3d, vec3d1));
 					        return;
 						}
 					}
@@ -387,7 +391,7 @@ public class grappleArrow extends ProjectileItemEntity implements IEntityAdditio
 
 	@Override
 	protected Item getDefaultItem() {
-		return grapplemod.grapplebowitem;
+		return CommonSetup.grapplebowitem;
 	}
 	
 	public void serverAttach(BlockPos blockpos, vec pos, Direction sideHit) {
@@ -399,7 +403,7 @@ public class grappleArrow extends ProjectileItemEntity implements IEntityAdditio
 		if (blockpos != null) {
 			Block block = this.level.getBlockState(blockpos).getBlock();
 
-			if (!grapplemod.attachesblock(block)) {
+			if (!GrappleConfigUtils.attachesblock(block)) {
 				this.removeServer();
 				return;
 			}
@@ -435,19 +439,19 @@ public class grappleArrow extends ProjectileItemEntity implements IEntityAdditio
         
         this.thispos = vec.positionvec(this);
 		this.firstattach = true;
-		grapplemod.attached.add(this.shootingEntityID);
+		ServerControllerManager.attached.add(this.shootingEntityID);
 		
-		grapplemod.sendtocorrectclient(new GrappleAttachMessage(this.getId(), this.position().x, this.position().y, this.position().z, this.getControlId(), this.shootingEntityID, blockpos, this.segmenthandler.segments, this.segmenthandler.segmenttopsides, this.segmenthandler.segmentbottomsides, this.customization), this.shootingEntityID, this.level);
+		GrapplemodUtils.sendtocorrectclient(new GrappleAttachMessage(this.getId(), this.position().x, this.position().y, this.position().z, this.getControlId(), this.shootingEntityID, blockpos, this.segmenthandler.segments, this.segmenthandler.segmenttopsides, this.segmenthandler.segmentbottomsides, this.customization), this.shootingEntityID, this.level);
 		
 		GrappleAttachPosMessage msg = new GrappleAttachPosMessage(this.getId(), this.position().x, this.position().y, this.position().z);
-		grapplemod.network.send(PacketDistributor.TRACKING_CHUNK.with(() -> this.level.getChunkAt(new BlockPos(this.position().x, this.position().y, this.position().z))), msg);
+		CommonSetup.network.send(PacketDistributor.TRACKING_CHUNK.with(() -> this.level.getChunkAt(new BlockPos(this.position().x, this.position().y, this.position().z))), msg);
 	}
 	
 	public void clientAttach(double x, double y, double z) {
 		this.setAttachPos(x, y, z);
 		
 		if (this.shootingEntity instanceof PlayerEntity) {
-			grapplemod.proxy.resetlaunchertime(this.shootingEntityID);
+			CommonProxyClass.proxy.resetlaunchertime(this.shootingEntityID);
 		}
 	}
 	
@@ -461,7 +465,7 @@ public class grappleArrow extends ProjectileItemEntity implements IEntityAdditio
     }
 	
 	public int getControlId() {
-		return grapplemod.GRAPPLEID;
+		return GrapplemodUtils.GRAPPLEID;
 	}
 
 	public void setAttachPos(double x, double y, double z) {
@@ -505,7 +509,7 @@ public class grappleArrow extends ProjectileItemEntity implements IEntityAdditio
     		boolean isblock = false;
 	    	BlockState blockstate = this.level.getBlockState(pos);
 	    	Block b = blockstate.getBlock();
-			if (!grapplemod.attachesblock(b)) {
+			if (!GrappleConfigUtils.attachesblock(b)) {
 		    	if (!(b.isAir(blockstate, this.level, pos))) {
 			    	VoxelShape BB = blockstate.getCollisionShape(this.level, pos);
 			    	if (BB != null && !BB.isEmpty()) {

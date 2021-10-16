@@ -4,9 +4,9 @@ import java.util.HashMap;
 
 import javax.annotation.Nullable;
 
+import com.yyon.grapplinghook.CommonSetup;
 import com.yyon.grapplinghook.GrappleCustomization;
-import com.yyon.grapplinghook.grapplemod;
-import com.yyon.grapplinghook.grapplemod.upgradeCategories;
+import com.yyon.grapplinghook.GrappleCustomization.upgradeCategories;
 import com.yyon.grapplinghook.network.GrappleModifierMessage;
 
 import net.minecraft.block.BlockState;
@@ -16,11 +16,11 @@ import net.minecraft.network.play.server.SUpdateTileEntityPacket;
 import net.minecraft.tileentity.TileEntity;
 
 public class TileEntityGrappleModifier extends TileEntity {
-	public HashMap<grapplemod.upgradeCategories, Boolean> unlockedCategories = new HashMap<grapplemod.upgradeCategories, Boolean>();
+	public HashMap<GrappleCustomization.upgradeCategories, Boolean> unlockedCategories = new HashMap<GrappleCustomization.upgradeCategories, Boolean>();
 	public GrappleCustomization customization;
 	
 	public TileEntityGrappleModifier() {
-		super(grapplemod.tileEntityGrappleModifierType);
+		super(CommonSetup.tileEntityGrappleModifierType);
 		this.customization = new GrappleCustomization();
 	}
 
@@ -31,7 +31,7 @@ public class TileEntityGrappleModifier extends TileEntity {
 	
 	public void setCustomizationClient(GrappleCustomization customization) {
 		this.customization = customization;
-		grapplemod.network.sendToServer(new GrappleModifierMessage(this.worldPosition, this.customization));
+		CommonSetup.network.sendToServer(new GrappleModifierMessage(this.worldPosition, this.customization));
 		this.sendUpdates();
 	}
 
@@ -54,7 +54,7 @@ public class TileEntityGrappleModifier extends TileEntity {
 
 		CompoundNBT unlockedNBT = nbtTagCompound.getCompound("unlocked");
 		
-		for (grapplemod.upgradeCategories category : grapplemod.upgradeCategories.values()) {
+		for (GrappleCustomization.upgradeCategories category : GrappleCustomization.upgradeCategories.values()) {
 			String num = String.valueOf(category.toInt());
 			boolean unlocked = this.isUnlocked(category);
 			
@@ -73,7 +73,7 @@ public class TileEntityGrappleModifier extends TileEntity {
 		
 		CompoundNBT unlockedNBT = parentNBTTagCompound.getCompound("unlocked");
 		
-		for (grapplemod.upgradeCategories category : grapplemod.upgradeCategories.values()) {
+		for (GrappleCustomization.upgradeCategories category : GrappleCustomization.upgradeCategories.values()) {
 			String num = String.valueOf(category.toInt());
 			boolean unlocked = unlockedNBT.getBoolean(num);
 			

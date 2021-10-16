@@ -2,7 +2,7 @@ package com.yyon.grapplinghook.network;
 
 import java.util.HashSet;
 
-import com.yyon.grapplinghook.grapplemod;
+import com.yyon.grapplinghook.ServerControllerManager;
 
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.network.PacketBuffer;
@@ -66,6 +66,6 @@ public class GrappleEndMessage extends BaseMessageServer {
 		}
 		World w = player.level;
 		
-		grapplemod.receiveGrappleEnd(id, w, this.arrowIds);
+		ServerControllerManager.receiveGrappleEnd(id, w, this.arrowIds);
     }
 }

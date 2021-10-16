@@ -4,8 +4,9 @@ import java.util.List;
 
 import javax.annotation.Nullable;
 
+import com.yyon.grapplinghook.CommonProxyClass;
+import com.yyon.grapplinghook.CommonSetup;
 import com.yyon.grapplinghook.GrappleConfig;
-import com.yyon.grapplinghook.grapplemod;
 
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.inventory.EquipmentSlotType;
@@ -40,7 +41,7 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 
 public class LongFallBoots extends ArmorItem {
 	public LongFallBoots(ArmorMaterial material, int type) {
-	    super(material, EquipmentSlotType.FEET, new Item.Properties().stacksTo(1).tab(grapplemod.tabGrapplemod));
+	    super(material, EquipmentSlotType.FEET, new Item.Properties().stacksTo(1).tab(CommonSetup.tabGrapplemod));
 	}
 	
 	@Override
@@ -48,10 +49,10 @@ public class LongFallBoots extends ArmorItem {
 	public void appendHoverText(ItemStack stack, @Nullable World world, List<ITextComponent> list, ITooltipFlag par4) {
 		if (!stack.isEnchanted()) {
 			if (GrappleConfig.getconf().longfallboots.longfallbootsrecipe) {
-				list.add(new StringTextComponent(grapplemod.proxy.localize("grappletooltip.longfallbootsrecipe.desc")));
+				list.add(new StringTextComponent(CommonProxyClass.proxy.localize("grappletooltip.longfallbootsrecipe.desc")));
 			}
 		}
-		list.add(new StringTextComponent(grapplemod.proxy.localize("grappletooltip.longfallboots.desc")));
+		list.add(new StringTextComponent(CommonProxyClass.proxy.localize("grappletooltip.longfallboots.desc")));
 	}
 
 	@Override
@@ -61,9 +62,9 @@ public class LongFallBoots extends ArmorItem {
 	            items.add(stack);
 	            
 	        	stack = new ItemStack(this);
-	        	stack.enchant(grapplemod.wallrunenchantment, 1);
-	        	stack.enchant(grapplemod.doublejumpenchantment, 1);
-	        	stack.enchant(grapplemod.slidingenchantment, 1);
+	        	stack.enchant(CommonSetup.wallrunenchantment, 1);
+	        	stack.enchant(CommonSetup.doublejumpenchantment, 1);
+	        	stack.enchant(CommonSetup.slidingenchantment, 1);
 	            items.add(stack);
 			}
 	}

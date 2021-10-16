@@ -2,6 +2,7 @@ package com.yyon.grapplinghook.network;
 
 import java.util.function.Supplier;
 
+import com.yyon.grapplinghook.CommonProxyClass;
 import com.yyon.grapplinghook.grapplemod;
 
 import net.minecraft.entity.player.ServerPlayerEntity;
@@ -37,7 +38,7 @@ public abstract class BaseMessageClient {
         ctx.setPacketHandled(true);
         
         ctx.enqueueWork(() -> 
-        	grapplemod.proxy.onMessageReceivedClient(this, ctx)
+        	CommonProxyClass.proxy.onMessageReceivedClient(this, ctx)
         );
     }
 }

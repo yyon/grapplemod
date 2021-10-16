@@ -1,42 +1,20 @@
 package com.yyon.grapplinghook;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.ConcurrentModificationException;
-
-import javax.annotation.Nullable;
-
-import org.lwjgl.glfw.GLFW;
-
 import com.yyon.grapplinghook.controllers.airfrictionController;
 import com.yyon.grapplinghook.controllers.grappleController;
 import com.yyon.grapplinghook.controllers.repelController;
-import com.yyon.grapplinghook.entities.RenderGrappleArrow;
-import com.yyon.grapplinghook.entities.grappleArrow;
 import com.yyon.grapplinghook.items.KeypressItem;
 
-import me.shedaniel.autoconfig.AutoConfig;
-import me.shedaniel.autoconfig.gui.registry.GuiRegistry;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.entity.EntityRenderer;
-import net.minecraft.client.renderer.entity.EntityRendererManager;
-import net.minecraft.client.settings.KeyBinding;
-import net.minecraft.client.util.InputMappings;
-import net.minecraft.client.world.ClientWorld;
-import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.IItemPropertyGetter;
 import net.minecraft.item.Item;
-import net.minecraft.item.ItemModelsProperties;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Hand;
 import net.minecraft.util.MovementInput;
-import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BlockRayTraceResult;
 import net.minecraft.util.math.RayTraceResult;
-import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.ClientPlayerNetworkEvent.LoggedOutEvent;
 import net.minecraftforge.client.event.EntityViewRenderEvent.CameraSetup;
 import net.minecraftforge.client.event.InputEvent.KeyInputEvent;
@@ -45,13 +23,6 @@ import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.world.BlockEvent.BreakEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.ExtensionPoint;
-import net.minecraftforge.fml.ModLoadingContext;
-import net.minecraftforge.fml.client.registry.ClientRegistry;
-import net.minecraftforge.fml.client.registry.IRenderFactory;
-import net.minecraftforge.fml.client.registry.RenderingRegistry;
-import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 
 public class ClientEventHandlers {
 	public static ClientEventHandlers instance = null;
@@ -102,12 +73,12 @@ public class ClientEventHandlers {
 	@SubscribeEvent
     public void blockbreak(BreakEvent event) {
 		if (event.getPos() != null) {
-			if (grapplemod.controllerpos.containsKey(event.getPos())) {
-				grappleController control = grapplemod.controllerpos.get(event.getPos());
+			if (ClientControllerManager.controllerpos.containsKey(event.getPos())) {
+				grappleController control = ClientControllerManager.controllerpos.get(event.getPos());
 
 				control.unattach();
 				
-				grapplemod.controllerpos.remove(event.getPos());
+				ClientControllerManager.controllerpos.remove(event.getPos());
 			}
 		}
     }
@@ -125,8 +96,8 @@ public class ClientEventHandlers {
 		}
 		
 		grappleController controller = null;
-		if (grapplemod.controllers.containsKey(player.getId())) {
-			controller = grapplemod.controllers.get(player.getId());
+		if (ClientControllerManager.controllers.containsKey(player.getId())) {
+			controller = ClientControllerManager.controllers.get(player.getId());
 		}
 		
 		if (Minecraft.getInstance().options.keyJump.isDown()) {
@@ -148,9 +119,9 @@ public class ClientEventHandlers {
 		}
 		
 		int id = player.getId();
-		if (grapplemod.controllers.containsKey(id)) {
+		if (ClientControllerManager.controllers.containsKey(id)) {
 			MovementInput input = event.getMovementInput();
-			grappleController control = grapplemod.controllers.get(id);
+			grappleController control = ClientControllerManager.controllers.get(id);
 			control.receivePlayerMovementMessage(input.leftImpulse, input.forwardImpulse, input.jumping, input.shiftKeyDown);
 			
 			boolean overrideMovement = true;
@@ -184,8 +155,8 @@ public class ClientEventHandlers {
 
 		int id = player.getId();
 		int targetCameraTilt = 0;
-		if (grapplemod.controllers.containsKey(id)) {
-			grappleController controller = grapplemod.controllers.get(id);
+		if (ClientControllerManager.controllers.containsKey(id)) {
+			grappleController controller = ClientControllerManager.controllers.get(id);
 			if (controller instanceof airfrictionController) {
 				airfrictionController afcontroller = (airfrictionController) controller;
 				if (afcontroller.was_wallrunning) {
@@ -245,7 +216,7 @@ public class ClientEventHandlers {
 			BlockPos pos = bray.getBlockPos();
 			BlockState state = player.level.getBlockState(pos);
 			
-			return (state.getBlock() == grapplemod.blockGrappleModifier);
+			return (state.getBlock() == CommonSetup.blockGrappleModifier);
 		}
 		return false;
 	}

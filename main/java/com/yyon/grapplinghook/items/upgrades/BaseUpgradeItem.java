@@ -3,16 +3,18 @@ package com.yyon.grapplinghook.items.upgrades;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 
+import com.yyon.grapplinghook.CommonSetup;
+import com.yyon.grapplinghook.GrappleCustomization;
 import com.yyon.grapplinghook.grapplemod;
 
 import net.minecraft.item.Item;
 import net.minecraftforge.fml.common.ObfuscationReflectionHelper;
 
 public class BaseUpgradeItem extends Item {
-	public grapplemod.upgradeCategories category = null;
+	public GrappleCustomization.upgradeCategories category = null;
 
-	public BaseUpgradeItem(int maxStackSize, grapplemod.upgradeCategories theCategory) {
-		super(new Item.Properties().stacksTo(maxStackSize).tab(grapplemod.tabGrapplemod));
+	public BaseUpgradeItem(int maxStackSize, GrappleCustomization.upgradeCategories theCategory) {
+		super(new Item.Properties().stacksTo(maxStackSize).tab(CommonSetup.tabGrapplemod));
 		
 		this.category = theCategory;
 		

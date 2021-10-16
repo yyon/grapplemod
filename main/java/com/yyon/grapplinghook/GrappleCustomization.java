@@ -1,6 +1,7 @@
 package com.yyon.grapplinghook;
 
 import io.netty.buffer.ByteBuf;
+import net.minecraft.item.Item;
 import net.minecraft.nbt.CompoundNBT;
 
 public class GrappleCustomization {
@@ -58,6 +59,63 @@ public class GrappleCustomization {
 	public double rocket_active_time;
 	public double rocket_refuel_ratio;
 	public double rocket_vertical_angle;
+	
+	public enum upgradeCategories {
+		ROPE ("Rope"), 
+		THROW ("Hook Thrower"), 
+		MOTOR ("Motor"), 
+		SWING ("Swing Speed"), 
+		STAFF ("Ender Staff"), 
+		FORCEFIELD ("Forcefield"), 
+		MAGNET ("Hook Magnet"), 
+		DOUBLE ("Double Hook"),
+		LIMITS ("Limits"),
+		ROCKET ("Rocket");
+		
+		public String description;
+		private upgradeCategories(String desc) {
+			this.description = desc;
+		}
+		
+		public static upgradeCategories fromInt(int i) {
+			return upgradeCategories.values()[i];
+		}
+		public int toInt() {
+			for (int i = 0; i < size(); i++) {
+				if (upgradeCategories.values()[i] == this) {
+					return i;
+				}
+			}
+			return -1;
+		}
+		public static int size() {
+			return upgradeCategories.values().length;
+		}
+		public Item getItem() {
+			if (this == upgradeCategories.ROPE) {
+				return CommonSetup.ropeupgradeitem;
+			} else if (this == upgradeCategories.THROW) {
+				return CommonSetup.throwupgradeitem;
+			} else if (this == upgradeCategories.MOTOR) {
+				return CommonSetup.motorupgradeitem;
+			} else if (this == upgradeCategories.SWING) {
+				return CommonSetup.swingupgradeitem;
+			} else if (this == upgradeCategories.STAFF) {
+				return CommonSetup.staffupgradeitem;
+			} else if (this == upgradeCategories.FORCEFIELD) {
+				return CommonSetup.forcefieldupgradeitem;
+			} else if (this == upgradeCategories.MAGNET) {
+				return CommonSetup.magnetupgradeitem;
+			} else if (this == upgradeCategories.DOUBLE) {
+				return CommonSetup.doubleupgradeitem;
+			} else if (this == upgradeCategories.LIMITS) {
+				return CommonSetup.limitsupgradeitem;
+			} else if (this == upgradeCategories.ROCKET) {
+				return CommonSetup.rocketupgradeitem;
+			}
+			return null;
+		}
+	};
 	
 	public GrappleCustomization() {
 		for (String option : booleanoptions) {

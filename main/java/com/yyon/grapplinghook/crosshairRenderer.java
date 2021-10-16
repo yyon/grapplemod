@@ -53,7 +53,7 @@ public class crosshairRenderer {
 			}
 			
 			if (bow != null) {
-				GrappleCustomization custom = ((grappleBow) grapplemod.grapplebowitem).getCustomization(bow);
+				GrappleCustomization custom = ((grappleBow) CommonSetup.grapplebowitem).getCustomization(bow);
             	double angle = Math.toRadians(custom.angle);//((grappleBow) grapplemod.grapplebowitem).getAngle(player, bow));
             	double verticalangle = Math.toRadians(custom.verticalthrowangle);
             	if (player.isCrouching()) {

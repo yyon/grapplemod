@@ -26,7 +26,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.network.NetworkEvent.Context;
 
-public class ClientProxyClass implements CommonProxyClass {
+public class ClientProxyClass extends CommonProxyClass {
 	public ResourceLocation doubleJumpSoundLoc = new ResourceLocation("grapplemod", "doublejump");
 	public ResourceLocation slideSoundLoc = new ResourceLocation("grapplemod", "slide");
 
@@ -35,23 +35,8 @@ public class ClientProxyClass implements CommonProxyClass {
 	
 	@Override
 	public void startrocket(PlayerEntity player, GrappleCustomization custom) {
-		if (!custom.rocket) return;
-		
-		if (!grapplemod.controllers.containsKey(player.getId())) {
-			this.createControl(grapplemod.AIRID, -1, player.getId(), player.level, new vec(0,0,0), null, custom);
-		} else {
-			grappleController controller = grapplemod.controllers.get(player.getId());
-			if (controller.custom == null || !controller.custom.rocket) {
-				if (controller.custom == null) {controller.custom = custom;}
-				controller.custom.rocket = true;
-				controller.custom.rocket_active_time = custom.rocket_active_time;
-				controller.custom.rocket_force = custom.rocket_force;
-				controller.custom.rocket_refuel_ratio = custom.rocket_refuel_ratio;
-				this.updateRocketRegen(custom.rocket_active_time, custom.rocket_refuel_ratio);
-			}
-		}
+		ClientControllerManager.instance.startrocket(player, custom);
 	}
-
 	
 	@Override
 	public String getkeyname(mckeys keyenum) {
@@ -137,7 +122,7 @@ public class ClientProxyClass implements CommonProxyClass {
 			recipemanager.getRecipeIds().filter(loc -> loc.getNamespace().equals(grapplemod.MODID)).forEach(loc -> {
 				ItemStack stack = recipemanager.byKey(loc).get().getResultItem();
 				if (stack.getItem() instanceof grappleBow) {
-					if (!grapplemod.grapplebowitem.getCustomization(stack).equals(new GrappleCustomization())) {
+					if (!CommonSetup.grapplebowitem.getCustomization(stack).equals(new GrappleCustomization())) {
 						grapplinghookvariants.add(stack);
 					}
 				}
@@ -202,5 +187,20 @@ public class ClientProxyClass implements CommonProxyClass {
 		else if (key == CommonProxyClass.grapplekeys.key_rocket) {return ClientSetup.key_rocket.isDown();}
 		else if (key == CommonProxyClass.grapplekeys.key_slide) {return ClientSetup.key_slide.isDown();}
 		return false;
+	}
+
+	@Override
+	public grappleController unregisterController(int entityId) {
+		return ClientControllerManager.unregisterController(entityId);
+	}
+
+	@Override
+	public double getTimeSinceLastRopeJump(World world) {
+		return GrapplemodUtils.getTime(world) - ClientControllerManager.prev_rope_jump_time;
+	}
+
+	@Override
+	public void resetRopeJumpTime(World world) {
+		ClientControllerManager.prev_rope_jump_time = GrapplemodUtils.getTime(world);
 	}
 }

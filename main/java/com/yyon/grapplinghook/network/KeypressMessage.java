@@ -4,7 +4,10 @@ import com.yyon.grapplinghook.grapplemod;
 import com.yyon.grapplinghook.items.KeypressItem;
 
 import net.minecraft.entity.player.ServerPlayerEntity;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
 import net.minecraft.network.PacketBuffer;
+import net.minecraft.util.Hand;
 import net.minecraftforge.fml.network.NetworkEvent;
 
 /*
@@ -49,8 +52,34 @@ public class KeypressMessage extends BaseMessageServer {
     }
 
     public void processMessage(NetworkEvent.Context ctx) {
-    	final ServerPlayerEntity sendingPlayer = ctx.getSender();
+    	final ServerPlayerEntity player = ctx.getSender();
         
-		grapplemod.receiveKeypress(sendingPlayer, this.key, this.isDown);
+		if (player != null) {
+			ItemStack stack = player.getItemInHand(Hand.MAIN_HAND);
+			if (stack != null) {
+				Item item = stack.getItem();
+				if (item instanceof KeypressItem) {
+					if (isDown) {
+						((KeypressItem)item).onCustomKeyDown(stack, player, key, true);
+					} else {
+						((KeypressItem)item).onCustomKeyUp(stack, player, key, true);
+					}
+					return;
+				}
+			}
+
+			stack = player.getItemInHand(Hand.OFF_HAND);
+			if (stack != null) {
+				Item item = stack.getItem();
+				if (item instanceof KeypressItem) {
+					if (isDown) {
+						((KeypressItem)item).onCustomKeyDown(stack, player, key, false);
+					} else {
+						((KeypressItem)item).onCustomKeyUp(stack, player, key, false);
+					}
+					return;
+				}
+			}
+		}
 	}
 }

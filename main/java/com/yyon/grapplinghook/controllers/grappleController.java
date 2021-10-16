@@ -4,8 +4,11 @@ import java.util.HashSet;
 import java.util.stream.Stream;
 
 import com.yyon.grapplinghook.ClientProxyClass;
+import com.yyon.grapplinghook.CommonProxyClass;
+import com.yyon.grapplinghook.CommonSetup;
 import com.yyon.grapplinghook.GrappleConfig;
 import com.yyon.grapplinghook.GrappleCustomization;
+import com.yyon.grapplinghook.GrapplemodUtils;
 import com.yyon.grapplinghook.grapplemod;
 import com.yyon.grapplinghook.vec;
 import com.yyon.grapplinghook.entities.grappleArrow;
@@ -20,7 +23,6 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BlockRayTraceResult;
-import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.math.shapes.VoxelShape;
 import net.minecraft.world.World;
 
@@ -126,9 +128,7 @@ public class grappleController {
 //        this.applyAirFriction();
 
 		this.ongroundtimer = 0;
-		
-		grapplemod.registerController(this.entityId, this);
-		
+				
 //		if (grapplemod.proxy instanceof ClientProxyClass) {
 //			this.clientproxy = (ClientProxyClass) grapplemod.proxy;
 //		}
@@ -144,19 +144,17 @@ public class grappleController {
 		}
 		
 		if (custom != null && custom.rocket) {
-			grapplemod.proxy.updateRocketRegen(custom.rocket_active_time, custom.rocket_refuel_ratio);
+			CommonProxyClass.proxy.updateRocketRegen(custom.rocket_active_time, custom.rocket_refuel_ratio);
 		}
 	}
 	
 	public void unattach() {
-		if (grapplemod.controllers.containsValue(this)) {
+		if (CommonProxyClass.proxy.unregisterController(this.entityId) != null) {
 			this.attached = false;
 			
-			grapplemod.unregisterController(this.entityId);
-			
-			if (this.controllerid != grapplemod.AIRID) {
-				grapplemod.network.sendToServer(new GrappleEndMessage(this.entityId, this.arrowIds));
-				grapplemod.proxy.createControl(grapplemod.AIRID, -1, this.entityId, this.entity.level, new vec(0,0,0), null, this.custom);
+			if (this.controllerid != GrapplemodUtils.AIRID) {
+				CommonSetup.network.sendToServer(new GrappleEndMessage(this.entityId, this.arrowIds));
+				CommonProxyClass.proxy.createControl(GrapplemodUtils.AIRID, -1, this.entityId, this.entity.level, new vec(0,0,0), null, this.custom);
 			}
 		}
 	}
@@ -237,9 +235,9 @@ public class grappleController {
 					// is motor active? (check motorwhencrouching / motorwhennotcrouching)
 					boolean motor = false;
 					if (this.custom.motor) {
-						if (grapplemod.proxy.isKeyDown(ClientProxyClass.grapplekeys.key_motoronoff) && this.custom.motorwhencrouching) {
+						if (CommonProxyClass.proxy.isKeyDown(ClientProxyClass.grapplekeys.key_motoronoff) && this.custom.motorwhencrouching) {
 							motor = true;
-						} else if (!grapplemod.proxy.isKeyDown(ClientProxyClass.grapplekeys.key_motoronoff) && this.custom.motorwhennotcrouching) {
+						} else if (!CommonProxyClass.proxy.isKeyDown(ClientProxyClass.grapplekeys.key_motoronoff) && this.custom.motorwhennotcrouching) {
 							motor = true;
 						}
 					}
@@ -307,22 +305,22 @@ public class grappleController {
 						// handle keyboard input (jumping and climbing)
 						if (entity instanceof PlayerEntity) {
 							PlayerEntity player = (PlayerEntity) entity;
-							boolean isjumping = grapplemod.proxy.isKeyDown(ClientProxyClass.grapplekeys.key_jumpanddetach);
+							boolean isjumping = CommonProxyClass.proxy.isKeyDown(ClientProxyClass.grapplekeys.key_jumpanddetach);
 							isjumping = isjumping && !playerjump; // only jump once when key is first pressed
-							playerjump = grapplemod.proxy.isKeyDown(ClientProxyClass.grapplekeys.key_jumpanddetach);
+							playerjump = CommonProxyClass.proxy.isKeyDown(ClientProxyClass.grapplekeys.key_jumpanddetach);
 							if (isjumping) {
 								// jumping
 								if (ongroundtimer > 0) { // on ground: jump normally
 									
 								} else {
-									double timer = grapplemod.getTime(this.entity.level) - grapplemod.prev_rope_jump_time;
+									double timer = CommonProxyClass.proxy.getTimeSinceLastRopeJump(this.entity.level);
 									if (timer > GrappleConfig.getconf().grapplinghook.other.rope_jump_cooldown_s * 20.0) {
 										doJump = true;
 										jumpSpeed = this.getJumpPower(player, spherevec, arrow);
 									}
 								}
 							}
-							if (grapplemod.proxy.isKeyDown(ClientProxyClass.grapplekeys.key_slow)) {
+							if (CommonProxyClass.proxy.isKeyDown(ClientProxyClass.grapplekeys.key_slow)) {
 								// climbing
 	//							motion = multvec(motion, 0.9);
 								vec motiontorwards = spherevec.changelen(-0.1);
@@ -336,15 +334,15 @@ public class grappleController {
 	//							motion = multvec(motion, 0.98);
 
 							}
-							if ((grapplemod.proxy.isKeyDown(ClientProxyClass.grapplekeys.key_climb) || !this.custom.climbkey) && !motor) {
+							if ((CommonProxyClass.proxy.isKeyDown(ClientProxyClass.grapplekeys.key_climb) || !this.custom.climbkey) && !motor) {
 								isClimbing = true;
 								if (anchor.y > playerpos.y) {
 									// when shift is pressed, stop swinging
 									
 									// climb up/down rope
 									float playerforward = 0;
-									if (grapplemod.proxy.isKeyDown(ClientProxyClass.grapplekeys.key_climbup)) { playerforward = 1.0f; }
-									else if (grapplemod.proxy.isKeyDown(ClientProxyClass.grapplekeys.key_climbdown)) { playerforward = -1.0f; }
+									if (CommonProxyClass.proxy.isKeyDown(ClientProxyClass.grapplekeys.key_climbup)) { playerforward = 1.0f; }
+									else if (CommonProxyClass.proxy.isKeyDown(ClientProxyClass.grapplekeys.key_climbdown)) { playerforward = -1.0f; }
 									if (playerforward != 0) {
 											if (dist + distToAnchor < maxlen || this.playerforward > 0 || maxlen == 0) {
 //												double motionup = this.playerforward;
@@ -615,7 +613,7 @@ public class grappleController {
 							jumpSpeed = GrappleConfig.getconf().grapplinghook.other.rope_jump_power;
 						}
 						this.doJump(entity, jumpSpeed, averagemotiontowards, min_spherevec_dist);
-						grapplemod.prev_rope_jump_time = grapplemod.getTime(this.entity.level);
+						CommonProxyClass.proxy.resetRopeJumpTime(this.entity.level);
 						return;
 					}
 					
@@ -826,7 +824,7 @@ public class grappleController {
 	}
 	
 	public void updateServerPos() {
-		grapplemod.network.sendToServer(new PlayerMovementMessage(this.entityId, this.entity.position().x, this.entity.position().y, this.entity.position().z, this.entity.getDeltaMovement().x, this.entity.getDeltaMovement().y, this.entity.getDeltaMovement().z));
+		CommonSetup.network.sendToServer(new PlayerMovementMessage(this.entityId, this.entity.position().x, this.entity.position().y, this.entity.position().z, this.entity.getDeltaMovement().x, this.entity.getDeltaMovement().y, this.entity.getDeltaMovement().z));
 	}
 	
 	// Vector stuff:
@@ -986,8 +984,8 @@ public class grappleController {
 	}
 	
 	public vec rocket(Entity entity) {
-		if (grapplemod.proxy.isKeyDown(ClientProxyClass.grapplekeys.key_rocket)) {
-			double rocket_force = this.custom.rocket_force * 0.225 * grapplemod.proxy.getRocketFunctioning();
+		if (CommonProxyClass.proxy.isKeyDown(ClientProxyClass.grapplekeys.key_rocket)) {
+			double rocket_force = this.custom.rocket_force * 0.225 * CommonProxyClass.proxy.getRocketFunctioning();
         	double yaw = entity.yRot;
         	double pitch = -entity.xRot;
         	pitch += this.custom.rocket_vertical_angle;
@@ -1009,7 +1007,7 @@ public class grappleController {
 		float entitywidth = this.entity.getBbWidth();
 		
 		for (vec direction : new vec[] {tryfirst, trysecond, tryfirst.mult(-1), trysecond.mult(-1)}) {
-			BlockRayTraceResult raytraceresult = grapplemod.rayTraceBlocks(this.entity.level, vec.positionvec(this.entity), vec.positionvec(this.entity).add(direction.changelen(entitywidth/2 + extra)));
+			BlockRayTraceResult raytraceresult = GrapplemodUtils.rayTraceBlocks(this.entity.level, vec.positionvec(this.entity), vec.positionvec(this.entity).add(direction.changelen(entitywidth/2 + extra)));
 			if (raytraceresult != null) {
 				wallrun_raytrace_result = raytraceresult;
 				return direction;
@@ -1090,7 +1088,7 @@ public class grappleController {
 			vec corner1 = getcorner(i, v1, v2);
 			vec corner2 = getcorner((i + 1) % 4, v1, v2);
 			
-			BlockRayTraceResult raytraceresult = grapplemod.rayTraceBlocks(this.entity.level, vec.positionvec(this.entity).add(corner1), vec.positionvec(this.entity).add(corner2));
+			BlockRayTraceResult raytraceresult = GrapplemodUtils.rayTraceBlocks(this.entity.level, vec.positionvec(this.entity).add(corner1), vec.positionvec(this.entity).add(corner2));
 			if (raytraceresult != null) {
 				return true;
 			}
@@ -1121,7 +1119,7 @@ public class grappleController {
 				}
 				
 				// start wallrun
-				if (grapplemod.proxy.iswallrunning(this.entity, this.motion)) {
+				if (CommonProxyClass.proxy.iswallrunning(this.entity, this.motion)) {
 					isonwall = true;
 					return true;
 				}
@@ -1149,7 +1147,7 @@ public class grappleController {
 			}
 		}
 		
-		if (wallrun && !grapplemod.proxy.isKeyDown(ClientProxyClass.grapplekeys.key_jumpanddetach)) {
+		if (wallrun && !CommonProxyClass.proxy.isKeyDown(ClientProxyClass.grapplekeys.key_jumpanddetach)) {
 
 			vec wallside = this.getwalldirection();
 			if (wallside != null) {
@@ -1196,9 +1194,9 @@ public class grappleController {
 		}
 		
 		// jump
-		boolean isjumping = grapplemod.proxy.isKeyDown(ClientProxyClass.grapplekeys.key_jumpanddetach) && isonwall;
+		boolean isjumping = CommonProxyClass.proxy.isKeyDown(ClientProxyClass.grapplekeys.key_jumpanddetach) && isonwall;
 		isjumping = isjumping && !playerjump; // only jump once when key is first pressed
-		playerjump = grapplemod.proxy.isKeyDown(ClientProxyClass.grapplekeys.key_jumpanddetach) && isonwall;
+		playerjump = CommonProxyClass.proxy.isKeyDown(ClientProxyClass.grapplekeys.key_jumpanddetach) && isonwall;
 		if (isjumping && wallrun) {
 			vec jump = new vec(0, GrappleConfig.getconf().enchantments.wallrun.wall_jump_up, 0);
 			if (walldirection != null) {
@@ -1208,7 +1206,7 @@ public class grappleController {
 			
 			wallrun = false;
 
-			grapplemod.proxy.playWallrunJumpSound(entity);
+			CommonProxyClass.proxy.playWallrunJumpSound(entity);
 		}
 		
 		return wallrun;

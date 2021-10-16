@@ -4,9 +4,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import com.yyon.grapplinghook.CommonProxyClass;
+import com.yyon.grapplinghook.CommonSetup;
 import com.yyon.grapplinghook.GrappleConfig;
 import com.yyon.grapplinghook.GrappleCustomization;
-import com.yyon.grapplinghook.grapplemod;
 import com.yyon.grapplinghook.vec;
 import com.yyon.grapplinghook.items.grappleBow;
 import com.yyon.grapplinghook.items.upgrades.BaseUpgradeItem;
@@ -62,7 +63,7 @@ public class BlockGrappleModifier extends Block {
 		}
 		TileEntityGrappleModifier tileent = (TileEntityGrappleModifier) ent;
 		
-		for (grapplemod.upgradeCategories category : grapplemod.upgradeCategories.values()) {
+		for (GrappleCustomization.upgradeCategories category : GrappleCustomization.upgradeCategories.values()) {
 			if (tileent.unlockedCategories.containsKey(category) && tileent.unlockedCategories.get(category)) {
 				drops.add(new ItemStack(category.getItem()));
 			}
@@ -80,7 +81,7 @@ public class BlockGrappleModifier extends Block {
 				TileEntity ent = worldIn.getBlockEntity(pos);
 				TileEntityGrappleModifier tileent = (TileEntityGrappleModifier) ent;
 				
-				grapplemod.upgradeCategories category = ((BaseUpgradeItem) helditem).category;
+				GrappleCustomization.upgradeCategories category = ((BaseUpgradeItem) helditem).category;
 				
 				if (tileent.isUnlocked(category)) {
 					playerIn.sendMessage(new StringTextComponent("Already has upgrade: " + category.description), playerIn.getUUID());
@@ -100,7 +101,7 @@ public class BlockGrappleModifier extends Block {
 				TileEntityGrappleModifier tileent = (TileEntityGrappleModifier) ent;
 				
 				GrappleCustomization custom = tileent.customization;
-				((grappleBow) grapplemod.grapplebowitem).setCustomOnServer(helditemstack, custom, playerIn);
+				((grappleBow) CommonSetup.grapplebowitem).setCustomOnServer(helditemstack, custom, playerIn);
 				
 				playerIn.sendMessage(new StringTextComponent("Applied configuration"), playerIn.getUUID());
 			}
@@ -112,7 +113,7 @@ public class BlockGrappleModifier extends Block {
 						Map<Enchantment, Integer> enchantments = EnchantmentHelper.getEnchantments(helditemstack);
 						if (enchantments.containsKey(Enchantments.FALL_PROTECTION)) {
 							if (enchantments.get(Enchantments.FALL_PROTECTION) >= 4) {
-								ItemStack newitemstack = new ItemStack(grapplemod.longfallboots);
+								ItemStack newitemstack = new ItemStack(CommonSetup.longfallboots);
 								EnchantmentHelper.setEnchantments(enchantments, newitemstack);
 								playerIn.setItemInHand(Hand.MAIN_HAND, newitemstack);
 								gaveitem = true;
@@ -133,7 +134,7 @@ public class BlockGrappleModifier extends Block {
 				TileEntity ent = worldIn.getBlockEntity(pos);
 				TileEntityGrappleModifier tileent = (TileEntityGrappleModifier) ent;
 				
-				grapplemod.proxy.openModifierScreen(tileent);
+				CommonProxyClass.proxy.openModifierScreen(tileent);
 			}
 		}
 		return ActionResultType.SUCCESS;

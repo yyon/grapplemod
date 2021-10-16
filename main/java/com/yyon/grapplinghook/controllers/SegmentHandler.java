@@ -2,7 +2,8 @@ package com.yyon.grapplinghook.controllers;
 
 import java.util.LinkedList;
 
-import com.yyon.grapplinghook.grapplemod;
+import com.yyon.grapplinghook.CommonSetup;
+import com.yyon.grapplinghook.GrapplemodUtils;
 import com.yyon.grapplinghook.vec;
 import com.yyon.grapplinghook.entities.grappleArrow;
 import com.yyon.grapplinghook.network.SegmentMessage;
@@ -14,7 +15,6 @@ import net.minecraft.util.math.BlockRayTraceResult;
 import net.minecraft.util.math.vector.Vector3i;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.network.PacketDistributor;
-import net.minecraftforge.fml.network.PacketDistributor.TargetPoint;
 
 public class SegmentHandler {
 
@@ -171,17 +171,17 @@ public class SegmentHandler {
 		if (!this.world.isClientSide) {
 			SegmentMessage addmessage = new SegmentMessage(this.arrow.getId(), false, index, new vec(0, 0, 0), Direction.DOWN, Direction.DOWN);
 			vec playerpoint = vec.positionvec(this.arrow.shootingEntity);
-			grapplemod.network.send(PacketDistributor.TRACKING_CHUNK.with(() -> world.getChunkAt(new BlockPos(playerpoint.x, playerpoint.y, playerpoint.z))), addmessage);
+			CommonSetup.network.send(PacketDistributor.TRACKING_CHUNK.with(() -> world.getChunkAt(new BlockPos(playerpoint.x, playerpoint.y, playerpoint.z))), addmessage);
 //			grapplemod.network.sendToAllAround(addmessage, new TargetPoint(this.world.provider.getDimension(), playerpoint.x, playerpoint.y, playerpoint.z, 100));
 		}
 	}
 	
 	public void updatesegment(vec top, vec prevtop, vec bottom, vec prevbottom, int index, int numberrecursions) {		
-		BlockRayTraceResult bottomraytraceresult = grapplemod.rayTraceBlocks(this.world, bottom, top);
+		BlockRayTraceResult bottomraytraceresult = GrapplemodUtils.rayTraceBlocks(this.world, bottom, top);
         
         // if rope hit block
         if (bottomraytraceresult != null) {
-        	if (grapplemod.rayTraceBlocks(this.world, prevbottom, prevtop) != null) {
+        	if (GrapplemodUtils.rayTraceBlocks(this.world, prevbottom, prevtop) != null) {
 //        		System.out.println("Warning: prev collision");
         		return;
         	}
@@ -239,7 +239,7 @@ public class SegmentHandler {
             	}
             	
             	// the corner must be in the line (cornerbound2, cornerbound1)
-            	BlockRayTraceResult cornerraytraceresult = grapplemod.rayTraceBlocks(this.world, cornerbound2, cornerbound1);
+            	BlockRayTraceResult cornerraytraceresult = GrapplemodUtils.rayTraceBlocks(this.world, cornerbound2, cornerbound1);
                 if (cornerraytraceresult != null) {
                 	vec cornerhitpos = new vec(cornerraytraceresult.getLocation());
                 	Direction cornerside = cornerraytraceresult.getDirection();
@@ -429,7 +429,7 @@ public class SegmentHandler {
 		if (!this.world.isClientSide) {
 			SegmentMessage addmessage = new SegmentMessage(this.arrow.getId(), true, index, bendpoint, topside, bottomside);
 			vec playerpoint = vec.positionvec(this.arrow.shootingEntity);
-			grapplemod.network.send(PacketDistributor.TRACKING_CHUNK.with(() -> world.getChunkAt(new BlockPos(playerpoint.x, playerpoint.y, playerpoint.z))), addmessage);
+			CommonSetup.network.send(PacketDistributor.TRACKING_CHUNK.with(() -> world.getChunkAt(new BlockPos(playerpoint.x, playerpoint.y, playerpoint.z))), addmessage);
 //			grapplemod.network.sendToAllAround(addmessage, new TargetPoint(this.world.provider.getDimension(), playerpoint.x, playerpoint.y, playerpoint.z, 100));
 		}
 	}

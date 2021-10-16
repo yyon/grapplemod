@@ -4,21 +4,15 @@ import java.util.List;
 
 import javax.annotation.Nullable;
 
-import org.spongepowered.asm.mixin.MixinEnvironment.Side;
-
 import com.yyon.grapplinghook.CommonProxyClass;
-import com.yyon.grapplinghook.GrappleConfig;
-import com.yyon.grapplinghook.grapplemod;
+import com.yyon.grapplinghook.CommonSetup;
 
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ActionResult;
-import net.minecraft.util.Direction;
 import net.minecraft.util.Hand;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.world.World;
@@ -45,12 +39,12 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 public class launcherItem extends Item {
 	
 	public launcherItem() {
-		super(new Item.Properties().stacksTo(1).tab(grapplemod.tabGrapplemod));
+		super(new Item.Properties().stacksTo(1).tab(CommonSetup.tabGrapplemod));
 	}
 	
 	public void dorightclick(ItemStack stack, World worldIn, PlayerEntity player) {
 		if (worldIn.isClientSide) {
-			grapplemod.proxy.launchplayer(player);
+			CommonProxyClass.proxy.launchplayer(player);
 		}
 	}
 	
@@ -65,9 +59,9 @@ public class launcherItem extends Item {
 	@Override
 	@OnlyIn(Dist.CLIENT)
 	public void appendHoverText(ItemStack stack, @Nullable World world, List<ITextComponent> list, ITooltipFlag par4) {
-		list.add(new StringTextComponent(grapplemod.proxy.localize("grappletooltip.launcheritem.desc")));
+		list.add(new StringTextComponent(CommonProxyClass.proxy.localize("grappletooltip.launcheritem.desc")));
 		list.add(new StringTextComponent(""));
-		list.add(new StringTextComponent(grapplemod.proxy.localize("grappletooltip.launcheritemaim.desc")));
-		list.add(new StringTextComponent(grapplemod.proxy.getkeyname(CommonProxyClass.mckeys.keyBindUseItem) + grapplemod.proxy.localize("grappletooltip.launcheritemcontrols.desc")));
+		list.add(new StringTextComponent(CommonProxyClass.proxy.localize("grappletooltip.launcheritemaim.desc")));
+		list.add(new StringTextComponent(CommonProxyClass.proxy.getkeyname(CommonProxyClass.mckeys.keyBindUseItem) + CommonProxyClass.proxy.localize("grappletooltip.launcheritemcontrols.desc")));
 	}
 }

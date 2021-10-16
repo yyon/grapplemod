@@ -24,8 +24,6 @@ import net.minecraftforge.event.entity.living.LivingHurtEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent.PlayerLoggedInEvent;
 import net.minecraftforge.event.world.BlockEvent.BreakEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.ExtensionPoint;
-import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.event.server.FMLServerStartedEvent;
 import net.minecraftforge.fml.network.PacketDistributor;
 
@@ -53,31 +51,29 @@ public class EventHandlers {
     
     @SubscribeEvent
     public void onLivingDeath(LivingDeathEvent event) {
-		Entity entity = event.getEntity();
-		int id = entity.getId();
-		boolean isconnected = grapplemod.allarrows.containsKey(id);
-		if (isconnected) {
-			HashSet<grappleArrow> arrows = grapplemod.allarrows.get(id);
-			for (grappleArrow arrow: arrows) {
-				arrow.removeServer();
-			}
-			arrows.clear();
+    	if (!event.getEntity().level.isClientSide) {
+    		Entity entity = event.getEntity();
+    		int id = entity.getId();
+    		boolean isconnected = ServerControllerManager.allarrows.containsKey(id);
+    		if (isconnected) {
+    			HashSet<grappleArrow> arrows = ServerControllerManager.allarrows.get(id);
+    			for (grappleArrow arrow: arrows) {
+    				arrow.removeServer();
+    			}
+    			arrows.clear();
 
-			grapplemod.attached.remove(id);
-			
-			if (grapplemod.controllers.containsKey(id)) {
-				grapplemod.controllers.remove(id);
-			}
-			
-			if (grappleBow.grapplearrows1.containsKey(entity)) {
-				grappleBow.grapplearrows1.remove(entity);
-			}
-			if (grappleBow.grapplearrows2.containsKey(entity)) {
-				grappleBow.grapplearrows2.remove(entity);
-			}
-			
-			grapplemod.sendtocorrectclient(new GrappleDetachMessage(id), id, entity.level);
-		}
+    			ServerControllerManager.attached.remove(id);
+    			
+    			if (grappleBow.grapplearrows1.containsKey(entity)) {
+    				grappleBow.grapplearrows1.remove(entity);
+    			}
+    			if (grappleBow.grapplearrows2.containsKey(entity)) {
+    				grappleBow.grapplearrows2.remove(entity);
+    			}
+    			
+    			GrapplemodUtils.sendtocorrectclient(new GrappleDetachMessage(id), id, entity.level);
+    		}
+    	}
 	}
 	
 	@SubscribeEvent
@@ -122,7 +118,7 @@ public class EventHandlers {
 	@SubscribeEvent
 	public void onPlayerLoggedInEvent(PlayerLoggedInEvent e) {
 		if (e.getPlayer() instanceof ServerPlayerEntity) {
-			grapplemod.network.send(PacketDistributor.PLAYER.with(() -> (ServerPlayerEntity) e.getPlayer()), new LoggedInMessage(GrappleConfig.getconf()));
+			CommonSetup.network.send(PacketDistributor.PLAYER.with(() -> (ServerPlayerEntity) e.getPlayer()), new LoggedInMessage(GrappleConfig.getconf()));
 		} else {
 			System.out.println("Not an PlayerEntityMP");
 		}
