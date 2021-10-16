@@ -81,7 +81,7 @@ public class ClientControllerManager {
 	}
 
 	public void checkslide(PlayerEntity player) {
-		if (ClientEventHandlers.key_slide.isDown() && !grapplemod.controllers.containsKey(player.getId()) && this.issliding(player, vec.motionvec(player))) {
+		if (ClientSetup.key_slide.isDown() && !grapplemod.controllers.containsKey(player.getId()) && this.issliding(player, vec.motionvec(player))) {
 			this.createControl(grapplemod.AIRID, -1, player.getId(), player.level, new vec(0,0,0), null, null);
 		}
 	}
@@ -147,7 +147,7 @@ public class ClientControllerManager {
 					Map<Enchantment, Integer> enchantments = EnchantmentHelper.getEnchantments(stack);
 					if (enchantments.containsKey(grapplemod.wallrunenchantment)) {
 						if (enchantments.get(grapplemod.wallrunenchantment) >= 1) {
-							if (!ClientEventHandlers.key_jumpanddetach.isDown() && !Minecraft.getInstance().options.keyJump.isDown()) {
+							if (!ClientSetup.key_jumpanddetach.isDown() && !Minecraft.getInstance().options.keyJump.isDown()) {
 								BlockRayTraceResult raytraceresult = grapplemod.rayTraceBlocks(entity.level, vec.positionvec(entity), vec.positionvec(entity).add(new vec(0, -1, 0)));
 								if (raytraceresult == null) {
 									double current_speed = Math.sqrt(Math.pow(motion.x, 2) + Math.pow(motion.z,  2));
@@ -241,7 +241,7 @@ public class ClientControllerManager {
 	public boolean issliding(Entity entity, vec motion) {
 		if (entity.isInWater()) {return false;}
 		
-		if (entity.isOnGround() && ClientEventHandlers.key_slide.isDown()) {
+		if (entity.isOnGround() && ClientSetup.key_slide.isDown()) {
 			if (isWearingSlidingEnchant(entity)) {
 				boolean was_sliding = false;
 				int id = entity.getId();

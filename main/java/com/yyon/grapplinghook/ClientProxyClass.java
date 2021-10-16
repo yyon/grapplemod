@@ -189,18 +189,18 @@ public class ClientProxyClass implements CommonProxyClass {
 
 	@Override
 	public boolean isKeyDown(grapplekeys key) {
-		if (key == CommonProxyClass.grapplekeys.key_boththrow) {return ClientEventHandlers.key_boththrow.isDown();}
-		else if (key == CommonProxyClass.grapplekeys.key_leftthrow) {return ClientEventHandlers.key_leftthrow.isDown();}
-		else if (key == CommonProxyClass.grapplekeys.key_rightthrow) {return ClientEventHandlers.key_rightthrow.isDown();}
-		else if (key == CommonProxyClass.grapplekeys.key_motoronoff) {return ClientEventHandlers.key_motoronoff.isDown();}
-		else if (key == CommonProxyClass.grapplekeys.key_jumpanddetach) {return ClientEventHandlers.key_jumpanddetach.isDown();}
-		else if (key == CommonProxyClass.grapplekeys.key_slow) {return ClientEventHandlers.key_slow.isDown();}
-		else if (key == CommonProxyClass.grapplekeys.key_climb) {return ClientEventHandlers.key_climb.isDown();}
-		else if (key == CommonProxyClass.grapplekeys.key_climbup) {return ClientEventHandlers.key_climbup.isDown();}
-		else if (key == CommonProxyClass.grapplekeys.key_climbdown) {return ClientEventHandlers.key_climbdown.isDown();}
-		else if (key == CommonProxyClass.grapplekeys.key_enderlaunch) {return ClientEventHandlers.key_enderlaunch.isDown();}
-		else if (key == CommonProxyClass.grapplekeys.key_rocket) {return ClientEventHandlers.key_rocket.isDown();}
-		else if (key == CommonProxyClass.grapplekeys.key_slide) {return ClientEventHandlers.key_slide.isDown();}
+		if (key == CommonProxyClass.grapplekeys.key_boththrow) {return ClientSetup.key_boththrow.isDown();}
+		else if (key == CommonProxyClass.grapplekeys.key_leftthrow) {return ClientSetup.key_leftthrow.isDown();}
+		else if (key == CommonProxyClass.grapplekeys.key_rightthrow) {return ClientSetup.key_rightthrow.isDown();}
+		else if (key == CommonProxyClass.grapplekeys.key_motoronoff) {return ClientSetup.key_motoronoff.isDown();}
+		else if (key == CommonProxyClass.grapplekeys.key_jumpanddetach) {return ClientSetup.key_jumpanddetach.isDown();}
+		else if (key == CommonProxyClass.grapplekeys.key_slow) {return ClientSetup.key_slow.isDown();}
+		else if (key == CommonProxyClass.grapplekeys.key_climb) {return ClientSetup.key_climb.isDown();}
+		else if (key == CommonProxyClass.grapplekeys.key_climbup) {return ClientSetup.key_climbup.isDown();}
+		else if (key == CommonProxyClass.grapplekeys.key_climbdown) {return ClientSetup.key_climbdown.isDown();}
+		else if (key == CommonProxyClass.grapplekeys.key_enderlaunch) {return ClientSetup.key_enderlaunch.isDown();}
+		else if (key == CommonProxyClass.grapplekeys.key_rocket) {return ClientSetup.key_rocket.isDown();}
+		else if (key == CommonProxyClass.grapplekeys.key_slide) {return ClientSetup.key_slide.isDown();}
 		return false;
 	}
 }
