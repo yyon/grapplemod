@@ -1,4 +1,4 @@
-package com.yyon.grapplinghook.entities.grapplearrow;
+package com.yyon.grapplinghook.entities.grapplehook;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.systems.RenderSystem;
@@ -45,7 +45,7 @@ import net.minecraftforge.api.distmarker.OnlyIn;
  */
 
 @OnlyIn(Dist.CLIENT)
-public class RenderGrappleArrow<T extends GrapplehookEntity> extends EntityRenderer<T>
+public class RenderGrapplehookEntity<T extends GrapplehookEntity> extends EntityRenderer<T>
 {
     protected final Item item;
     private static final ResourceLocation HOOK_TEXTURES = new ResourceLocation("grapplemod", "textures/items/grapplinghook.png");
@@ -53,7 +53,7 @@ public class RenderGrappleArrow<T extends GrapplehookEntity> extends EntityRende
     private static final ResourceLocation ROPE_TEXTURES = new ResourceLocation("grapplemod", "textures/entity/rope.png");
     private static final RenderType ROPE_RENDER = RenderType.entitySolid(ROPE_TEXTURES);
     
-    public RenderGrappleArrow(EntityRendererManager renderManagerIn, Item itemIn)
+    public RenderGrapplehookEntity(EntityRendererManager renderManagerIn, Item itemIn)
     {
         super(renderManagerIn);
         this.item = itemIn;
@@ -66,14 +66,14 @@ public class RenderGrappleArrow<T extends GrapplehookEntity> extends EntityRende
      * double d2, float f, float f1). But JAD is pre 1.5 so doe
      */
     @Override
-    public void render(T arrow, float p_225623_2_, float partialTicks, MatrixStack matrix, IRenderTypeBuffer rendertype, int p_225623_6_) {
-		if (arrow == null || !arrow.isAlive()) {
+    public void render(T hookEntity, float p_225623_2_, float partialTicks, MatrixStack matrix, IRenderTypeBuffer rendertype, int p_225623_6_) {
+		if (hookEntity == null || !hookEntity.isAlive()) {
 			return;
 		}
 		
-		SegmentHandler segmenthandler = arrow.segmenthandler;
+		SegmentHandler segmenthandler = hookEntity.segmentHandler;
 		
-		LivingEntity e = (LivingEntity) arrow.shootingEntity;
+		LivingEntity e = (LivingEntity) hookEntity.shootingEntity;
 		
 		if (e == null || !e.isAlive()) {
 			return;
@@ -105,7 +105,7 @@ public class RenderGrappleArrow<T extends GrapplehookEntity> extends EntityRende
 		/** get player hand position **/
 		
 		// is right hand?
-		int hand_right = (playerentity.getMainArm() == HandSide.RIGHT ? 1 : -1) * (arrow.righthand ? 1 : -1);
+		int hand_right = (playerentity.getMainArm() == HandSide.RIGHT ? 1 : -1) * (hookEntity.rightHand ? 1 : -1);
 		
 		// attack/swing progress
 		float f = playerentity.getAttackAnim(partialTicks);
@@ -121,25 +121,25 @@ public class RenderGrappleArrow<T extends GrapplehookEntity> extends EntityRende
 			d7 = d7 / 100.0D;
 			hand_offset = new Vec((double) hand_right * -0.46D * d7, -0.18D * d7, 0.38D);
 			// apply swing
-			hand_offset = hand_offset.rotate_pitch(-f1 * 0.7F);
-			hand_offset = hand_offset.rotate_yaw(-f1 * 0.5F);
+			hand_offset = hand_offset.rotatePitch(-f1 * 0.7F);
+			hand_offset = hand_offset.rotateYaw(-f1 * 0.5F);
 			// apply looking direction
-			hand_offset = hand_offset.rotate_pitch(-Vec.lerp(partialTicks, playerentity.xRotO, playerentity.xRot) * ((float)Math.PI / 180F));
-			hand_offset = hand_offset.rotate_yaw(Vec.lerp(partialTicks, playerentity.yRotO, playerentity.yRot) * ((float)Math.PI / 180F));
+			hand_offset = hand_offset.rotatePitch(-Vec.lerp(partialTicks, playerentity.xRotO, playerentity.xRot) * ((float)Math.PI / 180F));
+			hand_offset = hand_offset.rotateYaw(Vec.lerp(partialTicks, playerentity.yRotO, playerentity.yRot) * ((float)Math.PI / 180F));
 		} else {
 			// if third person
 			
 			// base hand offset (no swing, when facing +Z)
 			hand_offset = new Vec((double) hand_right * -0.36D, -0.65D + (playerentity.isCrouching() ? -0.1875F : 0.0F), 0.6D);
 			// apply swing
-			hand_offset = hand_offset.rotate_pitch(f1 * 0.7F);
+			hand_offset = hand_offset.rotatePitch(f1 * 0.7F);
 			// apply body rotation
-			hand_offset = hand_offset.rotate_yaw(Vec.lerp(partialTicks, playerentity.yBodyRotO, playerentity.yBodyRot) * ((float)Math.PI / 180F));
+			hand_offset = hand_offset.rotateYaw(Vec.lerp(partialTicks, playerentity.yBodyRotO, playerentity.yBodyRot) * ((float)Math.PI / 180F));
 		}
 		
 		// get the hand position
 		hand_offset.y += playerentity.getEyeHeight();
-		Vec hand_position = hand_offset.add(Vec.partialpositionvec(playerentity, partialTicks));
+		Vec hand_position = hand_offset.add(Vec.partialPositionVec(playerentity, partialTicks));
         
 		
 		/** draw rope **/
@@ -156,25 +156,25 @@ public class RenderGrappleArrow<T extends GrapplehookEntity> extends EntityRende
         // draw rope
         if (segmenthandler == null) {
         	// if no segmenthandler, straight line from hand to hook
-    		drawSegment(new Vec(0,0,0), getRelativeToEntity(arrow, new Vec(hand_position), partialTicks), 1.0F, vertexbuffer, matrix4f1, matrix3f1, p_225623_6_);
+    		drawSegment(new Vec(0,0,0), getRelativeToEntity(hookEntity, new Vec(hand_position), partialTicks), 1.0F, vertexbuffer, matrix4f1, matrix3f1, p_225623_6_);
         } else {
         	for (int i = 0; i < segmenthandler.segments.size() - 1; i++) {
         		Vec from = segmenthandler.segments.get(i);
         		Vec to = segmenthandler.segments.get(i+1);
         		
         		if (i == 0) {
-        			from = Vec.partialpositionvec(arrow, partialTicks);
+        			from = Vec.partialPositionVec(hookEntity, partialTicks);
         		}
         		if (i + 2 == segmenthandler.segments.size()) {
         			to = hand_position;
         		}
         		
-        		from = getRelativeToEntity(arrow, from, partialTicks);
-        		to = getRelativeToEntity(arrow, to, partialTicks);
+        		from = getRelativeToEntity(hookEntity, from, partialTicks);
+        		to = getRelativeToEntity(hookEntity, to, partialTicks);
         		
         		double taut = 1;
         		if (i == segmenthandler.segments.size() - 2) {
-//        			taut = arrow.taut;
+//        			taut = hookEntity.taut;
         		}
         		
         		drawSegment(from, to, taut, vertexbuffer, matrix4f1, matrix3f1, p_225623_6_);
@@ -185,11 +185,11 @@ public class RenderGrappleArrow<T extends GrapplehookEntity> extends EntityRende
         
 		
          
-		super.render(arrow, p_225623_2_, partialTicks, matrix, rendertype, p_225623_6_);
+		super.render(hookEntity, p_225623_2_, partialTicks, matrix, rendertype, p_225623_6_);
     }
     
-    Vec getRelativeToEntity(GrapplehookEntity arrow, Vec inVec, float partialTicks) {
-    	return inVec.sub(Vec.partialpositionvec(arrow, partialTicks));
+    Vec getRelativeToEntity(GrapplehookEntity hookEntity, Vec inVec, float partialTicks) {
+    	return inVec.sub(Vec.partialPositionVec(hookEntity, partialTicks));
     }
     
     // vertex for the hook
@@ -210,14 +210,14 @@ public class RenderGrappleArrow<T extends GrapplehookEntity> extends EntityRende
 
     	Vec diff = finish.sub(start);
         
-        Vec forward = diff.changelen(1);
+        Vec forward = diff.changeLen(1);
         Vec up = forward.cross(new Vec(1, 0, 0));
         if (up.length() == 0) {
         	up = forward.cross(new Vec(0, 0, 1));
         }
-        up.changelen_ip(0.025);
+        up.changeLen_ip(0.025);
         Vec side = forward.cross(up);
-        side.changelen_ip(0.025);
+        side.changeLen_ip(0.025);
         
         Vec[] corners = new Vec[] {up.mult(-1).add(side.mult(-1)), up.add(side.mult(-1)), up.add(side), up.mult(-1).add(side)};
 

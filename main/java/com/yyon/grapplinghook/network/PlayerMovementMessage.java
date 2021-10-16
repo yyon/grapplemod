@@ -77,8 +77,8 @@ public class PlayerMovementMessage extends BaseMessageServer {
     	final ServerPlayerEntity referencedPlayer = ctx.getSender();
         
 		if(referencedPlayer.getId() == this.entityId) {
-			new Vec(this.x, this.y, this.z).setpos(referencedPlayer);
-			new Vec(this.mx, this.my, this.mz).setmotion(referencedPlayer);
+			new Vec(this.x, this.y, this.z).setPos(referencedPlayer);
+			new Vec(this.mx, this.my, this.mz).setMotion(referencedPlayer);
 
 			referencedPlayer.connection.resetPosition();
 			

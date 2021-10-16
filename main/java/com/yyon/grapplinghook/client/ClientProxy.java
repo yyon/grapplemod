@@ -41,31 +41,31 @@ public class ClientProxy extends ClientProxyInterface {
 	}
 	
 	@Override
-	public void startrocket(PlayerEntity player, GrappleCustomization custom) {
-		ClientControllerManager.instance.startrocket(player, custom);
+	public void startRocket(PlayerEntity player, GrappleCustomization custom) {
+		ClientControllerManager.instance.startRocket(player, custom);
 	}
 	
 	@Override
-	public String getkeyname(mckeys keyenum) {
+	public String getKeyname(McKeys keyenum) {
 		KeyBinding binding = null;
 		
 		GameSettings gs = Minecraft.getInstance().options;
 		
-		if (keyenum == mckeys.keyBindAttack) {
+		if (keyenum == McKeys.keyBindAttack) {
 			binding = gs.keyAttack;
-		} else if (keyenum == mckeys.keyBindBack) {
+		} else if (keyenum == McKeys.keyBindBack) {
 			binding = gs.keyDown;
-		} else if (keyenum == mckeys.keyBindForward) {
+		} else if (keyenum == McKeys.keyBindForward) {
 			binding = gs.keyUp;
-		} else if (keyenum == mckeys.keyBindJump) {
+		} else if (keyenum == McKeys.keyBindJump) {
 			binding = gs.keyJump;
-		} else if (keyenum == mckeys.keyBindLeft) {
+		} else if (keyenum == McKeys.keyBindLeft) {
 			binding = gs.keyLeft;
-		} else if (keyenum == mckeys.keyBindRight) {
+		} else if (keyenum == McKeys.keyBindRight) {
 			binding = gs.keyRight;
-		} else if (keyenum == mckeys.keyBindSneak) {
+		} else if (keyenum == McKeys.keyBindSneak) {
 			binding = gs.keyShift;
-		} else if (keyenum == mckeys.keyBindUseItem) {
+		} else if (keyenum == McKeys.keyBindUseItem) {
 			binding = gs.keyUse;
 		}
 		
@@ -102,20 +102,20 @@ public class ClientProxy extends ClientProxyInterface {
 
 	@Override
 	public void playSlideSound(Entity entity) {
-		entity.playSound(new SoundEvent(this.slideSoundLoc), GrappleConfig.getclientconf().sounds.slide_sound_volume, 1.0F);
+		entity.playSound(new SoundEvent(this.slideSoundLoc), GrappleConfig.getClientConf().sounds.slide_sound_volume, 1.0F);
 	}
 
 	@Override
 	public void playDoubleJumpSound(Entity entity) {
-		entity.playSound(new SoundEvent(this.doubleJumpSoundLoc), GrappleConfig.getclientconf().sounds.doublejump_sound_volume * 0.7F, 1.0F);
+		entity.playSound(new SoundEvent(this.doubleJumpSoundLoc), GrappleConfig.getClientConf().sounds.doublejump_sound_volume * 0.7F, 1.0F);
 	}
 
 	@Override
 	public void playWallrunJumpSound(Entity entity) {
-		entity.playSound(new SoundEvent(this.doubleJumpSoundLoc), GrappleConfig.getclientconf().sounds.wallrunjump_sound_volume * 0.7F, 1.0F);
+		entity.playSound(new SoundEvent(this.doubleJumpSoundLoc), GrappleConfig.getClientConf().sounds.wallrunjump_sound_volume * 0.7F, 1.0F);
 	}
 	
-	List<ItemStack> grapplinghookvariants = null;
+	List<ItemStack> grapplingHookVariants = null;
 
 	@Override
 	public void fillGrappleVariants(ItemGroup tab, NonNullList<ItemStack> items) {
@@ -123,20 +123,20 @@ public class ClientProxy extends ClientProxyInterface {
 			return;
 		}
 		
-		if (grapplinghookvariants == null) {
-			grapplinghookvariants = new ArrayList<ItemStack>();
+		if (grapplingHookVariants == null) {
+			grapplingHookVariants = new ArrayList<ItemStack>();
 			RecipeManager recipemanager = Minecraft.getInstance().player.level.getRecipeManager();
 			recipemanager.getRecipeIds().filter(loc -> loc.getNamespace().equals(grapplemod.MODID)).forEach(loc -> {
 				ItemStack stack = recipemanager.byKey(loc).get().getResultItem();
 				if (stack.getItem() instanceof GrapplehookItem) {
-					if (!CommonSetup.grapplebowitem.getCustomization(stack).equals(new GrappleCustomization())) {
-						grapplinghookvariants.add(stack);
+					if (!CommonSetup.grapplingHookItem.getCustomization(stack).equals(new GrappleCustomization())) {
+						grapplingHookVariants.add(stack);
 					}
 				}
 			});
 		}
 		
-		items.addAll(grapplinghookvariants);
+		items.addAll(grapplingHookVariants);
 	}
 	
 	public Screen onConfigScreen(Minecraft mc, Screen screen) {
@@ -144,13 +144,13 @@ public class ClientProxy extends ClientProxyInterface {
 	}
 
 	@Override
-	public void resetlaunchertime(int playerid) {
-		ClientControllerManager.instance.resetlaunchertime(playerid);
+	public void resetLauncherTime(int playerid) {
+		ClientControllerManager.instance.resetLauncherTime(playerid);
 	}
 
 	@Override
-	public void launchplayer(PlayerEntity player) {
-		ClientControllerManager.instance.launchplayer(player);
+	public void launchPlayer(PlayerEntity player) {
+		ClientControllerManager.instance.launchPlayer(player);
 	}
 
 	@Override
@@ -164,35 +164,35 @@ public class ClientProxy extends ClientProxyInterface {
 	}
 
 	@Override
-	public boolean iswallrunning(Entity entity, Vec motion) {
-		return ClientControllerManager.instance.iswallrunning(entity, motion);
+	public boolean isWallRunning(Entity entity, Vec motion) {
+		return ClientControllerManager.instance.isWallRunning(entity, motion);
 	}
 
 	@Override
-	public boolean issliding(Entity entity, Vec motion) {
-		return ClientControllerManager.instance.issliding(entity, motion);
+	public boolean isSliding(Entity entity, Vec motion) {
+		return ClientControllerManager.instance.isSliding(entity, motion);
 	}
 
 	@Override
-	public GrappleController createControl(int id, int arrowid, int entityid, World world, Vec pos, BlockPos blockpos,
+	public GrappleController createControl(int id, int hookEntityId, int entityid, World world, Vec pos, BlockPos blockpos,
 			GrappleCustomization custom) {
-		return ClientControllerManager.instance.createControl(id, arrowid, entityid, world, pos, blockpos, custom);
+		return ClientControllerManager.instance.createControl(id, hookEntityId, entityid, world, pos, blockpos, custom);
 	}
 
 	@Override
-	public boolean isKeyDown(grapplekeys key) {
-		if (key == ClientProxyInterface.grapplekeys.key_boththrow) {return ClientSetup.key_boththrow.isDown();}
-		else if (key == ClientProxyInterface.grapplekeys.key_leftthrow) {return ClientSetup.key_leftthrow.isDown();}
-		else if (key == ClientProxyInterface.grapplekeys.key_rightthrow) {return ClientSetup.key_rightthrow.isDown();}
-		else if (key == ClientProxyInterface.grapplekeys.key_motoronoff) {return ClientSetup.key_motoronoff.isDown();}
-		else if (key == ClientProxyInterface.grapplekeys.key_jumpanddetach) {return ClientSetup.key_jumpanddetach.isDown();}
-		else if (key == ClientProxyInterface.grapplekeys.key_slow) {return ClientSetup.key_slow.isDown();}
-		else if (key == ClientProxyInterface.grapplekeys.key_climb) {return ClientSetup.key_climb.isDown();}
-		else if (key == ClientProxyInterface.grapplekeys.key_climbup) {return ClientSetup.key_climbup.isDown();}
-		else if (key == ClientProxyInterface.grapplekeys.key_climbdown) {return ClientSetup.key_climbdown.isDown();}
-		else if (key == ClientProxyInterface.grapplekeys.key_enderlaunch) {return ClientSetup.key_enderlaunch.isDown();}
-		else if (key == ClientProxyInterface.grapplekeys.key_rocket) {return ClientSetup.key_rocket.isDown();}
-		else if (key == ClientProxyInterface.grapplekeys.key_slide) {return ClientSetup.key_slide.isDown();}
+	public boolean isKeyDown(GrappleKeys key) {
+		if (key == ClientProxyInterface.GrappleKeys.key_boththrow) {return ClientSetup.key_boththrow.isDown();}
+		else if (key == ClientProxyInterface.GrappleKeys.key_leftthrow) {return ClientSetup.key_leftthrow.isDown();}
+		else if (key == ClientProxyInterface.GrappleKeys.key_rightthrow) {return ClientSetup.key_rightthrow.isDown();}
+		else if (key == ClientProxyInterface.GrappleKeys.key_motoronoff) {return ClientSetup.key_motoronoff.isDown();}
+		else if (key == ClientProxyInterface.GrappleKeys.key_jumpanddetach) {return ClientSetup.key_jumpanddetach.isDown();}
+		else if (key == ClientProxyInterface.GrappleKeys.key_slow) {return ClientSetup.key_slow.isDown();}
+		else if (key == ClientProxyInterface.GrappleKeys.key_climb) {return ClientSetup.key_climb.isDown();}
+		else if (key == ClientProxyInterface.GrappleKeys.key_climbup) {return ClientSetup.key_climbup.isDown();}
+		else if (key == ClientProxyInterface.GrappleKeys.key_climbdown) {return ClientSetup.key_climbdown.isDown();}
+		else if (key == ClientProxyInterface.GrappleKeys.key_enderlaunch) {return ClientSetup.key_enderlaunch.isDown();}
+		else if (key == ClientProxyInterface.GrappleKeys.key_rocket) {return ClientSetup.key_rocket.isDown();}
+		else if (key == ClientProxyInterface.GrappleKeys.key_slide) {return ClientSetup.key_slide.isDown();}
 		return false;
 	}
 
@@ -203,31 +203,31 @@ public class ClientProxy extends ClientProxyInterface {
 
 	@Override
 	public double getTimeSinceLastRopeJump(World world) {
-		return GrapplemodUtils.getTime(world) - ClientControllerManager.prev_rope_jump_time;
+		return GrapplemodUtils.getTime(world) - ClientControllerManager.prevRopeJumpTime;
 	}
 
 	@Override
 	public void resetRopeJumpTime(World world) {
-		ClientControllerManager.prev_rope_jump_time = GrapplemodUtils.getTime(world);
+		ClientControllerManager.prevRopeJumpTime = GrapplemodUtils.getTime(world);
 	}
 
 	@Override
-	public boolean isKeyDown(mckeys keyenum) {
-		if (keyenum == mckeys.keyBindAttack) {
+	public boolean isKeyDown(McKeys keyenum) {
+		if (keyenum == McKeys.keyBindAttack) {
 			return Minecraft.getInstance().options.keyAttack.isDown();
-		} else if (keyenum == mckeys.keyBindBack) {
+		} else if (keyenum == McKeys.keyBindBack) {
 			return Minecraft.getInstance().options.keyDown.isDown();
-		} else if (keyenum == mckeys.keyBindForward) {
+		} else if (keyenum == McKeys.keyBindForward) {
 			return Minecraft.getInstance().options.keyUp.isDown();
-		} else if (keyenum == mckeys.keyBindJump) {
+		} else if (keyenum == McKeys.keyBindJump) {
 			return Minecraft.getInstance().options.keyJump.isDown();
-		} else if (keyenum == mckeys.keyBindLeft) {
+		} else if (keyenum == McKeys.keyBindLeft) {
 			return Minecraft.getInstance().options.keyLeft.isDown();
-		} else if (keyenum == mckeys.keyBindRight) {
+		} else if (keyenum == McKeys.keyBindRight) {
 			return Minecraft.getInstance().options.keyRight.isDown();
-		} else if (keyenum == mckeys.keyBindSneak) {
+		} else if (keyenum == McKeys.keyBindSneak) {
 			return Minecraft.getInstance().options.keyShift.isDown();
-		} else if (keyenum == mckeys.keyBindUseItem) {
+		} else if (keyenum == McKeys.keyBindUseItem) {
 			return Minecraft.getInstance().options.keyUse.isDown();
 		}
 		return false;

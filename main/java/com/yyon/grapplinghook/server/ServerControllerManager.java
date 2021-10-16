@@ -3,42 +3,42 @@ package com.yyon.grapplinghook.server;
 import java.util.HashMap;
 import java.util.HashSet;
 
-import com.yyon.grapplinghook.entities.grapplearrow.GrapplehookEntity;
+import com.yyon.grapplinghook.entities.grapplehook.GrapplehookEntity;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.world.World;
 
 public class ServerControllerManager {
 	public static HashSet<Integer> attached = new HashSet<Integer>(); // server side
-	public static HashMap<Integer, HashSet<GrapplehookEntity>> allarrows = new HashMap<Integer, HashSet<GrapplehookEntity>>(); // server side
+	public static HashMap<Integer, HashSet<GrapplehookEntity>> allGrapplehookEntities = new HashMap<Integer, HashSet<GrapplehookEntity>>(); // server side
 
-	public static void addarrow(int id, GrapplehookEntity arrow) {
-		if (!allarrows.containsKey(id)) {
-			allarrows.put(id, new HashSet<GrapplehookEntity>());
+	public static void addGrapplehookEntity(int id, GrapplehookEntity hookEntity) {
+		if (!allGrapplehookEntities.containsKey(id)) {
+			allGrapplehookEntities.put(id, new HashSet<GrapplehookEntity>());
 		}
-		allarrows.get(id).add(arrow);
+		allGrapplehookEntities.get(id).add(hookEntity);
 	}
 	
-	public static void removeallmultihookarrows(int id) {
-		if (!allarrows.containsKey(id)) {
-			allarrows.put(id, new HashSet<GrapplehookEntity>());
+	public static void removeAllMultiHookGrapplehookEntities(int id) {
+		if (!allGrapplehookEntities.containsKey(id)) {
+			allGrapplehookEntities.put(id, new HashSet<GrapplehookEntity>());
 		}
-		for (GrapplehookEntity arrow : allarrows.get(id)) {
-			if (arrow != null && arrow.isAlive()) {
-				arrow.removeServer();
+		for (GrapplehookEntity hookEntity : allGrapplehookEntities.get(id)) {
+			if (hookEntity != null && hookEntity.isAlive()) {
+				hookEntity.removeServer();
 			}
 		}
-		allarrows.put(id, new HashSet<GrapplehookEntity>());
+		allGrapplehookEntities.put(id, new HashSet<GrapplehookEntity>());
 	}
 	
-	public static void receiveGrappleEnd(int id, World world, HashSet<Integer> arrowIds) {
+	public static void receiveGrappleEnd(int id, World world, HashSet<Integer> hookEntityIds) {
 		if (attached.contains(id)) {
 			attached.remove(id);
 		} else {
 		}
 		
-		for (int arrowid : arrowIds) {
-	      	Entity grapple = world.getEntity(arrowid);
+		for (int hookEntityId : hookEntityIds) {
+	      	Entity grapple = world.getEntity(hookEntityId);
 	  		if (grapple instanceof GrapplehookEntity) {
 	  			((GrapplehookEntity) grapple).removeServer();
 	  		} else {
@@ -51,6 +51,6 @@ public class ServerControllerManager {
       		entity.fallDistance = 0;
   		}
   		
-  		removeallmultihookarrows(id);
+  		removeAllMultiHookGrapplehookEntities(id);
 	}
 }

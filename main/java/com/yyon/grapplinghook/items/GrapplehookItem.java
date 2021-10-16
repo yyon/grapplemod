@@ -9,7 +9,7 @@ import com.yyon.grapplinghook.client.ClientProxyInterface;
 import com.yyon.grapplinghook.client.ClientSetup;
 import com.yyon.grapplinghook.common.CommonSetup;
 import com.yyon.grapplinghook.config.GrappleConfig;
-import com.yyon.grapplinghook.entities.grapplearrow.GrapplehookEntity;
+import com.yyon.grapplinghook.entities.grapplehook.GrapplehookEntity;
 import com.yyon.grapplinghook.network.DetachSingleHookMessage;
 import com.yyon.grapplinghook.network.GrappleDetachMessage;
 import com.yyon.grapplinghook.network.KeypressMessage;
@@ -60,39 +60,39 @@ import net.minecraftforge.api.distmarker.OnlyIn;
  */
 
 public class GrapplehookItem extends Item implements KeypressItem {
-	public static HashMap<Entity, GrapplehookEntity> grapplearrows1 = new HashMap<Entity, GrapplehookEntity>();
-	public static HashMap<Entity, GrapplehookEntity> grapplearrows2 = new HashMap<Entity, GrapplehookEntity>();
+	public static HashMap<Entity, GrapplehookEntity> grapplehookEntitiesLeft = new HashMap<Entity, GrapplehookEntity>();
+	public static HashMap<Entity, GrapplehookEntity> grapplehookEntitiesRight = new HashMap<Entity, GrapplehookEntity>();
 	
 	public GrapplehookItem() {
-		super(new Item.Properties().stacksTo(1).tab(CommonSetup.tabGrapplemod).durability(GrappleConfig.getconf().grapplinghook.other.default_durability));
+		super(new Item.Properties().stacksTo(1).tab(CommonSetup.tabGrapplemod).durability(GrappleConfig.getConf().grapplinghook.other.default_durability));
 	}
 
-	public boolean hasArrow(Entity entity) {
-		GrapplehookEntity arrow1 = getArrowLeft(entity);
-		GrapplehookEntity arrow2 = getArrowRight(entity);
-		return (arrow1 != null) || (arrow2 != null);
+	public boolean hasHookEntity(Entity entity) {
+		GrapplehookEntity hookLeft = getHookEntityLeft(entity);
+		GrapplehookEntity hookRight = getHookEntityRight(entity);
+		return (hookLeft != null) || (hookRight != null);
 	}
 
-	public void setArrowLeft(Entity entity, GrapplehookEntity arrow) {
-		GrapplehookItem.grapplearrows1.put(entity, arrow);
+	public void setHookEntityLeft(Entity entity, GrapplehookEntity hookEntity) {
+		GrapplehookItem.grapplehookEntitiesLeft.put(entity, hookEntity);
 	}
-	public void setArrowRight(Entity entity, GrapplehookEntity arrow) {
-		GrapplehookItem.grapplearrows2.put(entity, arrow);
+	public void setHookEntityRight(Entity entity, GrapplehookEntity hookEntity) {
+		GrapplehookItem.grapplehookEntitiesRight.put(entity, hookEntity);
 	}
-	public GrapplehookEntity getArrowLeft(Entity entity) {
-		if (GrapplehookItem.grapplearrows1.containsKey(entity)) {
-			GrapplehookEntity arrow = GrapplehookItem.grapplearrows1.get(entity);
-			if (arrow != null && arrow.isAlive()) {
-				return arrow;
+	public GrapplehookEntity getHookEntityLeft(Entity entity) {
+		if (GrapplehookItem.grapplehookEntitiesLeft.containsKey(entity)) {
+			GrapplehookEntity hookEntity = GrapplehookItem.grapplehookEntitiesLeft.get(entity);
+			if (hookEntity != null && hookEntity.isAlive()) {
+				return hookEntity;
 			}
 		}
 		return null;
 	}
-	public GrapplehookEntity getArrowRight(Entity entity) {
-		if (GrapplehookItem.grapplearrows2.containsKey(entity)) {
-			GrapplehookEntity arrow = GrapplehookItem.grapplearrows2.get(entity);
-			if (arrow != null && arrow.isAlive()) {
-				return arrow;
+	public GrapplehookEntity getHookEntityRight(Entity entity) {
+		if (GrapplehookItem.grapplehookEntitiesRight.containsKey(entity)) {
+			GrapplehookEntity hookEntity = GrapplehookItem.grapplehookEntitiesRight.get(entity);
+			if (hookEntity != null && hookEntity.isAlive()) {
+				return hookEntity;
 			}
 		}
 		return null;
@@ -126,23 +126,23 @@ public class GrapplehookItem extends Item implements KeypressItem {
 		if (player.level.isClientSide) {
 			if (key == KeypressItem.Keys.LAUNCHER) {
 				if (this.getCustomization(stack).enderstaff) {
-					ClientProxyInterface.proxy.launchplayer(player);
+					ClientProxyInterface.proxy.launchPlayer(player);
 				}
 			} else if (key == KeypressItem.Keys.THROWLEFT || key == KeypressItem.Keys.THROWRIGHT || key == KeypressItem.Keys.THROWBOTH) {
 				CommonSetup.network.sendToServer(new KeypressMessage(key, true));
 			} else if (key == KeypressItem.Keys.ROCKET) {
 				GrappleCustomization custom = this.getCustomization(stack);
 				if (custom.rocket) {
-					ClientProxyInterface.proxy.startrocket(player, custom);
+					ClientProxyInterface.proxy.startRocket(player, custom);
 				}
 			}
 		} else {
 			if (key == KeypressItem.Keys.THROWBOTH) {
 	        	throwBoth(stack, player.level, player, ismainhand);
 			} else if (key == KeypressItem.Keys.THROWLEFT) {
-				GrapplehookEntity arrow1 = getArrowLeft(player);
+				GrapplehookEntity hookLeft = getHookEntityLeft(player);
 
-	    		if (arrow1 != null) {
+	    		if (hookLeft != null) {
 	    			detachLeft(player);
 		    		return;
 				}
@@ -158,9 +158,9 @@ public class GrapplehookItem extends Item implements KeypressItem {
 			        player.level.playSound((PlayerEntity) null, player.position().x, player.position().y, player.position().z, SoundEvents.ARROW_SHOOT, SoundCategory.NEUTRAL, 1.0F, 1.0F / (Item.random.nextFloat() * 0.4F + 1.2F) + 2.0F * 0.5F);
 				}
 			} else if (key == KeypressItem.Keys.THROWRIGHT) {
-				GrapplehookEntity arrow2 = getArrowRight(player);
+				GrapplehookEntity hookRight = getHookEntityRight(player);
 
-	    		if (arrow2 != null) {
+	    		if (hookRight != null) {
 	    			detachRight(player);
 		    		return;
 				}
@@ -187,25 +187,25 @@ public class GrapplehookItem extends Item implements KeypressItem {
 	    	GrappleCustomization custom = this.getCustomization(stack);
 	    	
 	    	if (custom.detachonkeyrelease) {
-	    		GrapplehookEntity arrow_left = getArrowLeft(player);
-	    		GrapplehookEntity arrow_right = getArrowRight(player);
+	    		GrapplehookEntity hookLeft = getHookEntityLeft(player);
+	    		GrapplehookEntity hookRight = getHookEntityRight(player);
 	    		
 				if (key == KeypressItem.Keys.THROWBOTH) {
 					detachBoth(player);
 				} else if (key == KeypressItem.Keys.THROWLEFT) {
-		    		if (arrow_left != null) detachLeft(player);
+		    		if (hookLeft != null) detachLeft(player);
 				} else if (key == KeypressItem.Keys.THROWRIGHT) {
-		    		if (arrow_right != null) detachRight(player);
+		    		if (hookRight != null) detachRight(player);
 				}
 	    	}
 		}
 	}
 
 	public void throwBoth(ItemStack stack, World worldIn, LivingEntity entityLiving, boolean righthand) {
-		GrapplehookEntity arrow_left = getArrowLeft(entityLiving);
-		GrapplehookEntity arrow_right = getArrowRight(entityLiving);
+		GrapplehookEntity hookLeft = getHookEntityLeft(entityLiving);
+		GrapplehookEntity hookRight = getHookEntityRight(entityLiving);
 
-		if (arrow_left != null || arrow_right != null) {
+		if (hookLeft != null || hookRight != null) {
 			detachBoth(entityLiving);
     		return;
 		}
@@ -244,19 +244,19 @@ public class GrapplehookItem extends Item implements KeypressItem {
   		
   		LivingEntity player = entityLiving;
   		
-  		Vec anglevec = Vec.fromAngles(Math.toRadians(-angle), Math.toRadians(verticalangle)); //new vec(0,0,1).rotate_yaw(Math.toRadians(angle)).rotate_pitch(Math.toRadians(verticalangle));
-  		anglevec = anglevec.rotate_pitch(Math.toRadians(-player.getViewXRot(1.0F)));
-  		anglevec = anglevec.rotate_yaw(Math.toRadians(player.getViewYRot(1.0F)));
+  		Vec anglevec = Vec.fromAngles(Math.toRadians(-angle), Math.toRadians(verticalangle));
+  		anglevec = anglevec.rotatePitch(Math.toRadians(-player.getViewXRot(1.0F)));
+  		anglevec = anglevec.rotateYaw(Math.toRadians(player.getViewYRot(1.0F)));
         float velx = -MathHelper.sin((float) anglevec.getYaw() * 0.017453292F) * MathHelper.cos((float) anglevec.getPitch() * 0.017453292F);
         float vely = -MathHelper.sin((float) anglevec.getPitch() * 0.017453292F);
         float velz = MathHelper.cos((float) anglevec.getYaw() * 0.017453292F) * MathHelper.cos((float) anglevec.getPitch() * 0.017453292F);
-		GrapplehookEntity entityarrow = this.createarrow(stack, worldIn, entityLiving, false, true);// new grappleArrow(worldIn, player, false);
-        float extravelocity = (float) Vec.motionvec(entityLiving).dist_along(new Vec(velx, vely, velz));
+		GrapplehookEntity hookEntity = this.createGrapplehookEntity(stack, worldIn, entityLiving, false, true);
+        float extravelocity = (float) Vec.motionVec(entityLiving).distAlong(new Vec(velx, vely, velz));
         if (extravelocity < 0) { extravelocity = 0; }
-        entityarrow.shoot((double) velx, (double) vely, (double) velz, entityarrow.getVelocity() + extravelocity, 0.0F);
+        hookEntity.shoot((double) velx, (double) vely, (double) velz, hookEntity.getVelocity() + extravelocity, 0.0F);
         
-		worldIn.addFreshEntity(entityarrow);
-		setArrowLeft(entityLiving, entityarrow);    			
+		worldIn.addFreshEntity(hookEntity);
+		setHookEntityLeft(entityLiving, hookEntity);    			
 		
 		return true;
 	}
@@ -272,54 +272,53 @@ public class GrapplehookItem extends Item implements KeypressItem {
   		}
 
     	if (!custom.doublehook || angle == 0) {
-			GrapplehookEntity entityarrow = this.createarrow(stack, worldIn, entityLiving, righthand, false);
-      		Vec anglevec = new Vec(0,0,1).rotate_pitch(Math.toRadians(verticalangle));
-      		anglevec = anglevec.rotate_pitch(Math.toRadians(-entityLiving.getViewXRot(1.0F)));
-      		anglevec = anglevec.rotate_yaw(Math.toRadians(entityLiving.getViewYRot(1.0F)));
+			GrapplehookEntity hookEntity = this.createGrapplehookEntity(stack, worldIn, entityLiving, righthand, false);
+      		Vec anglevec = new Vec(0,0,1).rotatePitch(Math.toRadians(verticalangle));
+      		anglevec = anglevec.rotatePitch(Math.toRadians(-entityLiving.getViewXRot(1.0F)));
+      		anglevec = anglevec.rotateYaw(Math.toRadians(entityLiving.getViewYRot(1.0F)));
 	        float velx = -MathHelper.sin((float) anglevec.getYaw() * 0.017453292F) * MathHelper.cos((float) anglevec.getPitch() * 0.017453292F);
 	        float vely = -MathHelper.sin((float) anglevec.getPitch() * 0.017453292F);
 	        float velz = MathHelper.cos((float) anglevec.getYaw() * 0.017453292F) * MathHelper.cos((float) anglevec.getPitch() * 0.017453292F);
-	        float extravelocity = (float) Vec.motionvec(entityLiving).dist_along(new Vec(velx, vely, velz));
+	        float extravelocity = (float) Vec.motionVec(entityLiving).distAlong(new Vec(velx, vely, velz));
 	        if (extravelocity < 0) { extravelocity = 0; }
-	        entityarrow.shoot((double) velx, (double) vely, (double) velz, entityarrow.getVelocity() + extravelocity, 0.0F);
-			setArrowRight(entityLiving, entityarrow);
-			worldIn.addFreshEntity(entityarrow);
+	        hookEntity.shoot((double) velx, (double) vely, (double) velz, hookEntity.getVelocity() + extravelocity, 0.0F);
+			setHookEntityRight(entityLiving, hookEntity);
+			worldIn.addFreshEntity(hookEntity);
     	} else {
       		LivingEntity player = entityLiving;
       		
-      		Vec anglevec = Vec.fromAngles(Math.toRadians(angle), Math.toRadians(verticalangle)); //new vec(0,0,1).rotate_yaw(Math.toRadians(angle)).rotate_pitch(Math.toRadians(verticalangle));
-      		anglevec = anglevec.rotate_pitch(Math.toRadians(-player.getViewXRot(1.0F)));
-      		anglevec = anglevec.rotate_yaw(Math.toRadians(player.getViewYRot(1.0F)));
+      		Vec anglevec = Vec.fromAngles(Math.toRadians(angle), Math.toRadians(verticalangle));
+      		anglevec = anglevec.rotatePitch(Math.toRadians(-player.getViewXRot(1.0F)));
+      		anglevec = anglevec.rotateYaw(Math.toRadians(player.getViewYRot(1.0F)));
 	        float velx = -MathHelper.sin((float) anglevec.getYaw() * 0.017453292F) * MathHelper.cos((float) anglevec.getPitch() * 0.017453292F);
 	        float vely = -MathHelper.sin((float) anglevec.getPitch() * 0.017453292F);
 	        float velz = MathHelper.cos((float) anglevec.getYaw() * 0.017453292F) * MathHelper.cos((float) anglevec.getPitch() * 0.017453292F);
-			GrapplehookEntity entityarrow = this.createarrow(stack, worldIn, entityLiving, true, true);//new grappleArrow(worldIn, player, true);
-//            entityarrow.shoot(player, (float) anglevec.getPitch(), (float)anglevec.getYaw(), 0.0F, entityarrow.getVelocity(), 0.0F);
-	        float extravelocity = (float) Vec.motionvec(entityLiving).dist_along(new Vec(velx, vely, velz));
+			GrapplehookEntity hookEntity = this.createGrapplehookEntity(stack, worldIn, entityLiving, true, true);
+	        float extravelocity = (float) Vec.motionVec(entityLiving).distAlong(new Vec(velx, vely, velz));
 	        if (extravelocity < 0) { extravelocity = 0; }
-	        entityarrow.shoot((double) velx, (double) vely, (double) velz, entityarrow.getVelocity() + extravelocity, 0.0F);
+	        hookEntity.shoot((double) velx, (double) vely, (double) velz, hookEntity.getVelocity() + extravelocity, 0.0F);
             
-			worldIn.addFreshEntity(entityarrow);
-			setArrowRight(entityLiving, entityarrow);
+			worldIn.addFreshEntity(hookEntity);
+			setHookEntityRight(entityLiving, hookEntity);
 		}
 	}
 	
 	public void detachBoth(LivingEntity entityLiving) {
-		GrapplehookEntity arrow1 = getArrowLeft(entityLiving);
-		GrapplehookEntity arrow2 = getArrowRight(entityLiving);
+		GrapplehookEntity hookLeft = getHookEntityLeft(entityLiving);
+		GrapplehookEntity hookRight = getHookEntityRight(entityLiving);
 
-		setArrowLeft(entityLiving, null);
-		setArrowRight(entityLiving, null);
+		setHookEntityLeft(entityLiving, null);
+		setHookEntityRight(entityLiving, null);
 		
-		if (arrow1 != null) {
-			arrow1.removeServer();
+		if (hookLeft != null) {
+			hookLeft.removeServer();
 		}
-		if (arrow2 != null) {
-			arrow2.removeServer();
+		if (hookRight != null) {
+			hookRight.removeServer();
 		}
 
 		int id = entityLiving.getId();
-		GrapplemodUtils.sendtocorrectclient(new GrappleDetachMessage(id), entityLiving.getId(), entityLiving.level);
+		GrapplemodUtils.sendToCorrectClient(new GrappleDetachMessage(id), entityLiving.getId(), entityLiving.level);
 
 		if (ServerControllerManager.attached.contains(id)) {
 			ServerControllerManager.attached.remove(id);
@@ -327,21 +326,21 @@ public class GrapplehookItem extends Item implements KeypressItem {
 	}
 	
 	public void detachLeft(LivingEntity entityLiving) {
-		GrapplehookEntity arrow1 = getArrowLeft(entityLiving);
+		GrapplehookEntity hookLeft = getHookEntityLeft(entityLiving);
 		
-		setArrowLeft(entityLiving, null);
+		setHookEntityLeft(entityLiving, null);
 		
-		if (arrow1 != null) {
-			arrow1.removeServer();
+		if (hookLeft != null) {
+			hookLeft.removeServer();
 		}
 		
 		int id = entityLiving.getId();
 		
 		// remove controller if hook is attached
-		if (getArrowRight(entityLiving) == null) {
-			GrapplemodUtils.sendtocorrectclient(new GrappleDetachMessage(id), id, entityLiving.level);
+		if (getHookEntityRight(entityLiving) == null) {
+			GrapplemodUtils.sendToCorrectClient(new GrappleDetachMessage(id), id, entityLiving.level);
 		} else {
-			GrapplemodUtils.sendtocorrectclient(new DetachSingleHookMessage(id, arrow1.getId()), id, entityLiving.level);
+			GrapplemodUtils.sendToCorrectClient(new DetachSingleHookMessage(id, hookLeft.getId()), id, entityLiving.level);
 		}
 		
 		if (ServerControllerManager.attached.contains(id)) {
@@ -350,21 +349,21 @@ public class GrapplehookItem extends Item implements KeypressItem {
 	}
 	
 	public void detachRight(LivingEntity entityLiving) {
-		GrapplehookEntity arrow2 = getArrowRight(entityLiving);
+		GrapplehookEntity hookRight = getHookEntityRight(entityLiving);
 		
-		setArrowRight(entityLiving, null);
+		setHookEntityRight(entityLiving, null);
 		
-		if (arrow2 != null) {
-			arrow2.removeServer();
+		if (hookRight != null) {
+			hookRight.removeServer();
 		}
 		
 		int id = entityLiving.getId();
 		
 		// remove controller if hook is attached
-		if (getArrowLeft(entityLiving) == null) {
-			GrapplemodUtils.sendtocorrectclient(new GrappleDetachMessage(id), id, entityLiving.level);
+		if (getHookEntityLeft(entityLiving) == null) {
+			GrapplemodUtils.sendToCorrectClient(new GrappleDetachMessage(id), id, entityLiving.level);
 		} else {
-			GrapplemodUtils.sendtocorrectclient(new DetachSingleHookMessage(id, arrow2.getId()), id, entityLiving.level);
+			GrapplemodUtils.sendToCorrectClient(new DetachSingleHookMessage(id, hookRight.getId()), id, entityLiving.level);
 		}
 		
 		if (ServerControllerManager.attached.contains(id)) {
@@ -381,10 +380,10 @@ public class GrapplehookItem extends Item implements KeypressItem {
     	}
     }
 	
-	public GrapplehookEntity createarrow(ItemStack stack, World worldIn, LivingEntity entityLiving, boolean righthand, boolean isdouble) {
-		GrapplehookEntity arrow = new GrapplehookEntity(worldIn, entityLiving, righthand, this.getCustomization(stack), isdouble);
-		ServerControllerManager.addarrow(entityLiving.getId(), arrow);
-		return arrow;
+	public GrapplehookEntity createGrapplehookEntity(ItemStack stack, World worldIn, LivingEntity entityLiving, boolean righthand, boolean isdouble) {
+		GrapplehookEntity hookEntity = new GrapplehookEntity(worldIn, entityLiving, righthand, this.getCustomization(stack), isdouble);
+		ServerControllerManager.addGrapplehookEntity(entityLiving.getId(), hookEntity);
+		return hookEntity;
 	}
     
     public GrappleCustomization getCustomization(ItemStack itemstack) {
@@ -423,10 +422,10 @@ public class GrapplehookItem extends Item implements KeypressItem {
 			} else {
 				list.add(new StringTextComponent(ClientSetup.key_boththrow.getTranslatedKeyMessage().getString() + " " + ClientProxyInterface.proxy.localize("grappletooltip.throwhold.desc")));
 			}
-			list.add(new StringTextComponent(ClientProxyInterface.proxy.getkeyname(ClientProxyInterface.mckeys.keyBindForward) + ", " +
-					ClientProxyInterface.proxy.getkeyname(ClientProxyInterface.mckeys.keyBindLeft) + ", " +
-					ClientProxyInterface.proxy.getkeyname(ClientProxyInterface.mckeys.keyBindBack) + ", " +
-					ClientProxyInterface.proxy.getkeyname(ClientProxyInterface.mckeys.keyBindRight) +
+			list.add(new StringTextComponent(ClientProxyInterface.proxy.getKeyname(ClientProxyInterface.McKeys.keyBindForward) + ", " +
+					ClientProxyInterface.proxy.getKeyname(ClientProxyInterface.McKeys.keyBindLeft) + ", " +
+					ClientProxyInterface.proxy.getKeyname(ClientProxyInterface.McKeys.keyBindBack) + ", " +
+					ClientProxyInterface.proxy.getKeyname(ClientProxyInterface.McKeys.keyBindRight) +
 					" " + ClientProxyInterface.proxy.localize("grappletooltip.swing.desc")));
 			list.add(new StringTextComponent(ClientSetup.key_jumpanddetach.getTranslatedKeyMessage().getString() + " " + ClientProxyInterface.proxy.localize("grappletooltip.jump.desc")));
 			list.add(new StringTextComponent(ClientSetup.key_slow.getTranslatedKeyMessage().getString() + " " + ClientProxyInterface.proxy.localize("grappletooltip.slow.desc")));
@@ -462,17 +461,17 @@ public class GrapplehookItem extends Item implements KeypressItem {
 				list.add(new StringTextComponent(ClientSetup.key_rightthrow.getTranslatedKeyMessage().getString() + " " + ClientProxyInterface.proxy.localize("grappletooltip.throwalt.desc")));
 			}
 			if (custom.reelin) {
-				list.add(new StringTextComponent(ClientProxyInterface.proxy.getkeyname(ClientProxyInterface.mckeys.keyBindSneak) + " " + ClientProxyInterface.proxy.localize("grappletooltip.reelin.desc")));
+				list.add(new StringTextComponent(ClientProxyInterface.proxy.getKeyname(ClientProxyInterface.McKeys.keyBindSneak) + " " + ClientProxyInterface.proxy.localize("grappletooltip.reelin.desc")));
 			}
 		} else {
 			if (Screen.hasControlDown()) {
 				for (String option : GrappleCustomization.booleanoptions) {
-					if (custom.isoptionvalid(option) && custom.getBoolean(option) != GrappleCustomization.DEFAULT.getBoolean(option)) {
+					if (custom.isOptionValid(option) && custom.getBoolean(option) != GrappleCustomization.DEFAULT.getBoolean(option)) {
 						list.add(new StringTextComponent((custom.getBoolean(option) ? "" : ClientProxyInterface.proxy.localize("grappletooltip.negate.desc") + " ") + ClientProxyInterface.proxy.localize(custom.getName(option))));
 					}
 				}
 				for (String option : GrappleCustomization.doubleoptions) {
-					if (custom.isoptionvalid(option) && (custom.getDouble(option) != GrappleCustomization.DEFAULT.getDouble(option))) {
+					if (custom.isOptionValid(option) && (custom.getDouble(option) != GrappleCustomization.DEFAULT.getDouble(option))) {
 						list.add(new StringTextComponent(ClientProxyInterface.proxy.localize(custom.getName(option)) + ": " + Math.floor(custom.getDouble(option) * 100) / 100));
 					}
 				}
@@ -520,7 +519,7 @@ public class GrapplehookItem extends Item implements KeypressItem {
 	@Override
 	public boolean onDroppedByPlayer(ItemStack item, PlayerEntity player) {
 		int id = player.getId();
-		GrapplemodUtils.sendtocorrectclient(new GrappleDetachMessage(id), id, player.level);
+		GrapplemodUtils.sendToCorrectClient(new GrappleDetachMessage(id), id, player.level);
 		
 		if (!player.level.isClientSide) {
 			if (ServerControllerManager.attached.contains(id)) {
@@ -528,19 +527,19 @@ public class GrapplehookItem extends Item implements KeypressItem {
 			}
 		}
 		
-		if (grapplearrows1.containsKey(player)) {
-			GrapplehookEntity arrow1 = grapplearrows1.get(player);
-			setArrowLeft(player, null);
-			if (arrow1 != null) {
-				arrow1.removeServer();
+		if (grapplehookEntitiesLeft.containsKey(player)) {
+			GrapplehookEntity hookLeft = grapplehookEntitiesLeft.get(player);
+			setHookEntityLeft(player, null);
+			if (hookLeft != null) {
+				hookLeft.removeServer();
 			}
 		}
 		
-		if (grapplearrows2.containsKey(player)) {
-			GrapplehookEntity arrow2 = grapplearrows2.get(player);
-			setArrowLeft(player, null);
-			if (arrow2 != null) {
-				arrow2.removeServer();
+		if (grapplehookEntitiesRight.containsKey(player)) {
+			GrapplehookEntity hookRight = grapplehookEntitiesRight.get(player);
+			setHookEntityLeft(player, null);
+			if (hookRight != null) {
+				hookRight.removeServer();
 			}
 		}
 		

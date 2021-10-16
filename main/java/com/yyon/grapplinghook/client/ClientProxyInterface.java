@@ -19,11 +19,11 @@ import net.minecraftforge.fml.network.NetworkEvent.Context;
 public abstract class ClientProxyInterface {
 	public static ClientProxyInterface proxy = DistExecutor.unsafeRunForDist(() -> ClientProxy::new, () -> () -> null);
 
-	public abstract void resetlaunchertime(int playerid);
+	public abstract void resetLauncherTime(int playerid);
 
-	public abstract void launchplayer(PlayerEntity player);
+	public abstract void launchPlayer(PlayerEntity player);
 	
-	public enum mckeys {
+	public enum McKeys {
 		keyBindUseItem,
 		keyBindForward,
 		keyBindLeft,
@@ -33,23 +33,25 @@ public abstract class ClientProxyInterface {
 		keyBindSneak,
 		keyBindAttack
 	}
-	public abstract String getkeyname(mckeys keyenum);
+	public abstract String getKeyname(McKeys keyenum);
+
+	public abstract boolean isKeyDown(McKeys keybindjump);
 
 	public abstract void openModifierScreen(TileEntityGrappleModifier tileent);
 	
 	public abstract String localize(String string);
 
-	public abstract void startrocket(PlayerEntity player, GrappleCustomization custom);
+	public abstract void startRocket(PlayerEntity player, GrappleCustomization custom);
 	
 	public abstract void updateRocketRegen(double rocket_active_time, double rocket_refuel_ratio);
 
 	public abstract double getRocketFunctioning();
 
-	public abstract boolean iswallrunning(Entity entity, Vec motion);
+	public abstract boolean isWallRunning(Entity entity, Vec motion);
 	
-	public abstract boolean issliding(Entity entity, Vec motion);
+	public abstract boolean isSliding(Entity entity, Vec motion);
 		
-	public abstract GrappleController createControl(int id, int arrowid, int entityid, World world, Vec pos, BlockPos blockpos, GrappleCustomization custom);
+	public abstract GrappleController createControl(int id, int hookEntityId, int entityid, World world, Vec pos, BlockPos blockpos, GrappleCustomization custom);
 
 	public abstract void playSlideSound(Entity entity);
 	
@@ -61,7 +63,7 @@ public abstract class ClientProxyInterface {
 
 	public abstract void fillGrappleVariants(ItemGroup tab, NonNullList<ItemStack> items);
 	
-	public enum grapplekeys {
+	public enum GrappleKeys {
 		key_boththrow,
 		key_leftthrow,
 		key_rightthrow,
@@ -75,13 +77,11 @@ public abstract class ClientProxyInterface {
 		key_rocket,
 		key_slide
 	}
-	public abstract boolean isKeyDown(grapplekeys key);
+	public abstract boolean isKeyDown(GrappleKeys key);
 
 	public abstract GrappleController unregisterController(int entityId);
 
 	public abstract double getTimeSinceLastRopeJump(World world);
 
 	public abstract void resetRopeJumpTime(World level);
-
-	public abstract boolean isKeyDown(mckeys keybindjump);
 }

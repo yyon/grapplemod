@@ -7,7 +7,7 @@ import com.yyon.grapplinghook.blocks.modifierblock.TileEntityGrappleModifier;
 import com.yyon.grapplinghook.enchantments.DoublejumpEnchantment;
 import com.yyon.grapplinghook.enchantments.SlidingEnchantment;
 import com.yyon.grapplinghook.enchantments.WallrunEnchantment;
-import com.yyon.grapplinghook.entities.grapplearrow.GrapplehookEntity;
+import com.yyon.grapplinghook.entities.grapplehook.GrapplehookEntity;
 import com.yyon.grapplinghook.items.LongFallBoots;
 import com.yyon.grapplinghook.items.GrapplehookItem;
 import com.yyon.grapplinghook.items.EnderStaffItem;
@@ -57,40 +57,38 @@ import net.minecraftforge.fml.network.simple.SimpleChannel;
 
 @Mod.EventBusSubscriber(bus=Mod.EventBusSubscriber.Bus.MOD)
 public class CommonSetup {
-    public static GrapplehookItem grapplebowitem;
-    public static EnderStaffItem launcheritem;
-    public static ForcefieldItem repelleritem;
+    public static GrapplehookItem grapplingHookItem;
+    public static EnderStaffItem enderStaffItem;
+    public static ForcefieldItem forcefieldItem;
 
-    public static BaseUpgradeItem baseupgradeitem;
-    public static DoubleUpgradeItem doubleupgradeitem;
-    public static ForcefieldUpgradeItem forcefieldupgradeitem;
-    public static MagnetUpgradeItem magnetupgradeitem;
-    public static MotorUpgradeItem motorupgradeitem;
-    public static RopeUpgradeItem ropeupgradeitem;
-    public static StaffUpgradeItem staffupgradeitem;
-    public static SwingUpgradeItem swingupgradeitem;
-    public static ThrowUpgradeItem throwupgradeitem;
-    public static LimitsUpgradeItem limitsupgradeitem;
-    public static RocketUpgradeItem rocketupgradeitem;
+    public static BaseUpgradeItem baseUpgradeItem;
+    public static DoubleUpgradeItem doubleUpgradeItem;
+    public static ForcefieldUpgradeItem forcefieldUpgradeItem;
+    public static MagnetUpgradeItem magnetUpgradeItem;
+    public static MotorUpgradeItem motorUpgradeItem;
+    public static RopeUpgradeItem ropeUpgradeItem;
+    public static StaffUpgradeItem staffUpgradeItem;
+    public static SwingUpgradeItem swingUpgradeItem;
+    public static ThrowUpgradeItem throwUpgradeItem;
+    public static LimitsUpgradeItem limitsUpgradeItem;
+    public static RocketUpgradeItem rocketUpgradeItem;
 
-    public static Item longfallboots;
+    public static Item longFallBootsItem;
     
-    public static WallrunEnchantment wallrunenchantment;
-    public static DoublejumpEnchantment doublejumpenchantment;
-    public static SlidingEnchantment slidingenchantment;
+    public static WallrunEnchantment wallrunEnchantment;
+    public static DoublejumpEnchantment doubleJumpEnchantment;
+    public static SlidingEnchantment slidingEnchantment;
 
 	public static SimpleChannel network;    // used to transmit your network messages
 	public static final ResourceLocation simpleChannelRL = new ResourceLocation("grapplemod", "channel");
 
-	public static Block blockGrappleModifier;
-	public static BlockItem itemBlockGrappleModifier;
+	public static Block grappleModifierBlock;
+	public static BlockItem grappleModifierBlockItem;
 	
-	public ResourceLocation resourceLocation;
-
 	public static final ItemGroup tabGrapplemod = new ItemGroup("grapplemod") {
 	      @OnlyIn(Dist.CLIENT)
 	      public ItemStack makeIcon() {
-	         return new ItemStack(grapplebowitem);
+	         return new ItemStack(grapplingHookItem);
 	      }
 	};
 	
@@ -116,61 +114,61 @@ public class CommonSetup {
 	
 	@SubscribeEvent
 	public static void onBlocksRegistration(final RegistryEvent.Register<Block> blockRegisterEvent) {
-		blockGrappleModifier = (BlockGrappleModifier)(new BlockGrappleModifier().setRegistryName("grapplemod", "block_grapple_modifier"));
-		blockRegisterEvent.getRegistry().register(blockGrappleModifier);
+		grappleModifierBlock = (BlockGrappleModifier)(new BlockGrappleModifier().setRegistryName("grapplemod", "block_grapple_modifier"));
+		blockRegisterEvent.getRegistry().register(grappleModifierBlock);
 	}
 
-	public static TileEntityType<TileEntityGrappleModifier> tileEntityGrappleModifierType;
+	public static TileEntityType<TileEntityGrappleModifier> grappleModifierTileEntityType;
 	
 	@SubscribeEvent
 	public static void onTileEntityTypeRegistration(final RegistryEvent.Register<TileEntityType<?>> event) {
-		tileEntityGrappleModifierType =
-				TileEntityType.Builder.of(TileEntityGrappleModifier::new, blockGrappleModifier).build(null);  // you probably don't need a datafixer --> null should be fine
-		tileEntityGrappleModifierType.setRegistryName("grapplemod:block_grapple_modifier");
-		event.getRegistry().register(tileEntityGrappleModifierType);
+		grappleModifierTileEntityType =
+				TileEntityType.Builder.of(TileEntityGrappleModifier::new, grappleModifierBlock).build(null);  // you probably don't need a datafixer --> null should be fine
+		grappleModifierTileEntityType.setRegistryName("grapplemod:block_grapple_modifier");
+		event.getRegistry().register(grappleModifierTileEntityType);
 	}
 
-	public static EntityType<GrapplehookEntity> grappleArrowType;
+	public static EntityType<GrapplehookEntity> grapplehookEntityType;
 	
 	@SubscribeEvent
 	public static void onEntityTypeRegistration(RegistryEvent.Register<EntityType<?>> entityTypeRegisterEvent) {
-		grappleArrowType = EntityType.Builder.<GrapplehookEntity>of(GrapplehookEntity::new, EntityClassification.MISC)
+		grapplehookEntityType = EntityType.Builder.<GrapplehookEntity>of(GrapplehookEntity::new, EntityClassification.MISC)
 	            .sized(0.25F, 0.25F)
-	            .build("grapplemod:grapplearrow");
-		grappleArrowType.setRegistryName("grapplemod:grapplearrow");
-	    entityTypeRegisterEvent.getRegistry().register(grappleArrowType);
+	            .build("grapplemod:grapplehook");
+		grapplehookEntityType.setRegistryName("grapplemod:grapplehook");
+	    entityTypeRegisterEvent.getRegistry().register(grapplehookEntityType);
 	}
 	
 	public static Item[] getAllItems() {
 		return new Item[] {
-				grapplebowitem,
-				launcheritem, 
-				repelleritem, 
-				longfallboots, 
-				baseupgradeitem, 
-				ropeupgradeitem, 
-				throwupgradeitem, 
-				motorupgradeitem, 
-				swingupgradeitem, 
-				staffupgradeitem, 
-				forcefieldupgradeitem, 
-				magnetupgradeitem, 
-				doubleupgradeitem, 
-				rocketupgradeitem, 
-				limitsupgradeitem, 
+				grapplingHookItem,
+				enderStaffItem, 
+				forcefieldItem, 
+				longFallBootsItem, 
+				baseUpgradeItem, 
+				ropeUpgradeItem, 
+				throwUpgradeItem, 
+				motorUpgradeItem, 
+				swingUpgradeItem, 
+				staffUpgradeItem, 
+				forcefieldUpgradeItem, 
+				magnetUpgradeItem, 
+				doubleUpgradeItem, 
+				rocketUpgradeItem, 
+				limitsUpgradeItem, 
 				};
 	}
 	
 	@SubscribeEvent
 	public static void registerEnchantments(final RegistryEvent.Register<Enchantment> event) {
-	    wallrunenchantment = new WallrunEnchantment();
-	    wallrunenchantment.setRegistryName("wallrunenchantment");
-	    doublejumpenchantment = new DoublejumpEnchantment();
-	    doublejumpenchantment.setRegistryName("doublejumpenchantment");
-	    slidingenchantment = new SlidingEnchantment();
-	    slidingenchantment.setRegistryName("slidingenchantment");
+	    wallrunEnchantment = new WallrunEnchantment();
+	    wallrunEnchantment.setRegistryName("wallrunenchantment");
+	    doubleJumpEnchantment = new DoublejumpEnchantment();
+	    doubleJumpEnchantment.setRegistryName("doublejumpenchantment");
+	    slidingEnchantment = new SlidingEnchantment();
+	    slidingEnchantment.setRegistryName("slidingenchantment");
 	    
-	    event.getRegistry().registerAll(wallrunenchantment, doublejumpenchantment, slidingenchantment);
+	    event.getRegistry().registerAll(wallrunEnchantment, doubleJumpEnchantment, slidingEnchantment);
 
 	}
 
@@ -181,44 +179,44 @@ public class CommonSetup {
 	
 	@SubscribeEvent
 	public static void onItemsRegistration(final RegistryEvent.Register<Item> itemRegisterEvent) {
-		grapplebowitem = new GrapplehookItem();
-		registerItem(grapplebowitem, "grapplinghook", itemRegisterEvent);
+		grapplingHookItem = new GrapplehookItem();
+		registerItem(grapplingHookItem, "grapplinghook", itemRegisterEvent);
 
-		launcheritem = new EnderStaffItem();
-		registerItem(launcheritem, "launcheritem", itemRegisterEvent);
-		longfallboots = new LongFallBoots(ArmorMaterial.DIAMOND, 3);
-		registerItem(longfallboots, "longfallboots", itemRegisterEvent);
-		repelleritem = new ForcefieldItem();
-		registerItem(repelleritem, "repeller", itemRegisterEvent);
-	    baseupgradeitem = new BaseUpgradeItem();
-		registerItem(baseupgradeitem, "baseupgradeitem", itemRegisterEvent);
-	    doubleupgradeitem = new DoubleUpgradeItem();
-		registerItem(doubleupgradeitem, "doubleupgradeitem", itemRegisterEvent);
-	    forcefieldupgradeitem = new ForcefieldUpgradeItem();
-		registerItem(forcefieldupgradeitem, "forcefieldupgradeitem", itemRegisterEvent);
-	    magnetupgradeitem = new MagnetUpgradeItem();
-		registerItem(magnetupgradeitem, "magnetupgradeitem", itemRegisterEvent);
-	    motorupgradeitem = new MotorUpgradeItem();
-		registerItem(motorupgradeitem, "motorupgradeitem", itemRegisterEvent);
-	    ropeupgradeitem = new RopeUpgradeItem();
-		registerItem(ropeupgradeitem, "ropeupgradeitem", itemRegisterEvent);
-	    staffupgradeitem = new StaffUpgradeItem();
-		registerItem(staffupgradeitem, "staffupgradeitem", itemRegisterEvent);
-	    swingupgradeitem = new SwingUpgradeItem();
-		registerItem(swingupgradeitem, "swingupgradeitem", itemRegisterEvent);
-	    throwupgradeitem = new ThrowUpgradeItem();
-		registerItem(throwupgradeitem, "throwupgradeitem", itemRegisterEvent);
-	    limitsupgradeitem = new LimitsUpgradeItem();
-		registerItem(limitsupgradeitem, "limitsupgradeitem", itemRegisterEvent);
-	    rocketupgradeitem = new RocketUpgradeItem();
-		registerItem(rocketupgradeitem, "rocketupgradeitem", itemRegisterEvent);
+		enderStaffItem = new EnderStaffItem();
+		registerItem(enderStaffItem, "launcheritem", itemRegisterEvent);
+		longFallBootsItem = new LongFallBoots(ArmorMaterial.DIAMOND, 3);
+		registerItem(longFallBootsItem, "longfallboots", itemRegisterEvent);
+		forcefieldItem = new ForcefieldItem();
+		registerItem(forcefieldItem, "repeller", itemRegisterEvent);
+	    baseUpgradeItem = new BaseUpgradeItem();
+		registerItem(baseUpgradeItem, "baseupgradeitem", itemRegisterEvent);
+	    doubleUpgradeItem = new DoubleUpgradeItem();
+		registerItem(doubleUpgradeItem, "doubleupgradeitem", itemRegisterEvent);
+	    forcefieldUpgradeItem = new ForcefieldUpgradeItem();
+		registerItem(forcefieldUpgradeItem, "forcefieldupgradeitem", itemRegisterEvent);
+	    magnetUpgradeItem = new MagnetUpgradeItem();
+		registerItem(magnetUpgradeItem, "magnetupgradeitem", itemRegisterEvent);
+	    motorUpgradeItem = new MotorUpgradeItem();
+		registerItem(motorUpgradeItem, "motorupgradeitem", itemRegisterEvent);
+	    ropeUpgradeItem = new RopeUpgradeItem();
+		registerItem(ropeUpgradeItem, "ropeupgradeitem", itemRegisterEvent);
+	    staffUpgradeItem = new StaffUpgradeItem();
+		registerItem(staffUpgradeItem, "staffupgradeitem", itemRegisterEvent);
+	    swingUpgradeItem = new SwingUpgradeItem();
+		registerItem(swingUpgradeItem, "swingupgradeitem", itemRegisterEvent);
+	    throwUpgradeItem = new ThrowUpgradeItem();
+		registerItem(throwUpgradeItem, "throwupgradeitem", itemRegisterEvent);
+	    limitsUpgradeItem = new LimitsUpgradeItem();
+		registerItem(limitsUpgradeItem, "limitsupgradeitem", itemRegisterEvent);
+	    rocketUpgradeItem = new RocketUpgradeItem();
+		registerItem(rocketUpgradeItem, "rocketupgradeitem", itemRegisterEvent);
 
 		// We need to create a BlockItem so the player can carry this block in their hand and it can appear in the inventory
 		Item.Properties itemSimpleProperties = new Item.Properties()
 				.stacksTo(64)
 				.tab(tabGrapplemod);  // which inventory tab?
-		itemBlockGrappleModifier = new BlockItem(blockGrappleModifier, itemSimpleProperties);
-		itemBlockGrappleModifier.setRegistryName(blockGrappleModifier.getRegistryName());
-		itemRegisterEvent.getRegistry().register(itemBlockGrappleModifier);
+		grappleModifierBlockItem = new BlockItem(grappleModifierBlock, itemSimpleProperties);
+		grappleModifierBlockItem.setRegistryName(grappleModifierBlock.getRegistryName());
+		itemRegisterEvent.getRegistry().register(grappleModifierBlockItem);
 	}
 }

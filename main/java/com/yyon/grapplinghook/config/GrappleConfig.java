@@ -346,7 +346,7 @@ public class GrappleConfig implements ConfigData {
 	public Config options = new Config(); // local options
 	
     @ConfigEntry.Gui.Excluded
-	private static Config server_options = null;
+	private static Config serverOptions = null;
 	
 	public static class ClientConfig {
 		@ConfigEntry.Gui.CollapsibleObject
@@ -378,21 +378,21 @@ public class GrappleConfig implements ConfigData {
 	
     @ConfigEntry.Gui.CollapsibleObject
 	@Tooltip
-	public ClientConfig client_options = new ClientConfig(); // client-only options, don't need to sync with server
+	public ClientConfig clientOptions = new ClientConfig(); // client-only options, don't need to sync with server
 
-	public static Config getconf() {
-		if (server_options == null) {
+	public static Config getConf() {
+		if (serverOptions == null) {
 			return AutoConfig.getConfigHolder(GrappleConfig.class).getConfig().options;
 		} else {
-			return server_options;
+			return serverOptions;
 		}
 	}
 	
-	public static void setserveroptions(Config newserveroptions) {
-		server_options = newserveroptions;
+	public static void setServerOptions(Config newserveroptions) {
+		serverOptions = newserveroptions;
 	}
 	
-	public static ClientConfig getclientconf() {
-		return AutoConfig.getConfigHolder(GrappleConfig.class).getConfig().client_options;
+	public static ClientConfig getClientConf() {
+		return AutoConfig.getConfigHolder(GrappleConfig.class).getConfig().clientOptions;
 	}
 }

@@ -101,19 +101,19 @@ public class BlockGrappleModifier extends Block {
 				TileEntityGrappleModifier tileent = (TileEntityGrappleModifier) ent;
 				
 				GrappleCustomization custom = tileent.customization;
-				((GrapplehookItem) CommonSetup.grapplebowitem).setCustomOnServer(helditemstack, custom, playerIn);
+				((GrapplehookItem) CommonSetup.grapplingHookItem).setCustomOnServer(helditemstack, custom, playerIn);
 				
 				playerIn.sendMessage(new StringTextComponent("Applied configuration"), playerIn.getUUID());
 			}
 		} else if (helditem == Items.DIAMOND_BOOTS) {
 			if (!worldIn.isClientSide) {
-				if (GrappleConfig.getconf().longfallboots.longfallbootsrecipe) {
+				if (GrappleConfig.getConf().longfallboots.longfallbootsrecipe) {
 					boolean gaveitem = false;
 					if (helditemstack.isEnchanted()) {
 						Map<Enchantment, Integer> enchantments = EnchantmentHelper.getEnchantments(helditemstack);
 						if (enchantments.containsKey(Enchantments.FALL_PROTECTION)) {
 							if (enchantments.get(Enchantments.FALL_PROTECTION) >= 4) {
-								ItemStack newitemstack = new ItemStack(CommonSetup.longfallboots);
+								ItemStack newitemstack = new ItemStack(CommonSetup.longFallBootsItem);
 								EnchantmentHelper.setEnchantments(enchantments, newitemstack);
 								playerIn.setItemInHand(Hand.MAIN_HAND, newitemstack);
 								gaveitem = true;
@@ -148,9 +148,9 @@ public class BlockGrappleModifier extends Block {
 		
 		for (int i = 0; i < positions.length; i++) {
 			Vec newpos = new Vec(pos.getX() + 0.5, pos.getY() + 1, pos.getZ() + 0.5);
-			Vec toPlayer = Vec.positionvec(playerIn).sub(newpos);
+			Vec toPlayer = Vec.positionVec(playerIn).sub(newpos);
 			double angle = toPlayer.length() == 0 ? 0 : toPlayer.getYaw();
-			newpos = newpos.add(positions[i].rotate_yaw(Math.toRadians(angle)));
+			newpos = newpos.add(positions[i].rotateYaw(Math.toRadians(angle)));
 			
 			CompoundNBT explosion = new CompoundNBT();
 	        explosion.putByte("Type", (byte) FireworkRocketItem.Shape.SMALL_BALL.getId());

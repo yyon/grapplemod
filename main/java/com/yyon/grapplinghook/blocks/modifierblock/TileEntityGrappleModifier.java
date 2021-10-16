@@ -20,7 +20,7 @@ public class TileEntityGrappleModifier extends TileEntity {
 	public GrappleCustomization customization;
 	
 	public TileEntityGrappleModifier() {
-		super(CommonSetup.tileEntityGrappleModifierType);
+		super(CommonSetup.grappleModifierTileEntityType);
 		this.customization = new GrappleCustomization();
 	}
 

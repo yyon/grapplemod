@@ -35,17 +35,15 @@ public class GuiModifier extends Screen {
 	int id;
 	HashMap<Widget, String> options;
 
-	TileEntityGrappleModifier tileent;
+	TileEntityGrappleModifier tileEnt;
 	GrappleCustomization customization;
 
 	GrappleCustomization.upgradeCategories category = null;
-	boolean allowed = false;
-	boolean showinghelpscreen = false;
 
 	public GuiModifier(TileEntityGrappleModifier tileent) {
 		super(new StringTextComponent(ClientProxyInterface.proxy.localize("grapplemodifier.title.desc")));
 
-		this.tileent = tileent;
+		this.tileEnt = tileent;
 		customization = tileent.customization;
 	}
 
@@ -55,8 +53,7 @@ public class GuiModifier extends Screen {
 		this.guiLeft = (this.width - this.xSize) / 2;
 		this.guiTop = (this.height - this.ySize) / 2;
 
-		clearscreen();
-		mainscreen();
+		mainScreen();
 	}
 	
 	class PressCategory implements IPressable {
@@ -66,9 +63,7 @@ public class GuiModifier extends Screen {
 		}
 		
 		public void onPress(Button p_onPress_1_) {
-			clearscreen();
-
-			boolean unlocked = tileent.isUnlocked(category) || Minecraft.getInstance().player.isCreative();
+			boolean unlocked = tileEnt.isUnlocked(category) || Minecraft.getInstance().player.isCreative();
 
 			if (unlocked) {
 				showCategoryScreen(category);
@@ -80,12 +75,12 @@ public class GuiModifier extends Screen {
 	
 	class PressBack implements IPressable {
 		public void onPress(Button p_onPress_1_) {
-			showinghelpscreen = false;
-			clearscreen();
-			mainscreen();
+			mainScreen();
 		}
 	}
-	public void mainscreen() {
+	public void mainScreen() {
+		clearScreen();
+
 		this.addButton(new Button(this.guiLeft + 10, this.guiTop + this.ySize - 20 - 10,
 			50, 20, new StringTextComponent(ClientProxyInterface.proxy.localize("grapplemodifier.close.desc")), new IPressable() {
 				public void onPress(Button p_onPress_1_) {
@@ -96,17 +91,13 @@ public class GuiModifier extends Screen {
 			50, 20, new StringTextComponent(ClientProxyInterface.proxy.localize("grapplemodifier.reset.desc")), new IPressable() {
 				public void onPress(Button p_onPress_1_) {
 					customization = new GrappleCustomization();
-					showinghelpscreen = false;
-					clearscreen();
-					mainscreen();
+					mainScreen();
 				}
 			}));
 		this.addButton(new Button(this.guiLeft + 10 + 75, this.guiTop + this.ySize - 20 - 10,
 			50, 20, new StringTextComponent(ClientProxyInterface.proxy.localize("grapplemodifier.helpbutton.desc")), new IPressable() {
 				public void onPress(Button p_onPress_1_) {
-					showinghelpscreen = true;
-					clearscreen();
-					helpscreen();
+					helpScreen();
 				}
 			}));
 
@@ -146,10 +137,9 @@ public class GuiModifier extends Screen {
 	   }
 	}
 
-	public void clearscreen() {
+	public void clearScreen() {
 		this.buttons.clear();
 		this.category = null;
-		this.allowed = false;
 		posy = 10;
 		id = 10;
 		options = new HashMap<>();
@@ -186,9 +176,10 @@ public class GuiModifier extends Screen {
 	}
 
 	public void notAllowedScreen(GrappleCustomization.upgradeCategories category) {
+		clearScreen();
+
 		this.addButton(new Button(this.guiLeft + 10, this.guiTop + this.ySize - 20 - 10, 50, 20, new StringTextComponent(ClientProxyInterface.proxy.localize("grapplemodifier.back.desc")), new PressBack()));
 		this.category = category;
-		this.allowed = false;
 		this.addButton(new TextWidget(new StringTextComponent(ClientProxyInterface.proxy.localize("grapplemodifier.unlock1.desc")), this.guiLeft + 10, this.guiTop + 10));
 		this.addButton(new TextWidget(new StringTextComponent(this.category.description), 10, 25));
 		this.addButton(new TextWidget(new StringTextComponent(ClientProxyInterface.proxy.localize("grapplemodifier.unlock2.desc")), this.guiLeft + 10, this.guiTop + 40));
@@ -197,7 +188,9 @@ public class GuiModifier extends Screen {
 		this.addButton(new TextWidget(new StringTextComponent(ClientProxyInterface.proxy.localize("grapplemodifier.unlock4.desc")), this.guiLeft + 10, this.guiTop + 85));
 	}
 
-	public void helpscreen() {
+	public void helpScreen() {
+		clearScreen();
+
 		this.addButton(new Button(this.guiLeft + 10, this.guiTop + this.ySize - 20 - 10, 50, 20, new StringTextComponent(ClientProxyInterface.proxy.localize("grapplemodifier.back.desc")), new PressBack()));
 
 		this.addButton(new TextWidget(new StringTextComponent(ClientProxyInterface.proxy.localize("grapplemodifier.help.desc")), this.guiLeft + 10, this.guiTop + 10));
@@ -299,9 +292,10 @@ public class GuiModifier extends Screen {
 	}
 
 	public void showCategoryScreen(GrappleCustomization.upgradeCategories category) {
+		clearScreen();
+
 		this.addButton(new Button(this.guiLeft + 10, this.guiTop + this.ySize - 20 - 10, 50, 20, new StringTextComponent(ClientProxyInterface.proxy.localize("grapplemodifier.back.desc")), new PressBack()));
 		this.category = category;
-		this.allowed = true;
 
 		if (category == GrappleCustomization.upgradeCategories.ROPE) {
 			addSlider("maxlen");
@@ -351,12 +345,10 @@ public class GuiModifier extends Screen {
 		this.updateEnabled();
 	}
 	
-	Button buttonpressed = null;
-	
 	@Override
 	public void onClose() {
 //		this.updateOptions();
-		this.tileent.setCustomizationClient(customization);
+		this.tileEnt.setCustomizationClient(customization);
 		
 		super.onClose();
 	}
@@ -368,7 +360,7 @@ public class GuiModifier extends Screen {
 			
 			String desc = ClientProxyInterface.proxy.localize(this.customization.getDescription(option));
 			
-			if (this.customization.isoptionvalid(option)) {
+			if (this.customization.isOptionValid(option)) {
 			} else {
 				desc = ClientProxyInterface.proxy.localize("grapplemodifier.incompatability.desc") + "\n" + desc;
 				enabled = false;
@@ -396,7 +388,7 @@ public class GuiModifier extends Screen {
 	}
 	
 	public int getLimits() {
-		if (this.tileent.isUnlocked(GrappleCustomization.upgradeCategories.LIMITS) || Minecraft.getInstance().player.isCreative()) {
+		if (this.tileEnt.isUnlocked(GrappleCustomization.upgradeCategories.LIMITS) || Minecraft.getInstance().player.isCreative()) {
 			return 1;
 		}
 		return 0;

@@ -27,11 +27,11 @@ public class ForcefieldItem extends Item {
 		super(new Item.Properties().stacksTo(1).tab(CommonSetup.tabGrapplemod));
 	}
 	
-	public void dorightclick(ItemStack stack, World worldIn, PlayerEntity player) {
+	public void doRightClick(ItemStack stack, World worldIn, PlayerEntity player) {
 		if (worldIn.isClientSide) {
 			int playerid = player.getId();
 			GrappleController oldController = ClientProxyInterface.proxy.unregisterController(playerid);
-			if (oldController == null || oldController.controllerid == GrapplemodUtils.AIRID) {
+			if (oldController == null || oldController.controllerId == GrapplemodUtils.AIRID) {
 				ClientProxyInterface.proxy.createControl(GrapplemodUtils.REPELID, -1, playerid, worldIn, new Vec(0,0,0), null, null);
 			}
 		}
@@ -40,7 +40,7 @@ public class ForcefieldItem extends Item {
     @Override
     public ActionResult<ItemStack> use(World worldIn, PlayerEntity playerIn, Hand hand) {
     	ItemStack stack = playerIn.getItemInHand(hand);
-        this.dorightclick(stack, worldIn, playerIn);
+        this.doRightClick(stack, worldIn, playerIn);
         
     	return ActionResult.success(stack);
 	}
@@ -51,13 +51,13 @@ public class ForcefieldItem extends Item {
 		list.add(new StringTextComponent(ClientProxyInterface.proxy.localize("grappletooltip.repelleritem.desc")));
 		list.add(new StringTextComponent(ClientProxyInterface.proxy.localize("grappletooltip.repelleritem2.desc")));
 		list.add(new StringTextComponent(""));
-		list.add(new StringTextComponent(ClientProxyInterface.proxy.getkeyname(ClientProxyInterface.mckeys.keyBindUseItem) + ClientProxyInterface.proxy.localize("grappletooltip.repelleritemon.desc")));
-		list.add(new StringTextComponent(ClientProxyInterface.proxy.getkeyname(ClientProxyInterface.mckeys.keyBindUseItem) + ClientProxyInterface.proxy.localize("grappletooltip.repelleritemoff.desc")));
-		list.add(new StringTextComponent(ClientProxyInterface.proxy.getkeyname(ClientProxyInterface.mckeys.keyBindSneak) + ClientProxyInterface.proxy.localize("grappletooltip.repelleritemslow.desc")));
-		list.add(new StringTextComponent(ClientProxyInterface.proxy.getkeyname(ClientProxyInterface.mckeys.keyBindForward) + ", " +
-				ClientProxyInterface.proxy.getkeyname(ClientProxyInterface.mckeys.keyBindLeft) + ", " +
-				ClientProxyInterface.proxy.getkeyname(ClientProxyInterface.mckeys.keyBindBack) + ", " +
-				ClientProxyInterface.proxy.getkeyname(ClientProxyInterface.mckeys.keyBindRight) +
+		list.add(new StringTextComponent(ClientProxyInterface.proxy.getKeyname(ClientProxyInterface.McKeys.keyBindUseItem) + ClientProxyInterface.proxy.localize("grappletooltip.repelleritemon.desc")));
+		list.add(new StringTextComponent(ClientProxyInterface.proxy.getKeyname(ClientProxyInterface.McKeys.keyBindUseItem) + ClientProxyInterface.proxy.localize("grappletooltip.repelleritemoff.desc")));
+		list.add(new StringTextComponent(ClientProxyInterface.proxy.getKeyname(ClientProxyInterface.McKeys.keyBindSneak) + ClientProxyInterface.proxy.localize("grappletooltip.repelleritemslow.desc")));
+		list.add(new StringTextComponent(ClientProxyInterface.proxy.getKeyname(ClientProxyInterface.McKeys.keyBindForward) + ", " +
+				ClientProxyInterface.proxy.getKeyname(ClientProxyInterface.McKeys.keyBindLeft) + ", " +
+				ClientProxyInterface.proxy.getKeyname(ClientProxyInterface.McKeys.keyBindBack) + ", " +
+				ClientProxyInterface.proxy.getKeyname(ClientProxyInterface.McKeys.keyBindRight) +
 				" " + ClientProxyInterface.proxy.localize("grappletooltip.repelleritemmove.desc")));
 	}
 }

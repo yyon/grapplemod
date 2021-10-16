@@ -11,7 +11,7 @@ import net.minecraft.world.World;
 import net.minecraftforge.fml.network.PacketDistributor;
 
 public class GrapplemodUtils {
-	public static void sendtocorrectclient(Object message, int playerid, World w) {
+	public static void sendToCorrectClient(Object message, int playerid, World w) {
 		Entity entity = w.getEntity(playerid);
 		if (entity instanceof ServerPlayerEntity) {
 			CommonSetup.network.send(PacketDistributor.PLAYER.with(() -> (ServerPlayerEntity) entity), message);

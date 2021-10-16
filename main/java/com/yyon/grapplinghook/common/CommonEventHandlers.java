@@ -3,7 +3,7 @@ package com.yyon.grapplinghook.common;
 import java.util.HashSet;
 
 import com.yyon.grapplinghook.config.GrappleConfig;
-import com.yyon.grapplinghook.entities.grapplearrow.GrapplehookEntity;
+import com.yyon.grapplinghook.entities.grapplehook.GrapplehookEntity;
 import com.yyon.grapplinghook.items.LongFallBoots;
 import com.yyon.grapplinghook.items.GrapplehookItem;
 import com.yyon.grapplinghook.network.GrappleDetachMessage;
@@ -57,24 +57,24 @@ public class CommonEventHandlers {
     	if (!event.getEntity().level.isClientSide) {
     		Entity entity = event.getEntity();
     		int id = entity.getId();
-    		boolean isconnected = ServerControllerManager.allarrows.containsKey(id);
+    		boolean isconnected = ServerControllerManager.allGrapplehookEntities.containsKey(id);
     		if (isconnected) {
-    			HashSet<GrapplehookEntity> arrows = ServerControllerManager.allarrows.get(id);
-    			for (GrapplehookEntity arrow: arrows) {
-    				arrow.removeServer();
+    			HashSet<GrapplehookEntity> grapplehookEntities = ServerControllerManager.allGrapplehookEntities.get(id);
+    			for (GrapplehookEntity hookEntity: grapplehookEntities) {
+    				hookEntity.removeServer();
     			}
-    			arrows.clear();
+    			grapplehookEntities.clear();
 
     			ServerControllerManager.attached.remove(id);
     			
-    			if (GrapplehookItem.grapplearrows1.containsKey(entity)) {
-    				GrapplehookItem.grapplearrows1.remove(entity);
+    			if (GrapplehookItem.grapplehookEntitiesLeft.containsKey(entity)) {
+    				GrapplehookItem.grapplehookEntitiesLeft.remove(entity);
     			}
-    			if (GrapplehookItem.grapplearrows2.containsKey(entity)) {
-    				GrapplehookItem.grapplearrows2.remove(entity);
+    			if (GrapplehookItem.grapplehookEntitiesRight.containsKey(entity)) {
+    				GrapplehookItem.grapplehookEntitiesRight.remove(entity);
     			}
     			
-    			GrapplemodUtils.sendtocorrectclient(new GrappleDetachMessage(id), id, entity.level);
+    			GrapplemodUtils.sendToCorrectClient(new GrappleDetachMessage(id), id, entity.level);
     		}
     	}
 	}
@@ -113,7 +113,7 @@ public class CommonEventHandlers {
 
 	@SubscribeEvent
 	public void onServerStart(FMLServerStartedEvent event) {
-		if (GrappleConfig.getconf().other.override_allowflight) {
+		if (GrappleConfig.getConf().other.override_allowflight) {
 			event.getServer().setFlightAllowed(true);
 		}
 	}
@@ -121,7 +121,7 @@ public class CommonEventHandlers {
 	@SubscribeEvent
 	public void onPlayerLoggedInEvent(PlayerLoggedInEvent e) {
 		if (e.getPlayer() instanceof ServerPlayerEntity) {
-			CommonSetup.network.send(PacketDistributor.PLAYER.with(() -> (ServerPlayerEntity) e.getPlayer()), new LoggedInMessage(GrappleConfig.getconf()));
+			CommonSetup.network.send(PacketDistributor.PLAYER.with(() -> (ServerPlayerEntity) e.getPlayer()), new LoggedInMessage(GrappleConfig.getConf()));
 		} else {
 			System.out.println("Not an PlayerEntityMP");
 		}

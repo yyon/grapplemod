@@ -6,10 +6,10 @@ import net.minecraft.entity.Entity;
 import net.minecraft.world.World;
 
 public class ForcefieldController extends GrappleController {
-	public ForcefieldController(int arrowId, int entityId, World world, Vec pos, int id) {
-		super(arrowId, entityId, world, pos, id, null);
+	public ForcefieldController(int grapplehookEntityId, int entityId, World world, Vec pos, int id) {
+		super(grapplehookEntityId, entityId, world, pos, id, null);
 		
-		this.playermovementmult = 1;
+		this.playerMovementMult = 1;
 	}
 
 	public void updatePlayerPos() {
@@ -22,16 +22,16 @@ public class ForcefieldController extends GrappleController {
 					this.normalCollisions(true);
 //					this.applyAirFriction();
 					
-					Vec playerpos = Vec.positionvec(entity);
+					Vec playerpos = Vec.positionVec(entity);
 					
 //					double dist = oldspherevec.length();
 					
-					if (playersneak) {
+					if (playerSneak) {
 						motion.mult_ip(0.95);
 					}
 					applyPlayerMovement();
 					
-					Vec blockpush = check_repel(playerpos, entity.level);
+					Vec blockpush = checkRepel(playerpos, entity.level);
 					blockpush.mult_ip(0.5);
 					blockpush = new Vec(blockpush.x*0.5, blockpush.y*2, blockpush.z*0.5);
 					this.motion.add_ip(blockpush);
@@ -40,7 +40,7 @@ public class ForcefieldController extends GrappleController {
 						motion.add_ip(0, -0.05, 0);
 					}
 					
-					motion.setmotion(this.entity);
+					motion.setMotion(this.entity);
 					
 					this.updateServerPos();
 				}

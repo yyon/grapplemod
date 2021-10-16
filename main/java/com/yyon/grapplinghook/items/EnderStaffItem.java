@@ -42,16 +42,16 @@ public class EnderStaffItem extends Item {
 		super(new Item.Properties().stacksTo(1).tab(CommonSetup.tabGrapplemod));
 	}
 	
-	public void dorightclick(ItemStack stack, World worldIn, PlayerEntity player) {
+	public void doRightClick(ItemStack stack, World worldIn, PlayerEntity player) {
 		if (worldIn.isClientSide) {
-			ClientProxyInterface.proxy.launchplayer(player);
+			ClientProxyInterface.proxy.launchPlayer(player);
 		}
 	}
 	
     @Override
     public ActionResult<ItemStack> use(World worldIn, PlayerEntity playerIn, Hand hand) {
     	ItemStack stack = playerIn.getItemInHand(hand);
-        this.dorightclick(stack, worldIn, playerIn);
+        this.doRightClick(stack, worldIn, playerIn);
 
     	return ActionResult.success(stack);
 	}
@@ -62,6 +62,6 @@ public class EnderStaffItem extends Item {
 		list.add(new StringTextComponent(ClientProxyInterface.proxy.localize("grappletooltip.launcheritem.desc")));
 		list.add(new StringTextComponent(""));
 		list.add(new StringTextComponent(ClientProxyInterface.proxy.localize("grappletooltip.launcheritemaim.desc")));
-		list.add(new StringTextComponent(ClientProxyInterface.proxy.getkeyname(ClientProxyInterface.mckeys.keyBindUseItem) + ClientProxyInterface.proxy.localize("grappletooltip.launcheritemcontrols.desc")));
+		list.add(new StringTextComponent(ClientProxyInterface.proxy.getKeyname(ClientProxyInterface.McKeys.keyBindUseItem) + ClientProxyInterface.proxy.localize("grappletooltip.launcheritemcontrols.desc")));
 	}
 }

@@ -47,16 +47,16 @@ public class CrosshairRenderer {
 
 		if (event.getType() == ElementType.CROSSHAIRS) {
 			ClientPlayerEntity player = this.mc.player;
-			ItemStack bow = null;
+			ItemStack grapplehookItemStack = null;
 			if ((player.getItemInHand(Hand.MAIN_HAND) != null && player.getItemInHand(Hand.MAIN_HAND).getItem() instanceof GrapplehookItem)) {
-				bow = player.getItemInHand(Hand.MAIN_HAND);
+				grapplehookItemStack = player.getItemInHand(Hand.MAIN_HAND);
 			} else if ((player.getItemInHand(Hand.OFF_HAND) != null && player.getItemInHand(Hand.OFF_HAND).getItem() instanceof GrapplehookItem)) {
-				bow = player.getItemInHand(Hand.OFF_HAND);
+				grapplehookItemStack = player.getItemInHand(Hand.OFF_HAND);
 			}
 			
-			if (bow != null) {
-				GrappleCustomization custom = ((GrapplehookItem) CommonSetup.grapplebowitem).getCustomization(bow);
-            	double angle = Math.toRadians(custom.angle);//((grappleBow) grapplemod.grapplebowitem).getAngle(player, bow));
+			if (grapplehookItemStack != null) {
+				GrappleCustomization custom = ((GrapplehookItem) CommonSetup.grapplingHookItem).getCustomization(grapplehookItemStack);
+            	double angle = Math.toRadians(custom.angle);
             	double verticalangle = Math.toRadians(custom.verticalthrowangle);
             	if (player.isCrouching()) {
             		angle = Math.toRadians(custom.sneakingangle);

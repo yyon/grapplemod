@@ -9,7 +9,7 @@ import net.minecraft.inventory.EquipmentSlotType;
 
 public class SlidingEnchantment extends Enchantment {
 	public SlidingEnchantment() {
-		super(GrappleConfigUtils.getRarityFromInt(GrappleConfig.getconf().enchantments.slide.enchant_rarity_sliding), EnchantmentType.ARMOR_FEET, new EquipmentSlotType[] {EquipmentSlotType.FEET});
+		super(GrappleConfigUtils.getRarityFromInt(GrappleConfig.getConf().enchantments.slide.enchant_rarity_sliding), EnchantmentType.ARMOR_FEET, new EquipmentSlotType[] {EquipmentSlotType.FEET});
 	}
     public int getMinEnchantability(int enchantmentLevel)
     {

@@ -10,8 +10,8 @@ import com.yyon.grapplinghook.common.CommonSetup;
 import com.yyon.grapplinghook.config.GrappleConfig;
 import com.yyon.grapplinghook.controllers.AirfrictionController;
 import com.yyon.grapplinghook.controllers.ForcefieldController;
-import com.yyon.grapplinghook.entities.grapplearrow.RenderGrappleArrow;
-import com.yyon.grapplinghook.entities.grapplearrow.GrapplehookEntity;
+import com.yyon.grapplinghook.entities.grapplehook.GrapplehookEntity;
+import com.yyon.grapplinghook.entities.grapplehook.RenderGrapplehookEntity;
 
 import me.shedaniel.autoconfig.AutoConfig;
 import me.shedaniel.autoconfig.gui.registry.GuiRegistry;
@@ -42,29 +42,29 @@ public class ClientSetup {
 	public ClientSetup() {
 	}
 
-	public CrosshairRenderer crosshairrenderer;
-	public ClientEventHandlers clienteventhandlers;
-	public ClientControllerManager clientcontrollermanager;
+	public CrosshairRenderer crosshairRenderer;
+	public ClientEventHandlers clientEventHandlers;
+	public ClientControllerManager clientControllerManager;
 	
 	public static ArrayList<KeyBinding> keyBindings = new ArrayList<KeyBinding>();
 	
-	public static KeyBinding createkeybinding(KeyBinding k) {
+	public static KeyBinding createKeyBinding(KeyBinding k) {
 		keyBindings.add(k);
 		return k;
 	}
 	
-	public static KeyBinding key_boththrow = createkeybinding(new NonConflictingKeyBinding("key.boththrow.desc", InputMappings.Type.MOUSE, GLFW.GLFW_MOUSE_BUTTON_2, "key.grapplemod.category"));
-	public static KeyBinding key_leftthrow = createkeybinding(new NonConflictingKeyBinding("key.leftthrow.desc", InputMappings.UNKNOWN.getValue(), "key.grapplemod.category"));
-	public static KeyBinding key_rightthrow = createkeybinding(new NonConflictingKeyBinding("key.rightthrow.desc", InputMappings.UNKNOWN.getValue(), "key.grapplemod.category"));
-	public static KeyBinding key_motoronoff = createkeybinding(new NonConflictingKeyBinding("key.motoronoff.desc", GLFW.GLFW_KEY_LEFT_SHIFT, "key.grapplemod.category"));
-	public static KeyBinding key_jumpanddetach = createkeybinding(new NonConflictingKeyBinding("key.jumpanddetach.desc", GLFW.GLFW_KEY_SPACE, "key.grapplemod.category"));
-	public static KeyBinding key_slow = createkeybinding(new NonConflictingKeyBinding("key.slow.desc", GLFW.GLFW_KEY_LEFT_SHIFT, "key.grapplemod.category"));
-	public static KeyBinding key_climb = createkeybinding(new NonConflictingKeyBinding("key.climb.desc", GLFW.GLFW_KEY_LEFT_SHIFT, "key.grapplemod.category"));
-	public static KeyBinding key_climbup = createkeybinding(new NonConflictingKeyBinding("key.climbup.desc", GLFW.GLFW_KEY_W, "key.grapplemod.category"));
-	public static KeyBinding key_climbdown = createkeybinding(new NonConflictingKeyBinding("key.climbdown.desc", GLFW.GLFW_KEY_S, "key.grapplemod.category"));
-	public static KeyBinding key_enderlaunch = createkeybinding(new NonConflictingKeyBinding("key.enderlaunch.desc", InputMappings.Type.MOUSE, GLFW.GLFW_MOUSE_BUTTON_1, "key.grapplemod.category"));
-	public static KeyBinding key_rocket = createkeybinding(new NonConflictingKeyBinding("key.rocket.desc", InputMappings.Type.MOUSE, GLFW.GLFW_MOUSE_BUTTON_1, "key.grapplemod.category"));
-	public static KeyBinding key_slide = createkeybinding(new NonConflictingKeyBinding("key.slide.desc", GLFW.GLFW_KEY_LEFT_SHIFT, "key.grapplemod.category"));
+	public static KeyBinding key_boththrow = createKeyBinding(new NonConflictingKeyBinding("key.boththrow.desc", InputMappings.Type.MOUSE, GLFW.GLFW_MOUSE_BUTTON_2, "key.grapplemod.category"));
+	public static KeyBinding key_leftthrow = createKeyBinding(new NonConflictingKeyBinding("key.leftthrow.desc", InputMappings.UNKNOWN.getValue(), "key.grapplemod.category"));
+	public static KeyBinding key_rightthrow = createKeyBinding(new NonConflictingKeyBinding("key.rightthrow.desc", InputMappings.UNKNOWN.getValue(), "key.grapplemod.category"));
+	public static KeyBinding key_motoronoff = createKeyBinding(new NonConflictingKeyBinding("key.motoronoff.desc", GLFW.GLFW_KEY_LEFT_SHIFT, "key.grapplemod.category"));
+	public static KeyBinding key_jumpanddetach = createKeyBinding(new NonConflictingKeyBinding("key.jumpanddetach.desc", GLFW.GLFW_KEY_SPACE, "key.grapplemod.category"));
+	public static KeyBinding key_slow = createKeyBinding(new NonConflictingKeyBinding("key.slow.desc", GLFW.GLFW_KEY_LEFT_SHIFT, "key.grapplemod.category"));
+	public static KeyBinding key_climb = createKeyBinding(new NonConflictingKeyBinding("key.climb.desc", GLFW.GLFW_KEY_LEFT_SHIFT, "key.grapplemod.category"));
+	public static KeyBinding key_climbup = createKeyBinding(new NonConflictingKeyBinding("key.climbup.desc", GLFW.GLFW_KEY_W, "key.grapplemod.category"));
+	public static KeyBinding key_climbdown = createKeyBinding(new NonConflictingKeyBinding("key.climbdown.desc", GLFW.GLFW_KEY_S, "key.grapplemod.category"));
+	public static KeyBinding key_enderlaunch = createKeyBinding(new NonConflictingKeyBinding("key.enderlaunch.desc", InputMappings.Type.MOUSE, GLFW.GLFW_MOUSE_BUTTON_1, "key.grapplemod.category"));
+	public static KeyBinding key_rocket = createKeyBinding(new NonConflictingKeyBinding("key.rocket.desc", InputMappings.Type.MOUSE, GLFW.GLFW_MOUSE_BUTTON_1, "key.grapplemod.category"));
+	public static KeyBinding key_slide = createKeyBinding(new NonConflictingKeyBinding("key.slide.desc", GLFW.GLFW_KEY_LEFT_SHIFT, "key.grapplemod.category"));
 
 	@SubscribeEvent
 	public static void clientSetup(final FMLClientSetupEvent event) {
@@ -72,10 +72,10 @@ public class ClientSetup {
 	    instance.onClientSetup();
 	}
 	
-	private static class grappleArrowRenderFactory implements IRenderFactory<GrapplehookEntity> {
+	private static class GrapplehookEntityRenderFactory implements IRenderFactory<GrapplehookEntity> {
 	    @Override
 	    public EntityRenderer<? super GrapplehookEntity> createRenderFor(EntityRendererManager manager) {
-	      return new RenderGrappleArrow<>(manager, CommonSetup.grapplebowitem);
+	      return new RenderGrapplehookEntity<>(manager, CommonSetup.grapplingHookItem);
 	    	
 	    }
 	}
@@ -87,7 +87,7 @@ public class ClientSetup {
 		    ClientRegistry.registerKeyBinding(keyBindings.get(i));
 		}
 		
-	    RenderingRegistry.registerEntityRenderingHandler(CommonSetup.grappleArrowType, new grappleArrowRenderFactory());
+	    RenderingRegistry.registerEntityRenderingHandler(CommonSetup.grapplehookEntityType, new GrapplehookEntityRenderFactory());
 
 		ModLoadingContext.get().registerExtensionPoint(
                 ExtensionPoint.CONFIGGUIFACTORY,
@@ -95,49 +95,49 @@ public class ClientSetup {
 		
 	    this.registerPropertyOverride();
 	    
-		crosshairrenderer = new CrosshairRenderer();
-		clientcontrollermanager = new ClientControllerManager();
-		clienteventhandlers = new ClientEventHandlers();
+		crosshairRenderer = new CrosshairRenderer();
+		clientControllerManager = new ClientControllerManager();
+		clientEventHandlers = new ClientEventHandlers();
 	}
 	
 	public void registerPropertyOverride() {
-		ItemModelsProperties.register(CommonSetup.grapplebowitem, new ResourceLocation("rocket"), new IItemPropertyGetter() {
+		ItemModelsProperties.register(CommonSetup.grapplingHookItem, new ResourceLocation("rocket"), new IItemPropertyGetter() {
 			public float call(ItemStack stack, @Nullable ClientWorld world, @Nullable LivingEntity entity) {
-				return CommonSetup.grapplebowitem.getPropertyRocket(stack, world, entity) ? 1 : 0;
+				return CommonSetup.grapplingHookItem.getPropertyRocket(stack, world, entity) ? 1 : 0;
 			}
 		});
-		ItemModelsProperties.register(CommonSetup.grapplebowitem, new ResourceLocation("double"), new IItemPropertyGetter() {
+		ItemModelsProperties.register(CommonSetup.grapplingHookItem, new ResourceLocation("double"), new IItemPropertyGetter() {
 			public float call(ItemStack stack, @Nullable ClientWorld world, @Nullable LivingEntity entity) {
-				return CommonSetup.grapplebowitem.getPropertyDouble(stack, world, entity) ? 1 : 0;
+				return CommonSetup.grapplingHookItem.getPropertyDouble(stack, world, entity) ? 1 : 0;
 			}
 		});
-		ItemModelsProperties.register(CommonSetup.grapplebowitem, new ResourceLocation("motor"), new IItemPropertyGetter() {
+		ItemModelsProperties.register(CommonSetup.grapplingHookItem, new ResourceLocation("motor"), new IItemPropertyGetter() {
 			public float call(ItemStack stack, @Nullable ClientWorld world, @Nullable LivingEntity entity) {
-				return CommonSetup.grapplebowitem.getPropertyMotor(stack, world, entity) ? 1 : 0;
+				return CommonSetup.grapplingHookItem.getPropertyMotor(stack, world, entity) ? 1 : 0;
 			}
 		});
-		ItemModelsProperties.register(CommonSetup.grapplebowitem, new ResourceLocation("smart"), new IItemPropertyGetter() {
+		ItemModelsProperties.register(CommonSetup.grapplingHookItem, new ResourceLocation("smart"), new IItemPropertyGetter() {
 			public float call(ItemStack stack, @Nullable ClientWorld world, @Nullable LivingEntity entity) {
-				return CommonSetup.grapplebowitem.getPropertySmart(stack, world, entity) ? 1 : 0;
+				return CommonSetup.grapplingHookItem.getPropertySmart(stack, world, entity) ? 1 : 0;
 			}
 		});
-		ItemModelsProperties.register(CommonSetup.grapplebowitem, new ResourceLocation("enderstaff"), new IItemPropertyGetter() {
+		ItemModelsProperties.register(CommonSetup.grapplingHookItem, new ResourceLocation("enderstaff"), new IItemPropertyGetter() {
 			public float call(ItemStack stack, @Nullable ClientWorld world, @Nullable LivingEntity entity) {
-				return CommonSetup.grapplebowitem.getPropertyEnderstaff(stack, world, entity) ? 1 : 0;
+				return CommonSetup.grapplingHookItem.getPropertyEnderstaff(stack, world, entity) ? 1 : 0;
 			}
 		});
-		ItemModelsProperties.register(CommonSetup.grapplebowitem, new ResourceLocation("magnet"), new IItemPropertyGetter() {
+		ItemModelsProperties.register(CommonSetup.grapplingHookItem, new ResourceLocation("magnet"), new IItemPropertyGetter() {
 			public float call(ItemStack stack, @Nullable ClientWorld world, @Nullable LivingEntity entity) {
-				return CommonSetup.grapplebowitem.getPropertyMagnet(stack, world, entity) ? 1 : 0;
+				return CommonSetup.grapplingHookItem.getPropertyMagnet(stack, world, entity) ? 1 : 0;
 			}
 		});
-		ItemModelsProperties.register(CommonSetup.grapplebowitem, new ResourceLocation("attached"), new IItemPropertyGetter() {
+		ItemModelsProperties.register(CommonSetup.grapplingHookItem, new ResourceLocation("attached"), new IItemPropertyGetter() {
 			public float call(ItemStack stack, @Nullable ClientWorld world, @Nullable LivingEntity entity) {
 				if (entity == null) {return 0;}
 				return (ClientControllerManager.controllers.containsKey(entity.getId()) && !(ClientControllerManager.controllers.get(entity.getId()) instanceof AirfrictionController)) ? 1 : 0;
 			}
 		});
-		ItemModelsProperties.register(CommonSetup.repelleritem, new ResourceLocation("attached"), new IItemPropertyGetter() {
+		ItemModelsProperties.register(CommonSetup.forcefieldItem, new ResourceLocation("attached"), new IItemPropertyGetter() {
 			public float call(ItemStack stack, @Nullable ClientWorld world, @Nullable LivingEntity entity) {
 				if (entity == null) {return 0;}
 				return (ClientControllerManager.controllers.containsKey(entity.getId()) && ClientControllerManager.controllers.get(entity.getId()) instanceof ForcefieldController) ? 1 : 0;

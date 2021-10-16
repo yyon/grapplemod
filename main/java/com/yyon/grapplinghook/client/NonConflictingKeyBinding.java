@@ -36,14 +36,14 @@ public class NonConflictingKeyBinding extends KeyBinding {
 	   return true;
    }
    
-   public boolean is_down = false;
+   public boolean isDown = false;
    
    public boolean isDown() {
-	   return is_down;
+	   return isDown;
    }
    
    @Override
    public void setDown(boolean value) {
-	   this.is_down = value;
+	   this.isDown = value;
    }
 }

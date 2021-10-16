@@ -48,7 +48,7 @@ public class LongFallBoots extends ArmorItem {
 	@OnlyIn(Dist.CLIENT)
 	public void appendHoverText(ItemStack stack, @Nullable World world, List<ITextComponent> list, ITooltipFlag par4) {
 		if (!stack.isEnchanted()) {
-			if (GrappleConfig.getconf().longfallboots.longfallbootsrecipe) {
+			if (GrappleConfig.getConf().longfallboots.longfallbootsrecipe) {
 				list.add(new StringTextComponent(ClientProxyInterface.proxy.localize("grappletooltip.longfallbootsrecipe.desc")));
 			}
 		}
@@ -62,9 +62,9 @@ public class LongFallBoots extends ArmorItem {
 	            items.add(stack);
 	            
 	        	stack = new ItemStack(this);
-	        	stack.enchant(CommonSetup.wallrunenchantment, 1);
-	        	stack.enchant(CommonSetup.doublejumpenchantment, 1);
-	        	stack.enchant(CommonSetup.slidingenchantment, 1);
+	        	stack.enchant(CommonSetup.wallrunEnchantment, 1);
+	        	stack.enchant(CommonSetup.doubleJumpEnchantment, 1);
+	        	stack.enchant(CommonSetup.slidingEnchantment, 1);
 	            items.add(stack);
 			}
 	}

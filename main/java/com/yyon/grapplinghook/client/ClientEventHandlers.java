@@ -34,7 +34,7 @@ public class ClientEventHandlers {
 	    MinecraftForge.EVENT_BUS.register(this);
 	}
 
-	public boolean prevkeys[] = {false, false, false, false, false};
+	public boolean prevKeys[] = {false, false, false, false, false};
 	
 	@SubscribeEvent
 	public void onClientTick(TickEvent.ClientTickEvent event) {
@@ -49,7 +49,7 @@ public class ClientEventHandlers {
 					
 					for (int i = 0; i < keys.length; i++) {
 						boolean iskeydown = keys[i];
-						boolean prevkey = prevkeys[i];
+						boolean prevkey = prevKeys[i];
 						
 						if (iskeydown != prevkey) {
 							KeypressItem.Keys key = KeypressItem.Keys.values()[i];
@@ -66,7 +66,7 @@ public class ClientEventHandlers {
 							}
 						}
 						
-						prevkeys[i] = iskeydown;
+						prevKeys[i] = iskeydown;
 					}
 				}
 			}
@@ -74,21 +74,21 @@ public class ClientEventHandlers {
 	}
 	
 	@SubscribeEvent
-    public void blockbreak(BreakEvent event) {
+    public void onBlockBreak(BreakEvent event) {
 		if (event.getPos() != null) {
-			if (ClientControllerManager.controllerpos.containsKey(event.getPos())) {
-				GrappleController control = ClientControllerManager.controllerpos.get(event.getPos());
+			if (ClientControllerManager.controllerPos.containsKey(event.getPos())) {
+				GrappleController control = ClientControllerManager.controllerPos.get(event.getPos());
 
 				control.unattach();
 				
-				ClientControllerManager.controllerpos.remove(event.getPos());
+				ClientControllerManager.controllerPos.remove(event.getPos());
 			}
 		}
     }
 
 	@SubscribeEvent
 	public void onPlayerLoggedOutEvent(LoggedOutEvent e) {
-		GrappleConfig.setserveroptions(null);
+		GrappleConfig.setServerOptions(null);
 	}
 
 	@SubscribeEvent
@@ -105,13 +105,13 @@ public class ClientEventHandlers {
 		
 		if (Minecraft.getInstance().options.keyJump.isDown()) {
 			if (controller != null) {
-				if (controller instanceof AirfrictionController && ((AirfrictionController) controller).was_sliding) {
+				if (controller instanceof AirfrictionController && ((AirfrictionController) controller).wasSliding) {
 					controller.slidingJump();
 				}
 			}
 		}	
 
-		ClientControllerManager.instance.checkslide(Minecraft.getInstance().player);
+		ClientControllerManager.instance.checkSlide(Minecraft.getInstance().player);
 	}
 	
 	@SubscribeEvent
@@ -150,7 +150,7 @@ public class ClientEventHandlers {
 	public float currentCameraTilt = 0;
 
 	@SubscribeEvent
-	public void CameraSetup(CameraSetup event) {
+	public void onCameraSetup(CameraSetup event) {
 		PlayerEntity player = Minecraft.getInstance().player;
 		if (!Minecraft.getInstance().isRunning() || player == null) {
 			return;
@@ -162,10 +162,10 @@ public class ClientEventHandlers {
 			GrappleController controller = ClientControllerManager.controllers.get(id);
 			if (controller instanceof AirfrictionController) {
 				AirfrictionController afcontroller = (AirfrictionController) controller;
-				if (afcontroller.was_wallrunning) {
-					Vec walldirection = afcontroller.getwalldirection();
+				if (afcontroller.wasWallrunning) {
+					Vec walldirection = afcontroller.getWallDirection();
 					if (walldirection != null) {
-						Vec lookdirection = Vec.lookvec(player);
+						Vec lookdirection = Vec.lookVec(player);
 						int dir = lookdirection.cross(walldirection).y > 0 ? 1 : -1;
 						targetCameraTilt = dir;
 					}
@@ -176,7 +176,7 @@ public class ClientEventHandlers {
 		if (currentCameraTilt != targetCameraTilt) {
 			float cameraDiff = targetCameraTilt - currentCameraTilt;
 			if (cameraDiff != 0) {
-				float anim_s = GrappleConfig.getclientconf().camera.wallrun_camera_animation_s;
+				float anim_s = GrappleConfig.getClientConf().camera.wallrun_camera_animation_s;
 				float speed = (anim_s == 0) ? 9999 :  1.0f / (anim_s * 20.0f);
 				if (speed > Math.abs(cameraDiff)) {
 					currentCameraTilt = targetCameraTilt;
@@ -187,7 +187,7 @@ public class ClientEventHandlers {
 		}
 		
 		if (currentCameraTilt != 0) {
-		    event.setRoll(event.getRoll() + currentCameraTilt*GrappleConfig.getclientconf().camera.wallrun_camera_tilt_degrees);
+		    event.setRoll(event.getRoll() + currentCameraTilt*GrappleConfig.getClientConf().camera.wallrun_camera_tilt_degrees);
 		}
 	}
 
@@ -219,7 +219,7 @@ public class ClientEventHandlers {
 			BlockPos pos = bray.getBlockPos();
 			BlockState state = player.level.getBlockState(pos);
 			
-			return (state.getBlock() == CommonSetup.blockGrappleModifier);
+			return (state.getBlock() == CommonSetup.grappleModifierBlock);
 		}
 		return false;
 	}

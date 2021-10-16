@@ -28,37 +28,37 @@ import net.minecraftforge.fml.network.NetworkEvent;
 
 public class GrappleEndMessage extends BaseMessageServer {
    
-	public int entityid;
-	public HashSet<Integer> arrowIds;
+	public int entityId;
+	public HashSet<Integer> hookEntityIds;
 
     public GrappleEndMessage(PacketBuffer buf) {
     	super(buf);
     }
 
-    public GrappleEndMessage(int entityid, HashSet<Integer> arrowIds) {
-    	this.entityid = entityid;
-    	this.arrowIds = arrowIds;
+    public GrappleEndMessage(int entityId, HashSet<Integer> hookEntityIds) {
+    	this.entityId = entityId;
+    	this.hookEntityIds = hookEntityIds;
     }
 
     public void decode(PacketBuffer buf) {
-    	this.entityid = buf.readInt();
+    	this.entityId = buf.readInt();
     	int size = buf.readInt();
-    	this.arrowIds = new HashSet<Integer>();
+    	this.hookEntityIds = new HashSet<Integer>();
     	for (int i = 0; i < size; i++) {
-    		this.arrowIds.add(buf.readInt());
+    		this.hookEntityIds.add(buf.readInt());
     	}
     }
 
     public void encode(PacketBuffer buf) {
-    	buf.writeInt(this.entityid);
-    	buf.writeInt(this.arrowIds.size());
-    	for (int id : this.arrowIds) {
+    	buf.writeInt(this.entityId);
+    	buf.writeInt(this.hookEntityIds.size());
+    	for (int id : this.hookEntityIds) {
         	buf.writeInt(id);
     	}
     }
 
     public void processMessage(NetworkEvent.Context ctx) {
-		int id = this.entityid;
+		int id = this.entityId;
 		
 		ServerPlayerEntity player = ctx.getSender();
 		if (player == null) {
@@ -66,6 +66,6 @@ public class GrappleEndMessage extends BaseMessageServer {
 		}
 		World w = player.level;
 		
-		ServerControllerManager.receiveGrappleEnd(id, w, this.arrowIds);
+		ServerControllerManager.receiveGrappleEnd(id, w, this.hookEntityIds);
     }
 }

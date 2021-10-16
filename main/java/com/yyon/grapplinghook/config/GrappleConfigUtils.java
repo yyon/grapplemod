@@ -8,11 +8,11 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.registries.ForgeRegistries;
 
 public class GrappleConfigUtils {
-	private static boolean anyblocks = true;
-	private static HashSet<Block> grapplingblocks;
-	private static boolean removeblocks = false;
-	private static HashSet<Block> grapplingbreaksblocks;
-	private static boolean anybreakblocks = false;
+	private static boolean anyBlocks = true;
+	private static HashSet<Block> grapplingBlocks;
+	private static boolean removeBlocks = false;
+	private static HashSet<Block> grapplingBreaksBlocks;
+	private static boolean anyBreakBlocks = false;
 
 	public static HashSet<Block> stringToBlocks(String s) {
 		HashSet<Block> blocks = new HashSet<Block>();
@@ -45,43 +45,43 @@ public class GrappleConfigUtils {
 	}
 	
 	public static void updateGrapplingBlocks() {
-		String s = GrappleConfig.getconf().grapplinghook.blocks.grapplingBlocks;
+		String s = GrappleConfig.getConf().grapplinghook.blocks.grapplingBlocks;
 		if (s.equals("any") || s.equals("")) {
-			s = GrappleConfig.getconf().grapplinghook.blocks.grapplingNonBlocks;
+			s = GrappleConfig.getConf().grapplinghook.blocks.grapplingNonBlocks;
 			if (s.equals("none") || s.equals("")) {
-				anyblocks = true;
+				anyBlocks = true;
 			} else {
-				anyblocks = false;
-				removeblocks = true;
+				anyBlocks = false;
+				removeBlocks = true;
 			}
 		} else {
-			anyblocks = false;
-			removeblocks = false;
+			anyBlocks = false;
+			removeBlocks = false;
 		}
 	
-		if (!anyblocks) {
-			grapplingblocks = stringToBlocks(s);
+		if (!anyBlocks) {
+			grapplingBlocks = stringToBlocks(s);
 		}
 		
-		grapplingbreaksblocks = stringToBlocks(GrappleConfig.getconf().grapplinghook.blocks.grappleBreakBlocks);
-		anybreakblocks = grapplingbreaksblocks.size() != 0;
+		grapplingBreaksBlocks = stringToBlocks(GrappleConfig.getConf().grapplinghook.blocks.grappleBreakBlocks);
+		anyBreakBlocks = grapplingBreaksBlocks.size() != 0;
 		
 	}
 
 	private static String prevGrapplingBlocks = null;
 	private static String prevGrapplingNonBlocks = null;
-	public static boolean attachesblock(Block block) {
-		if (!GrappleConfig.getconf().grapplinghook.blocks.grapplingBlocks.equals(prevGrapplingBlocks) || !GrappleConfig.getconf().grapplinghook.blocks.grapplingNonBlocks.equals(prevGrapplingNonBlocks)) {
+	public static boolean attachesBlock(Block block) {
+		if (!GrappleConfig.getConf().grapplinghook.blocks.grapplingBlocks.equals(prevGrapplingBlocks) || !GrappleConfig.getConf().grapplinghook.blocks.grapplingNonBlocks.equals(prevGrapplingNonBlocks)) {
 			updateGrapplingBlocks();
 		}
 		
-		if (anyblocks) {
+		if (anyBlocks) {
 			return true;
 		}
 		
-		boolean inlist = grapplingblocks.contains(block);
+		boolean inlist = grapplingBlocks.contains(block);
 		
-		if (removeblocks) {
+		if (removeBlocks) {
 			return !inlist;
 		} else {
 			return inlist;
@@ -89,16 +89,16 @@ public class GrappleConfigUtils {
 	}
 
 	private static String prevGrapplingBreakBlocks = null;
-	public static boolean breaksblock(Block block) {
-		if (!GrappleConfig.getconf().grapplinghook.blocks.grappleBreakBlocks.equals(prevGrapplingBreakBlocks)) {
+	public static boolean breaksBlock(Block block) {
+		if (!GrappleConfig.getConf().grapplinghook.blocks.grappleBreakBlocks.equals(prevGrapplingBreakBlocks)) {
 			updateGrapplingBlocks();
 		}
 		
-		if (!anybreakblocks) {
+		if (!anyBreakBlocks) {
 			return false;
 		}
 		
-		return grapplingbreaksblocks.contains(block);
+		return grapplingBreaksBlocks.contains(block);
 	}
 
 	public static Rarity getRarityFromInt(int rarity_int) {

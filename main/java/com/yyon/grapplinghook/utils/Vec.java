@@ -44,11 +44,11 @@ public class Vec {
 		return new Vector3d(this.x, this.y, this.z);
 	}
 	
-	public static Vec positionvec(Entity e) {
+	public static Vec positionVec(Entity e) {
 		return new Vec(e.position());
 	}
 	
-	public static Vec partialpositionvec(Entity e, double partialTicks) {
+	public static Vec partialPositionVec(Entity e, double partialTicks) {
 		return new Vec(lerp(partialTicks, e.xo, e.getX()), lerp(partialTicks, e.yo, e.getY()), lerp(partialTicks, e.zo, e.getZ()));
 	}
 	
@@ -56,7 +56,7 @@ public class Vec {
 		return (from * (1-frac)) + (to * frac);
 	}
 	
-	public static Vec motionvec(Entity e) {
+	public static Vec motionVec(Entity e) {
 		return new Vec(e.getDeltaMovement());
 	}
 	
@@ -86,11 +86,11 @@ public class Vec {
 		this.z -= v2.z;
 	}
 	
-	public Vec rotate_yaw(double a) {
+	public Vec rotateYaw(double a) {
 		return new Vec(this.x * Math.cos(a) - this.z * Math.sin(a), this.y, this.x * Math.sin(a) + this.z * Math.cos(a));
 	}
 	
-    public Vec rotate_pitch(double pitch) {
+    public Vec rotatePitch(double pitch) {
         return new Vec(this.x, this.y * Math.cos(pitch) + this.z * Math.sin(pitch), this.z * Math.cos(pitch) - this.y * Math.sin(pitch));
     }
     
@@ -128,7 +128,7 @@ public class Vec {
 		return this.x*v2.x + this.y*v2.y + this.z*v2.z;
 	}
 	
-	public Vec changelen(double l) {
+	public Vec changeLen(double l) {
 		double oldl = this.length();
 		if (oldl != 0) {
 			double changefactor = l / oldl;
@@ -138,7 +138,7 @@ public class Vec {
 		}
 	}
 	
-	public void changelen_ip(double l) {
+	public void changeLen_ip(double l) {
 		double oldl = this.length();
 		if (oldl != 0) {
 			double changefactor = l / oldl;
@@ -149,15 +149,15 @@ public class Vec {
 	public Vec proj(Vec v2) {
 		Vec v3 = v2.normalize();
 		double dot = this.dot(v3);
-		return v3.changelen(dot);
+		return v3.changeLen(dot);
 	}
 	
-	public double dist_along(Vec v2) {
+	public double distAlong(Vec v2) {
 		Vec v3 = v2.normalize();
 		return this.dot(v3);
 	}
 	
-	public Vec removealong(Vec v2) {
+	public Vec removeAlong(Vec v2) {
 		return this.sub(this.proj(v2));
 	}
 	
@@ -194,19 +194,19 @@ public class Vec {
 		return Math.acos(this.dot(b) / (la*lb));
 	}
 	
-	public void setpos(Entity e) {
+	public void setPos(Entity e) {
 		this.checkNaN();
 
 		e.setPos(this.x, this.y, this.z);
 	}
 	
-	public void setmotion(Entity e) {
+	public void setMotion(Entity e) {
 		this.checkNaN();
 		
 		e.setDeltaMovement(this.toVec3d());
 	}
 
-	public static Vec lookvec(Entity entity) {
+	public static Vec lookVec(Entity entity) {
 		return new Vec(entity.getLookAngle());
 	}
 }

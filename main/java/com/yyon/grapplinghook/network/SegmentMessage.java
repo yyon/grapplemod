@@ -1,7 +1,7 @@
 package com.yyon.grapplinghook.network;
 
-import com.yyon.grapplinghook.entities.grapplearrow.GrapplehookEntity;
-import com.yyon.grapplinghook.entities.grapplearrow.SegmentHandler;
+import com.yyon.grapplinghook.entities.grapplehook.GrapplehookEntity;
+import com.yyon.grapplinghook.entities.grapplehook.SegmentHandler;
 import com.yyon.grapplinghook.utils.Vec;
 
 import net.minecraft.client.Minecraft;
@@ -36,8 +36,8 @@ public class SegmentMessage extends BaseMessageClient {
 	public boolean add;
 	public int index;
 	public Vec pos;
-	public Direction topfacing;
-	public Direction bottomfacing;
+	public Direction topFacing;
+	public Direction bottomFacing;
 
     public SegmentMessage(PacketBuffer buf) {
     	super(buf);
@@ -48,8 +48,8 @@ public class SegmentMessage extends BaseMessageClient {
     	this.add = add;
     	this.index = index;
     	this.pos = pos;
-    	this.topfacing = topfacing;
-    	this.bottomfacing = bottomfacing;
+    	this.topFacing = topfacing;
+    	this.bottomFacing = bottomfacing;
     }
 
     public void decode(PacketBuffer buf) {
@@ -57,8 +57,8 @@ public class SegmentMessage extends BaseMessageClient {
     	this.add = buf.readBoolean();
     	this.index = buf.readInt();
     	this.pos = new Vec(buf.readDouble(), buf.readDouble(), buf.readDouble());
-    	this.topfacing = buf.readEnum(Direction.class);
-    	this.bottomfacing = buf.readEnum(Direction.class);
+    	this.topFacing = buf.readEnum(Direction.class);
+    	this.bottomFacing = buf.readEnum(Direction.class);
     }
 
     public void encode(PacketBuffer buf) {
@@ -68,8 +68,8 @@ public class SegmentMessage extends BaseMessageClient {
     	buf.writeDouble(pos.x);
     	buf.writeDouble(pos.y);
     	buf.writeDouble(pos.z);
-    	buf.writeEnum(this.topfacing);
-    	buf.writeEnum(this.bottomfacing);
+    	buf.writeEnum(this.topFacing);
+    	buf.writeEnum(this.bottomFacing);
     }
 
     @OnlyIn(Dist.CLIENT)
@@ -81,11 +81,11 @@ public class SegmentMessage extends BaseMessageClient {
     	}
     	
     	if (grapple instanceof GrapplehookEntity) {
-    		SegmentHandler segmenthandler = ((GrapplehookEntity) grapple).segmenthandler;
+    		SegmentHandler segmenthandler = ((GrapplehookEntity) grapple).segmentHandler;
     		if (this.add) {
-    			segmenthandler.actuallyaddsegment(this.index, this.pos, this.bottomfacing, this.topfacing);
+    			segmenthandler.actuallyAddSegment(this.index, this.pos, this.bottomFacing, this.topFacing);
     		} else {
-    			segmenthandler.removesegment(this.index);
+    			segmenthandler.removeSegment(this.index);
     		}
     	} else {
     	}
