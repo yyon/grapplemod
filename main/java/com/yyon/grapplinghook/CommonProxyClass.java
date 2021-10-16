@@ -1,9 +1,13 @@
 package com.yyon.grapplinghook;
 
+import org.lwjgl.glfw.GLFW;
+
 import com.yyon.grapplinghook.blocks.TileEntityGrappleModifier;
 import com.yyon.grapplinghook.controllers.grappleController;
 import com.yyon.grapplinghook.network.BaseMessageClient;
 
+import net.minecraft.client.settings.KeyBinding;
+import net.minecraft.client.util.InputMappings;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemGroup;
@@ -15,16 +19,21 @@ import net.minecraftforge.event.world.BlockEvent.BreakEvent;
 import net.minecraftforge.fml.network.NetworkEvent.Context;
 
 public interface CommonProxyClass {
-
-	public void registerPropertyOverride();
-	
 	public void resetlaunchertime(int playerid);
 
 	public void launchplayer(PlayerEntity player);
 	
-	public boolean isSneaking(Entity entity);
-    
-	public String getkeyname(grapplemod.keys keyenum);
+	public enum mckeys {
+		keyBindUseItem,
+		keyBindForward,
+		keyBindLeft,
+		keyBindBack,
+		keyBindRight,
+		keyBindJump,
+		keyBindSneak,
+		keyBindAttack
+	}
+	public String getkeyname(mckeys keyenum);
 
 	public void openModifierScreen(TileEntityGrappleModifier tileent);
 	
@@ -46,9 +55,25 @@ public interface CommonProxyClass {
 	
 	public void playWallrunJumpSound(Entity entity);
 
+	public void playDoubleJumpSound(Entity entity);
+
 	public void onMessageReceivedClient(BaseMessageClient baseMessage, Context ctx);
 
-	void blockbreak(BreakEvent event);
-
 	public void fillGrappleVariants(ItemGroup tab, NonNullList<ItemStack> items);
+	
+	public enum grapplekeys {
+		key_boththrow,
+		key_leftthrow,
+		key_rightthrow,
+		key_motoronoff,
+		key_jumpanddetach,
+		key_slow,
+		key_climb,
+		key_climbup,
+		key_climbdown,
+		key_enderlaunch,
+		key_rocket,
+		key_slide
+	}
+	public boolean isKeyDown(grapplekeys key);
 }

@@ -137,6 +137,7 @@ public class grapplemod {
 	public static HashMap<BlockPos, grappleController> controllerpos = new HashMap<BlockPos, grappleController>();
 	public static HashSet<Integer> attached = new HashSet<Integer>(); // server side	
 	public static HashMap<Integer, HashSet<grappleArrow>> allarrows = new HashMap<Integer, HashSet<grappleArrow>>(); // server side
+	public static long prev_rope_jump_time = 0; // client side
 	
 	private static int controllerid = 0;
 	public static int GRAPPLEID = controllerid++;
@@ -217,17 +218,6 @@ public class grapplemod {
 	         return new ItemStack(grapplebowitem);
 	      }
 	};
-
-	public enum keys {
-		keyBindUseItem,
-		keyBindForward,
-		keyBindLeft,
-		keyBindBack,
-		keyBindRight,
-		keyBindJump,
-		keyBindSneak,
-		keyBindAttack
-	}
 	
 	public static EventHandlers eventHandlers = new EventHandlers();;
 

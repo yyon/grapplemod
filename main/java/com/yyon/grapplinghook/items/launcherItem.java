@@ -68,6 +68,6 @@ public class launcherItem extends Item {
 		list.add(new StringTextComponent(grapplemod.proxy.localize("grappletooltip.launcheritem.desc")));
 		list.add(new StringTextComponent(""));
 		list.add(new StringTextComponent(grapplemod.proxy.localize("grappletooltip.launcheritemaim.desc")));
-		list.add(new StringTextComponent(grapplemod.proxy.getkeyname(grapplemod.keys.keyBindUseItem) + grapplemod.proxy.localize("grappletooltip.launcheritemcontrols.desc")));
+		list.add(new StringTextComponent(grapplemod.proxy.getkeyname(CommonProxyClass.mckeys.keyBindUseItem) + grapplemod.proxy.localize("grappletooltip.launcheritemcontrols.desc")));
 	}
 }

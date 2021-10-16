@@ -49,10 +49,6 @@ public class EventHandlers {
 	    		}
 	    	}
     	}
-    	
-    	if (event.getWorld().isClientSide()) {
-        	grapplemod.proxy.blockbreak(event);
-    	}
     }
     
     @SubscribeEvent

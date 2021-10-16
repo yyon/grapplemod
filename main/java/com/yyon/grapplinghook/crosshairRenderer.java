@@ -89,7 +89,7 @@ public class crosshairRenderer {
             	}
 			}
 
-	    	double rocketFuel = ((ClientProxyClass) grapplemod.proxy).rocketFuel;
+	    	double rocketFuel = ClientControllerManager.instance.rocketFuel;
 	
 	    	if (rocketFuel < 1) {
 				MainWindow resolution = event.getWindow();

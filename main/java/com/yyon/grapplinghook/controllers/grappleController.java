@@ -237,9 +237,9 @@ public class grappleController {
 					// is motor active? (check motorwhencrouching / motorwhennotcrouching)
 					boolean motor = false;
 					if (this.custom.motor) {
-						if (ClientProxyClass.key_motoronoff.isDown() && this.custom.motorwhencrouching) {
+						if (grapplemod.proxy.isKeyDown(ClientProxyClass.grapplekeys.key_motoronoff) && this.custom.motorwhencrouching) {
 							motor = true;
-						} else if (!ClientProxyClass.key_motoronoff.isDown() && this.custom.motorwhennotcrouching) {
+						} else if (!grapplemod.proxy.isKeyDown(ClientProxyClass.grapplekeys.key_motoronoff) && this.custom.motorwhennotcrouching) {
 							motor = true;
 						}
 					}
@@ -307,22 +307,22 @@ public class grappleController {
 						// handle keyboard input (jumping and climbing)
 						if (entity instanceof PlayerEntity) {
 							PlayerEntity player = (PlayerEntity) entity;
-							boolean isjumping = ClientProxyClass.key_jumpanddetach.isDown();
+							boolean isjumping = grapplemod.proxy.isKeyDown(ClientProxyClass.grapplekeys.key_jumpanddetach);
 							isjumping = isjumping && !playerjump; // only jump once when key is first pressed
-							playerjump = ClientProxyClass.key_jumpanddetach.isDown();
+							playerjump = grapplemod.proxy.isKeyDown(ClientProxyClass.grapplekeys.key_jumpanddetach);
 							if (isjumping) {
 								// jumping
 								if (ongroundtimer > 0) { // on ground: jump normally
 									
 								} else {
-									double timer = grapplemod.getTime(this.entity.level) - ClientProxyClass.prev_rope_jump_time;
+									double timer = grapplemod.getTime(this.entity.level) - grapplemod.prev_rope_jump_time;
 									if (timer > GrappleConfig.getconf().grapplinghook.other.rope_jump_cooldown_s * 20.0) {
 										doJump = true;
 										jumpSpeed = this.getJumpPower(player, spherevec, arrow);
 									}
 								}
 							}
-							if (ClientProxyClass.key_slow.isDown()) {
+							if (grapplemod.proxy.isKeyDown(ClientProxyClass.grapplekeys.key_slow)) {
 								// climbing
 	//							motion = multvec(motion, 0.9);
 								vec motiontorwards = spherevec.changelen(-0.1);
@@ -336,15 +336,15 @@ public class grappleController {
 	//							motion = multvec(motion, 0.98);
 
 							}
-							if ((ClientProxyClass.key_climb.isDown() || !this.custom.climbkey) && !motor) {
+							if ((grapplemod.proxy.isKeyDown(ClientProxyClass.grapplekeys.key_climb) || !this.custom.climbkey) && !motor) {
 								isClimbing = true;
 								if (anchor.y > playerpos.y) {
 									// when shift is pressed, stop swinging
 									
 									// climb up/down rope
 									float playerforward = 0;
-									if (ClientProxyClass.key_climbup.isDown()) { playerforward = 1.0f; }
-									else if (ClientProxyClass.key_climbdown.isDown()) { playerforward = -1.0f; }
+									if (grapplemod.proxy.isKeyDown(ClientProxyClass.grapplekeys.key_climbup)) { playerforward = 1.0f; }
+									else if (grapplemod.proxy.isKeyDown(ClientProxyClass.grapplekeys.key_climbdown)) { playerforward = -1.0f; }
 									if (playerforward != 0) {
 											if (dist + distToAnchor < maxlen || this.playerforward > 0 || maxlen == 0) {
 //												double motionup = this.playerforward;
@@ -615,7 +615,7 @@ public class grappleController {
 							jumpSpeed = GrappleConfig.getconf().grapplinghook.other.rope_jump_power;
 						}
 						this.doJump(entity, jumpSpeed, averagemotiontowards, min_spherevec_dist);
-						ClientProxyClass.prev_rope_jump_time = grapplemod.getTime(this.entity.level);
+						grapplemod.prev_rope_jump_time = grapplemod.getTime(this.entity.level);
 						return;
 					}
 					
@@ -986,7 +986,7 @@ public class grappleController {
 	}
 	
 	public vec rocket(Entity entity) {
-		if (ClientProxyClass.key_rocket.isDown()) {
+		if (grapplemod.proxy.isKeyDown(ClientProxyClass.grapplekeys.key_rocket)) {
 			double rocket_force = this.custom.rocket_force * 0.225 * grapplemod.proxy.getRocketFunctioning();
         	double yaw = entity.yRot;
         	double pitch = -entity.xRot;
@@ -1149,7 +1149,7 @@ public class grappleController {
 			}
 		}
 		
-		if (wallrun && !ClientProxyClass.key_jumpanddetach.isDown()) {
+		if (wallrun && !grapplemod.proxy.isKeyDown(ClientProxyClass.grapplekeys.key_jumpanddetach)) {
 
 			vec wallside = this.getwalldirection();
 			if (wallside != null) {
@@ -1196,9 +1196,9 @@ public class grappleController {
 		}
 		
 		// jump
-		boolean isjumping = ClientProxyClass.key_jumpanddetach.isDown() && isonwall;
+		boolean isjumping = grapplemod.proxy.isKeyDown(ClientProxyClass.grapplekeys.key_jumpanddetach) && isonwall;
 		isjumping = isjumping && !playerjump; // only jump once when key is first pressed
-		playerjump = ClientProxyClass.key_jumpanddetach.isDown() && isonwall;
+		playerjump = grapplemod.proxy.isKeyDown(ClientProxyClass.grapplekeys.key_jumpanddetach) && isonwall;
 		if (isjumping && wallrun) {
 			vec jump = new vec(0, GrappleConfig.getconf().enchantments.wallrun.wall_jump_up, 0);
 			if (walldirection != null) {

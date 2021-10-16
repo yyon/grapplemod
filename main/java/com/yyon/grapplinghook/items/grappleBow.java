@@ -5,7 +5,8 @@ import java.util.List;
 
 import javax.annotation.Nullable;
 
-import com.yyon.grapplinghook.ClientProxyClass;
+import com.yyon.grapplinghook.ClientEventHandlers;
+import com.yyon.grapplinghook.CommonProxyClass;
 import com.yyon.grapplinghook.GrappleConfig;
 import com.yyon.grapplinghook.GrappleCustomization;
 import com.yyon.grapplinghook.grapplemod;
@@ -414,52 +415,52 @@ public class grappleBow extends Item implements KeypressItem {
 		
 		if (Screen.hasShiftDown()) {
 			if (!custom.detachonkeyrelease) {
-				list.add(new StringTextComponent(ClientProxyClass.key_boththrow.getTranslatedKeyMessage().getString() + " " + grapplemod.proxy.localize("grappletooltip.throw.desc")));
-				list.add(new StringTextComponent(ClientProxyClass.key_boththrow.getTranslatedKeyMessage().getString() + " " + grapplemod.proxy.localize("grappletooltip.release.desc")));
-				list.add(new StringTextComponent(grapplemod.proxy.localize("grappletooltip.double.desc") + ClientProxyClass.key_boththrow.getTranslatedKeyMessage().getString() + " " + grapplemod.proxy.localize("grappletooltip.releaseandthrow.desc")));
+				list.add(new StringTextComponent(ClientEventHandlers.key_boththrow.getTranslatedKeyMessage().getString() + " " + grapplemod.proxy.localize("grappletooltip.throw.desc")));
+				list.add(new StringTextComponent(ClientEventHandlers.key_boththrow.getTranslatedKeyMessage().getString() + " " + grapplemod.proxy.localize("grappletooltip.release.desc")));
+				list.add(new StringTextComponent(grapplemod.proxy.localize("grappletooltip.double.desc") + ClientEventHandlers.key_boththrow.getTranslatedKeyMessage().getString() + " " + grapplemod.proxy.localize("grappletooltip.releaseandthrow.desc")));
 			} else {
-				list.add(new StringTextComponent(ClientProxyClass.key_boththrow.getTranslatedKeyMessage().getString() + " " + grapplemod.proxy.localize("grappletooltip.throwhold.desc")));
+				list.add(new StringTextComponent(ClientEventHandlers.key_boththrow.getTranslatedKeyMessage().getString() + " " + grapplemod.proxy.localize("grappletooltip.throwhold.desc")));
 			}
-			list.add(new StringTextComponent(grapplemod.proxy.getkeyname(grapplemod.keys.keyBindForward) + ", " +
-					grapplemod.proxy.getkeyname(grapplemod.keys.keyBindLeft) + ", " +
-					grapplemod.proxy.getkeyname(grapplemod.keys.keyBindBack) + ", " +
-					grapplemod.proxy.getkeyname(grapplemod.keys.keyBindRight) +
+			list.add(new StringTextComponent(grapplemod.proxy.getkeyname(CommonProxyClass.mckeys.keyBindForward) + ", " +
+					grapplemod.proxy.getkeyname(CommonProxyClass.mckeys.keyBindLeft) + ", " +
+					grapplemod.proxy.getkeyname(CommonProxyClass.mckeys.keyBindBack) + ", " +
+					grapplemod.proxy.getkeyname(CommonProxyClass.mckeys.keyBindRight) +
 					" " + grapplemod.proxy.localize("grappletooltip.swing.desc")));
-			list.add(new StringTextComponent(ClientProxyClass.key_jumpanddetach.getTranslatedKeyMessage().getString() + " " + grapplemod.proxy.localize("grappletooltip.jump.desc")));
-			list.add(new StringTextComponent(ClientProxyClass.key_slow.getTranslatedKeyMessage().getString() + " " + grapplemod.proxy.localize("grappletooltip.slow.desc")));
-			list.add(new StringTextComponent((custom.climbkey ? ClientProxyClass.key_climb.getTranslatedKeyMessage().getString() + " + " : "") +
-					ClientProxyClass.key_climbup.getTranslatedKeyMessage().getString() + 
+			list.add(new StringTextComponent(ClientEventHandlers.key_jumpanddetach.getTranslatedKeyMessage().getString() + " " + grapplemod.proxy.localize("grappletooltip.jump.desc")));
+			list.add(new StringTextComponent(ClientEventHandlers.key_slow.getTranslatedKeyMessage().getString() + " " + grapplemod.proxy.localize("grappletooltip.slow.desc")));
+			list.add(new StringTextComponent((custom.climbkey ? ClientEventHandlers.key_climb.getTranslatedKeyMessage().getString() + " + " : "") +
+					ClientEventHandlers.key_climbup.getTranslatedKeyMessage().getString() + 
 					" " + grapplemod.proxy.localize("grappletooltip.climbup.desc")));
-			list.add(new StringTextComponent((custom.climbkey ? ClientProxyClass.key_climb.getTranslatedKeyMessage().getString() + " + " : "") +
-					ClientProxyClass.key_climbdown.getTranslatedKeyMessage().getString() + 
+			list.add(new StringTextComponent((custom.climbkey ? ClientEventHandlers.key_climb.getTranslatedKeyMessage().getString() + " + " : "") +
+					ClientEventHandlers.key_climbdown.getTranslatedKeyMessage().getString() + 
 					" " + grapplemod.proxy.localize("grappletooltip.climbdown.desc")));
 			if (custom.enderstaff) {
-				list.add(new StringTextComponent(ClientProxyClass.key_enderlaunch.getTranslatedKeyMessage().getString() + " " + grapplemod.proxy.localize("grappletooltip.enderlaunch.desc")));
+				list.add(new StringTextComponent(ClientEventHandlers.key_enderlaunch.getTranslatedKeyMessage().getString() + " " + grapplemod.proxy.localize("grappletooltip.enderlaunch.desc")));
 			}
 			if (custom.rocket) {
-				list.add(new StringTextComponent(ClientProxyClass.key_rocket.getTranslatedKeyMessage().getString() + " " + grapplemod.proxy.localize("grappletooltip.rocket.desc")));
+				list.add(new StringTextComponent(ClientEventHandlers.key_rocket.getTranslatedKeyMessage().getString() + " " + grapplemod.proxy.localize("grappletooltip.rocket.desc")));
 			}
 			if (custom.motor) {
 				if (custom.motorwhencrouching && !custom.motorwhennotcrouching) {
-					list.add(new StringTextComponent(ClientProxyClass.key_motoronoff.getTranslatedKeyMessage().getString() + " " + grapplemod.proxy.localize("grappletooltip.motoron.desc")));
+					list.add(new StringTextComponent(ClientEventHandlers.key_motoronoff.getTranslatedKeyMessage().getString() + " " + grapplemod.proxy.localize("grappletooltip.motoron.desc")));
 				}
 				else if (!custom.motorwhencrouching && custom.motorwhennotcrouching) {
-					list.add(new StringTextComponent(ClientProxyClass.key_motoronoff.getTranslatedKeyMessage().getString() + " " + grapplemod.proxy.localize("grappletooltip.motoroff.desc")));
+					list.add(new StringTextComponent(ClientEventHandlers.key_motoronoff.getTranslatedKeyMessage().getString() + " " + grapplemod.proxy.localize("grappletooltip.motoroff.desc")));
 				}
 			}
 			if (custom.doublehook) {
 				if (!custom.detachonkeyrelease) {
-					list.add(new StringTextComponent(ClientProxyClass.key_leftthrow.getTranslatedKeyMessage().getString() + " " + grapplemod.proxy.localize("grappletooltip.throwleft.desc")));
-					list.add(new StringTextComponent(ClientProxyClass.key_rightthrow.getTranslatedKeyMessage().getString() + " " + grapplemod.proxy.localize("grappletooltip.throwright.desc")));
+					list.add(new StringTextComponent(ClientEventHandlers.key_leftthrow.getTranslatedKeyMessage().getString() + " " + grapplemod.proxy.localize("grappletooltip.throwleft.desc")));
+					list.add(new StringTextComponent(ClientEventHandlers.key_rightthrow.getTranslatedKeyMessage().getString() + " " + grapplemod.proxy.localize("grappletooltip.throwright.desc")));
 				} else {
-					list.add(new StringTextComponent(ClientProxyClass.key_leftthrow.getTranslatedKeyMessage().getString() + " " + grapplemod.proxy.localize("grappletooltip.throwlefthold.desc")));
-					list.add(new StringTextComponent(ClientProxyClass.key_rightthrow.getTranslatedKeyMessage().getString() + " " + grapplemod.proxy.localize("grappletooltip.throwrighthold.desc")));
+					list.add(new StringTextComponent(ClientEventHandlers.key_leftthrow.getTranslatedKeyMessage().getString() + " " + grapplemod.proxy.localize("grappletooltip.throwlefthold.desc")));
+					list.add(new StringTextComponent(ClientEventHandlers.key_rightthrow.getTranslatedKeyMessage().getString() + " " + grapplemod.proxy.localize("grappletooltip.throwrighthold.desc")));
 				}
 			} else {
-				list.add(new StringTextComponent(ClientProxyClass.key_rightthrow.getTranslatedKeyMessage().getString() + " " + grapplemod.proxy.localize("grappletooltip.throwalt.desc")));
+				list.add(new StringTextComponent(ClientEventHandlers.key_rightthrow.getTranslatedKeyMessage().getString() + " " + grapplemod.proxy.localize("grappletooltip.throwalt.desc")));
 			}
 			if (custom.reelin) {
-				list.add(new StringTextComponent(grapplemod.proxy.getkeyname(grapplemod.keys.keyBindSneak) + " " + grapplemod.proxy.localize("grappletooltip.reelin.desc")));
+				list.add(new StringTextComponent(grapplemod.proxy.getkeyname(CommonProxyClass.mckeys.keyBindSneak) + " " + grapplemod.proxy.localize("grappletooltip.reelin.desc")));
 			}
 		} else {
 			if (Screen.hasControlDown()) {

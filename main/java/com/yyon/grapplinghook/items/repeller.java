@@ -4,6 +4,7 @@ import java.util.List;
 
 import javax.annotation.Nullable;
 
+import com.yyon.grapplinghook.CommonProxyClass;
 import com.yyon.grapplinghook.grapplemod;
 import com.yyon.grapplinghook.vec;
 import com.yyon.grapplinghook.controllers.grappleController;
@@ -51,13 +52,13 @@ public class repeller extends Item {
 		list.add(new StringTextComponent(grapplemod.proxy.localize("grappletooltip.repelleritem.desc")));
 		list.add(new StringTextComponent(grapplemod.proxy.localize("grappletooltip.repelleritem2.desc")));
 		list.add(new StringTextComponent(""));
-		list.add(new StringTextComponent(grapplemod.proxy.getkeyname(grapplemod.keys.keyBindUseItem) + grapplemod.proxy.localize("grappletooltip.repelleritemon.desc")));
-		list.add(new StringTextComponent(grapplemod.proxy.getkeyname(grapplemod.keys.keyBindUseItem) + grapplemod.proxy.localize("grappletooltip.repelleritemoff.desc")));
-		list.add(new StringTextComponent(grapplemod.proxy.getkeyname(grapplemod.keys.keyBindSneak) + grapplemod.proxy.localize("grappletooltip.repelleritemslow.desc")));
-		list.add(new StringTextComponent(grapplemod.proxy.getkeyname(grapplemod.keys.keyBindForward) + ", " +
-				grapplemod.proxy.getkeyname(grapplemod.keys.keyBindLeft) + ", " +
-				grapplemod.proxy.getkeyname(grapplemod.keys.keyBindBack) + ", " +
-				grapplemod.proxy.getkeyname(grapplemod.keys.keyBindRight) +
+		list.add(new StringTextComponent(grapplemod.proxy.getkeyname(CommonProxyClass.mckeys.keyBindUseItem) + grapplemod.proxy.localize("grappletooltip.repelleritemon.desc")));
+		list.add(new StringTextComponent(grapplemod.proxy.getkeyname(CommonProxyClass.mckeys.keyBindUseItem) + grapplemod.proxy.localize("grappletooltip.repelleritemoff.desc")));
+		list.add(new StringTextComponent(grapplemod.proxy.getkeyname(CommonProxyClass.mckeys.keyBindSneak) + grapplemod.proxy.localize("grappletooltip.repelleritemslow.desc")));
+		list.add(new StringTextComponent(grapplemod.proxy.getkeyname(CommonProxyClass.mckeys.keyBindForward) + ", " +
+				grapplemod.proxy.getkeyname(CommonProxyClass.mckeys.keyBindLeft) + ", " +
+				grapplemod.proxy.getkeyname(CommonProxyClass.mckeys.keyBindBack) + ", " +
+				grapplemod.proxy.getkeyname(CommonProxyClass.mckeys.keyBindRight) +
 				" " + grapplemod.proxy.localize("grappletooltip.repelleritemmove.desc")));
 	}
 }
