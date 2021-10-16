@@ -4,6 +4,7 @@ import java.util.HashMap;
 
 import javax.annotation.Nonnull;
 
+import com.yyon.grapplinghook.grapplemod;
 import com.yyon.grapplinghook.client.ClientProxyInterface;
 import com.yyon.grapplinghook.common.CommonSetup;
 import com.yyon.grapplinghook.config.GrappleConfig;
@@ -503,7 +504,7 @@ public class GrapplehookEntity extends ProjectileItemEntity implements IEntityAd
     		boolean isblock = false;
 	    	BlockState blockstate = this.level.getBlockState(pos);
 	    	Block b = blockstate.getBlock();
-			if (!GrappleConfigUtils.attachesBlock(b)) {
+			if (GrappleConfigUtils.attachesBlock(b)) {
 		    	if (!(b.isAir(blockstate, this.level, pos))) {
 			    	VoxelShape BB = blockstate.getCollisionShape(this.level, pos);
 			    	if (BB != null && !BB.isEmpty()) {
