@@ -18,7 +18,9 @@ public class BaseUpgradeItem extends Item {
 		
 		this.category = theCategory;
 		
-		this.setCraftingRemainingItem();
+		if (theCategory != null) {
+			this.setCraftingRemainingItem();
+		}
 	}
 	
 	public void setCraftingRemainingItem() {

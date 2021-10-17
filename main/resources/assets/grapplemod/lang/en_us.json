@@ -502,5 +502,16 @@
     "text.autoconfig.grapplemod.option.options.grapplinghook.custom.rocket.rocket_vertical_angle.max": "max",
     "text.autoconfig.grapplemod.option.options.grapplinghook.custom.rocket.rocket_vertical_angle.max_upgraded": "max_upgraded",
     "text.autoconfig.grapplemod.option.options.grapplinghook.custom.rocket.rocket_vertical_angle.min": "min",
-    "text.autoconfig.grapplemod.option.options.grapplinghook.custom.rocket.rocket_vertical_angle.min_upgraded": "min_upgraded"
+    "text.autoconfig.grapplemod.option.options.grapplinghook.custom.rocket.rocket_vertical_angle.min_upgraded": "min_upgraded",
+    
+    "grapplemod.upgradecategories.rope": "Rope",
+    "grapplemod.upgradecategories.throw": "Hook Thrower",
+    "grapplemod.upgradecategories.motor": "Motor",
+    "grapplemod.upgradecategories.swing": "Swing Speed",
+    "grapplemod.upgradecategories.staff": "Ender Staff",
+    "grapplemod.upgradecategories.forcefield": "Forcefield",
+    "grapplemod.upgradecategories.magnet": "Hook Magnet",
+    "grapplemod.upgradecategories.double": "Double Hook",
+    "grapplemod.upgradecategories.limits": "Limits",
+    "grapplemod.upgradecategories.rocket": "Rocket"
 }

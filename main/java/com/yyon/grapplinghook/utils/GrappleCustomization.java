@@ -1,5 +1,6 @@
 package com.yyon.grapplinghook.utils;
 
+import com.yyon.grapplinghook.client.ClientProxyInterface;
 import com.yyon.grapplinghook.common.CommonSetup;
 import com.yyon.grapplinghook.config.GrappleConfig;
 
@@ -64,20 +65,28 @@ public class GrappleCustomization {
 	public double rocket_vertical_angle;
 	
 	public enum upgradeCategories {
-		ROPE ("Rope"), 
-		THROW ("Hook Thrower"), 
-		MOTOR ("Motor"), 
-		SWING ("Swing Speed"), 
-		STAFF ("Ender Staff"), 
-		FORCEFIELD ("Forcefield"), 
-		MAGNET ("Hook Magnet"), 
-		DOUBLE ("Double Hook"),
-		LIMITS ("Limits"),
-		ROCKET ("Rocket");
+		ROPE ("rope"), 
+		THROW ("throw"), 
+		MOTOR ("motor"), 
+		SWING ("swing"), 
+		STAFF ("staff"), 
+		FORCEFIELD ("forcefield"), 
+		MAGNET ("magnet"), 
+		DOUBLE ("double"),
+		LIMITS ("limits"),
+		ROCKET ("rocket");
 		
-		public String description;
-		private upgradeCategories(String desc) {
-			this.description = desc;
+		private String nameUnlocalized;
+		private upgradeCategories(String name) {
+			this.nameUnlocalized = name;
+		}
+		
+		public String getName() {
+			if (ClientProxyInterface.proxy != null) {
+				return ClientProxyInterface.proxy.localize("grapplemod.upgradecategories." + this.nameUnlocalized);
+			} else {
+				return nameUnlocalized;
+			}
 		}
 		
 		public static upgradeCategories fromInt(int i) {

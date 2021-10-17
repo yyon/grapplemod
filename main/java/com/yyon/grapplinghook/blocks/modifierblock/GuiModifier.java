@@ -111,7 +111,7 @@ public class GuiModifier extends Screen {
 					x += 1;
 				}
 				this.addButton(
-						new Button(this.guiLeft + 10 + 105*x, this.guiTop + 15 + 30 * y, 95, 20, new StringTextComponent(category.description), new PressCategory(category)));
+						new Button(this.guiLeft + 10 + 105*x, this.guiTop + 15 + 30 * y, 95, 20, new StringTextComponent(category.getName()), new PressCategory(category)));
 				y += 1;
 			}
 		}
@@ -181,7 +181,7 @@ public class GuiModifier extends Screen {
 		this.addButton(new Button(this.guiLeft + 10, this.guiTop + this.ySize - 20 - 10, 50, 20, new StringTextComponent(ClientProxyInterface.proxy.localize("grapplemodifier.back.desc")), new PressBack()));
 		this.category = category;
 		this.addButton(new TextWidget(new StringTextComponent(ClientProxyInterface.proxy.localize("grapplemodifier.unlock1.desc")), this.guiLeft + 10, this.guiTop + 10));
-		this.addButton(new TextWidget(new StringTextComponent(this.category.description), 10, 25));
+		this.addButton(new TextWidget(new StringTextComponent(this.category.getName()), this.guiLeft + 10, this.guiTop + 25));
 		this.addButton(new TextWidget(new StringTextComponent(ClientProxyInterface.proxy.localize("grapplemodifier.unlock2.desc")), this.guiLeft + 10, this.guiTop + 40));
 		this.addButton(new TextWidget(new StringTextComponent(ClientProxyInterface.proxy.localize("grapplemodifier.unlock3.desc")), this.guiLeft + 10, this.guiTop + 55));
 		this.addButton(new TextWidget(new ItemStack(this.category.getItem()).getDisplayName(), this.guiLeft + 10, this.guiTop + 70));
@@ -235,7 +235,7 @@ public class GuiModifier extends Screen {
 		this.addButton(checkbox);
 		options.put(checkbox, option);
 	}
-	
+		
 	class GuiSlider extends AbstractSlider {
 		double min, max, val;
 		String text, option;

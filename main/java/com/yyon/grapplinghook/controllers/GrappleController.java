@@ -200,7 +200,7 @@ public class GrappleController {
 						// vectors along rope
 						Vec anchor = hookEntity.segmentHandler.getClosest(hookPos);
 						double distToAnchor = hookEntity.segmentHandler.getDistToAnchor();
-						double remaininglength = motor ? this.custom.maxlen : hookEntity.r - distToAnchor;
+						double remaininglength = motor ? this.custom.maxlen - distToAnchor : hookEntity.r - distToAnchor;
 						
 						Vec oldspherevec = playerpos.sub(anchor);
 						Vec spherevec = oldspherevec.changeLen(remaininglength);
