@@ -186,7 +186,11 @@ public class GrapplehookEntity extends ProjectileItemEntity implements IEntityAd
 							if (this.segmentHandler.segments.size() > 2) {
 								int bendnumber = this.segmentHandler.segments.size() - 2;
 								Vec closest = this.segmentHandler.segments.get(bendnumber);
-								this.serverAttach(this.segmentHandler.getBendBlock(bendnumber), closest, null);
+								BlockPos blockpos = this.segmentHandler.getBendBlock(bendnumber);
+								for (int i = 1; i <= bendnumber; i++) { 
+									this.segmentHandler.removeSegment(1);
+								}
+								this.serverAttach(blockpos, closest, null);
 							}
 						}
 					} else {
