@@ -231,7 +231,7 @@ public class GuiModifier extends Screen {
 		String text = ClientProxyInterface.proxy.localize(this.customization.getName(option));
 		String desc = ClientProxyInterface.proxy.localize(this.customization.getDescription(option));
 		GuiCheckbox checkbox = new GuiCheckbox(10 + this.guiLeft, posy + this.guiTop, this.xSize - 20, 20, new StringTextComponent(text), customization.getBoolean(option), option, new StringTextComponent(desc));
-		posy += 20;
+		posy += 22;
 		this.addButton(checkbox);
 		options.put(checkbox, option);
 	}
@@ -286,7 +286,7 @@ public class GuiModifier extends Screen {
 		String desc = ClientProxyInterface.proxy.localize(this.customization.getDescription(option));
 		GuiSlider slider = new GuiSlider(10 + this.guiLeft, posy + this.guiTop, this.xSize - 20, 20, new StringTextComponent(text), min, max, d, option, new StringTextComponent(desc));
 		
-		posy += 25;
+		posy += 22;
 		this.addButton(slider);
 		options.put(slider, option);
 	}
