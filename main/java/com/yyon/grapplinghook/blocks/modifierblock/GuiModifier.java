@@ -380,9 +380,11 @@ public class GuiModifier extends Screen {
 
 			if (b instanceof GuiSlider) {
 				((GuiSlider) b).tooltip = new StringTextComponent(desc);
+				b.setAlpha(enabled ? 1.0F : 0.5F);
 			}
 			if (b instanceof GuiCheckbox) {
 				((GuiCheckbox) b).tooltip = new StringTextComponent(desc);
+				b.setAlpha(enabled ? 1.0F : 0.5F);
 			}
 		}
 	}
