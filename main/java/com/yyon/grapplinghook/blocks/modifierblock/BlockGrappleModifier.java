@@ -82,17 +82,18 @@ public class BlockGrappleModifier extends Block {
 				TileEntityGrappleModifier tileent = (TileEntityGrappleModifier) ent;
 				
 				GrappleCustomization.upgradeCategories category = ((BaseUpgradeItem) helditem).category;
-				
-				if (tileent.isUnlocked(category)) {
-					playerIn.sendMessage(new StringTextComponent("Already has upgrade: " + category.getName()), playerIn.getUUID());
-				} else {
-					if (!playerIn.isCreative()) {
-						playerIn.setItemInHand(Hand.MAIN_HAND, ItemStack.EMPTY);
+				if (category != null) {
+					if (tileent.isUnlocked(category)) {
+						playerIn.sendMessage(new StringTextComponent("Already has upgrade: " + category.getName()), playerIn.getUUID());
+					} else {
+						if (!playerIn.isCreative()) {
+							playerIn.setItemInHand(Hand.MAIN_HAND, ItemStack.EMPTY);
+						}
+						
+						tileent.unlockCategory(category);
+						
+						playerIn.sendMessage(new StringTextComponent("Applied upgrade: " + category.getName()), playerIn.getUUID());
 					}
-					
-					tileent.unlockCategory(category);
-					
-					playerIn.sendMessage(new StringTextComponent("Applied upgrade: " + category.getName()), playerIn.getUUID());
 				}
 			}
 		} else if (helditem instanceof GrapplehookItem) {
