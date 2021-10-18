@@ -252,7 +252,7 @@ public class GrappleController {
 								}
 							}
 							if (ClientProxyInterface.proxy.isKeyDown(ClientProxyInterface.GrappleKeys.key_slow)) {
-								// climbing
+								// slow down
 								Vec motiontorwards = spherevec.changeLen(-0.1);
 								motiontorwards = new Vec(motiontorwards.x, 0, motiontorwards.z);
 								if (motion.dot(motiontorwards) < 0) {
@@ -266,8 +266,6 @@ public class GrappleController {
 							if ((ClientProxyInterface.proxy.isKeyDown(ClientProxyInterface.GrappleKeys.key_climb) || !this.custom.climbkey) && !motor) {
 								isClimbing = true;
 								if (anchor.y > playerpos.y) {
-									// when shift is pressed, stop swinging
-									
 									// climb up/down rope
 									float playerforward = 0;
 									if (ClientProxyInterface.proxy.isKeyDown(ClientProxyInterface.GrappleKeys.key_climbup)) { playerforward = 1.0f; }
@@ -379,7 +377,7 @@ public class GrappleController {
 							totalpull = new Vec(0, 0, 0);
 							
 							for (GrapplehookEntity hookEntity : this.grapplehookEntities) {
-								Vec hookPos = Vec.positionVec(hookEntity);//this.getPositionVector();
+								Vec hookPos = Vec.positionVec(hookEntity);
 								Vec anchor = hookEntity.segmentHandler.getClosest(hookPos);
 								Vec spherevec = playerpos.sub(anchor);
 								Vec pull = spherevec.mult(-1);
