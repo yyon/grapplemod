@@ -7,14 +7,12 @@ import javax.annotation.Nullable;
 import org.lwjgl.glfw.GLFW;
 
 import com.yyon.grapplinghook.common.CommonSetup;
-import com.yyon.grapplinghook.config.GrappleConfig;
 import com.yyon.grapplinghook.controllers.AirfrictionController;
 import com.yyon.grapplinghook.controllers.ForcefieldController;
 import com.yyon.grapplinghook.entities.grapplehook.GrapplehookEntity;
 import com.yyon.grapplinghook.entities.grapplehook.RenderGrapplehookEntity;
 
-import me.shedaniel.autoconfig.AutoConfig;
-import me.shedaniel.autoconfig.gui.registry.GuiRegistry;
+import net.minecraft.client.audio.TickableSound;
 import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.EntityRendererManager;
 import net.minecraft.client.settings.KeyBinding;
@@ -25,6 +23,8 @@ import net.minecraft.item.IItemPropertyGetter;
 import net.minecraft.item.ItemModelsProperties;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.SoundCategory;
+import net.minecraft.util.SoundEvent;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.ExtensionPoint;
@@ -79,6 +79,7 @@ public class ClientSetup {
 	    	
 	    }
 	}
+	
 	
 	public void onClientSetup() {
 		// register all the key bindings

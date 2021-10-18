@@ -4,9 +4,19 @@
 		"subtitle": "grapplemod.subtitle.slide",
 		"sounds": [ "grapplemod:slide1", "grapplemod:slide2", "grapplemod:slide3" ]
 	},
- 	"doublejump": {
- 		"category": "player",
-		"subtitle": "grapplemod.subtitle.doublejump",
-		"sounds": [ "grapplemod:jump1", "grapplemod:jump2", "grapplemod:jump3", "grapplemod:jump4" ]
-	}
+	"doublejump": {
+		"category": "player",
+	   "subtitle": "grapplemod.subtitle.doublejump",
+	   "sounds": [ "grapplemod:jump1", "grapplemod:jump2", "grapplemod:jump3", "grapplemod:jump4" ]
+   },
+   "rocket": {
+	"category": "player",
+   "subtitle": "grapplemod.subtitle.rocket",
+   "sounds": [ "grapplemod:rocket"]
+},
+   "enderstaff": {
+	"category": "player",
+   "subtitle": "grapplemod.subtitle.enderstaff",
+   "sounds": [ "grapplemod:enderstaff"]
+}
 }

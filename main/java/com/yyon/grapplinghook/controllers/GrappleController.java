@@ -809,9 +809,12 @@ public class GrappleController {
 		}
 	}
 	
+	public boolean rocket_key = false;
+	public double rocket_on = 0;
 	public Vec rocket(Entity entity) {
 		if (ClientProxyInterface.proxy.isKeyDown(ClientProxyInterface.GrappleKeys.key_rocket)) {
-			double rocket_force = this.custom.rocket_force * 0.225 * ClientProxyInterface.proxy.getRocketFunctioning();
+			rocket_on = ClientProxyInterface.proxy.getRocketFunctioning();
+			double rocket_force = this.custom.rocket_force * 0.225 * rocket_on;
         	double yaw = entity.yRot;
         	double pitch = -entity.xRot;
         	pitch += this.custom.rocket_vertical_angle;
@@ -819,8 +822,11 @@ public class GrappleController {
         	force = force.rotatePitch(Math.toRadians(pitch));
         	force = force.rotateYaw(Math.toRadians(yaw));
         	
+        	rocket_key = true;
         	return force;
 		}
+		rocket_key = false;
+		rocket_on = 0F;
 		return new Vec(0,0,0);
 	}
 	

@@ -4,6 +4,7 @@ import java.util.ConcurrentModificationException;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.yyon.grapplinghook.grapplemod;
 import com.yyon.grapplinghook.common.CommonSetup;
 import com.yyon.grapplinghook.config.GrappleConfig;
 import com.yyon.grapplinghook.controllers.AirfrictionController;
@@ -17,6 +18,7 @@ import com.yyon.grapplinghook.utils.GrapplemodUtils;
 import com.yyon.grapplinghook.utils.Vec;
 
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.audio.TickableSound;
 import net.minecraft.client.entity.player.ClientPlayerEntity;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;
@@ -24,6 +26,9 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Hand;
+import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.SoundCategory;
+import net.minecraft.util.SoundEvent;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BlockRayTraceResult;
 import net.minecraft.world.World;
@@ -117,6 +122,7 @@ public class ClientControllerManager {
 				}
 				facing.mult_ip(GrappleConfig.getConf().enderstaff.ender_staff_strength);
 				receiveEnderLaunch(player.getId(), facing.x, facing.y, facing.z);
+				player.playSound(new SoundEvent(new ResourceLocation("grapplemod", "enderstaff")), GrappleConfig.getClientConf().sounds.enderstaff_sound_volume * 0.5F, 1.0F);
 			}
 		}
 	}
@@ -136,6 +142,7 @@ public class ClientControllerManager {
 	public double getRocketFunctioning() {
 		this.rocketFuel -= this.rocketIncreaseTick;
 		this.rocketFuel -= this.rocketDecreaseTick;
+		
 		if (this.rocketFuel >= 0) {
 			return 1;
 		} else {
@@ -385,13 +392,33 @@ public class ClientControllerManager {
 		}
 	}
 
+	public static class RocketSound extends TickableSound {
+		GrappleController controller;
+		protected RocketSound(GrappleController controller, SoundEvent p_i46532_1_, SoundCategory p_i46532_2_) {
+			super(p_i46532_1_, p_i46532_2_);
+			this.looping = true;
+			this.controller = controller;
+			controller.rocket_key = true;
+			controller.rocket_on = 1.0F;
+		}
+
+		@Override
+		public void tick() {
+			this.volume = (float) controller.rocket_on * GrappleConfig.getClientConf().sounds.rocket_sound_volume * 0.5F;
+			if (!controller.rocket_key) {
+				this.stop();
+			}
+		}
+	}
+
 	public void startRocket(PlayerEntity player, GrappleCustomization custom) {
 		if (!custom.rocket) return;
 		
+		GrappleController controller;
 		if (!controllers.containsKey(player.getId())) {
-			this.createControl(GrapplemodUtils.AIRID, -1, player.getId(), player.level, new Vec(0,0,0), null, custom);
+			controller = this.createControl(GrapplemodUtils.AIRID, -1, player.getId(), player.level, new Vec(0,0,0), null, custom);
 		} else {
-			GrappleController controller = controllers.get(player.getId());
+			controller = controllers.get(player.getId());
 			if (controller.custom == null || !controller.custom.rocket) {
 				if (controller.custom == null) {controller.custom = custom;}
 				controller.custom.rocket = true;
@@ -401,6 +428,9 @@ public class ClientControllerManager {
 				this.updateRocketRegen(custom.rocket_active_time, custom.rocket_refuel_ratio);
 			}
 		}
+		
+		RocketSound sound = new RocketSound(controller, new SoundEvent(new ResourceLocation("grapplemod", "rocket")), SoundCategory.NEUTRAL);
+		Minecraft.getInstance().getSoundManager().play(sound);
 	}
 
 	public static HashMap<BlockPos, GrappleController> controllerPos = new HashMap<BlockPos, GrappleController>();

@@ -373,6 +373,10 @@ public class GrappleConfig implements ConfigData {
 			public float slide_sound_volume = 1.0F;
 			@Tooltip
 			public float wallrunjump_sound_volume = 1.0F;
+			@Tooltip
+			public float rocket_sound_volume = 1.0F;
+			@Tooltip
+			public float enderstaff_sound_volume = 1.0F;
 		}
 	}
 	
