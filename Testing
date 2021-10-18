@@ -63,6 +63,10 @@
  - air friction controller
     - check that player has less air friction after a swing/ender staff/etc
     - check that momentum stops after hitting a wall
+- multiplayer
+    - check that dedicated server doesn't crash
+    - check that can see other players grappling hooks
+    - check basic functionality
  - grappling hook upgrades
     - test main functionality of all craftable grappling hooks
         - motor: test motor pull, and disabling motor using shift
@@ -123,6 +127,7 @@
         - ender staff
             - ender staff
  - enchantments
+    - check that enchantments are obtainable through enchanting table
     - wallrunning
         - check wallrunning
         - check wallrun jump
@@ -221,6 +226,3 @@
             - wallrunjump_sound_volume
             - rocket_sound_volume
             - enderstaff_sound_volume
-- multiplayer
-    - check that can see other players grappling hooks
-    - check basic functionality

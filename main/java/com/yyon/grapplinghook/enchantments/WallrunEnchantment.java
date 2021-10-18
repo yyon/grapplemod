@@ -11,17 +11,21 @@ public class WallrunEnchantment extends Enchantment {
 	public WallrunEnchantment() {
 		super(GrappleConfigUtils.getRarityFromInt(GrappleConfig.getConf().enchantments.wallrun.enchant_rarity_wallrun), EnchantmentType.ARMOR_FEET, new EquipmentSlotType[] {EquipmentSlotType.FEET});
 	}
-    public int getMinEnchantability(int enchantmentLevel)
+	
+	@Override
+    public int getMinCost(int enchantmentLevel)
     {
         return 1;
     }
 
-    public int getMaxEnchantability(int enchantmentLevel)
+	@Override
+    public int getMaxCost(int enchantmentLevel)
     {
-        return this.getMinEnchantability(enchantmentLevel) + 40;
+        return this.getMinCost(enchantmentLevel) + 40;
     }
 
-    public int getMaxLevel()
+	@Override
+	public int getMaxLevel()
     {
         return 1;
     }
