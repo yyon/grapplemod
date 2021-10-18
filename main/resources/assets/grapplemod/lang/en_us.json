@@ -303,6 +303,8 @@
     "text.autoconfig.grapplemod.option.clientOptions.sounds.doublejump_sound_volume": "doublejump_sound_volume",
     "text.autoconfig.grapplemod.option.clientOptions.sounds.slide_sound_volume": "slide_sound_volume",
     "text.autoconfig.grapplemod.option.clientOptions.sounds.wallrunjump_sound_volume": "wallrunjump_sound_volume",
+    "text.autoconfig.grapplemod.option.clientOptions.sounds.rocket_sound_volume": "rocket_sound_volume",
+    "text.autoconfig.grapplemod.option.clientOptions.sounds.enderstaff_sound_volume": "enderstaff_sound_volume",
 
     "text.autoconfig.grapplemod.option.options.@Tooltip": "Options that should be synced from the server to the client",
     "text.autoconfig.grapplemod.option.options.grapplinghook.@Tooltip": "Options for grappling hooks",
@@ -369,6 +371,8 @@
     "text.autoconfig.grapplemod.option.clientOptions.sounds.doublejump_sound_volume.@Tooltip": "Double jump volume (1=default)",
     "text.autoconfig.grapplemod.option.clientOptions.sounds.slide_sound_volume.@Tooltip": "Sliding volume (1=default)",
     "text.autoconfig.grapplemod.option.clientOptions.sounds.wallrunjump_sound_volume.@Tooltip": "Jump from wallrun volume (1=default)",
+    "text.autoconfig.grapplemod.option.clientOptions.sounds.rocket_sound_volume.@Tooltip": "Rocket volume (1=default)",
+    "text.autoconfig.grapplemod.option.clientOptions.sounds.enderstaff_sound_volume.@Tooltip": "Ender staff volume (1=default)",
 
     "text.autoconfig.grapplemod.option.options.grapplinghook.custom.rope.phaserope.default_value": "default_value",
     "text.autoconfig.grapplemod.option.options.grapplinghook.custom.rope.phaserope.enabled": "enabled",
