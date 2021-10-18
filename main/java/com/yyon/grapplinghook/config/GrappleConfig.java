@@ -354,7 +354,7 @@ public class GrappleConfig implements ConfigData {
 		public Camera camera = new Camera();
 		public static class Camera {
 			@Tooltip
-			public float wallrun_camera_tilt_degrees = 5;
+			public float wallrun_camera_tilt_degrees = 10;
 			@Tooltip
 			public float wallrun_camera_animation_s = 0.5f;
 		}
