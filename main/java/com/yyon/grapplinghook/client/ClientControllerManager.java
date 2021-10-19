@@ -394,18 +394,34 @@ public class ClientControllerManager {
 
 	public static class RocketSound extends TickableSound {
 		GrappleController controller;
+		boolean stopping = false;
+		public float changespeed;
 		protected RocketSound(GrappleController controller, SoundEvent p_i46532_1_, SoundCategory p_i46532_2_) {
 			super(p_i46532_1_, p_i46532_2_);
 			this.looping = true;
 			this.controller = controller;
 			controller.rocket_key = true;
 			controller.rocket_on = 1.0F;
+			this.changespeed = GrappleConfig.getClientConf().sounds.rocket_sound_volume * 0.5F * 0.2F;
+			this.volume = this.changespeed;
 		}
 
 		@Override
 		public void tick() {
-			this.volume = (float) controller.rocket_on * GrappleConfig.getClientConf().sounds.rocket_sound_volume * 0.5F;
 			if (!controller.rocket_key) {
+				this.stopping = true;
+			}
+			float targetvolume = (float) controller.rocket_on * GrappleConfig.getClientConf().sounds.rocket_sound_volume * 0.5F;
+			if (this.stopping) {
+				targetvolume = 0;
+			}
+			float diff = Math.abs(targetvolume - this.volume);
+			if (diff > changespeed) {
+				this.volume = this.volume + changespeed * (this.volume > targetvolume ? -1 : 1);
+			} else {
+				this.volume = targetvolume;
+			}
+			if (this.volume == 0 && this.stopping) {
 				this.stop();
 			}
 		}
