@@ -408,7 +408,7 @@ public class ClientControllerManager {
 
 		@Override
 		public void tick() {
-			if (!controller.rocket_key) {
+			if (!controller.rocket_key || !controller.attached) {
 				this.stopping = true;
 			}
 			float targetvolume = (float) controller.rocket_on * GrappleConfig.getClientConf().sounds.rocket_sound_volume * 0.5F;
