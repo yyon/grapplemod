@@ -21,6 +21,7 @@ import com.yyon.grapplinghook.items.repeller;
 
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.audio.MovingSound;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.renderer.ItemMeshDefinition;
 import net.minecraft.client.renderer.block.model.ModelBakery;
@@ -40,6 +41,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.MovementInput;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.SoundCategory;
 import net.minecraft.util.SoundEvent;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RayTraceResult;
@@ -372,14 +374,53 @@ public class ClientProxyClass extends CommonProxyClass {
 		}
 	}
 
+	public static class RocketSound extends MovingSound {
+		grappleController controller;
+		boolean stopping = false;
+		public float changespeed;
+		protected RocketSound(grappleController controller, SoundEvent p_i46532_1_, SoundCategory p_i46532_2_) {
+			super(p_i46532_1_, p_i46532_2_);
+			this.repeat = true;
+			this.controller = controller;
+			controller.rocket_key = true;
+			controller.rocket_on = 1.0F;
+			this.changespeed = GrappleConfig.client_options.rocket_sound_volume * 0.5F * 0.2F;
+			this.volume = this.changespeed;
+		}
+
+		@Override
+		public void update() {
+			if (!controller.rocket_key || !controller.attached) {
+				this.stopping = true;
+			}
+			float targetvolume = (float) controller.rocket_on * GrappleConfig.client_options.rocket_sound_volume * 0.5F;
+			if (this.stopping) {
+				targetvolume = 0;
+			}
+			float diff = Math.abs(targetvolume - this.volume);
+			if (diff > changespeed) {
+				this.volume = this.volume + changespeed * (this.volume > targetvolume ? -1 : 1);
+			} else {
+				this.volume = targetvolume;
+			}
+			if (this.volume == 0 && this.stopping) {
+				this.donePlaying = true;
+			}
+			this.xPosF = (float) controller.entity.posX;
+			this.yPosF = (float) controller.entity.posY;
+			this.zPosF = (float) controller.entity.posZ;
+		}
+	}
+
 	@Override
 	public void startrocket(EntityPlayer player, GrappleCustomization custom) {
 		if (!custom.rocket) return;
 		
+		grappleController controller;
 		if (!grapplemod.controllers.containsKey(player.getEntityId())) {
-			this.createControl(grapplemod.AIRID, -1, player.getEntityId(), player.world, new vec(0,0,0), null, custom);
+			controller = this.createControl(grapplemod.AIRID, -1, player.getEntityId(), player.world, new vec(0,0,0), null, custom);
 		} else {
-			grappleController controller = grapplemod.controllers.get(player.getEntityId());
+			controller = grapplemod.controllers.get(player.getEntityId());
 			if (controller.custom == null || !controller.custom.rocket) {
 				if (controller.custom == null) {controller.custom = custom;}
 				controller.custom.rocket = true;
@@ -389,6 +430,9 @@ public class ClientProxyClass extends CommonProxyClass {
 				this.updateRocketRegen(custom.rocket_active_time, custom.rocket_refuel_ratio);
 			}
 		}
+
+		RocketSound sound = new RocketSound(controller, new SoundEvent(new ResourceLocation("grapplemod", "rocket")), SoundCategory.NEUTRAL);
+		Minecraft.getMinecraft().getSoundHandler().playSound(sound);
 	}
 
 	
@@ -439,6 +483,7 @@ public class ClientProxyClass extends CommonProxyClass {
 				}
 				facing.mult_ip(GrappleConfig.getconf().ender_staff_strength);
 				grapplemod.receiveEnderLaunch(player.getEntityId(), facing.x, facing.y, facing.z);
+				player.playSound(new SoundEvent(new ResourceLocation("grapplemod", "enderstaff")), GrappleConfig.client_options.enderstaff_sound_volume * 0.5F, 1.0F);
 			}
 		}
 	}

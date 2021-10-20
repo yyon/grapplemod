@@ -18,7 +18,7 @@ public class RocketDoubleMotorHook extends grappleBow {
     	custom.reelin = false;
     	custom.sticky = true;
     	
-    	custom.hookgravity = 100;
+    	custom.hookgravity = 50;
     	custom.verticalthrowangle = 30;
     	custom.sneakingverticalthrowangle = 25;
     	custom.reelin = false;

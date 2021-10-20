@@ -150,7 +150,11 @@ public class grappleArrow extends EntityThrowable implements IEntityAdditionalSp
 							if (this.segmenthandler.segments.size() > 2) {
 								int bendnumber = this.segmenthandler.segments.size() - 2;
 								vec closest = this.segmenthandler.segments.get(bendnumber);
-								this.serverAttach(this.segmenthandler.getbendblock(bendnumber), closest, null);
+								BlockPos blockpos = this.segmenthandler.getbendblock(bendnumber);
+								for (int i = 1; i <= bendnumber; i++) { 
+									this.segmenthandler.removesegment(1);
+								}
+								this.serverAttach(blockpos, closest, null);
 							}
 						}
 					} else {

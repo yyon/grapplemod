@@ -261,7 +261,7 @@ public class grappleController {
 						// vectors along rope
 						vec anchor = arrow.segmenthandler.getclosest(arrowpos);
 						double distToAnchor = arrow.segmenthandler.getDistToAnchor();
-						double remaininglength = arrow.r - distToAnchor;
+						double remaininglength = motor ? Math.max(this.custom.maxlen, arrow.r) - distToAnchor : arrow.r - distToAnchor;
 						
 						vec oldspherevec = playerpos.sub(anchor);
 						vec spherevec = oldspherevec.changelen(remaininglength);
@@ -283,17 +283,15 @@ public class grappleController {
 						// snap to rope length
 						if (oldspherevec.length() < remaininglength) {
 						} else {
-							if (!motor) {
-								if (oldspherevec.length() - remaininglength > GrappleConfig.getconf().rope_snap_buffer) {
-									// if rope is too long, the rope snaps
-									
-									this.unattach();
-									
-									this.updateServerPos();
-									return;
-								} else {
-									additionalmotion = spherechange;
-								}
+							if (oldspherevec.length() - remaininglength > GrappleConfig.getconf().rope_snap_buffer) {
+								// if rope is too long, the rope snaps
+								
+								this.unattach();
+								
+								this.updateServerPos();
+								return;
+							} else {
+								additionalmotion = spherechange;
 							}
 						}
 						
@@ -368,7 +366,7 @@ public class grappleController {
 						}
 						
 						// swing along max rope length
-						if (anchor.sub(playerpos.add(motion)).length() > remaininglength && !motor) { // moving away
+						if (anchor.sub(playerpos.add(motion)).length() > remaininglength) { // moving away
 							motion = motion.removealong(spherevec);
 						}
 					}
@@ -988,9 +986,12 @@ public class grappleController {
 		}
 	}
 	
+	public boolean rocket_key = false;
+	public double rocket_on = 0;
 	public vec rocket(Entity entity) {
 		if (ClientProxyClass.key_rocket.isKeyDown()) {
-			double rocket_force = this.custom.rocket_force * 0.225 * grapplemod.proxy.getRocketFunctioning();
+			rocket_on = grapplemod.proxy.getRocketFunctioning();
+			double rocket_force = this.custom.rocket_force * 0.225 * rocket_on;
         	double yaw = entity.rotationYaw;
         	double pitch = -entity.rotationPitch;
         	pitch += this.custom.rocket_vertical_angle;
@@ -998,8 +999,11 @@ public class grappleController {
         	force = force.rotate_pitch(Math.toRadians(pitch));
         	force = force.rotate_yaw(Math.toRadians(yaw));
         	
+        	rocket_key = true;
         	return force;
 		}
+		rocket_key = false;
+		rocket_on = 0F;
 		return new vec(0,0,0);
 	}
 	
