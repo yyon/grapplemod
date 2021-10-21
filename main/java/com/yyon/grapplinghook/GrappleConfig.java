@@ -8,7 +8,6 @@ public class GrappleConfig {
 		// rope
 		public double default_maxlen = 30;
 		public boolean default_phaserope = false;
-		public boolean default_climbkey = true;
 		public boolean default_sticky = false;
 		// hook thrower
 		public double default_hookgravity = 1F;
@@ -117,7 +116,6 @@ public class GrappleConfig {
 		// rope
 		public int enable_maxlen = 0;
 		public int enable_phaserope = 0;
-		public int enable_climbkey = 0;
 		public int enable_sticky = 0;
 		// hook thrower
 		public int enable_hookgravity = 0;

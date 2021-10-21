@@ -140,7 +140,6 @@ public class GuiModifier extends GuiScreen {
 			addSlider("maxlen");
 			addCheckbox("phaserope");
 			addCheckbox("sticky");
-			addCheckbox("climbkey");
 		} else if (category == grapplemod.upgradeCategories.THROW) {
 			addSlider("hookgravity");
 			addSlider("throwspeed");

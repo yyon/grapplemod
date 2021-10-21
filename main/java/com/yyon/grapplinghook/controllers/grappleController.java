@@ -331,28 +331,36 @@ public class grappleController {
 	//							motion = multvec(motion, 0.98);
 
 							}
-							if ((ClientProxyClass.key_climb.isKeyDown() || !this.custom.climbkey) && !motor) {
+							if ((ClientProxyClass.key_climb.isKeyDown() || ClientProxyClass.key_climbup.isKeyDown() || ClientProxyClass.key_climbdown.isKeyDown()) && !motor) {
 								isClimbing = true;
 								if (anchor.y > playerpos.y) {
 									// when shift is pressed, stop swinging
 									
 									// climb up/down rope
-									float playerforward = 0;
-									if (ClientProxyClass.key_climbup.isKeyDown()) { playerforward = 1.0f; }
-									else if (ClientProxyClass.key_climbdown.isKeyDown()) { playerforward = -1.0f; }
-									if (playerforward != 0) {
-											if (dist + distToAnchor < maxlen || this.playerforward > 0 || maxlen == 0) {
-//												double motionup = this.playerforward;
-//												additionalmotion = new vec(0, playerforward, 0);
-//												additionalmotion.add_ip(spherevec.changelen_ip(playerforward));
-//												this.r = dist;
+//									double climbup = 0;
+//									if (ClientProxyClass.key_climbup.isKeyDown()) { playerforward = 1.0f; }
+//									else if (ClientProxyClass.key_climbdown.isKeyDown()) { playerforward = -1.0f; }
+//									if (playerforward != 0) {
+//											if (dist + distToAnchor < maxlen || this.playerforward > 0 || maxlen == 0) {
+									double climbup = 0;
+									if (ClientProxyClass.key_climb.isKeyDown()) {
+										climbup = playerforward;
+										if (playersneak) {
+											climbup = climbup / 0.3D;
+										}
+										if (climbup > 1) {climbup = 1;} else if (climbup < -1) {climbup = -1;}
+									}
+									else if (ClientProxyClass.key_climbup.isKeyDown()) { climbup = 1.0; }
+									else if (ClientProxyClass.key_climbdown.isKeyDown()) { climbup = -1.0; }
+									if (climbup != 0) {
+										if (dist + distToAnchor < maxlen || climbup > 0 || maxlen == 0) {
 												arrow.r = dist + distToAnchor;
-												arrow.r -= playerforward*GrappleConfig.getconf().climb_speed;
+												arrow.r -= climbup*GrappleConfig.getconf().climb_speed;
 												if (arrow.r < distToAnchor) {
 													arrow.r = dist + distToAnchor;
 												}
 												
-												vec additionalmovementdown = spherevec.changelen(-playerforward * GrappleConfig.getconf().climb_speed).proj(new vec(0,1,0));
+												vec additionalmovementdown = spherevec.changelen(-climbup * GrappleConfig.getconf().climb_speed).proj(new vec(0,1,0));
 												if (additionalmovementdown.y < 0) {
 													additionalmotion.add_ip(additionalmovementdown);
 												}

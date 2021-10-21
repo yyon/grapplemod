@@ -4,13 +4,12 @@ import io.netty.buffer.ByteBuf;
 import net.minecraft.nbt.NBTTagCompound;
 
 public class GrappleCustomization {
-	public static final String[] booleanoptions = new String[] {"phaserope", "motor", "motorwhencrouching", "motorwhennotcrouching", "smartmotor", "enderstaff", "repel", "attract", "doublehook", "smartdoublemotor", "motordampener", "reelin", "pullbackwards", "oneropepull", "climbkey", "sticky", "detachonkeyrelease", "rocket"};
+	public static final String[] booleanoptions = new String[] {"phaserope", "motor", "motorwhencrouching", "motorwhennotcrouching", "smartmotor", "enderstaff", "repel", "attract", "doublehook", "smartdoublemotor", "motordampener", "reelin", "pullbackwards", "oneropepull", "sticky", "detachonkeyrelease", "rocket"};
 	public static final String[] doubleoptions = new String[] {"maxlen", "hookgravity", "throwspeed", "motormaxspeed", "motoracceleration", "playermovementmult", "repelforce", "attractradius", "angle", "sneakingangle", "verticalthrowangle", "sneakingverticalthrowangle", "rocket_force", "rocket_active_time", "rocket_refuel_ratio", "rocket_vertical_angle"};
 	
 	// rope
 	public double maxlen = GrappleConfig.getconf().default_maxlen;
 	public boolean phaserope = GrappleConfig.getconf().default_phaserope;
-	public boolean climbkey = GrappleConfig.getconf().default_climbkey;
 	public boolean sticky = GrappleConfig.getconf().default_sticky;
 
 	// hook thrower
@@ -102,7 +101,6 @@ public class GrappleCustomization {
 		else if (option.equals("reelin")) {this.reelin = bool;}
 		else if (option.equals("pullbackwards")) {this.pullbackwards = bool;}
 		else if (option.equals("oneropepull")) {this.oneropepull = bool;}
-		else if (option.equals("climbkey")) {this.climbkey = bool;}
 		else if (option.equals("sticky")) {this.sticky = bool;}
 		else if (option.equals("detachonkeyrelease")) {this.detachonkeyrelease = bool;}
 		else if (option.equals("rocket")) {this.rocket = bool;}
@@ -124,7 +122,6 @@ public class GrappleCustomization {
 		else if (option.equals("reelin")) {return this.reelin;}
 		else if (option.equals("pullbackwards")) {return this.pullbackwards;}
 		else if (option.equals("oneropepull")) {return this.oneropepull;}
-		else if (option.equals("climbkey")) {return this.climbkey;}
 		else if (option.equals("sticky")) {return this.sticky;}
 		else if (option.equals("detachonkeyrelease")) {return this.detachonkeyrelease;}
 		else if (option.equals("rocket")) {return this.rocket;}
@@ -290,7 +287,6 @@ public class GrappleCustomization {
 		else if (option.equals("sneakingangle")) {return GrappleConfig.getconf().enable_sneakingangle;}
 		else if (option.equals("oneropepull")) {return GrappleConfig.getconf().enable_oneropepull;}
 		else if (option.equals("sneakingverticalthrowangle")) {return GrappleConfig.getconf().enable_sneakingverticalthrowangle;}
-		else if (option.equals("climbkey")) {return GrappleConfig.getconf().enable_climbkey;}
 		else if (option.equals("sticky")) {return GrappleConfig.getconf().enable_sticky;}
 		else if (option.equals("detachonkeyrelease")) {return GrappleConfig.getconf().enable_detachonkeyrelease;}
 		else if (option.equals("rocket")) {return GrappleConfig.getconf().enable_rocket;}

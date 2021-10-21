@@ -230,8 +230,8 @@ public class ClientProxyClass extends CommonProxyClass {
 	public static KeyBinding key_jumpanddetach = createkeybinding("key.jumpanddetach.desc", Keyboard.KEY_SPACE, "key.grapplemod.category");
 	public static KeyBinding key_slow = createkeybinding("key.slow.desc", Keyboard.KEY_LSHIFT, "key.grapplemod.category");
 	public static KeyBinding key_climb = createkeybinding("key.climb.desc", Keyboard.KEY_LSHIFT, "key.grapplemod.category");
-	public static KeyBinding key_climbup = createkeybinding("key.climbup.desc", Keyboard.KEY_W, "key.grapplemod.category");
-	public static KeyBinding key_climbdown = createkeybinding("key.climbdown.desc", Keyboard.KEY_S, "key.grapplemod.category");
+	public static KeyBinding key_climbup = createkeybinding("key.climbup.desc", 0, "key.grapplemod.category");
+	public static KeyBinding key_climbdown = createkeybinding("key.climbdown.desc", 0, "key.grapplemod.category");
 	public static KeyBinding key_enderlaunch = createkeybinding("key.enderlaunch.desc", -100, "key.grapplemod.category");
 	public static KeyBinding key_rocket = createkeybinding("key.rocket.desc", -100, "key.grapplemod.category");
 	public static KeyBinding key_slide = createkeybinding("key.slide.desc", Keyboard.KEY_LSHIFT, "key.grapplemod.category");
