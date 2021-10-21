@@ -11,6 +11,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.NonNullList;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.DistExecutor;
@@ -86,4 +87,6 @@ public abstract class ClientProxyInterface {
 	public abstract void resetRopeJumpTime(World level);
 
 	public abstract boolean isMovingSlowly(Entity entity);
+
+	public abstract void playSound(ResourceLocation loc, float volume);
 }

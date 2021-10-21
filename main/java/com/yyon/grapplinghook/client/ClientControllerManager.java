@@ -18,6 +18,8 @@ import com.yyon.grapplinghook.utils.GrapplemodUtils;
 import com.yyon.grapplinghook.utils.Vec;
 
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.audio.ISound;
+import net.minecraft.client.audio.SimpleSound;
 import net.minecraft.client.audio.TickableSound;
 import net.minecraft.client.entity.player.ClientPlayerEntity;
 import net.minecraft.enchantment.Enchantment;
@@ -122,7 +124,9 @@ public class ClientControllerManager {
 				}
 				facing.mult_ip(GrappleConfig.getConf().enderstaff.ender_staff_strength);
 				receiveEnderLaunch(player.getId(), facing.x, facing.y, facing.z);
-				player.playSound(new SoundEvent(new ResourceLocation("grapplemod", "enderstaff")), GrappleConfig.getClientConf().sounds.enderstaff_sound_volume * 0.5F, 1.0F);
+//				player.playSound(new SoundEvent(new ResourceLocation("grapplemod", "enderstaff")), GrappleConfig.getClientConf().sounds.enderstaff_sound_volume * 0.5F, 1.0F);
+//				Minecraft.getInstance().getSoundManager().play(new SimpleSound(new ResourceLocation("grapplemod", "enderstaff"), SoundCategory.PLAYERS, GrappleConfig.getClientConf().sounds.enderstaff_sound_volume * 0.5F, 1.0F, false, 0, ISound.AttenuationType.NONE, player.getX(), player.getY(), player.getZ(), false));
+				ClientProxyInterface.proxy.playSound(new ResourceLocation("grapplemod", "enderstaff"), GrappleConfig.getClientConf().sounds.enderstaff_sound_volume * 0.5F);
 			}
 		}
 	}
@@ -404,6 +408,10 @@ public class ClientControllerManager {
 			controller.rocket_on = 1.0F;
 			this.changespeed = GrappleConfig.getClientConf().sounds.rocket_sound_volume * 0.5F * 0.2F;
 			this.volume = this.changespeed;
+			this.delay = 0;
+			this.attenuation = ISound.AttenuationType.NONE;
+			this.relative = false;
+			this.priority = false;
 		}
 
 		@Override
@@ -424,6 +432,10 @@ public class ClientControllerManager {
 			if (this.volume == 0 && this.stopping) {
 				this.stop();
 			}
+			
+			this.x = controller.entity.getX();
+			this.y = controller.entity.getY();
+			this.z = controller.entity.getZ();
 		}
 	}
 
@@ -445,7 +457,7 @@ public class ClientControllerManager {
 			}
 		}
 		
-		RocketSound sound = new RocketSound(controller, new SoundEvent(new ResourceLocation("grapplemod", "rocket")), SoundCategory.NEUTRAL);
+		RocketSound sound = new RocketSound(controller, new SoundEvent(new ResourceLocation("grapplemod", "rocket")), SoundCategory.PLAYERS);
 		Minecraft.getInstance().getSoundManager().play(sound);
 	}
 

@@ -18,6 +18,8 @@ import com.yyon.grapplinghook.utils.Vec;
 import me.shedaniel.autoconfig.AutoConfig;
 import net.minecraft.client.GameSettings;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.audio.ISound;
+import net.minecraft.client.audio.SimpleSound;
 import net.minecraft.client.entity.player.ClientPlayerEntity;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.resources.I18n;
@@ -29,6 +31,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.RecipeManager;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.SoundCategory;
 import net.minecraft.util.SoundEvent;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
@@ -103,17 +106,20 @@ public class ClientProxy extends ClientProxyInterface {
 
 	@Override
 	public void playSlideSound(Entity entity) {
-		entity.playSound(new SoundEvent(this.slideSoundLoc), GrappleConfig.getClientConf().sounds.slide_sound_volume, 1.0F);
+//		entity.playSound(new SoundEvent(this.slideSoundLoc), GrappleConfig.getClientConf().sounds.slide_sound_volume, 1.0F);
+		this.playSound(this.slideSoundLoc, GrappleConfig.getClientConf().sounds.slide_sound_volume);
 	}
 
 	@Override
 	public void playDoubleJumpSound(Entity entity) {
-		entity.playSound(new SoundEvent(this.doubleJumpSoundLoc), GrappleConfig.getClientConf().sounds.doublejump_sound_volume * 0.7F, 1.0F);
+//		entity.playSound(new SoundEvent(this.doubleJumpSoundLoc), GrappleConfig.getClientConf().sounds.doublejump_sound_volume * 0.7F, 1.0F);
+		this.playSound(this.doubleJumpSoundLoc, GrappleConfig.getClientConf().sounds.doublejump_sound_volume * 0.7F);
 	}
 
 	@Override
 	public void playWallrunJumpSound(Entity entity) {
-		entity.playSound(new SoundEvent(this.doubleJumpSoundLoc), GrappleConfig.getClientConf().sounds.wallrunjump_sound_volume * 0.7F, 1.0F);
+//		entity.playSound(new SoundEvent(this.doubleJumpSoundLoc), GrappleConfig.getClientConf().sounds.wallrunjump_sound_volume * 0.7F, 1.0F);
+		this.playSound(this.doubleJumpSoundLoc, GrappleConfig.getClientConf().sounds.wallrunjump_sound_volume * 0.7F);
 	}
 	
 	List<ItemStack> grapplingHookVariants = null;
@@ -240,5 +246,11 @@ public class ClientProxy extends ClientProxyInterface {
 			return ((ClientPlayerEntity) entity).isMovingSlowly();
 		}
 		return false;
+	}
+	
+	@Override
+	public void playSound(ResourceLocation loc, float volume) {
+		PlayerEntity player = Minecraft.getInstance().player;
+		Minecraft.getInstance().getSoundManager().play(new SimpleSound(loc, SoundCategory.PLAYERS, volume, 1.0F, false, 0, ISound.AttenuationType.NONE, player.getX(), player.getY(), player.getZ(), false));
 	}
 }
