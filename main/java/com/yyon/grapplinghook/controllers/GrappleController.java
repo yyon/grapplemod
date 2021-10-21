@@ -263,22 +263,29 @@ public class GrappleController {
 								motion = new Vec(newmotion.x, motion.y, newmotion.z);
 
 							}
-							if ((ClientProxyInterface.proxy.isKeyDown(ClientProxyInterface.GrappleKeys.key_climb) || !this.custom.climbkey) && !motor) {
+							if ((ClientProxyInterface.proxy.isKeyDown(ClientProxyInterface.GrappleKeys.key_climb) || ClientProxyInterface.proxy.isKeyDown(ClientProxyInterface.GrappleKeys.key_climbup) || ClientProxyInterface.proxy.isKeyDown(ClientProxyInterface.GrappleKeys.key_climbdown)) && !motor) {
 								isClimbing = true;
 								if (anchor.y > playerpos.y) {
 									// climb up/down rope
-									float playerforward = 0;
-									if (ClientProxyInterface.proxy.isKeyDown(ClientProxyInterface.GrappleKeys.key_climbup)) { playerforward = 1.0f; }
-									else if (ClientProxyInterface.proxy.isKeyDown(ClientProxyInterface.GrappleKeys.key_climbdown)) { playerforward = -1.0f; }
-									if (playerforward != 0) {
-											if (dist + distToAnchor < maxLen || this.playerForward > 0 || maxLen == 0) {
+									double climbup = 0;
+									if (ClientProxyInterface.proxy.isKeyDown(ClientProxyInterface.GrappleKeys.key_climb)) {
+										climbup = playerForward;
+										if (ClientProxyInterface.proxy.isMovingSlowly(this.entity)) {
+											climbup = climbup / 0.3D;
+										}
+										if (climbup > 1) {climbup = 1;} else if (climbup < -1) {climbup = -1;}
+									}
+									else if (ClientProxyInterface.proxy.isKeyDown(ClientProxyInterface.GrappleKeys.key_climbup)) { climbup = 1.0; }
+									else if (ClientProxyInterface.proxy.isKeyDown(ClientProxyInterface.GrappleKeys.key_climbdown)) { climbup = -1.0; }
+									if (climbup != 0) {
+											if (dist + distToAnchor < maxLen || climbup > 0 || maxLen == 0) {
 												hookEntity.r = dist + distToAnchor;
-												hookEntity.r -= playerforward*GrappleConfig.getConf().grapplinghook.other.climb_speed;
+												hookEntity.r -= climbup*GrappleConfig.getConf().grapplinghook.other.climb_speed;
 												if (hookEntity.r < distToAnchor) {
 													hookEntity.r = dist + distToAnchor;
 												}
 												
-												Vec additionalmovementdown = spherevec.changeLen(-playerforward * GrappleConfig.getConf().grapplinghook.other.climb_speed).proj(new Vec(0,1,0));
+												Vec additionalmovementdown = spherevec.changeLen(-climbup * GrappleConfig.getConf().grapplinghook.other.climb_speed).proj(new Vec(0,1,0));
 												if (additionalmovementdown.y < 0) {
 													additionalmotion.add_ip(additionalmovementdown);
 												}

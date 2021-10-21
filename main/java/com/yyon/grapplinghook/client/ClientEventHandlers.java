@@ -3,8 +3,8 @@ package com.yyon.grapplinghook.client;
 import com.yyon.grapplinghook.common.CommonSetup;
 import com.yyon.grapplinghook.config.GrappleConfig;
 import com.yyon.grapplinghook.controllers.AirfrictionController;
-import com.yyon.grapplinghook.controllers.GrappleController;
 import com.yyon.grapplinghook.controllers.ForcefieldController;
+import com.yyon.grapplinghook.controllers.GrappleController;
 import com.yyon.grapplinghook.items.KeypressItem;
 import com.yyon.grapplinghook.utils.Vec;
 
@@ -25,6 +25,7 @@ import net.minecraftforge.client.event.InputUpdateEvent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.world.BlockEvent.BreakEvent;
+import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 
 public class ClientEventHandlers {
@@ -114,7 +115,7 @@ public class ClientEventHandlers {
 		ClientControllerManager.instance.checkSlide(Minecraft.getInstance().player);
 	}
 	
-	@SubscribeEvent
+	@SubscribeEvent(priority=EventPriority.LOW)
     public void onInputUpdate(InputUpdateEvent event) {
 		PlayerEntity player = Minecraft.getInstance().player;
 		if (!Minecraft.getInstance().isRunning() || player == null) {

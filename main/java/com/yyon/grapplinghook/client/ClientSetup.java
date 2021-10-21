@@ -60,8 +60,8 @@ public class ClientSetup {
 	public static KeyBinding key_jumpanddetach = createKeyBinding(new NonConflictingKeyBinding("key.jumpanddetach.desc", GLFW.GLFW_KEY_SPACE, "key.grapplemod.category"));
 	public static KeyBinding key_slow = createKeyBinding(new NonConflictingKeyBinding("key.slow.desc", GLFW.GLFW_KEY_LEFT_SHIFT, "key.grapplemod.category"));
 	public static KeyBinding key_climb = createKeyBinding(new NonConflictingKeyBinding("key.climb.desc", GLFW.GLFW_KEY_LEFT_SHIFT, "key.grapplemod.category"));
-	public static KeyBinding key_climbup = createKeyBinding(new NonConflictingKeyBinding("key.climbup.desc", GLFW.GLFW_KEY_W, "key.grapplemod.category"));
-	public static KeyBinding key_climbdown = createKeyBinding(new NonConflictingKeyBinding("key.climbdown.desc", GLFW.GLFW_KEY_S, "key.grapplemod.category"));
+	public static KeyBinding key_climbup = createKeyBinding(new NonConflictingKeyBinding("key.climbup.desc", InputMappings.UNKNOWN.getValue(), "key.grapplemod.category"));
+	public static KeyBinding key_climbdown = createKeyBinding(new NonConflictingKeyBinding("key.climbdown.desc", InputMappings.UNKNOWN.getValue(), "key.grapplemod.category"));
 	public static KeyBinding key_enderlaunch = createKeyBinding(new NonConflictingKeyBinding("key.enderlaunch.desc", InputMappings.Type.MOUSE, GLFW.GLFW_MOUSE_BUTTON_1, "key.grapplemod.category"));
 	public static KeyBinding key_rocket = createKeyBinding(new NonConflictingKeyBinding("key.rocket.desc", InputMappings.Type.MOUSE, GLFW.GLFW_MOUSE_BUTTON_1, "key.grapplemod.category"));
 	public static KeyBinding key_slide = createKeyBinding(new NonConflictingKeyBinding("key.slide.desc", GLFW.GLFW_KEY_LEFT_SHIFT, "key.grapplemod.category"));

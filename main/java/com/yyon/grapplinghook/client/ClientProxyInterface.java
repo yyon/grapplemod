@@ -84,4 +84,6 @@ public abstract class ClientProxyInterface {
 	public abstract double getTimeSinceLastRopeJump(World world);
 
 	public abstract void resetRopeJumpTime(World level);
+
+	public abstract boolean isMovingSlowly(Entity entity);
 }

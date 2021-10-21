@@ -18,6 +18,7 @@ import com.yyon.grapplinghook.utils.Vec;
 import me.shedaniel.autoconfig.AutoConfig;
 import net.minecraft.client.GameSettings;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.entity.player.ClientPlayerEntity;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.client.settings.KeyBinding;
@@ -229,6 +230,14 @@ public class ClientProxy extends ClientProxyInterface {
 			return Minecraft.getInstance().options.keyShift.isDown();
 		} else if (keyenum == McKeys.keyBindUseItem) {
 			return Minecraft.getInstance().options.keyUse.isDown();
+		}
+		return false;
+	}
+
+	@Override
+	public boolean isMovingSlowly(Entity entity) {
+		if (entity instanceof ClientPlayerEntity) {
+			return ((ClientPlayerEntity) entity).isMovingSlowly();
 		}
 		return false;
 	}

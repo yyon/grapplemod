@@ -429,10 +429,10 @@ public class GrapplehookItem extends Item implements KeypressItem {
 					" " + ClientProxyInterface.proxy.localize("grappletooltip.swing.desc")));
 			list.add(new StringTextComponent(ClientSetup.key_jumpanddetach.getTranslatedKeyMessage().getString() + " " + ClientProxyInterface.proxy.localize("grappletooltip.jump.desc")));
 			list.add(new StringTextComponent(ClientSetup.key_slow.getTranslatedKeyMessage().getString() + " " + ClientProxyInterface.proxy.localize("grappletooltip.slow.desc")));
-			list.add(new StringTextComponent((custom.climbkey ? ClientSetup.key_climb.getTranslatedKeyMessage().getString() + " + " : "") +
+			list.add(new StringTextComponent(ClientSetup.key_climb.getTranslatedKeyMessage().getString() + " + " + ClientProxyInterface.proxy.getKeyname(ClientProxyInterface.McKeys.keyBindForward) + " / " +
 					ClientSetup.key_climbup.getTranslatedKeyMessage().getString() + 
 					" " + ClientProxyInterface.proxy.localize("grappletooltip.climbup.desc")));
-			list.add(new StringTextComponent((custom.climbkey ? ClientSetup.key_climb.getTranslatedKeyMessage().getString() + " + " : "") +
+			list.add(new StringTextComponent(ClientSetup.key_climb.getTranslatedKeyMessage().getString() + " + " + ClientProxyInterface.proxy.getKeyname(ClientProxyInterface.McKeys.keyBindBack) + " / " +
 					ClientSetup.key_climbdown.getTranslatedKeyMessage().getString() + 
 					" " + ClientProxyInterface.proxy.localize("grappletooltip.climbdown.desc")));
 			if (custom.enderstaff) {

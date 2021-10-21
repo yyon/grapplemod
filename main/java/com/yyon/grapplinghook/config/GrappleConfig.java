@@ -69,9 +69,6 @@ public class GrappleConfig implements ConfigData {
 					public BooleanCustomizationOption phaserope = new BooleanCustomizationOption(false, 0);
 					@ConfigEntry.Gui.CollapsibleObject
 					@Tooltip
-					public BooleanCustomizationOption climbkey = new BooleanCustomizationOption(true, 0);
-					@ConfigEntry.Gui.CollapsibleObject
-					@Tooltip
 					public BooleanCustomizationOption sticky = new BooleanCustomizationOption(false, 0);
 				}
 				
