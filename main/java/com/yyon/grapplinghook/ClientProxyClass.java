@@ -21,7 +21,9 @@ import com.yyon.grapplinghook.items.repeller;
 
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.audio.ISound;
 import net.minecraft.client.audio.MovingSound;
+import net.minecraft.client.audio.PositionedSoundRecord;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.renderer.ItemMeshDefinition;
 import net.minecraft.client.renderer.block.model.ModelBakery;
@@ -57,6 +59,7 @@ import net.minecraftforge.fml.client.registry.RenderingRegistry;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
+import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.InputEvent.KeyInputEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
@@ -386,6 +389,8 @@ public class ClientProxyClass extends CommonProxyClass {
 			controller.rocket_on = 1.0F;
 			this.changespeed = GrappleConfig.client_options.rocket_sound_volume * 0.5F * 0.2F;
 			this.volume = this.changespeed;
+			this.repeatDelay = 0;
+			this.attenuationType = ISound.AttenuationType.NONE;
 		}
 
 		@Override
@@ -431,7 +436,7 @@ public class ClientProxyClass extends CommonProxyClass {
 			}
 		}
 
-		RocketSound sound = new RocketSound(controller, new SoundEvent(new ResourceLocation("grapplemod", "rocket")), SoundCategory.NEUTRAL);
+		RocketSound sound = new RocketSound(controller, new SoundEvent(new ResourceLocation("grapplemod", "rocket")), SoundCategory.PLAYERS);
 		Minecraft.getMinecraft().getSoundHandler().playSound(sound);
 	}
 
@@ -483,7 +488,8 @@ public class ClientProxyClass extends CommonProxyClass {
 				}
 				facing.mult_ip(GrappleConfig.getconf().ender_staff_strength);
 				grapplemod.receiveEnderLaunch(player.getEntityId(), facing.x, facing.y, facing.z);
-				player.playSound(new SoundEvent(new ResourceLocation("grapplemod", "enderstaff")), GrappleConfig.client_options.enderstaff_sound_volume * 0.5F, 1.0F);
+//				player.playSound(new SoundEvent(new ResourceLocation("grapplemod", "enderstaff")), GrappleConfig.client_options.enderstaff_sound_volume * 0.5F, 1.0F);
+				this.playSound(new ResourceLocation("grapplemod", "enderstaff"), GrappleConfig.client_options.enderstaff_sound_volume * 0.5F);
 			}
 		}
 	}
@@ -750,7 +756,7 @@ public class ClientProxyClass extends CommonProxyClass {
 		return false;
 	}
 
-	@SubscribeEvent
+	@SubscribeEvent(priority=EventPriority.LOW)
 	public void onKeyInputEvent(KeyInputEvent event) {
 		EntityPlayer player = Minecraft.getMinecraft().player;
 		
@@ -900,16 +906,22 @@ public class ClientProxyClass extends CommonProxyClass {
 	}
 
 	public void playSlideSound(Entity entity) {
-		entity.playSound(new SoundEvent(this.slideSoundLoc), GrappleConfig.client_options.slide_sound_volume, 1.0F);
+		this.playSound(this.slideSoundLoc, GrappleConfig.client_options.slide_sound_volume);
 	}
 
 	private void playDoubleJumpSound(Entity entity) {
-		entity.playSound(new SoundEvent(this.doubleJumpSoundLoc), GrappleConfig.client_options.doublejump_sound_volume * 0.7F, 1.0F);
+		this.playSound(this.doubleJumpSoundLoc, GrappleConfig.client_options.doublejump_sound_volume * 0.7F);
 	}
 
 	@Override
 	public void playWallrunJumpSound(Entity entity) {
-		entity.playSound(new SoundEvent(this.doubleJumpSoundLoc), GrappleConfig.client_options.wallrunjump_sound_volume * 0.7F, 1.0F);
+		this.playSound(this.doubleJumpSoundLoc, GrappleConfig.client_options.wallrunjump_sound_volume * 0.7F);
 	}
 
+	
+	@Override
+	public void playSound(ResourceLocation loc, float volume) {
+		EntityPlayer player = Minecraft.getMinecraft().player;
+		Minecraft.getMinecraft().getSoundHandler().playSound(new PositionedSoundRecord(loc, SoundCategory.PLAYERS, volume, 1.0F, false, 0, ISound.AttenuationType.NONE, (float) player.posX, (float) player.posY, (float) player.posZ));
+	}
 }

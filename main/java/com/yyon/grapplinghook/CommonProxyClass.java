@@ -15,6 +15,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.NetHandlerPlayServer;
 import net.minecraft.util.DamageSource;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
@@ -201,5 +202,8 @@ public class CommonProxyClass {
 	}
 
 	public void playWallrunJumpSound(Entity entity) {
+	}
+
+	public void playSound(ResourceLocation loc, float volume) {
 	}
 }
