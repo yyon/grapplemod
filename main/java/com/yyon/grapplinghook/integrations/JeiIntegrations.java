@@ -5,6 +5,7 @@ import java.util.Arrays;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.yyon.grapplinghook.client.ClientProxyInterface;
 import com.yyon.grapplinghook.common.CommonSetup;
+import com.yyon.grapplinghook.config.GrappleConfig;
 import com.yyon.grapplinghook.utils.GrappleCustomization;
 
 import mezz.jei.api.IModPlugin;
@@ -171,9 +172,16 @@ public class JeiIntegrations implements IModPlugin {
 				new ModifierRecipes(new ItemStack(CommonSetup.staffUpgradeItem), new ItemStack(CommonSetup.grapplingHookItem), this.grappleWithCustom("enderstaff")), 
 				new ModifierRecipes(new ItemStack(CommonSetup.forcefieldUpgradeItem), new ItemStack(CommonSetup.grapplingHookItem), this.grappleWithCustom("repel")), 
 				new ModifierRecipes(new ItemStack(CommonSetup.magnetUpgradeItem), new ItemStack(CommonSetup.grapplingHookItem), this.grappleWithCustom("attract")), 
-				new ModifierRecipes(new ItemStack(CommonSetup.rocketUpgradeItem), new ItemStack(CommonSetup.grapplingHookItem), this.grappleWithCustom("rocket")),
-				new ModifierRecipes(ff_diamond_boots, new ItemStack(CommonSetup.longFallBootsItem))
+				new ModifierRecipes(new ItemStack(CommonSetup.rocketUpgradeItem), new ItemStack(CommonSetup.grapplingHookItem), this.grappleWithCustom("rocket"))
 				), modifierRecipesLoc);
+		
+		
+
+		if (GrappleConfig.getConf().longfallboots.longfallbootsrecipe) {
+			registration.addRecipes(Arrays.asList(
+					new ModifierRecipes(ff_diamond_boots, new ItemStack(CommonSetup.longFallBootsItem))
+			), modifierRecipesLoc);
+		}
 	}
 
 	
