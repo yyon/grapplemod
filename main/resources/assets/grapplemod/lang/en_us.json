@@ -517,5 +517,7 @@
     "grapplemod.upgradecategories.magnet": "Hook Magnet",
     "grapplemod.upgradecategories.double": "Double Hook",
     "grapplemod.upgradecategories.limits": "Limits",
-    "grapplemod.upgradecategories.rocket": "Rocket"
+    "grapplemod.upgradecategories.rocket": "Rocket",
+    
+    "grapplemod.jei_modifier_text": "Add upgrade(s), open\ninterface to customize,\nthen apply to hook"
 }
