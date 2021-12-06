@@ -297,6 +297,10 @@ public class grappleArrow extends EntityThrowable implements IEntityAdditionalSp
 	@Override
 	@SideOnly(Side.CLIENT)
 	public AxisAlignedBB getRenderBoundingBox() {
+		if (this.shootingEntity == null) {
+			return super.getRenderBoundingBox();
+		}
+		
 		AxisAlignedBB bb = this.segmenthandler.getBoundingBox(vec.positionvec(this), vec.positionvec(this.shootingEntity).add(new vec(0, this.shootingEntity.getEyeHeight(), 0)));
 //		bb = bb.union(this.shootingEntity.getEntityBoundingBox());
 //		AxisAlignedBB shooting_bb = this.shootingEntity.getRenderBoundingBox();

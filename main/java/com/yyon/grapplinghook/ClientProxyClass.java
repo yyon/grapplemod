@@ -36,6 +36,8 @@ import net.minecraft.client.settings.KeyBinding;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityLiving;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Items;
 import net.minecraft.item.Item;
@@ -626,6 +628,9 @@ public class ClientProxyClass extends CommonProxyClass {
 	@Override
 	public boolean iswallrunning(Entity entity, vec motion) {
 		if (entity.collidedHorizontally && !entity.onGround && !entity.isSneaking()) {
+			if (entity instanceof EntityLivingBase && ((EntityLivingBase) entity).isOnLadder()) {
+				return false;
+			}
 			for (ItemStack stack : entity.getArmorInventoryList()) {
 				if (stack != null) {
 					Map<Enchantment, Integer> enchantments = EnchantmentHelper.getEnchantments(stack);
@@ -670,7 +675,7 @@ public class ClientProxyClass extends CommonProxyClass {
 		
 		boolean isjumpbuttondown = Minecraft.getMinecraft().gameSettings.keyBindJump.isKeyDown();
 		
-		if (isjumpbuttondown && !prevjumpbutton && !player.isInWater()) {
+		if (isjumpbuttondown && !prevjumpbutton && !player.isInWater() && !player.isInLava()) {
 			
 			if (tickssincelastonground > 3) {
 				if (!alreadyuseddoublejump) {
@@ -730,7 +735,7 @@ public class ClientProxyClass extends CommonProxyClass {
 
 	@Override
 	public boolean issliding(Entity entity, vec motion) {
-		if (entity.isInWater()) {return false;}
+		if (entity.isInWater() || entity.isInLava()) {return false;}
 		
 		if (entity.onGround && key_slide.isKeyDown()) {
 			if (ClientProxyClass.isWearingSlidingEnchant(entity)) {

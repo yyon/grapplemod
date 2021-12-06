@@ -17,6 +17,7 @@ import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.settings.GameSettings;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RayTraceResult;
@@ -851,7 +852,7 @@ public class grappleController {
 	
 	public void applyAirFriction() {
 		double dragforce = 1 / 200F;
-		if (this.entity.isInWater()) {
+		if (this.entity.isInWater() || this.entity.isInLava()) {
 //			this.applyWaterFriction();
 			dragforce = 1 / 4F;
 		}
@@ -1132,6 +1133,9 @@ public class grappleController {
 			if (!(playersneak)) {
 				// continue wallrun
 				if (isonwall && !this.entity.onGround && this.entity.collidedHorizontally) {
+					if (entity instanceof EntityLivingBase && ((EntityLivingBase) entity).isOnLadder()) {
+						return false;
+					}
 					return true;
 				}
 				

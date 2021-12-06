@@ -73,7 +73,12 @@ public class airfrictionController extends grappleController {
 
 			this.applyAirFriction();
 			
-			if (this.entity.isInWater()) {
+			if (this.entity.isInWater() || this.entity.isInLava()) {
+				this.unattach();
+				return;
+			}
+
+			if (entity instanceof EntityLivingBase && ((EntityLivingBase) entity).isOnLadder()) {
 				this.unattach();
 				return;
 			}
@@ -109,13 +114,17 @@ public class airfrictionController extends grappleController {
 					if (new_movement.length() > GrappleConfig.getconf().wallrun_speed) {
 						new_movement.changelen_ip(GrappleConfig.getconf().wallrun_speed);
 					}
-					motion.add_ip(new_movement);
 					vec current_motion_along = this.motion.removealong(new vec(0,1,0));
+					vec new_motion_along = this.motion.add(new_movement).removealong(new vec(0,1,0));
 					if (this.walldirection != null) {
 						current_motion_along = current_motion_along.removealong(this.walldirection);
+						new_motion_along = new_motion_along.removealong(this.walldirection);
 					}
-					if (current_motion_along.length() > GrappleConfig.getconf().wallrun_max_speed) {
-						this.motion.changelen_ip(GrappleConfig.getconf().wallrun_max_speed);
+					if (current_motion_along.length() <= GrappleConfig.getconf().wallrun_max_speed || current_motion_along.dot(new_movement) < 0) {
+						motion.add_ip(new_movement);
+						if (new_motion_along.length() > GrappleConfig.getconf().wallrun_max_speed) {
+							this.motion.changelen_ip(GrappleConfig.getconf().wallrun_max_speed);
+						}
 					}
 					additionalmotion.add_ip(wallrun_press_against_wall());
 				} else {
