@@ -174,7 +174,7 @@ public class GrappleConfig {
 		public double slidingjumpforce =  0.6;
 		public double wallrun_speed = 0.1;
 		public double wallrun_max_speed = 0.7;
-		public double wallrun_drag = 0.05;
+		public double wallrun_drag = 0.01;
 		public double wallrun_min_speed = 0;
 		public double sliding_friction = 1 / 150F;
 		public boolean override_allowflight = true;
