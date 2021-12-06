@@ -67,8 +67,8 @@ public class airfrictionController extends grappleController {
 			}
 			
 			if (this.ignoregroundcounter <= 0) {
-				this.normalGround(!issliding);					
-				this.normalCollisions(!issliding);
+				this.normalGround(issliding);					
+				this.normalCollisions(issliding);
 			}
 
 			this.applyAirFriction();

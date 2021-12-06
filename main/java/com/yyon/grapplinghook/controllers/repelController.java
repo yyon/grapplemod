@@ -20,8 +20,8 @@ public class repelController extends grappleController {
 		if (this.attached) {
 			if(entity != null) {
 				if (true) {
-					this.normalGround(true);
-					this.normalCollisions(true);
+					this.normalGround(false);
+					this.normalCollisions(false);
 //					this.applyAirFriction();
 					
 					vec playerpos = vec.positionvec(entity);

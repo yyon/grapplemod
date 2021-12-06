@@ -209,8 +209,8 @@ public class grappleController {
 						return;
 					}
 					
-					this.normalGround(true);
-					this.normalCollisions(true);
+					this.normalGround(false);
+					this.normalCollisions(false);
 					this.applyAirFriction();
 					
 					vec playerpos = vec.positionvec(entity);
@@ -675,22 +675,31 @@ public class grappleController {
 //	boolean prevcollision = false;
 //	vec prevcollisionpos = new vec(0,0,0);
 
-	public void normalCollisions(boolean refreshmotion) {
+	public void normalCollisions(boolean sliding) {
 		// stop if collided with object
 		vec pos = vec.positionvec(this.entity);
 		if (entity.collidedHorizontally) {
 //			if (refreshmotion || prevcollision) {
 				if (entity.motionX == 0) {
-					if (refreshmotion || this.tryStepUp(new vec(this.motion.x, 0, 0))) {
+					if (!sliding || this.tryStepUp(new vec(this.motion.x, 0, 0))) {
 						this.motion.x = 0;
 					}
 				}
 				if (entity.motionZ == 0) {
-					if (refreshmotion || this.tryStepUp(new vec(0, 0, this.motion.z))) {
+					if (!sliding || this.tryStepUp(new vec(0, 0, this.motion.z))) {
 						this.motion.z = 0;
 					}
 				}
 //			}
+		}
+		
+		if (sliding && !entity.collidedHorizontally) {
+			if (entity.posX - entity.prevPosX == 0) {
+				this.motion.x = 0;
+			}
+			if (entity.posZ - entity.prevPosZ == 0) {
+				this.motion.z = 0;
+			}
 		}
 //		prevcollision = entity.collidedHorizontally;
 //		if (prevcollision) {
@@ -700,7 +709,7 @@ public class grappleController {
 //		}
 		if (entity.collidedVertically) {
 			if (entity.onGround) {
-				if (refreshmotion && GameSettings.isKeyDown(Minecraft.getMinecraft().gameSettings.keyBindJump)) {
+				if (!sliding && GameSettings.isKeyDown(Minecraft.getMinecraft().gameSettings.keyBindJump)) {
 					this.motion.y = entity.motionY;
 				} else {
 					if (this.motion.y < 0) {
@@ -738,7 +747,7 @@ public class grappleController {
 	
 	boolean prevonground = false;
 
-	public void normalGround(boolean refreshmotion) {
+	public void normalGround(boolean sliding) {
 		if (entity.onGround) {
 			ongroundtimer = maxongroundtimer;
 //			if (this.motion.y < 0) {
@@ -750,7 +759,7 @@ public class grappleController {
 			}
 		}
 		if (entity.onGround || ongroundtimer > 0) {
-			if (refreshmotion) {
+			if (!sliding) {
 				this.motion = vec.motionvec(entity);
 				if (Minecraft.getMinecraft().gameSettings.keyBindJump.isKeyDown()) {
 					this.motion.y += 0.05;
