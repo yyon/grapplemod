@@ -282,7 +282,7 @@ public class GrappleConfig implements ConfigData {
 				@Tooltip
 				public double wallrun_max_speed = 0.7;
 				@Tooltip
-				public double wallrun_drag = 0.05;
+				public double wallrun_drag = 0.01;
 				@Tooltip
 				public double wallrun_min_speed = 0;
 				@BoundedDiscrete(max=3, min=0)

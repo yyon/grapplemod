@@ -4,7 +4,6 @@ import java.util.ConcurrentModificationException;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.yyon.grapplinghook.grapplemod;
 import com.yyon.grapplinghook.common.CommonSetup;
 import com.yyon.grapplinghook.config.GrappleConfig;
 import com.yyon.grapplinghook.controllers.AirfrictionController;
@@ -19,12 +18,12 @@ import com.yyon.grapplinghook.utils.Vec;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.audio.ISound;
-import net.minecraft.client.audio.SimpleSound;
 import net.minecraft.client.audio.TickableSound;
 import net.minecraft.client.entity.player.ClientPlayerEntity;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Hand;
@@ -157,6 +156,9 @@ public class ClientControllerManager {
 	
 	public boolean isWallRunning(Entity entity, Vec motion) {
 		if (entity.horizontalCollision && !entity.isOnGround() && !entity.isCrouching()) {
+			if (entity instanceof LivingEntity && ((LivingEntity) entity).onClimbable()) {
+				return false;
+			}
 			for (ItemStack stack : entity.getArmorSlots()) {
 				if (stack != null) {
 					Map<Enchantment, Integer> enchantments = EnchantmentHelper.getEnchantments(stack);
@@ -196,7 +198,7 @@ public class ClientControllerManager {
 		
 		boolean isjumpbuttondown = Minecraft.getInstance().options.keyJump.isDown();
 		
-		if (isjumpbuttondown && !prevJumpButton && !player.isInWater()) {
+		if (isjumpbuttondown && !prevJumpButton && !player.isInWater() && !player.isInLava()) {
 			
 			if (ticksSinceLastOnGround > 3) {
 				if (!alreadyUsedDoubleJump) {
@@ -254,7 +256,7 @@ public class ClientControllerManager {
 	}
 
 	public boolean isSliding(Entity entity, Vec motion) {
-		if (entity.isInWater()) {return false;}
+		if (entity.isInWater() || entity.isInLava()) {return false;}
 		
 		if (entity.isOnGround() && ClientSetup.key_slide.isDown()) {
 			if (isWearingSlidingEnchant(entity)) {

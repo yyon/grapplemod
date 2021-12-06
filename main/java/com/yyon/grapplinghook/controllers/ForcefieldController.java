@@ -18,8 +18,8 @@ public class ForcefieldController extends GrappleController {
 		if (this.attached) {
 			if(entity != null) {
 				if (true) {
-					this.normalGround(true);
-					this.normalCollisions(true);
+					this.normalGround(false);
+					this.normalCollisions(false);
 //					this.applyAirFriction();
 					
 					Vec playerpos = Vec.positionVec(entity);

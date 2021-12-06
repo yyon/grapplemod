@@ -319,6 +319,9 @@ public class GrapplehookEntity extends ProjectileItemEntity implements IEntityAd
 	
 	@Override
 	public AxisAlignedBB getBoundingBoxForCulling() {
+		if (this.shootingEntity == null) {
+			return super.getBoundingBoxForCulling();
+		}
 		return this.segmentHandler.getBoundingBox(Vec.positionVec(this), Vec.positionVec(this.shootingEntity).add(new Vec(0, this.shootingEntity.getEyeHeight(), 0)));
 	}
 

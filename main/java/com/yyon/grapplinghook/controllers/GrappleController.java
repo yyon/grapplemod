@@ -19,6 +19,7 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.SoundType;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BlockRayTraceResult;
@@ -153,8 +154,8 @@ public class GrappleController {
 						return;
 					}
 					
-					this.normalGround(true);
-					this.normalCollisions(true);
+					this.normalGround(false);
+					this.normalCollisions(false);
 					this.applyAirFriction();
 					
 					Vec playerpos = Vec.positionVec(entity);
@@ -549,23 +550,33 @@ public class GrappleController {
     	}
 	}
 
-	public void normalCollisions(boolean refreshmotion) {
+	public void normalCollisions(boolean sliding) {
 		// stop if collided with object
 		if (entity.horizontalCollision) {
 			if (entity.getDeltaMovement().x == 0) {
-				if (refreshmotion || this.tryStepUp(new Vec(this.motion.x, 0, 0))) {
+				if (!sliding || this.tryStepUp(new Vec(this.motion.x, 0, 0))) {
 					this.motion.x = 0;
 				}
 			}
 			if (entity.getDeltaMovement().z == 0) {
-				if (refreshmotion || this.tryStepUp(new Vec(0, 0, this.motion.z))) {
+				if (!sliding || this.tryStepUp(new Vec(0, 0, this.motion.z))) {
 					this.motion.z = 0;
 				}
 			}
 		}
+		
+		if (sliding && !entity.horizontalCollision) {
+			if (entity.position().x - entity.xOld == 0) {
+				this.motion.x = 0;
+			}
+			if (entity.position().z - entity.zOld == 0) {
+				this.motion.z = 0;
+			}
+		}
+		
 		if (entity.verticalCollision) {
 			if (entity.isOnGround()) {
-				if (refreshmotion && Minecraft.getInstance().options.keyJump.isDown()) {
+				if (!sliding && Minecraft.getInstance().options.keyJump.isDown()) {
 					this.motion.y = entity.getDeltaMovement().y;
 				} else {
 					if (this.motion.y < 0) {
@@ -603,7 +614,7 @@ public class GrappleController {
 	
 	boolean prevOnGround = false;
 
-	public void normalGround(boolean refreshmotion) {
+	public void normalGround(boolean sliding) {
 		if (entity.isOnGround()) {
 			onGroundTimer = maxOnGroundTimer;
 		} else {
@@ -612,7 +623,7 @@ public class GrappleController {
 			}
 		}
 		if (entity.isOnGround() || onGroundTimer > 0) {
-			if (refreshmotion) {
+			if (!sliding) {
 				this.motion = Vec.motionVec(entity);
 				if (ClientProxyInterface.proxy.isKeyDown(ClientProxyInterface.McKeys.keyBindJump)) {
 					this.motion.y += 0.05;
@@ -710,7 +721,7 @@ public class GrappleController {
 	
 	public void applyAirFriction() {
 		double dragforce = 1 / 200F;
-		if (this.entity.isInWater()) {
+		if (this.entity.isInWater() || this.entity.isInLava()) {
 			dragforce = 1 / 4F;
 		}
 		
@@ -919,6 +930,9 @@ public class GrappleController {
 			if (!(playerSneak)) {
 				// continue wallrun
 				if (isOnWall && !this.entity.isOnGround() && this.entity.horizontalCollision) {
+					if (entity instanceof LivingEntity && ((LivingEntity) entity).onClimbable()) {
+						return false;
+					}
 					return true;
 				}
 				
