@@ -206,4 +206,11 @@ public class CommonProxyClass {
 
 	public void playSound(ResourceLocation loc, float volume) {
 	}
+	
+	public int getWallrunTicks() {
+		return -1;
+	}
+	
+	public void setWallrunTicks(int newWallrunTicks) {
+	}
 }

@@ -78,7 +78,9 @@ public class ClientProxyClass extends CommonProxyClass {
 	public double rocketDecreaseTick = 0.0;
 	
 	public static long prev_rope_jump_time = 0;
-	
+
+	public int tickswallrunning = 0;
+
 	@Override
 	public void preInit(FMLPreInitializationEvent event) {
 		super.preInit(event);
@@ -302,6 +304,10 @@ public class ClientProxyClass extends CommonProxyClass {
 		if (player != null) {
 			if (!Minecraft.getMinecraft().isGamePaused() || !Minecraft.getMinecraft().isSingleplayer()) {
 //				System.out.println(vec.motionvec(player).removealong(new vec(0,1,0)).length() + " " + grapplemod.controllers.containsKey(player.getEntityId()));
+				
+				if (player.onGround || (grapplemod.controllers.containsKey(player.getEntityId()) && grapplemod.controllers.get(player.getEntityId()).controllerid == grapplemod.GRAPPLEID)) {
+					tickswallrunning = 0;
+				}
 				
 				if (this.iswallrunning(player, vec.motionvec(player))) {
 					if (!grapplemod.controllers.containsKey(player.getEntityId())) {
@@ -928,5 +934,15 @@ public class ClientProxyClass extends CommonProxyClass {
 	public void playSound(ResourceLocation loc, float volume) {
 		EntityPlayer player = Minecraft.getMinecraft().player;
 		Minecraft.getMinecraft().getSoundHandler().playSound(new PositionedSoundRecord(loc, SoundCategory.PLAYERS, volume, 1.0F, false, 0, ISound.AttenuationType.NONE, (float) player.posX, (float) player.posY, (float) player.posZ));
+	}
+
+	@Override
+	public int getWallrunTicks() {
+		return this.tickswallrunning;
+	}
+	
+	@Override
+	public void setWallrunTicks(int newWallrunTicks) {
+		this.tickswallrunning = newWallrunTicks;
 	}
 }
