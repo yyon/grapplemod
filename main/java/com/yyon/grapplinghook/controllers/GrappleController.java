@@ -912,7 +912,6 @@ public class GrappleController {
 		return false;
 	}
 	
-	public int ticksWallRunning = 0;
 	int ticksSinceLastWallrunSoundEffect = 0;
 	
 	public boolean isWallRunning() {
@@ -923,10 +922,10 @@ public class GrappleController {
 		}
 		
 		if (isOnWall) {
-			ticksWallRunning += 1;
+			ClientProxyInterface.proxy.setWallrunTicks(ClientProxyInterface.proxy.getWallrunTicks()+1);
 		}
 		
-		if (ticksWallRunning < GrappleConfig.getConf().enchantments.wallrun.max_wallrun_time * 40) {
+		if (ClientProxyInterface.proxy.getWallrunTicks() < GrappleConfig.getConf().enchantments.wallrun.max_wallrun_time * 40) {
 			if (!(playerSneak)) {
 				// continue wallrun
 				if (isOnWall && !this.entity.isOnGround() && this.entity.horizontalCollision) {
@@ -946,8 +945,7 @@ public class GrappleController {
 			isOnWall = false;
 		}
 		
-		if (ticksWallRunning > 0 && (this.entity.isOnGround() || (!this.entity.horizontalCollision && !wallNearby(0.2)))) {
-			ticksWallRunning = 0;
+		if (ClientProxyInterface.proxy.getWallrunTicks() > 0 && (this.entity.isOnGround() || (!this.entity.horizontalCollision && !wallNearby(0.2)))) {
 			ticksSinceLastWallrunSoundEffect = 0;
 		}
 		
@@ -1015,6 +1013,7 @@ public class GrappleController {
 		isjumping = isjumping && !playerJump; // only jump once when key is first pressed
 		playerJump = ClientProxyInterface.proxy.isKeyDown(ClientProxyInterface.GrappleKeys.key_jumpanddetach) && isOnWall;
 		if (isjumping && wallrun) {
+			ClientProxyInterface.proxy.setWallrunTicks(0);
 			Vec jump = new Vec(0, GrappleConfig.getConf().enchantments.wallrun.wall_jump_up, 0);
 			if (wallDirection != null) {
 				jump.add_ip(wallDirection.mult(-GrappleConfig.getConf().enchantments.wallrun.wall_jump_side));

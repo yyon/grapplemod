@@ -253,4 +253,14 @@ public class ClientProxy extends ClientProxyInterface {
 		PlayerEntity player = Minecraft.getInstance().player;
 		Minecraft.getInstance().getSoundManager().play(new SimpleSound(loc, SoundCategory.PLAYERS, volume, 1.0F, false, 0, ISound.AttenuationType.NONE, player.getX(), player.getY(), player.getZ(), false));
 	}
+
+	@Override
+	public int getWallrunTicks() {
+		return ClientControllerManager.instance.ticksWallRunning;
+	}
+
+	@Override
+	public void setWallrunTicks(int newWallrunTicks) {
+		ClientControllerManager.instance.ticksWallRunning = newWallrunTicks;
+	}
 }

@@ -33,7 +33,7 @@ import net.minecraftforge.fml.common.Mod;
 public class grapplemod {
     public static final String MODID = "grapplemod";
     
-    public static final String VERSION = "1.16.5-v12";
+    public static final String VERSION = "1.16.5-v12.2";
 
     public static final Logger LOGGER = LogManager.getLogger();
 }

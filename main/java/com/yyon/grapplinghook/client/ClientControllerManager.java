@@ -49,7 +49,13 @@ public class ClientControllerManager {
 	public double rocketIncreaseTick = 0.0;
 	public double rocketDecreaseTick = 0.0;
 	
+	public int ticksWallRunning = 0;
+	
 	public void onClientTick(PlayerEntity player) {
+		if (player.isOnGround() || (controllers.containsKey(player.getId()) && controllers.get(player.getId()).controllerId == GrapplemodUtils.GRAPPLEID)) {
+			ticksWallRunning = 0;
+		}
+
 		if (this.isWallRunning(player, Vec.motionVec(player))) {
 			if (!controllers.containsKey(player.getId())) {
 				GrappleController controller = this.createControl(GrapplemodUtils.AIRID, -1, player.getId(), player.level, new Vec(0,0,0), null, null);

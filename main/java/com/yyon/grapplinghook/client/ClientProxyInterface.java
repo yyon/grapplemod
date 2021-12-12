@@ -89,4 +89,8 @@ public abstract class ClientProxyInterface {
 	public abstract boolean isMovingSlowly(Entity entity);
 
 	public abstract void playSound(ResourceLocation loc, float volume);
+	
+	public abstract int getWallrunTicks();
+	
+	public abstract void setWallrunTicks(int newWallrunTicks);
 }
