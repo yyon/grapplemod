@@ -105,13 +105,6 @@ repositories {
     maven {
         name = '100Media'
         url = 'https://maven.100media.dev/'
-        credentials {
-            username = project.getProperty('hm_maven_username')
-            password = project.getProperty('hm_maven_password')
-        }
-        authentication {
-            basic(BasicAuthentication)
-        }
     }
     maven { url "https://maven.shedaniel.me/" }
     mavenLocal()
