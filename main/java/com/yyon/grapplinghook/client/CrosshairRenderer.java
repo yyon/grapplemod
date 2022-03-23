@@ -10,6 +10,7 @@ import com.yyon.grapplinghook.utils.GrappleCustomization;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.Options;
 import net.minecraft.client.player.LocalPlayer;
+import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
@@ -94,13 +95,13 @@ public class CrosshairRenderer {
 	    		int totalbarlength = w / 8;
 	    		
 		        RenderSystem.getModelViewStack().pushPose();
-		        RenderSystem.disableDepthTest();
-		        RenderSystem.disableTexture();
+//		        RenderSystem.disableDepthTest();
+//		        RenderSystem.disableTexture();
 		        
 	            this.drawRect(w / 2 - totalbarlength / 2, h * 3 / 4, totalbarlength, 2, 50, 100);
 	            this.drawRect(w / 2 - totalbarlength / 2, h * 3 / 4, (int) (totalbarlength * rocketFuel), 2, 200, 255);
 
-	            RenderSystem.enableTexture();
+//	            RenderSystem.enableTexture();
 	            RenderSystem.getModelViewStack().popPose();
 	    	}
 		}
@@ -109,6 +110,7 @@ public class CrosshairRenderer {
     private void drawCrosshair(PoseStack mStack, int x, int y) {
         RenderSystem.blendFuncSeparate(GlStateManager.SourceFactor.ONE_MINUS_DST_COLOR, GlStateManager.DestFactor.ONE_MINUS_SRC_COLOR, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
         Minecraft.getInstance().gui.blit(mStack, (int) (x - (15.0F/2)), (int) (y - (15.0F/2)), 0, 0, 15, 15);
+        RenderSystem.defaultBlendFunc();
 	}
 
 	public void drawTexturedModalRect(int x, int y, int textureX, int textureY, int width, int height)
@@ -126,14 +128,15 @@ public class CrosshairRenderer {
     }
     public void drawRect(int x, int y, int width, int height, int g, int a)
     {
-        Tesselator tessellator = RenderSystem.renderThreadTesselator();
-        BufferBuilder bufferbuilder = tessellator.getBuilder();
-        GL11.glLineWidth(4.0F);
+        RenderSystem.setShader(GameRenderer::getPositionColorShader);
+        BufferBuilder bufferbuilder = Tesselator.getInstance().getBuilder();
+//        GL11.glLineWidth(4.0F);
         bufferbuilder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR);
         bufferbuilder.vertex((double)(x + 0), (double)(y + height), (double)this.zLevel).color(g, g, g, a).endVertex();
         bufferbuilder.vertex((double)(x + width), (double)(y + height), (double)this.zLevel).color(g, g, g, a).endVertex();
         bufferbuilder.vertex((double)(x + width), (double)(y + 0), (double)this.zLevel).color(g, g, g, a).endVertex();
         bufferbuilder.vertex((double)(x + 0), (double)(y + 0), (double)this.zLevel).color(g, g, g, a).endVertex();
-        tessellator.end();
+        bufferbuilder.end();
+        BufferUploader.end(bufferbuilder);
     }
 }
