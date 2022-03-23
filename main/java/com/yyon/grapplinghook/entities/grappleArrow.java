@@ -124,6 +124,7 @@ public class grappleArrow extends EntityThrowable implements IEntityAdditionalSp
 		
 		if (this.shootingEntityID == 0 || this.shootingEntity == null) { // removes ghost grappling hooks
 			this.remove();
+			return;
 		}
 		
 		if (this.firstattach) {
@@ -204,7 +205,6 @@ public class grappleArrow extends EntityThrowable implements IEntityAdditionalSp
 		
 		// magnet attraction
 		if (this.customization.attract && vec.positionvec(this).sub(vec.positionvec(this.shootingEntity)).length() > this.customization.attractradius) {
-	    	if (this.shootingEntity == null) {return;}
 	    	if (!this.foundblock) {
 	    		if (!this.world.isRemote) {
 	    			vec playerpos = vec.positionvec(this.shootingEntity);
