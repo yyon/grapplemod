@@ -581,7 +581,7 @@ public class GrappleController {
 		if (collisionmotion.length() == 0) {return false;}
 		Vec moveoffset = collisionmotion.changeLen(0.05).add(0, entity.maxUpStep+0.01, 0);
 		Iterable<VoxelShape> collisions = this.entity.level.getCollisions(this.entity, this.entity.getBoundingBox().move(moveoffset.x, moveoffset.y, moveoffset.z));
-		if (((Collection<?>)collisions).size() == 0) {
+		if (!collisions.iterator().hasNext()) {
 			if (!this.entity.isOnGround()) {
 				Vec pos = Vec.positionVec(entity);
 				pos.add_ip(moveoffset);
