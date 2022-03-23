@@ -156,6 +156,7 @@ public class GrapplehookEntity extends ProjectileItemEntity implements IEntityAd
 	public void tick() {
 		if (this.shootingEntityID == 0 || this.shootingEntity == null) { // removes ghost grappling hooks
 			this.remove();
+			return;
 		}
 		
 		if (this.firstAttach) {
@@ -232,7 +233,6 @@ public class GrapplehookEntity extends ProjectileItemEntity implements IEntityAd
 		
 		// magnet attraction
 		if (!this.attached && this.customization.attract && Vec.positionVec(this).sub(Vec.positionVec(this.shootingEntity)).length() > this.customization.attractradius) {
-	    	if (this.shootingEntity == null) {return;}
 	    	if (!this.foundBlock) {
 	    		if (!this.level.isClientSide) {
 	    			Vec playerpos = Vec.positionVec(this.shootingEntity);
