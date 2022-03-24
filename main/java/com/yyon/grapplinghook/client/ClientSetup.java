@@ -1,11 +1,18 @@
 package com.yyon.grapplinghook.client;
 
+import java.util.ArrayList;
+
+import javax.annotation.Nullable;
+
+import org.lwjgl.glfw.GLFW;
+
 import com.mojang.blaze3d.platform.InputConstants;
 import com.yyon.grapplinghook.common.CommonSetup;
 import com.yyon.grapplinghook.controllers.AirfrictionController;
 import com.yyon.grapplinghook.controllers.ForcefieldController;
 import com.yyon.grapplinghook.entities.grapplehook.GrapplehookEntity;
 import com.yyon.grapplinghook.entities.grapplehook.RenderGrapplehookEntity;
+
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.renderer.entity.EntityRenderer;
@@ -18,13 +25,11 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.ClientRegistry;
+import net.minecraftforge.client.ConfigGuiHandler;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
-import org.lwjgl.glfw.GLFW;
-
-import javax.annotation.Nullable;
-import java.util.ArrayList;
 
 @Mod.EventBusSubscriber(bus=Mod.EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)
 public class ClientSetup {
@@ -83,9 +88,8 @@ public class ClientSetup {
 		
 	    EntityRenderers.register(CommonSetup.grapplehookEntityType, new GrapplehookEntityRenderFactory());
 
-//		ModLoadingContext.get().registerExtensionPoint(
-//				ConfigGuiHandler.ConfigGuiFactory::screenFunction,
-//                () -> ((ClientProxy) ClientProxyInterface.proxy)::onConfigScreen);
+		ModLoadingContext.get().registerExtensionPoint(ConfigGuiHandler.ConfigGuiFactory.class,
+    		() -> new ConfigGuiHandler.ConfigGuiFactory(((ClientProxy) ClientProxyInterface.proxy)::onConfigScreen));
 		
 	    this.registerPropertyOverride();
 	    

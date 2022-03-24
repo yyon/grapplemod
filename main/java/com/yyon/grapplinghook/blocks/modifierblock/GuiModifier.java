@@ -234,7 +234,12 @@ public class GuiModifier extends Screen {
 			super.renderButton(p_230431_1_, p_230431_2_, p_230431_3_, p_230431_4_);
 			
 			if (this.isHovered) {
-				renderTooltip(p_230431_1_, tooltip, p_230431_2_, p_230431_3_);
+				String tooltiptext = tooltip.getString();
+				ArrayList<Component> lines = new ArrayList<Component>();
+				for (String line : tooltiptext.split("\n")) {
+					lines.add(new TextComponent(line));
+				}
+				renderTooltip(p_230431_1_, lines, Optional.empty(), p_230431_2_, p_230431_3_);
 			}
 		}
 	}

@@ -739,7 +739,6 @@ public class GrappleController {
     	
 		BlockPos pos = new BlockPos(Math.floor(p.x), Math.floor(p.y), Math.floor(p.z));
 		if (hasBlock(pos, w)) {
-			System.out.println("In block");
 			v.add_ip(0, 1, 0);
 		} else {
 	    	v.add_ip(vecDist(p, new Vec(-1,  t,  0), w));
