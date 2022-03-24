@@ -1,0 +1,228 @@
+ x basic grappling hook:
+    x shoot a grappling hook
+    x swing on a grappling hook
+    x shift to stop swinging
+    x climb up/down grappling hook
+    x walk with a grappling hook attached
+    x bend rope when grappling hook is attached
+    x bend rope when throwing rope
+    x unbend rope
+    x use shift to reel in rope after throwing it
+    x jump and detach
+    x detach without jumping
+    x remove before attaching
+    x test using "throw right hook" alternate key
+    x check using grappling hook in off hand
+    x check that rope unattaches when mining the block its attached to
+    x check tooltip, tooltip+shift, tooltip+ctrl
+    x check that item texture changes when attached
+    x check that rope detaches when player dies
+    x check that rope detaches when player throws item (with q)
+    x check underwater
+    x check that detaches when riding a horse
+    x check that momentum stops when hitting a wall
+ x check max length
+    x when swinging
+    x when climbing
+    x when walking with a grappling hook attached
+    x all of above when rope is bent
+ x ender staff
+    x launch with ender staff
+    x check if it still works when attached with a grappling hook
+    x check that ender staff is re-charged on ground
+    x check that ender staff charges slowly in air
+    x check that ender staff is re-charged from grappling hook attach
+    x check sound effect
+    x check tooltip
+ x forcefield
+    x use forcefield
+    x use shift to slow down
+    x check with ender staff
+    x check tooltip
+ x long fall boots
+    x check that fall damage is canceled
+    x test crafting using modifier block
+ x grappling hook modifier
+    x check that can open gui
+    x check that all categories are available in creative mode
+    x check that categories are locked in survival mode
+    x check that using upgrades unlocks categories
+    x check that sliders and checkboxes can be modified
+    x check that modifications are applied to grappling hook
+    x check reset button
+    x check that options are greyed-out when there are incompatibilities
+    x check that block drops + upgrades when mined (also that block doesn't insta-break)
+    x check easter egg
+    x check help screen
+    x check that options persist when reloading world
+ x crafting
+    x check all crafting recipes
+    x make sure crafting upgrades are kept when creating upgraded grappling hooks
+    x check creative tab
+    x check that upgraded hooks are in creative tab
+ x air friction controller
+    x check that player has less air friction after a swing/ender staff/etc
+    x check that momentum stops after hitting a wall
+ - multiplayer
+    - check that dedicated server doesn't crash
+    - check that can see other players grappling hooks
+    - check basic functionality
+ - grappling hook upgrades
+    - test main functionality of all craftable grappling hooks
+        - motor: test motor pull, and disabling motor using shift
+        - magnet hook: test hook attraction and forcefield repulsion. Also check basic functionality in the future city map
+        - ender staff: test ender staff while swinging, and while not swinging. Also check basic functionality in the future city map
+        - rocket: test rocket while swinging, and from a standstill while not swinging, also check sound effect
+        - smart motor: test using crosshairs for smart hook (vertical). Also check basic functionality combined with boots with all 3 encantments in the titanfall 2 map
+        - double motor: test throwing at angles (+ shift), test motor pull, and using crosshairs for double motor smart hook (horizontal). Also check that 2 extra crosshairs are drawn.
+        - rocket double motor: same tests as double motor and rocket. Also check that 3 extra crosshairs are drawn, plus rocket fuel when using rocket. Check that rocket fuel auto-refills. Also check basic functionality in the Shiganshina map
+    - check that item texture changes for the appropriate upgrades
+    - check that tooltip changes
+    - test all upgrades using the modifier
+        - rope
+            - rope length
+            - phase rope
+            - sticky rope
+            - dedicated climbing key
+        - forcefield
+            - enabled
+            - repel force
+        - hook thrower
+            - gravity on hook. Also check that values <1 are only unlocked after limits upgrade
+            - throw speed
+            - crouch to reel in
+            - vertical throw angle
+            - crouching throw angle
+            - detach hook on button/key release
+        - hook magnet
+            - magnet enabled
+            - attraction radius
+        - motor
+            - motor enabled
+            - motor max speed
+            - motor acceleration
+            - motor when on/off button held
+            - motor when on/off button not held
+            - smart moter
+            - sideways motion dampener. Also check that only unlocked after limits upgrade
+            - pull backwards
+        - double hook
+            - enabled
+            - check with motor
+            - smart motor
+            - check with vertical smart motor
+            - check with both horizontal and vertical smart motor
+            - angle
+            - angle when crouching
+            - angle + throwing vertical angle
+            - allow pulling with one rope
+        - swing speed
+            - swing speed
+        - rocket
+            - rocket enabled
+            - rocket force
+            - rocket time
+            - rocket refuel time ratio
+            - rocket vertical angle
+        - ender staff
+            - ender staff
+ - enchantments
+    - check that enchantments are obtainable through enchanting table
+    - wallrunning
+        - check wallrunning
+        - check wallrun jump
+        - check wallrun time-out
+        - check wallrunning off a corner
+        - check wallrunning after another wallrun using parallel / perpendicular walls
+        - check sound effects for footsteps and jump
+        - check screen tilt
+    - sliding
+        - check sliding from an ender staff
+        - check sliding from a wallrun
+        - check sliding jump
+        - check that player can't move during a slide
+        - check sliding from a run
+        - check sliding from a run + jump
+        - check that sliding doesn't work from a walk
+        - check that sliding doesn't work from a jump at low speed
+        - check that player comes to a stop, and can start walking again
+        - check that slide goes up stairs/slabs
+        - check sound effect
+    - double-jump
+        - check double-jump from standstill
+        - check double-jump after a wallrun
+        - check double-jump after a grappling hook swing
+        - check that double-jump is recharged after landing on ground
+        - check that double-jump isn't recharged in air
+        - check sound effect
+ - keybinds
+    - check remapping keybinds
+    - check that keybinds don't conflict (e.g. being unable to punch in midair when another keybind is mapped to left click)
+ - config options
+    - check that config file and config gui exist and contain the config options
+    - check that (non-client) options are synced when logging on to a dedicated server
+    - test a boolean grappling hook custom option in options->grapplinghook->custom->...
+        - check that default value is reflected when getting a new grappling hook
+        - check enabled 0 -> available in modifier block without limits upgrade, 1 -> only with limits upgrade, 2 -> not enabled
+    - test a double grappling hook custom option in options->grapplinghook->custom->...
+        - check that default value is reflected when getting a new grappling hook
+        - check enabled 0 -> available in modifier block without limits upgrade, 1 -> only with limits upgrade, 2 -> not enabled
+        - test min/max without limits upgrade
+        - test min_upgrade/max_upgraded with limits upgrade
+    - options
+        - grapplinghook
+            - custom
+                - grapplingBlocks
+                - grapplingNonBlocks
+                - grappleBreakBlocks
+            - other
+                - hookaffectsentities
+                - rope_snap_buffer
+                - default_durability
+                - rope_jump_power
+                - rope_jump_at_angle
+                - rope_jump_cooldown
+                - climb_speed
+        - longfallboots
+            - longfallbootsrecipe
+        - enderstaff
+            - ender_staff_strength
+            - ender_staff_recharge
+        - enchantments
+            - wallrun
+                - wall_jump_up
+                - wall_jump_side
+                - max_wallrun_time
+                - wallrun_speed
+                - wallrun_max_speed
+                - wallrun_drag
+                - wallrun_min_speed
+                - enchant_rarity_wallrun
+            - doublejump
+                - doublejumpforce
+                - doublejump_relative_to_falling
+                - dont_doublejump_if_falling_faster_than
+                - enchant_rarity_doublejump
+            - slide
+                - slidingjumpforce
+                - sliding_friction
+                - sliding_min_speed
+                - sliding_end_min_speed
+                - enchant_rarity_sliding
+        - other
+            - override_allowflight
+            - airstrafe_max_speed
+            - airstrafe_acceleration
+            - dont_override_movement_in_air
+    - clientOptions
+        - camera
+            - wallrun_camera_tilt_degrees
+            - wallrun_camera_animation_s
+        - sounds
+            - wallrun_sound_effect_time_s
+            - wallrun_sound_volume
+            - doublejump_sound_volume
+            - slide_sound_volume
+            - wallrunjump_sound_volume
+            - rocket_sound_volume
+            - enderstaff_sound_volume

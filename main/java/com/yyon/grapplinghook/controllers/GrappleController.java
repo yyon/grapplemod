@@ -739,6 +739,7 @@ public class GrappleController {
     	
 		BlockPos pos = new BlockPos(Math.floor(p.x), Math.floor(p.y), Math.floor(p.z));
 		if (hasBlock(pos, w)) {
+			System.out.println("In block");
 			v.add_ip(0, 1, 0);
 		} else {
 	    	v.add_ip(vecDist(p, new Vec(-1,  t,  0), w));
@@ -746,6 +747,7 @@ public class GrappleController {
 	    	v.add_ip(vecDist(p, new Vec(-1, -t,  0), w));
 	    	v.add_ip(vecDist(p, new Vec( 1, -t,  0), w));
 	    	v.add_ip(vecDist(p, new Vec( 0, -1,  t), w));
+	    	v.add_ip(vecDist(p, new Vec( 0,  1,  t), w));
 	    	v.add_ip(vecDist(p, new Vec( 0,  1,  t), w));
 	    	v.add_ip(vecDist(p, new Vec( 0, -1, -t), w));
 	    	v.add_ip(vecDist(p, new Vec( 0,  1, -t), w));
@@ -777,14 +779,13 @@ public class GrappleController {
     }
     
 	public boolean hasBlock(BlockPos pos, Level w) {
-		boolean isblock = false;
     	BlockState blockstate = w.getBlockState(pos);
-    	Block b = blockstate.getBlock();
+//    	Block b = blockstate.getBlock();
     	if (blockstate.isAir()) {
-    		isblock = true;
+    		return false;
     	}
 		
-    	return isblock;
+    	return true;
 	}
 
 	public void receiveGrappleDetachHook(int hookid) {

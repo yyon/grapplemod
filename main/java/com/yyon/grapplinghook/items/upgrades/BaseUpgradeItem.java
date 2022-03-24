@@ -4,6 +4,7 @@ import com.yyon.grapplinghook.common.CommonSetup;
 import com.yyon.grapplinghook.grapplemod;
 import com.yyon.grapplinghook.utils.GrappleCustomization;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.fml.util.ObfuscationReflectionHelper;
 
 import java.lang.reflect.Field;
@@ -11,6 +12,7 @@ import java.lang.reflect.Modifier;
 
 public class BaseUpgradeItem extends Item {
 	public GrappleCustomization.upgradeCategories category = null;
+	boolean craftingRemaining = false;
 
 	public BaseUpgradeItem(int maxStackSize, GrappleCustomization.upgradeCategories theCategory) {
 		super(new Item.Properties().stacksTo(maxStackSize).tab(CommonSetup.tabGrapplemod));
@@ -23,20 +25,25 @@ public class BaseUpgradeItem extends Item {
 	}
 	
 	public void setCraftingRemainingItem() {
-		try {
-			Field craftingRemainingItem = ObfuscationReflectionHelper.findField(Item.class, "field_77700_c");
-			craftingRemainingItem.setAccessible(true);
-
-			Field modifiersField = Field.class.getDeclaredField("modifiers");
-			modifiersField.setAccessible(true);
-			modifiersField.setInt(craftingRemainingItem, craftingRemainingItem.getModifiers() & ~Modifier.FINAL);
-
-			craftingRemainingItem.set(this, this);
-		} catch (Exception e) {
-			grapplemod.LOGGER.warn("unable to set craftingRemainingItem for upgrade item");
-		}
+		craftingRemaining = true;
 	}
+
+	@Override
+	public ItemStack getContainerItem(ItemStack itemStack)
+    {
+        if (!this.craftingRemaining)
+        {
+            return ItemStack.EMPTY;
+        }
+        return new ItemStack(this);
+    }
 	
+	@Override
+	public boolean hasCraftingRemainingItem() {
+		return this.craftingRemaining;
+	}
+
+
 	public BaseUpgradeItem() {
 		this(64, null);
 	}

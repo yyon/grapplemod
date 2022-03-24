@@ -1,9 +1,15 @@
 package com.yyon.grapplinghook.blocks.modifierblock;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Optional;
+
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.yyon.grapplinghook.client.ClientProxyInterface;
 import com.yyon.grapplinghook.utils.GrappleCustomization;
+
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.components.AbstractSliderButton;
@@ -18,8 +24,6 @@ import net.minecraft.network.chat.TextComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.item.ItemStack;
-
-import java.util.HashMap;
 
 public class GuiModifier extends Screen {
 	private static final ResourceLocation texture = new ResourceLocation("grapplemod",
@@ -142,12 +146,11 @@ public class GuiModifier extends Screen {
 	}
 
 	public void clearScreen() {
-		this.renderables.clear();
 		this.category = null;
 		posy = 10;
 		id = 10;
 		options = new HashMap<>();
-		this.renderables.clear();
+		this.clearWidgets();
 		
 		this.addRenderableWidget(new BackgroundWidget(this.guiLeft, this.guiTop, this.xSize, this.ySize));
 	}
@@ -279,7 +282,12 @@ public class GuiModifier extends Screen {
 			super.renderButton(p_230431_1_, p_230431_2_, p_230431_3_, p_230431_4_);
 			
 			if (this.isHovered) {
-				renderTooltip(p_230431_1_, tooltip, p_230431_2_, p_230431_3_);
+				String tooltiptext = tooltip.getString();
+				ArrayList<Component> lines = new ArrayList<Component>();
+				for (String line : tooltiptext.split("\n")) {
+					lines.add(new TextComponent(line));
+				}
+				renderTooltip(p_230431_1_, lines, Optional.empty(), p_230431_2_, p_230431_3_);
 			}
 		}
 	}
