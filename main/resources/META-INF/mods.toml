@@ -37,3 +37,9 @@ versionRange="${minecraft_version_range}"
 ordering="NONE"
 side="BOTH"
 
+[[dependencies.${mod_id}]]
+    modId="cloth_config"
+    mandatory=true
+    versionRange="[6, 7)"
+    ordering="NONE"
+    side="BOTH"
