@@ -1,13 +1,11 @@
 package com.yyon.grapplinghook.entities.grapplehook;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
-import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.IVertexBuilder;
 import com.yyon.grapplinghook.utils.Vec;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.IRenderTypeBuffer;
-import net.minecraft.client.renderer.ItemRenderer;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.culling.ClippingHelper;
 import net.minecraft.client.renderer.entity.EntityRenderer;
@@ -21,8 +19,7 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.vector.Matrix3f;
 import net.minecraft.util.math.vector.Matrix4f;
-import net.minecraft.util.math.vector.Vector3d;
-import net.minecraft.util.math.vector.Vector3f;
+import net.minecraft.util.math.vector.Quaternion;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
@@ -48,8 +45,8 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 public class RenderGrapplehookEntity<T extends GrapplehookEntity> extends EntityRenderer<T>
 {
     protected final Item item;
-    private static final ResourceLocation HOOK_TEXTURES = new ResourceLocation("grapplemod", "textures/items/grapplinghook.png");
-    private static final RenderType HOOK_RENDER = RenderType.entityCutout(HOOK_TEXTURES);
+    private static final ResourceLocation HOOK_TEXTURES = new ResourceLocation("grapplemod", "textures/entity/hook.png");
+    private static final RenderType HOOK_RENDER = RenderType.entityCutoutNoCull(HOOK_TEXTURES, false);
     private static final ResourceLocation ROPE_TEXTURES = new ResourceLocation("grapplemod", "textures/entity/rope.png");
     private static final RenderType ROPE_RENDER = RenderType.entitySolid(ROPE_TEXTURES);
     
@@ -80,27 +77,6 @@ public class RenderGrapplehookEntity<T extends GrapplehookEntity> extends Entity
 		}
 		
 		LivingEntity playerentity = e;
-		
-		/** draw hook **/
-		
-		// transformation so hook texture is facing camera
-		matrix.pushPose();
-		matrix.scale(0.5F, 0.5F, 0.5F);
-		matrix.mulPose(this.entityRenderDispatcher.cameraOrientation());
-		matrix.mulPose(Vector3f.YP.rotationDegrees(180.0F));
-		MatrixStack.Entry matrixstack$entry = matrix.last();
-		Matrix4f matrix4f = matrixstack$entry.pose();
-		Matrix3f matrix3f = matrixstack$entry.normal();
-		
-		// draw hook texture
-		IVertexBuilder ivertexbuilder = rendertype.getBuffer(HOOK_RENDER);
-		vertex(ivertexbuilder, matrix4f, matrix3f, p_225623_6_, 0.0F, 0, 0, 1);
-		vertex(ivertexbuilder, matrix4f, matrix3f, p_225623_6_, 1.0F, 0, 1, 1);
-		vertex(ivertexbuilder, matrix4f, matrix3f, p_225623_6_, 1.0F, 1, 1, 0);
-		vertex(ivertexbuilder, matrix4f, matrix3f, p_225623_6_, 0.0F, 1, 0, 0);
-		
-		// revert transformation
-		matrix.popPose();
 		
 		/** get player hand position **/
 		
@@ -142,6 +118,52 @@ public class RenderGrapplehookEntity<T extends GrapplehookEntity> extends Entity
 		Vec hand_position = hand_offset.add(Vec.partialPositionVec(playerentity, partialTicks));
         
 		
+		/** draw hook **/
+		
+		// get direction of rope where hook is attached
+		Vec hook_dir;
+        if (segmenthandler == null || segmenthandler.segments.size() <= 2) {
+        	hook_dir = getRelativeToEntity(hookEntity, new Vec(hand_position), partialTicks);
+        } else {
+    		Vec from = segmenthandler.segments.get(1);
+    		Vec to = Vec.partialPositionVec(hookEntity, partialTicks);
+        	hook_dir = from.sub(to);
+        }
+        hook_dir.normalize_ip();
+		
+		// transformation so hook texture is facing the camera
+		matrix.pushPose();
+		matrix.scale(0.5F, 0.5F, 0.5F);
+		matrix.mulPose(this.entityRenderDispatcher.cameraOrientation());
+		
+		Vec cam_pos = new Vec(this.entityRenderDispatcher.camera.getPosition());
+		Vec hook_pos = Vec.partialPositionVec(hookEntity, partialTicks);
+		
+		Vec cam_dir = hook_pos.sub(cam_pos);
+		Vec hook_dir_from_cam = hook_dir.removeAlong(cam_dir);
+		Vec up_from_cam = new Vec(this.entityRenderDispatcher.camera.getUpVector()).removeAlong(cam_dir);
+		double hook_angle_from_cam = hook_dir_from_cam.angle(up_from_cam);
+		if (hook_dir_from_cam.dot(cam_dir.cross(up_from_cam)) < 0) {
+			hook_angle_from_cam *= -1;
+		}
+		
+		matrix.mulPose(new Quaternion(new Vec(0, 0, 1).toVector3f(), (float) (hook_angle_from_cam + Math.PI*3/4), false));
+		
+		MatrixStack.Entry matrixstack$entry = matrix.last();
+		Matrix4f matrix4f = matrixstack$entry.pose();
+		Matrix3f matrix3f = matrixstack$entry.normal();
+		
+		// draw hook texture
+		IVertexBuilder ivertexbuilder = rendertype.getBuffer(HOOK_RENDER);
+		vertex(ivertexbuilder, matrix4f, matrix3f, p_225623_6_, 0.0F, 0, 0, 1);
+		vertex(ivertexbuilder, matrix4f, matrix3f, p_225623_6_, 1.0F, 0, 1, 1);
+		vertex(ivertexbuilder, matrix4f, matrix3f, p_225623_6_, 1.0F, 1, 1, 0);
+		vertex(ivertexbuilder, matrix4f, matrix3f, p_225623_6_, 0.0F, 1, 0, 0);
+		
+		// revert transformation
+		matrix.popPose();
+		
+		
 		/** draw rope **/
 		
 		// transformation (no tranformation)
@@ -180,6 +202,34 @@ public class RenderGrapplehookEntity<T extends GrapplehookEntity> extends Entity
         		drawSegment(from, to, taut, vertexbuffer, matrix4f1, matrix3f1, p_225623_6_);
         	}
         }
+        
+        // draw tip of rope closest to hand
+        Vec hand_closest;
+        if (segmenthandler == null || segmenthandler.segments.size() <= 2) {
+        	hand_closest = hook_pos;
+        } else {
+        	hand_closest = segmenthandler.segments.get(segmenthandler.segments.size() - 2);
+        }
+        Vec diff = hand_closest.sub(hand_position);
+        Vec forward = diff.changeLen(1);
+        Vec up = forward.cross(new Vec(1, 0, 0));
+        if (up.length() == 0) {
+        	up = forward.cross(new Vec(0, 0, 1));
+        }
+        up.changeLen_ip(0.025);
+        Vec side = forward.cross(up);
+        side.changeLen_ip(0.025);
+        
+        Vec[] corners = new Vec[] {up.mult(-1).add(side.mult(-1)), up.mult(-1).add(side), up.add(side), up.add(side.mult(-1))};
+        float[][] uvs = new float[][] {{0, 0.99F}, {0, 1}, {1, 1}, {1, 0.99F}};
+        
+        for (int size = 0; size < 4; size++) {
+            Vec corner = corners[size];
+        	Vec normal = corner.normalize(); //.add(forward.normalize().mult(-1)).normalize();
+        	Vec cornerpos = getRelativeToEntity(hookEntity, hand_position, partialTicks).add(corner);
+        	vertexbuffer.vertex(matrix4f1, (float) cornerpos.x, (float) cornerpos.y, (float) cornerpos.z).color(255, 255, 255, 255).uv(uvs[size][0], uvs[size][1]).overlayCoords(OverlayTexture.NO_OVERLAY).uv2(p_225623_6_).normal(matrix3f1, (float) normal.x, (float) normal.y, (float) normal.z).endVertex();
+        }
+        
 
 		matrix.popPose();
         
@@ -225,7 +275,8 @@ public class RenderGrapplehookEntity<T extends GrapplehookEntity> extends Entity
             Vec corner1 = corners[size];
             Vec corner2 = corners[(size + 1) % 4];
 
-        	Vec normal = new Vec(0,1,0);// corner1.add(corner2).normalize();
+        	Vec normal1 = corner1.normalize();
+        	Vec normal2 = corner2.normalize();
             
             for (int square_num = 0; square_num < number_squares; square_num++)
             {
@@ -241,10 +292,10 @@ public class RenderGrapplehookEntity<T extends GrapplehookEntity> extends Entity
                 Vec corner1pos2 = pos2.add(corner1);
                 Vec corner2pos2 = pos2.add(corner2);
             	
-                vertexbuffer.vertex(matrix, (float) corner1pos1.x, (float) corner1pos1.y, (float) corner1pos1.z).color(255, 255, 255, 255).uv(0, squarefrac1).overlayCoords(OverlayTexture.NO_OVERLAY).uv2(p_225623_6_).normal(matrix3, (float) normal.x, (float) normal.y, (float) normal.z).endVertex();
-                vertexbuffer.vertex(matrix, (float) corner2pos1.x, (float) corner2pos1.y, (float) corner2pos1.z).color(255, 255, 255, 255).uv(1, squarefrac1).overlayCoords(OverlayTexture.NO_OVERLAY).uv2(p_225623_6_).normal(matrix3, (float) normal.x, (float) normal.y, (float) normal.z).endVertex();
-                vertexbuffer.vertex(matrix, (float) corner2pos2.x, (float) corner2pos2.y, (float) corner2pos2.z).color(255, 255, 255, 255).uv(1, squarefrac2).overlayCoords(OverlayTexture.NO_OVERLAY).uv2(p_225623_6_).normal(matrix3, (float) normal.x, (float) normal.y, (float) normal.z).endVertex();
-                vertexbuffer.vertex(matrix, (float) corner1pos2.x, (float) corner1pos2.y, (float) corner1pos2.z).color(255, 255, 255, 255).uv(0, squarefrac2).overlayCoords(OverlayTexture.NO_OVERLAY).uv2(p_225623_6_).normal(matrix3, (float) normal.x, (float) normal.y, (float) normal.z).endVertex();
+                vertexbuffer.vertex(matrix, (float) corner1pos1.x, (float) corner1pos1.y, (float) corner1pos1.z).color(255, 255, 255, 255).uv(0, squarefrac1).overlayCoords(OverlayTexture.NO_OVERLAY).uv2(p_225623_6_).normal(matrix3, (float) normal1.x, (float) normal1.y, (float) normal1.z).endVertex();
+                vertexbuffer.vertex(matrix, (float) corner2pos1.x, (float) corner2pos1.y, (float) corner2pos1.z).color(255, 255, 255, 255).uv(1, squarefrac1).overlayCoords(OverlayTexture.NO_OVERLAY).uv2(p_225623_6_).normal(matrix3, (float) normal2.x, (float) normal2.y, (float) normal2.z).endVertex();
+                vertexbuffer.vertex(matrix, (float) corner2pos2.x, (float) corner2pos2.y, (float) corner2pos2.z).color(255, 255, 255, 255).uv(1, squarefrac2).overlayCoords(OverlayTexture.NO_OVERLAY).uv2(p_225623_6_).normal(matrix3, (float) normal2.x, (float) normal2.y, (float) normal2.z).endVertex();
+                vertexbuffer.vertex(matrix, (float) corner1pos2.x, (float) corner1pos2.y, (float) corner1pos2.z).color(255, 255, 255, 255).uv(0, squarefrac2).overlayCoords(OverlayTexture.NO_OVERLAY).uv2(p_225623_6_).normal(matrix3, (float) normal1.x, (float) normal1.y, (float) normal1.z).endVertex();
             }
         }
         

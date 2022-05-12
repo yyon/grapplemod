@@ -4,6 +4,8 @@ import com.yyon.grapplinghook.grapplemod;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.util.math.vector.Vector3d;
+import net.minecraft.util.math.vector.Vector3f;
+
 
 public class Vec {
 	public double x;
@@ -42,6 +44,16 @@ public class Vec {
 
 	public Vector3d toVec3d() {
 		return new Vector3d(this.x, this.y, this.z);
+	}
+	
+	public Vec(Vector3f vec) {
+		this.x = vec.x();
+		this.y = vec.y();
+		this.z = vec.z();
+	}
+
+	public Vector3f toVector3f() {
+		return new Vector3f((float) this.x, (float) this.y, (float) this.z);
 	}
 	
 	public static Vec positionVec(Entity e) {
