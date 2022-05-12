@@ -1,6 +1,8 @@
 package com.yyon.grapplinghook.utils;
 
+import com.mojang.math.Vector3f;
 import com.yyon.grapplinghook.grapplemod;
+
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.phys.Vec3;
 
@@ -39,8 +41,18 @@ public class Vec {
 		this.z = vec.z;
 	}
 
+	public Vec(Vector3f vec) {
+		this.x = vec.x();
+		this.y = vec.y();
+		this.z = vec.z();
+	}
+
 	public Vec3 toVec3d() {
 		return new Vec3(this.x, this.y, this.z);
+	}
+	
+	public Vector3f toVector3f() {
+		return new Vector3f((float) this.x, (float) this.y, (float) this.z);
 	}
 	
 	public static Vec positionVec(Entity e) {
