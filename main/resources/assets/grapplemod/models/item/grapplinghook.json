@@ -18,6 +18,7 @@
 	    { "predicate": { "rocket": 1, "attached": 0 }, "model": "grapplemod:item/rockethook" },
 	    { "predicate": { "rocket": 1, "attached": 1 }, "model": "grapplemod:item/rockethookrope" },
 	    { "predicate": { "rocket": 1, "double": 1, "attached": 0 }, "model": "grapplemod:item/rocketdoublemotorhook" },
-	    { "predicate": { "rocket": 1, "double": 1, "attached": 1 }, "model": "grapplemod:item/rocketdoublemotorhookrope" }
+	    { "predicate": { "rocket": 1, "double": 1, "attached": 1 }, "model": "grapplemod:item/rocketdoublemotorhookrope" },
+	    { "predicate": { "hook": 1 }, "model": "grapplemod:item/hook" }
 	]
 }

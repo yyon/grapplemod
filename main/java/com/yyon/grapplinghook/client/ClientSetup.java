@@ -71,11 +71,8 @@ public class ClientSetup {
 	private static class GrapplehookEntityRenderFactory implements EntityRendererProvider<GrapplehookEntity> {
 	    @Override
 	    public EntityRenderer<GrapplehookEntity> create(Context manager) {
-	      return new RenderGrapplehookEntity<>(manager, CommonSetup.grapplingHookItem);
-	    	
+	        return new RenderGrapplehookEntity<>(manager, CommonSetup.grapplingHookItem);
 	    }
-
-
 	}
 	
 	
@@ -100,7 +97,6 @@ public class ClientSetup {
 	
 	public void registerPropertyOverride() {
 		ItemProperties.register(CommonSetup.grapplingHookItem, new ResourceLocation("rocket"), new ItemPropertyFunction() {
-
 			public float call(ItemStack stack, @Nullable ClientLevel world, @Nullable LivingEntity entity, int seed) {
 				return CommonSetup.grapplingHookItem.getPropertyRocket(stack, world, entity) ? 1 : 0;
 			}
@@ -140,6 +136,11 @@ public class ClientSetup {
 			public float call(ItemStack stack, @Nullable ClientLevel world, @Nullable LivingEntity entity, int seed) {
 				if (entity == null) {return 0;}
 				return (ClientControllerManager.controllers.containsKey(entity.getId()) && ClientControllerManager.controllers.get(entity.getId()) instanceof ForcefieldController) ? 1 : 0;
+			}
+		});
+		ItemProperties.register(CommonSetup.grapplingHookItem, new ResourceLocation("hook"), new ItemPropertyFunction() {
+			public float call(ItemStack stack, @Nullable ClientLevel world, @Nullable LivingEntity entity, int seed) {
+				return CommonSetup.grapplingHookItem.getPropertyHook(stack, world, entity) ? 1 : 0;
 			}
 		});
 	}

@@ -13,6 +13,7 @@ import com.yyon.grapplinghook.utils.GrappleCustomization;
 import com.yyon.grapplinghook.utils.GrapplemodUtils;
 import com.yyon.grapplinghook.utils.Vec;
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.NonNullList;
 import net.minecraft.nbt.CompoundTag;
@@ -573,5 +574,10 @@ public class GrapplehookItem extends Item implements KeypressItem {
 	            	ClientProxyInterface.proxy.fillGrappleVariants(tab, items);
 	            }
 			}
+	}
+
+	public boolean getPropertyHook(ItemStack stack, ClientLevel world, LivingEntity entity) {
+    	CompoundTag tag = stack.getOrCreateTag();
+    	return tag.contains("hook");
 	}
 }

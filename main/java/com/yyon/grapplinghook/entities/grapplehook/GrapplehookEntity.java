@@ -112,6 +112,8 @@ public class GrapplehookEntity extends ThrowableItemProjectile implements IEntit
 	public boolean wasInAir = false;
 	public BlockPos magnetBlock = null;
 	
+	public Vec attach_dir = null;
+	
 	@Override
     public void writeSpawnData(FriendlyByteBuf data)
     {
