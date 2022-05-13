@@ -580,4 +580,9 @@ public class GrapplehookItem extends Item implements KeypressItem {
 	            }
 			}
 	}
+
+	public boolean getPropertyHook(ItemStack stack, World world, LivingEntity entity) {
+    	CompoundNBT tag = stack.getOrCreateTag();
+    	return tag.contains("hook");
+	}
 }

@@ -115,6 +115,8 @@ public class GrapplehookEntity extends ProjectileItemEntity implements IEntityAd
 	public boolean wasInAir = false;
 	public BlockPos magnetBlock = null;
 	
+	public Vec attach_dir = null;
+	
 	@Override
     public void writeSpawnData(PacketBuffer data)
     {

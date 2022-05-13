@@ -10,10 +10,13 @@ import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.culling.ClippingHelper;
 import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.EntityRendererManager;
+import net.minecraft.client.renderer.model.IBakedModel;
+import net.minecraft.client.renderer.model.ItemCameraTransforms;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.HandSide;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.MathHelper;
@@ -49,11 +52,13 @@ public class RenderGrapplehookEntity<T extends GrapplehookEntity> extends Entity
     private static final RenderType HOOK_RENDER = RenderType.entityCutoutNoCull(HOOK_TEXTURES, false);
     private static final ResourceLocation ROPE_TEXTURES = new ResourceLocation("grapplemod", "textures/entity/rope.png");
     private static final RenderType ROPE_RENDER = RenderType.entitySolid(ROPE_TEXTURES);
+    net.minecraft.client.renderer.ItemRenderer context;
     
     public RenderGrapplehookEntity(EntityRendererManager renderManagerIn, Item itemIn)
     {
         super(renderManagerIn);
         this.item = itemIn;
+		this.context = Minecraft.getInstance().getItemRenderer();
     }
 
     /**
@@ -121,6 +126,47 @@ public class RenderGrapplehookEntity<T extends GrapplehookEntity> extends Entity
 		/** draw hook **/
 		
 		// get direction of rope where hook is attached
+		Vec attach_dir = Vec.motionVec(hookEntity).mult(-1);
+		if (attach_dir.length() == 0) {
+			if (hookEntity.attach_dir != null) {
+				attach_dir = hookEntity.attach_dir;
+			} else {
+		        if (segmenthandler == null || segmenthandler.segments.size() <= 2) {
+		        	attach_dir = getRelativeToEntity(hookEntity, new Vec(hand_position), partialTicks);
+		        } else {
+		    		Vec from = segmenthandler.segments.get(1);
+		    		Vec to = Vec.partialPositionVec(hookEntity, partialTicks);
+		    		attach_dir = from.sub(to);
+		        }
+			}
+		}
+        attach_dir.normalize_ip();
+		if (hookEntity.attached) {
+			if (hookEntity.attach_dir != null) {
+				attach_dir = hookEntity.attach_dir;
+			}
+		}
+		hookEntity.attach_dir = attach_dir;
+		
+		// transformation so hook texture is facing the correct way
+		matrix.pushPose();
+		matrix.scale(0.5F, 0.5F, 0.5F);
+		
+		matrix.mulPose(new Quaternion(new Vec(0, 1, 0).toVector3f(), (float) (-attach_dir.getYaw()), true));
+		matrix.mulPose(new Quaternion(new Vec(1, 0, 0).toVector3f(), (float) (attach_dir.getPitch() - 90), true));
+		matrix.mulPose(new Quaternion(new Vec(0, 1, 0).toVector3f(), (float) (45 * hand_right), true));
+		matrix.mulPose(new Quaternion(new Vec(0, 0, 1).toVector3f(), (float) (-45), true));
+		
+		// draw hook
+		ItemStack stack = this.getStackToRender(hookEntity);
+		IBakedModel bakedmodel = context.getModel(stack, hookEntity.level, (LivingEntity)null);
+        context.render(stack, ItemCameraTransforms.TransformType.NONE, false, matrix, rendertype, p_225623_6_, OverlayTexture.NO_OVERLAY, bakedmodel);
+
+		// revert transformation
+		matrix.popPose();
+		
+		/*
+		// get direction of rope where hook is attached
 		Vec hook_dir;
         if (segmenthandler == null || segmenthandler.segments.size() <= 2) {
         	hook_dir = getRelativeToEntity(hookEntity, new Vec(hand_position), partialTicks);
@@ -162,13 +208,13 @@ public class RenderGrapplehookEntity<T extends GrapplehookEntity> extends Entity
 		
 		// revert transformation
 		matrix.popPose();
-		
+		*/
 		
 		/** draw rope **/
 		
 		// transformation (no tranformation)
         matrix.pushPose();
-        matrixstack$entry = matrix.last();
+        MatrixStack.Entry matrixstack$entry = matrix.last();
         Matrix4f matrix4f1 = matrixstack$entry.pose();
         Matrix3f matrix3f1 = matrixstack$entry.normal();
 
@@ -204,6 +250,7 @@ public class RenderGrapplehookEntity<T extends GrapplehookEntity> extends Entity
         }
         
         // draw tip of rope closest to hand
+		Vec hook_pos = Vec.partialPositionVec(hookEntity, partialTicks);
         Vec hand_closest;
         if (segmenthandler == null || segmenthandler.segments.size() <= 2) {
         	hand_closest = hook_pos;
@@ -308,7 +355,11 @@ public class RenderGrapplehookEntity<T extends GrapplehookEntity> extends Entity
 
 	public ItemStack getStackToRender(T entityIn)
     {
-        return new ItemStack(this.item);
+		ItemStack stack = new ItemStack(this.item);
+		CompoundNBT tag = stack.getOrCreateTag();
+		tag.putBoolean("hook", true);
+		stack.setTag(tag);
+        return stack;
     }
 
     /**

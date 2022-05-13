@@ -76,7 +76,6 @@ public class ClientSetup {
 	    @Override
 	    public EntityRenderer<? super GrapplehookEntity> createRenderFor(EntityRendererManager manager) {
 	      return new RenderGrapplehookEntity<>(manager, CommonSetup.grapplingHookItem);
-	    	
 	    }
 	}
 	
@@ -142,6 +141,11 @@ public class ClientSetup {
 			public float call(ItemStack stack, @Nullable ClientWorld world, @Nullable LivingEntity entity) {
 				if (entity == null) {return 0;}
 				return (ClientControllerManager.controllers.containsKey(entity.getId()) && ClientControllerManager.controllers.get(entity.getId()) instanceof ForcefieldController) ? 1 : 0;
+			}
+		});
+		ItemModelsProperties.register(CommonSetup.grapplingHookItem, new ResourceLocation("hook"), new IItemPropertyGetter() {
+			public float call(ItemStack stack, @Nullable ClientWorld world, @Nullable LivingEntity entity) {
+				return CommonSetup.grapplingHookItem.getPropertyHook(stack, world, entity) ? 1 : 0;
 			}
 		});
 	}
