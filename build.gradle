@@ -13,7 +13,7 @@ apply plugin: 'eclipse'
 apply plugin: 'maven-publish'
 apply plugin: 'java-library'
 
-version = '1.16.5-v12.3'
+version = '1.16.5-v13'
 group = 'com.yyon.grapplemod' // http://maven.apache.org/guides/mini/guide-naming-conventions.html
 archivesBaseName = 'grapplemod'
 
