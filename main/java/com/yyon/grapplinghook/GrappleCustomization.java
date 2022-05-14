@@ -3,63 +3,121 @@ package com.yyon.grapplinghook;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.nbt.NBTTagCompound;
 
+import java.nio.ByteBuffer;
+import java.nio.ByteBuffer;
+import java.util.zip.CRC32;
+import java.util.zip.Checksum;
+
 public class GrappleCustomization {
 	public static final String[] booleanoptions = new String[] {"phaserope", "motor", "motorwhencrouching", "motorwhennotcrouching", "smartmotor", "enderstaff", "repel", "attract", "doublehook", "smartdoublemotor", "motordampener", "reelin", "pullbackwards", "oneropepull", "sticky", "detachonkeyrelease", "rocket"};
 	public static final String[] doubleoptions = new String[] {"maxlen", "hookgravity", "throwspeed", "motormaxspeed", "motoracceleration", "playermovementmult", "repelforce", "attractradius", "angle", "sneakingangle", "verticalthrowangle", "sneakingverticalthrowangle", "rocket_force", "rocket_active_time", "rocket_refuel_ratio", "rocket_vertical_angle"};
 	
 	// rope
-	public double maxlen = GrappleConfig.getconf().default_maxlen;
-	public boolean phaserope = GrappleConfig.getconf().default_phaserope;
-	public boolean sticky = GrappleConfig.getconf().default_sticky;
+	public double maxlen;
+	public boolean phaserope;
+	public boolean sticky;
 
 	// hook thrower
-	public double hookgravity = GrappleConfig.getconf().default_hookgravity;
-	public double throwspeed = GrappleConfig.getconf().default_throwspeed;
-	public boolean reelin = GrappleConfig.getconf().default_reelin;
-	public double verticalthrowangle = GrappleConfig.getconf().default_verticalthrowangle;
-	public double sneakingverticalthrowangle = GrappleConfig.getconf().default_sneakingverticalthrowangle;
-	public boolean detachonkeyrelease = GrappleConfig.getconf().default_detachonkeyrelease;
+	public double hookgravity;
+	public double throwspeed;
+	public boolean reelin;
+	public double verticalthrowangle;
+	public double sneakingverticalthrowangle;
+	public boolean detachonkeyrelease;
 
 	// motor
-	public boolean motor = GrappleConfig.getconf().default_motor;
-	public double motormaxspeed = GrappleConfig.getconf().default_motormaxspeed;
-	public double motoracceleration = GrappleConfig.getconf().default_motoracceleration;
-	public boolean motorwhencrouching = GrappleConfig.getconf().default_motorwhencrouching;
-	public boolean motorwhennotcrouching = GrappleConfig.getconf().default_motorwhennotcrouching;
-	public boolean smartmotor = GrappleConfig.getconf().default_smartmotor;
-	public boolean motordampener = GrappleConfig.getconf().default_motordampener;
-	public boolean pullbackwards = GrappleConfig.getconf().default_pullbackwards;
+	public boolean motor;
+	public double motormaxspeed;
+	public double motoracceleration;
+	public boolean motorwhencrouching;
+	public boolean motorwhennotcrouching;
+	public boolean smartmotor;
+	public boolean motordampener;
+	public boolean pullbackwards;
 	
 	// swing speed
-	public double playermovementmult = GrappleConfig.getconf().default_playermovementmult;
+	public double playermovementmult;
 
 	// ender staff
-	public boolean enderstaff = GrappleConfig.getconf().default_enderstaff;
+	public boolean enderstaff;
 
 	// forcefield
-	public boolean repel = GrappleConfig.getconf().default_repel;
-	public double repelforce = GrappleConfig.getconf().default_repelforce;
+	public boolean repel;
+	public double repelforce;
 	
 	// hook magnet
-	public boolean attract = GrappleConfig.getconf().default_attract;
-	public double attractradius = GrappleConfig.getconf().default_attractradius;
+	public boolean attract;
+	public double attractradius;
 	
 	// double hook
-	public boolean doublehook = GrappleConfig.getconf().default_doublehook;
-	public boolean smartdoublemotor = GrappleConfig.getconf().default_smartdoublemotor;
-	public double angle = GrappleConfig.getconf().default_angle;
-	public double sneakingangle = GrappleConfig.getconf().default_sneakingangle;
-	public boolean oneropepull = GrappleConfig.getconf().default_oneropepull;
+	public boolean doublehook;
+	public boolean smartdoublemotor;
+	public double angle;
+	public double sneakingangle;
+	public boolean oneropepull;
 	
 	// rocket
-	public boolean rocket = GrappleConfig.getconf().default_rocketenabled;
-	public double rocket_force = GrappleConfig.getconf().default_rocket_force;
-	public double rocket_active_time = GrappleConfig.getconf().default_rocket_active_time;
-	public double rocket_refuel_ratio = GrappleConfig.getconf().default_rocket_refuel_ratio;
-	public double rocket_vertical_angle = GrappleConfig.getconf().default_rocket_vertical_angle;
+	public boolean rocket;
+	public double rocket_force;
+	public double rocket_active_time;
+	public double rocket_refuel_ratio;
+	public double rocket_vertical_angle;
 	
 	public GrappleCustomization() {
+		this.setDefaults();
+	}
+
+	public void setDefaults() {	
+		// rope
+		this.maxlen = GrappleConfig.getconf().default_maxlen;
+		this.phaserope = GrappleConfig.getconf().default_phaserope;
+		this.sticky = GrappleConfig.getconf().default_sticky;
+
+		// hook thrower
+		this.hookgravity = GrappleConfig.getconf().default_hookgravity;
+		this.throwspeed = GrappleConfig.getconf().default_throwspeed;
+		this.reelin = GrappleConfig.getconf().default_reelin;
+		this.verticalthrowangle = GrappleConfig.getconf().default_verticalthrowangle;
+		this.sneakingverticalthrowangle = GrappleConfig.getconf().default_sneakingverticalthrowangle;
+		this.detachonkeyrelease = GrappleConfig.getconf().default_detachonkeyrelease;
+
+		// motor
+		this.motor = GrappleConfig.getconf().default_motor;
+		this.motormaxspeed = GrappleConfig.getconf().default_motormaxspeed;
+		this.motoracceleration = GrappleConfig.getconf().default_motoracceleration;
+		this.motorwhencrouching = GrappleConfig.getconf().default_motorwhencrouching;
+		this.motorwhennotcrouching = GrappleConfig.getconf().default_motorwhennotcrouching;
+		this.smartmotor = GrappleConfig.getconf().default_smartmotor;
+		this.motordampener = GrappleConfig.getconf().default_motordampener;
+		this.pullbackwards = GrappleConfig.getconf().default_pullbackwards;
 		
+		// swing speed
+		this.playermovementmult = GrappleConfig.getconf().default_playermovementmult;
+
+		// ender staff
+		this.enderstaff = GrappleConfig.getconf().default_enderstaff;
+
+		// forcefield
+		this.repel = GrappleConfig.getconf().default_repel;
+		this.repelforce = GrappleConfig.getconf().default_repelforce;
+		
+		// hook magnet
+		this.attract = GrappleConfig.getconf().default_attract;
+		this.attractradius = GrappleConfig.getconf().default_attractradius;
+		
+		// double hook
+		this.doublehook = GrappleConfig.getconf().default_doublehook;
+		this.smartdoublemotor = GrappleConfig.getconf().default_smartdoublemotor;
+		this.angle = GrappleConfig.getconf().default_angle;
+		this.sneakingangle = GrappleConfig.getconf().default_sneakingangle;
+		this.oneropepull = GrappleConfig.getconf().default_oneropepull;
+		
+		// rocket
+		this.rocket = GrappleConfig.getconf().default_rocketenabled;
+		this.rocket_force = GrappleConfig.getconf().default_rocket_force;
+		this.rocket_active_time = GrappleConfig.getconf().default_rocket_active_time;
+		this.rocket_refuel_ratio = GrappleConfig.getconf().default_rocket_refuel_ratio;
+		this.rocket_vertical_angle = GrappleConfig.getconf().default_rocket_vertical_angle;
 	}
 	
 	public NBTTagCompound writeNBT() {
@@ -70,6 +128,7 @@ public class GrappleCustomization {
 		for (String option : doubleoptions) {
 			compound.setDouble(option, this.getDouble(option));
 		}
+ 		compound.setLong("crc32", this.getChecksum());
 		return compound;
 	}
 	
@@ -84,6 +143,28 @@ public class GrappleCustomization {
 				this.setDouble(option, compound.getDouble(option));
 			}
 		}
+		if (compound.hasKey("crc32")) {
+			long recordedChecksum = compound.getLong("crc32");
+			if (this.getChecksum() != recordedChecksum) {
+				System.out.println("Error checksum reading from NBT");
+				this.setDefaults();
+			}
+		}
+	}
+	
+
+	public long getChecksum() {
+		Checksum checker = new CRC32();
+		for (String option : booleanoptions) {
+			checker.update(this.getBoolean(option) ? 1 : 0);
+		}
+		for (String option : doubleoptions) {
+			// https://stackoverflow.com/questions/13071777/convert-double-to-byte-array
+			byte[] longBytes = ByteBuffer.allocate(8).putDouble(this.getDouble(option)).array();
+			checker.update(longBytes, 0, longBytes.length);
+		}
+		checker.update(54902349);
+		return checker.getValue();
 	}
 	
 	public void setBoolean(String option, boolean bool) {
@@ -177,7 +258,8 @@ public class GrappleCustomization {
 		for (String option : doubleoptions) {
 			buf.writeDouble(this.getDouble(option));
 		}
-	}
+ 		buf.writeLong(this.getChecksum());
+ 	}
 	
 	public void readFromBuf(ByteBuf buf) {
 		for (String option : booleanoptions) {
@@ -185,6 +267,11 @@ public class GrappleCustomization {
 		}
 		for (String option : doubleoptions) {
 			this.setDouble(option, buf.readDouble());
+		}
+		long recordedChecksum = buf.readLong();
+		if (this.getChecksum() != recordedChecksum) {
+			System.out.println("Error checksum reading from buffer");
+			this.setDefaults();
 		}
 	}
 

@@ -383,7 +383,7 @@ public class grappleArrow extends EntityThrowable implements IEntityAdditionalSp
 			if (this.attached) {
 				return;
 			}
-			if (this.shootingEntityID != 0) {
+			if (this.shootingEntityID != 0 && this.shootingEntity != null) {
 				if (movingobjectposition == null) {
 					return;
 				}
@@ -450,6 +450,9 @@ public class grappleArrow extends EntityThrowable implements IEntityAdditionalSp
 	
 	public void serverAttach(BlockPos blockpos, vec pos, EnumFacing sideHit) {
 		if (this.attached) {
+			return;
+		}
+		if (this.shootingEntity == null || this.shootingEntityID == 0) {
 			return;
 		}
 		this.attached = true;
