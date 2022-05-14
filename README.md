@@ -35,3 +35,33 @@ Currently, the versions of this mod for Minecraft 1.12, 1.16, and 1.18 are on br
 - main/java/com/yyon/grapplinghook/config: Configuration parameters provided by this mod that allows users to configure the parameters through a config file or cloth config
 - main/java/com/yyon/grapplinghook/integrations: Integration of this mod with other mods
 - main/java/com/yyon/grapplinghook/utils: Miscellaneous utilities
+
+## Credits
+
+1.18 update by Nyfaria
+
+Textures by Mayesnake
+
+Bug fixes:
+
+- Random832 (Prevent tick from running when shootingEntity is null)
+
+- LachimHeigrim (Fix for #37: removed forgotten debug prints)
+
+Languages:
+
+- Blueberryy (Russian)
+
+- Neerwan (French)
+
+- Eufranio (Brazillian Portugese)
+
+Sound Effects:
+
+- Iwan Gabovitch (Double jump sound effects (modified by me): https://opengameart.org/content/swish-bamboo-stick-weapon-swhoshes - Copyright Iwan Gabovitch 2009 Under the CC0 1.0 Universal license)
+
+- Outroelison (Ender staff sound effect (modified by me): https://freesound.org/people/outroelison/sounds/150950/ - Copyright outroelison 2012 under the CC0 1.0 Universal License)
+
+Bug finding:
+
+- Shivaxi
