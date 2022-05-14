@@ -333,7 +333,7 @@ public class GrapplehookEntity extends ProjectileItemEntity implements IEntityAd
 			if (this.attached) {
 				return;
 			}
-			if (this.shootingEntityID != 0 || this.shootingEntity == null) {
+			if (this.shootingEntityID != 0 && this.shootingEntity != null) {
 				if (movingobjectposition == null) {
 					return;
 				}
