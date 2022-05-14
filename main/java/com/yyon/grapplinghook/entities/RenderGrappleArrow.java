@@ -182,7 +182,7 @@ public class RenderGrappleArrow<T extends Entity> extends Render<T>
         vec somethingpos = new vec(d13, d8, d9).sub(thispos);
 
 //        GlStateManager.disableTexture2D();
-        GlStateManager.disableLighting();
+//        GlStateManager.disableLighting();
         GlStateManager.disableCull();
         this.bindTexture(this.getEntityTexture(entity));
         
@@ -211,8 +211,38 @@ public class RenderGrappleArrow<T extends Entity> extends Render<T>
                 this.drawSegment(from, to, taut, tessellator, vertexbuffer); 
         	}
         }
+        
 
-        GlStateManager.enableLighting();
+        // draw tip of rope closest to hand
+        vec hand_closest;
+        if (segmenthandler == null || segmenthandler.segments.size() <= 2) {
+        	hand_closest = thispos;
+        } else {
+        	hand_closest = segmenthandler.segments.get(segmenthandler.segments.size() - 2).sub(somethingpos);
+        }
+        vec diff = hand_closest.sub(handpos);
+        vec forward = diff.changelen(1);
+        vec up = forward.cross(new vec(1, 0, 0));
+        if (up.length() == 0) {
+        	up = forward.cross(new vec(0, 0, 1));
+        }
+        up.changelen_ip(0.025);
+        vec side = forward.cross(up);
+        side.changelen_ip(0.025);
+
+        vec[] corners = new vec[] {up.mult(-1).add(side.mult(-1)), up.mult(-1).add(side), up.add(side), up.add(side.mult(-1)), up.mult(-1).add(side.mult(-1))};
+        float[][] uvs = new float[][] {{0, 0.99F}, {0, 1}, {1, 1}, {1, 0.99F}, {0, 0.99F}};
+
+        vertexbuffer.begin(5, DefaultVertexFormats.POSITION_TEX_NORMAL);
+        for (int size = 0; size < 5; size++) {
+            vec corner = corners[size];
+        	vec normal = forward.normalize().mult(-1);
+        	vec cornerpos = handpos.add(corner);
+            vertexbuffer.pos((float) cornerpos.x, (float) cornerpos.y, (float) cornerpos.z).tex(uvs[size][0], uvs[size][1]).normal((float) normal.x, (float) normal.y, (float) normal.z).endVertex();
+        }
+        tessellator.draw();
+
+//        GlStateManager.enableLighting();
 //        GlStateManager.enableTexture2D();
         GlStateManager.enableCull();
         
@@ -303,10 +333,12 @@ public class RenderGrappleArrow<T extends Entity> extends Render<T>
         vec[] corners = new vec[] {up.mult(-1).add(side.mult(-1)), up.add(side.mult(-1)), up.add(side), up.mult(-1).add(side)};
         
         for (int corner = 0; corner < 4; corner++) {
-            vertexbuffer.begin(5, DefaultVertexFormats.POSITION_TEX);
+            vertexbuffer.begin(5, DefaultVertexFormats.POSITION_TEX_NORMAL);
             
             vec corner1 = corners[corner];
             vec corner2 = corners[(corner + 1) % 4];
+            
+            vec normal = corner1.add(corner2).normalize();
 
             for (int i1 = 0; i1 <= 16; ++i1)
             {
@@ -326,8 +358,8 @@ public class RenderGrappleArrow<T extends Entity> extends Render<T>
             	Z = z + d12 * (double)f10;
             	Y = y + d11 * (double)f10 - (1 - taut) * (0.25 - Math.pow((f10 - 0.5), 2)) * 1.5;
                 
-                vertexbuffer.pos(X + corner1.x, Y + corner1.y, Z + corner1.z).tex(0, i1/15.0F).endVertex();
-                vertexbuffer.pos(X + corner2.x, Y + corner2.y, Z + corner2.z).tex(1, i1/15.0F).endVertex();
+                vertexbuffer.pos(X + corner1.x, Y + corner1.y, Z + corner1.z).tex(0, i1/15.0F).normal((float) normal.x, (float) normal.y, (float) normal.z).endVertex();
+                vertexbuffer.pos(X + corner2.x, Y + corner2.y, Z + corner2.z).tex(1, i1/15.0F).normal((float) normal.x, (float) normal.y, (float) normal.z).endVertex();
             }
             
             tessellator.draw();
