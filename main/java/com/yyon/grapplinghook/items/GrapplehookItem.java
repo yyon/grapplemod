@@ -1,5 +1,10 @@
 package com.yyon.grapplinghook.items;
 
+import java.util.HashMap;
+import java.util.List;
+
+import javax.annotation.Nullable;
+
 import com.yyon.grapplinghook.client.ClientProxyInterface;
 import com.yyon.grapplinghook.client.ClientSetup;
 import com.yyon.grapplinghook.common.CommonSetup;
@@ -12,8 +17,8 @@ import com.yyon.grapplinghook.server.ServerControllerManager;
 import com.yyon.grapplinghook.utils.GrappleCustomization;
 import com.yyon.grapplinghook.utils.GrapplemodUtils;
 import com.yyon.grapplinghook.utils.Vec;
+
 import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.NonNullList;
 import net.minecraft.nbt.CompoundTag;
@@ -26,15 +31,15 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.*;
+import net.minecraft.world.item.CreativeModeTab;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
-
-import javax.annotation.Nullable;
-import java.util.HashMap;
-import java.util.List;
 
 
 /*
@@ -576,7 +581,7 @@ public class GrapplehookItem extends Item implements KeypressItem {
 			}
 	}
 
-	public boolean getPropertyHook(ItemStack stack, ClientLevel world, LivingEntity entity) {
+	public boolean getPropertyHook(ItemStack stack, Level world, LivingEntity entity) {
     	CompoundTag tag = stack.getOrCreateTag();
     	return tag.contains("hook");
 	}
