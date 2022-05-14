@@ -1,5 +1,7 @@
 package com.yyon.grapplinghook.entities;
 
+import org.lwjgl.util.vector.Quaternion;
+
 import com.yyon.grapplinghook.vec;
 import com.yyon.grapplinghook.controllers.SegmentHandler;
 
@@ -8,6 +10,7 @@ import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.RenderItem;
 import net.minecraft.client.renderer.Tessellator;
+import net.minecraft.client.renderer.block.model.IBakedModel;
 import net.minecraft.client.renderer.block.model.ItemCameraTransforms;
 import net.minecraft.client.renderer.culling.ICamera;
 import net.minecraft.client.renderer.entity.Render;
@@ -18,6 +21,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumHandSide;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.MathHelper;
@@ -44,7 +48,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
  */
 
 @SideOnly(Side.CLIENT)
-public class RenderGrappleArrow<T extends Entity> extends Render<T>
+public class RenderGrappleArrow<T extends grappleArrow> extends Render<T>
 {
     protected final Item item;
     private final RenderItem itemRenderer;
@@ -250,12 +254,39 @@ public class RenderGrappleArrow<T extends Entity> extends Render<T>
         GlStateManager.translate((float)x, (float)y, (float)z);
         GlStateManager.enableRescaleNormal();
         
-        GlStateManager.rotate(-this.renderManager.playerViewY, 0.0F, 1.0F, 0.0F);
-        GlStateManager.rotate((float)(this.renderManager.options.thirdPersonView == 2 ? -1 : 1) * this.renderManager.playerViewX, 1.0F, 0.0F, 0.0F);
-        GlStateManager.rotate(180.0F, 0.0F, 1.0F, 0.0F);
+		// get direction of rope where hook is attached
+		vec attach_dir = vec.motionvec(entity).mult(-1);
+		if (attach_dir.length() == 0) {
+			if (entity.attach_dir != null) {
+				attach_dir = entity.attach_dir;
+			} else {
+		        if (segmenthandler == null || segmenthandler.segments.size() <= 2) {
+		        	attach_dir = handpos.sub(thispos);
+		        } else {
+		    		vec from = segmenthandler.segments.get(1).sub(somethingpos);
+		    		vec to = thispos;
+		    		attach_dir = from.sub(to);
+		        }
+			}
+		}
+        attach_dir.normalize_ip();
+		if (entity.attached) {
+			if (entity.attach_dir != null) {
+				attach_dir = entity.attach_dir;
+			}
+		}
+		entity.attach_dir = attach_dir;
+
+		// transformation so hook texture is facing the correct way
+        GlStateManager.scale(0.5, 0.5, 0.5);
+        GlStateManager.rotate((float) (-attach_dir.getYaw()), 0.0F, 1.0F, 0.0F);
+        GlStateManager.rotate((float) (attach_dir.getPitch() - 90), 1.0F, 0.0F, 0.0F);
+        GlStateManager.rotate((float) (45 * k), 0.0F, 1.0F, 0.0F);
+        GlStateManager.rotate((float) (-45), 0.0F, 0.0F, 1.0F);
+
         this.bindTexture(TextureMap.LOCATION_BLOCKS_TEXTURE);
 
-        this.itemRenderer.renderItem(this.getStackToRender(entity), ItemCameraTransforms.TransformType.GROUND);
+        this.itemRenderer.renderItem(this.getStackToRender(entity), ItemCameraTransforms.TransformType.NONE);
 
         GlStateManager.disableRescaleNormal();
         GlStateManager.popMatrix();
@@ -375,13 +406,17 @@ public class RenderGrappleArrow<T extends Entity> extends Render<T>
 
 	public ItemStack getStackToRender(T entityIn)
     {
-        return new ItemStack(this.item);
+		ItemStack stack = new ItemStack(this.item);
+		NBTTagCompound tag = new NBTTagCompound();
+		tag.setBoolean("hook", true);
+		stack.setTagCompound(tag);
+        return stack;
     }
 
     /**
      * Returns the location of an entity's texture. Doesn't seem to be called unless you call Render.bindEntityTexture.
      */
-    protected ResourceLocation getEntityTexture(Entity entity)
+    protected ResourceLocation getEntityTexture(T entity)
     {
         return LEASH_KNOT_TEXTURES;
     }

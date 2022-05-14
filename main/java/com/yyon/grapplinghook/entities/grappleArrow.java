@@ -84,6 +84,8 @@ public class grappleArrow extends EntityThrowable implements IEntityAdditionalSp
 	public boolean wasinair = false;
 	public BlockPos magnetblock = null;
 	
+ 	public vec attach_dir = null;
+	
 	public grappleArrow(World worldIn) {
 		super(worldIn);
 		

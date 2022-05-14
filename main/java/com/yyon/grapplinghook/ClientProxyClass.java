@@ -88,7 +88,7 @@ public class ClientProxyClass extends CommonProxyClass {
 			@Override
 			public Render<? super grappleArrow> createRenderFor(
 					RenderManager manager) {
-				return new RenderGrappleArrow<grappleArrow>(manager, Items.IRON_PICKAXE, Minecraft.getMinecraft().getRenderItem());
+				return new RenderGrappleArrow<grappleArrow>(manager, grapplemod.grapplebowitem, Minecraft.getMinecraft().getRenderItem());
 			}
 		});
 		
@@ -113,6 +113,7 @@ public class ClientProxyClass extends CommonProxyClass {
 	public ModelResourceLocation odmropeloc = new ModelResourceLocation("grapplemod:odmrope", "inventory");
 	public ModelResourceLocation rocketloc = new ModelResourceLocation("grapplemod:rocket", "inventory");
 	public ModelResourceLocation rocketropeloc = new ModelResourceLocation("grapplemod:rocketrope", "inventory");
+	public ModelResourceLocation hookloc = new ModelResourceLocation("grapplemod:hook", "inventory");
 	
 	public ResourceLocation doubleJumpSoundLoc = new ResourceLocation("grapplemod", "doublejump");
 	public ResourceLocation slideSoundLoc = new ResourceLocation("grapplemod", "slide");
@@ -154,6 +155,9 @@ public class ClientProxyClass extends CommonProxyClass {
 				boolean active = !ClientProxyClass.isactive(stack);
 		    	if (stack.hasTagCompound()) {
 		    		NBTTagCompound compound = stack.getTagCompound();
+		    		if (compound.hasKey("hook")) {
+		    			return hookloc;
+		    		}
 		    		if (compound.getBoolean("rocket")) {
 		    			if (compound.getBoolean("doublehook")) {
 		    				return active ? odmloc : odmropeloc;
@@ -190,7 +194,7 @@ public class ClientProxyClass extends CommonProxyClass {
 		ModelLoader.setCustomMeshDefinition(grapplemod.enderhookitem, itemmeshdefinition);
 		ModelLoader.setCustomMeshDefinition(grapplemod.magnethookitem, itemmeshdefinition);
 		ModelLoader.setCustomMeshDefinition(grapplemod.rockethookitem, itemmeshdefinition);
-		for (ResourceLocation loc : new ResourceLocation[] {multihookloc, multihookropeloc, smarthookloc, smarthookropeloc, hookshotloc, hookshotropeloc, enderhookloc, magnetbowloc, grapplinghookloc, ropeloc, odmloc, odmropeloc, rocketloc, rocketropeloc}) {
+		for (ResourceLocation loc : new ResourceLocation[] {multihookloc, multihookropeloc, smarthookloc, smarthookropeloc, hookshotloc, hookshotropeloc, enderhookloc, magnetbowloc, grapplinghookloc, ropeloc, odmloc, odmropeloc, rocketloc, rocketropeloc, hookloc}) {
 			ModelBakery.registerItemVariants(grapplemod.grapplebowitem, loc);
 			ModelBakery.registerItemVariants(grapplemod.motorhookitem, loc);
 			ModelBakery.registerItemVariants(grapplemod.smarthookitem, loc);
