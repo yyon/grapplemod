@@ -1,5 +1,10 @@
 package com.yyon.grapplinghook.utils;
 
+import java.nio.ByteBuffer;
+import java.util.zip.CRC32;
+import java.util.zip.Checksum;
+
+import com.yyon.grapplinghook.grapplemod;
 import com.yyon.grapplinghook.client.ClientProxyInterface;
 import com.yyon.grapplinghook.common.CommonSetup;
 import com.yyon.grapplinghook.config.GrappleConfig;
@@ -129,6 +134,10 @@ public class GrappleCustomization {
 	};
 	
 	public GrappleCustomization() {
+		this.setDefaults();
+	}
+	
+	public void setDefaults() {
 		for (String option : booleanoptions) {
 			GrappleConfig.Config.GrapplingHook.Custom.BooleanCustomizationOption optionconfig = getBooleanConfig(option);
 			this.setBoolean(option, optionconfig.default_value);
@@ -188,6 +197,7 @@ public class GrappleCustomization {
 		for (String option : doubleoptions) {
 			compound.putDouble(option, this.getDouble(option));
 		}
+		compound.putLong("crc32", this.getChecksum());
 		return compound;
 	}
 	
@@ -200,6 +210,13 @@ public class GrappleCustomization {
 		for (String option : doubleoptions) {
 			if (compound.contains(option)) {
 				this.setDouble(option, compound.getDouble(option));
+			}
+		}
+		if (compound.contains("crc32")) {
+			long recordedChecksum = compound.getLong("crc32");
+			if (this.getChecksum() != recordedChecksum) {
+				grapplemod.LOGGER.error("Error checksum reading from NBT");
+				this.setDefaults();
 			}
 		}
 	}
@@ -288,6 +305,20 @@ public class GrappleCustomization {
 		return 0;
 	}
 	
+	public long getChecksum() {
+		Checksum checker = new CRC32();
+		for (String option : booleanoptions) {
+			checker.update(this.getBoolean(option) ? 1 : 0);
+		}
+		for (String option : doubleoptions) {
+			// https://stackoverflow.com/questions/13071777/convert-double-to-byte-array
+			byte[] longBytes = ByteBuffer.allocate(8).putDouble(this.getDouble(option)).array();
+			checker.update(longBytes, 0, longBytes.length);
+		}
+		checker.update(54902349);
+		return checker.getValue();
+	}
+	
 	public void writeToBuf(ByteBuf buf) {
 		for (String option : booleanoptions) {
 			buf.writeBoolean(this.getBoolean(option));
@@ -295,6 +326,7 @@ public class GrappleCustomization {
 		for (String option : doubleoptions) {
 			buf.writeDouble(this.getDouble(option));
 		}
+		buf.writeLong(this.getChecksum());
 	}
 	
 	public void readFromBuf(ByteBuf buf) {
@@ -303,6 +335,11 @@ public class GrappleCustomization {
 		}
 		for (String option : doubleoptions) {
 			this.setDouble(option, buf.readDouble());
+		}
+		long recordedChecksum = buf.readLong();
+		if (this.getChecksum() != recordedChecksum) {
+			grapplemod.LOGGER.error("Error checksum reading from buffer");
+			this.setDefaults();
 		}
 	}
 

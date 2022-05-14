@@ -333,62 +333,64 @@ public class GrapplehookEntity extends ProjectileItemEntity implements IEntityAd
 			if (this.attached) {
 				return;
 			}
-			if (this.shootingEntityID != 0) {
-				if (movingobjectposition == null) {
+			if (this.shootingEntityID != 0 || this.shootingEntity == null) {
+				return;
+			}
+			
+			if (movingobjectposition == null) {
+				return;
+			}
+			
+			Vec vec3d = Vec.positionVec(this);
+	        Vec vec3d1 = vec3d.add(Vec.motionVec(this));
+
+			if (movingobjectposition instanceof EntityRayTraceResult && !GrappleConfig.getConf().grapplinghook.other.hookaffectsentities) {
+				onHit(GrapplemodUtils.rayTraceBlocks(this.level, vec3d, vec3d1));
+		        return;
+			}
+			
+			BlockRayTraceResult blockhit = null;
+			if (movingobjectposition instanceof BlockRayTraceResult) {
+				blockhit = (BlockRayTraceResult) movingobjectposition;
+			}
+			
+			if (blockhit != null) {
+				BlockPos blockpos = blockhit.getBlockPos();
+				if (blockpos != null) {
+					Block block = this.level.getBlockState(blockpos).getBlock();
+					if (GrappleConfigUtils.breaksBlock(block)) {
+						this.level.destroyBlock(blockpos, true);
+				        onHit(GrapplemodUtils.rayTraceBlocks(this.level, vec3d, vec3d1));
+				        return;
+					}
+				}
+			}
+			
+			if (movingobjectposition instanceof EntityRayTraceResult) {
+				// hit entity
+				EntityRayTraceResult entityHit = (EntityRayTraceResult) movingobjectposition;
+				Entity entity = entityHit.getEntity();
+				if (entity == this.shootingEntity) {
 					return;
 				}
 				
-				Vec vec3d = Vec.positionVec(this);
-		        Vec vec3d1 = vec3d.add(Vec.motionVec(this));
+				Vec playerpos = Vec.positionVec(this.shootingEntity);
+				Vec entitypos = Vec.positionVec(entity);
+				Vec yank = playerpos.sub(entitypos).mult(0.4);
+				yank.y = Math.min(yank.y, 2);
+				Vec newmotion = Vec.motionVec(entity).add(yank);
+				entity.setDeltaMovement(newmotion.toVec3d());
+				
+				this.removeServer();
+				return;
+			} else if (blockhit != null) {
+				BlockPos blockpos = blockhit.getBlockPos();
+				
+				Vec vec3 = new Vec(movingobjectposition.getLocation());
 
-				if (movingobjectposition instanceof EntityRayTraceResult && !GrappleConfig.getConf().grapplinghook.other.hookaffectsentities) {
-					onHit(GrapplemodUtils.rayTraceBlocks(this.level, vec3d, vec3d1));
-			        return;
-				}
-				
-				BlockRayTraceResult blockhit = null;
-				if (movingobjectposition instanceof BlockRayTraceResult) {
-					blockhit = (BlockRayTraceResult) movingobjectposition;
-				}
-				
-				if (blockhit != null) {
-					BlockPos blockpos = blockhit.getBlockPos();
-					if (blockpos != null) {
-						Block block = this.level.getBlockState(blockpos).getBlock();
-						if (GrappleConfigUtils.breaksBlock(block)) {
-							this.level.destroyBlock(blockpos, true);
-					        onHit(GrapplemodUtils.rayTraceBlocks(this.level, vec3d, vec3d1));
-					        return;
-						}
-					}
-				}
-				
-				if (movingobjectposition instanceof EntityRayTraceResult) {
-					// hit entity
-					EntityRayTraceResult entityHit = (EntityRayTraceResult) movingobjectposition;
-					Entity entity = entityHit.getEntity();
-					if (entity == this.shootingEntity) {
-						return;
-					}
-					
-					Vec playerpos = Vec.positionVec(this.shootingEntity);
-					Vec entitypos = Vec.positionVec(entity);
-					Vec yank = playerpos.sub(entitypos).mult(0.4);
-					yank.y = Math.min(yank.y, 2);
-					Vec newmotion = Vec.motionVec(entity).add(yank);
-					entity.setDeltaMovement(newmotion.toVec3d());
-					
-					this.removeServer();
-					return;
-				} else if (blockhit != null) {
-					BlockPos blockpos = blockhit.getBlockPos();
-					
-					Vec vec3 = new Vec(movingobjectposition.getLocation());
-
-					this.serverAttach(blockpos, vec3, blockhit.getDirection());
-				} else {
-					System.out.println("unknown impact?");
-				}
+				this.serverAttach(blockpos, vec3, blockhit.getDirection());
+			} else {
+				System.out.println("unknown impact?");
 			}
 		}
 	}
@@ -400,6 +402,9 @@ public class GrapplehookEntity extends ProjectileItemEntity implements IEntityAd
 	
 	public void serverAttach(BlockPos blockpos, Vec pos, Direction sideHit) {
 		if (this.attached) {
+			return;
+		}
+		if (this.shootingEntity == null || this.shootingEntityID == 0) {
 			return;
 		}
 		this.attached = true;
