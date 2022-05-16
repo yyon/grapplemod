@@ -281,7 +281,7 @@ public class RenderGrappleArrow<T extends grappleArrow> extends Render<T>
         GlStateManager.scale(0.5, 0.5, 0.5);
         GlStateManager.rotate((float) (-attach_dir.getYaw()), 0.0F, 1.0F, 0.0F);
         GlStateManager.rotate((float) (attach_dir.getPitch() - 90), 1.0F, 0.0F, 0.0F);
-        GlStateManager.rotate((float) (45 * k), 0.0F, 1.0F, 0.0F);
+        GlStateManager.rotate((float) (45 * primaryhand * (arrow.righthand ? 1 : -1)), 0.0F, 1.0F, 0.0F);
         GlStateManager.rotate((float) (-45), 0.0F, 0.0F, 1.0F);
 
         this.bindTexture(TextureMap.LOCATION_BLOCKS_TEXTURE);
