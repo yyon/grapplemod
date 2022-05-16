@@ -357,8 +357,9 @@ public class grappleBow extends Item implements KeypressItem {
 				}
 			}
 		} else {
-			if (key == KeypressItem.Keys.THROWBOTH) {
-	        	throwBoth(stack, player.world, player, ismainhand);
+	    	GrappleCustomization custom = this.getCustomization(stack);
+			if (key == KeypressItem.Keys.THROWBOTH || (!custom.doublehook && (key == KeypressItem.Keys.THROWLEFT || key == KeypressItem.Keys.THROWRIGHT))) {
+				throwBoth(stack, player.world, player, ismainhand);
 			} else if (key == KeypressItem.Keys.THROWLEFT) {
 				grappleArrow arrow1 = getArrowLeft(player);
 
