@@ -17,6 +17,7 @@ plugins {
 apply plugin: 'net.minecraftforge.gradle'
 apply plugin: 'org.parchmentmc.librarian.forgegradle'
 apply plugin: 'org.spongepowered.mixin'
+apply from: 'https://raw.githubusercontent.com/SizableShrimp/ForgeUpdatesRemapper/main/remapper.gradle'
 // Only edit below this line, the above code adds and enables the necessary things for Forge to be setup.
 apply plugin: 'eclipse'
 apply plugin: 'maven-publish'
@@ -131,7 +132,7 @@ dependencies {
 
     // Capability Syncer
     shadow fg.deobf("dev._100media.capabilitysyncer:capabilitysyncer:${capabilitysyncer_version}")
-    implementation fg.deobf("me.shedaniel.cloth:cloth-config-forge:6.2.57")
+    implementation fg.deobf("me.shedaniel.cloth:cloth-config-forge:8.0.75")
 }
 
 // This block of code expands all the gradle properties in the specified resource targets.
