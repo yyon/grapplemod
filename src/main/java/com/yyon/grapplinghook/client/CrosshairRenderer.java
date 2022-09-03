@@ -134,7 +134,7 @@ public class CrosshairRenderer {
         bufferbuilder.vertex((double)(x + width), (double)(y + height), (double)this.zLevel).color(g, g, g, a).endVertex();
         bufferbuilder.vertex((double)(x + width), (double)(y + 0), (double)this.zLevel).color(g, g, g, a).endVertex();
         bufferbuilder.vertex((double)(x + 0), (double)(y + 0), (double)this.zLevel).color(g, g, g, a).endVertex();
-        bufferbuilder.end();
-        BufferUploader.draw(bufferbuilder.end());
+//        bufferbuilder.end();
+        BufferUploader.drawWithShader(bufferbuilder.end());
     }
 }
