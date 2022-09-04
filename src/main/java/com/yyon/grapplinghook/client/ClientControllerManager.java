@@ -1,16 +1,23 @@
 package com.yyon.grapplinghook.client;
 
-import com.yyon.grapplinghook.common.CommonSetup;
+import java.util.ConcurrentModificationException;
+import java.util.HashMap;
+import java.util.Map;
+
 import com.yyon.grapplinghook.config.GrappleConfig;
 import com.yyon.grapplinghook.controllers.AirfrictionController;
 import com.yyon.grapplinghook.controllers.ForcefieldController;
 import com.yyon.grapplinghook.controllers.GrappleController;
+import com.yyon.grapplinghook.enchantments.DoublejumpEnchantment;
+import com.yyon.grapplinghook.enchantments.SlidingEnchantment;
+import com.yyon.grapplinghook.enchantments.WallrunEnchantment;
 import com.yyon.grapplinghook.entities.grapplehook.GrapplehookEntity;
 import com.yyon.grapplinghook.items.EnderStaffItem;
 import com.yyon.grapplinghook.items.GrapplehookItem;
 import com.yyon.grapplinghook.utils.GrappleCustomization;
 import com.yyon.grapplinghook.utils.GrapplemodUtils;
 import com.yyon.grapplinghook.utils.Vec;
+
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.resources.sounds.AbstractTickableSoundInstance;
@@ -29,10 +36,6 @@ import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.BlockHitResult;
-
-import java.util.ConcurrentModificationException;
-import java.util.HashMap;
-import java.util.Map;
 
 public class ClientControllerManager {
 	public static ClientControllerManager instance;
@@ -168,14 +171,16 @@ public class ClientControllerManager {
 			for (ItemStack stack : entity.getArmorSlots()) {
 				if (stack != null) {
 					Map<Enchantment, Integer> enchantments = EnchantmentHelper.getEnchantments(stack);
-					if (enchantments.containsKey(CommonSetup.wallrunEnchantment)) {
-						if (enchantments.get(CommonSetup.wallrunEnchantment) >= 1) {
-							if (!ClientSetup.key_jumpanddetach.isDown() && !Minecraft.getInstance().options.keyJump.isDown()) {
-								BlockHitResult raytraceresult = GrapplemodUtils.rayTraceBlocks(entity.level, Vec.positionVec(entity), Vec.positionVec(entity).add(new Vec(0, -1, 0)));
-								if (raytraceresult == null) {
-									double current_speed = Math.sqrt(Math.pow(motion.x, 2) + Math.pow(motion.z,  2));
-									if (current_speed >= GrappleConfig.getConf().enchantments.wallrun.wallrun_min_speed) {
-										return true;
+					for (Enchantment enchant : enchantments.keySet()) {
+						if (enchant instanceof WallrunEnchantment) {
+							if (enchantments.get(enchant) >= 1) {
+								if (!ClientSetup.key_jumpanddetach.isDown() && !Minecraft.getInstance().options.keyJump.isDown()) {
+									BlockHitResult raytraceresult = GrapplemodUtils.rayTraceBlocks(entity.level, Vec.positionVec(entity), Vec.positionVec(entity).add(new Vec(0, -1, 0)));
+									if (raytraceresult == null) {
+										double current_speed = Math.sqrt(Math.pow(motion.x, 2) + Math.pow(motion.z,  2));
+										if (current_speed >= GrappleConfig.getConf().enchantments.wallrun.wallrun_min_speed) {
+											return true;
+										}
 									}
 								}
 							}
@@ -237,9 +242,11 @@ public class ClientControllerManager {
 		for (ItemStack stack : entity.getArmorSlots()) {
 			if (stack != null) {
 				Map<Enchantment, Integer> enchantments = EnchantmentHelper.getEnchantments(stack);
-				if (enchantments.containsKey(CommonSetup.doubleJumpEnchantment)) {
-					if (enchantments.get(CommonSetup.doubleJumpEnchantment) >= 1) {
-						return true;
+				for (Enchantment enchant : enchantments.keySet()) {
+					if (enchant instanceof DoublejumpEnchantment) {
+						if (enchantments.get(enchant) >= 1) {
+							return true;
+						}
 					}
 				}
 			}
@@ -251,9 +258,11 @@ public class ClientControllerManager {
 		for (ItemStack stack : entity.getArmorSlots()) {
 			if (stack != null) {
 				Map<Enchantment, Integer> enchantments = EnchantmentHelper.getEnchantments(stack);
-				if (enchantments.containsKey(CommonSetup.slidingEnchantment)) {
-					if (enchantments.get(CommonSetup.slidingEnchantment) >= 1) {
-						return true;
+				for (Enchantment enchant : enchantments.keySet()) {
+					if (enchant instanceof SlidingEnchantment) {
+						if (enchantments.get(enchant) >= 1) {
+							return true;
+						}
 					}
 				}
 			}
