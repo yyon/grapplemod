@@ -71,7 +71,7 @@ public class BlockGrappleModifier extends BaseEntityBlock {
 	
     @Override
     public InteractionResult use(BlockState state, Level worldIn, BlockPos pos, Player playerIn, InteractionHand hand, BlockHitResult raytraceresult) {
-		ItemStack helditemstack = playerIn.getItemInHand(InteractionHand.MAIN_HAND);
+		ItemStack helditemstack = playerIn.getItemInHand(hand);
 		Item helditem = helditemstack.getItem();
 
 		if (helditem instanceof BaseUpgradeItem) {
@@ -85,7 +85,7 @@ public class BlockGrappleModifier extends BaseEntityBlock {
 						playerIn.sendSystemMessage(Component.literal("Already has upgrade: " + category.getName()));
 					} else {
 						if (!playerIn.isCreative()) {
-							playerIn.setItemInHand(InteractionHand.MAIN_HAND, ItemStack.EMPTY);
+							playerIn.setItemInHand(hand, ItemStack.EMPTY);
 						}
 						
 						tileent.unlockCategory(category);
@@ -114,7 +114,7 @@ public class BlockGrappleModifier extends BaseEntityBlock {
 							if (enchantments.get(Enchantments.FALL_PROTECTION) >= 4) {
 								ItemStack newitemstack = new ItemStack(CommonSetup.longFallBootsItem.get());
 								EnchantmentHelper.setEnchantments(enchantments, newitemstack);
-								playerIn.setItemInHand(InteractionHand.MAIN_HAND, newitemstack);
+								playerIn.setItemInHand(hand, newitemstack);
 								gaveitem = true;
 							}
 						}
@@ -129,7 +129,7 @@ public class BlockGrappleModifier extends BaseEntityBlock {
 		} else if (helditem == Items.DIAMOND) {
 			this.easterEgg(state, worldIn, pos, playerIn, hand, raytraceresult);
 		} else {
-			if (worldIn.isClientSide) {
+			if (worldIn.isClientSide && hand == InteractionHand.MAIN_HAND) {
 				BlockEntity ent = worldIn.getBlockEntity(pos);
 				TileEntityGrappleModifier tileent = (TileEntityGrappleModifier) ent;
 				
