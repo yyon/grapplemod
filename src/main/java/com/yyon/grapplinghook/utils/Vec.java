@@ -1,9 +1,9 @@
 package com.yyon.grapplinghook.utils;
 
-import com.mojang.math.Vector3f;
 import com.yyon.grapplinghook.grapplemod;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.phys.Vec3;
+import org.joml.Vector3f;
 
 public class Vec {
 	public double x;
@@ -22,7 +22,6 @@ public class Vec {
 		if (Double.isNaN(x) || Double.isNaN(y) || Double.isNaN(z)) {
 			grapplemod.LOGGER.error("Error: vector contains NaN");
 			this.x = 0; this.y = 0; this.z = 0;
-//			throw new RuntimeException("hello");
 		}
 	}
 	
@@ -172,11 +171,11 @@ public class Vec {
 	}
 	
 	public void print(){
-		System.out.println(this.toString());
+		System.out.println(this);
 	}
 	
 	public String toString() {
-		return "<" + Double.toString(this.x) + "," + Double.toString(this.y) + "," + Double.toString(this.z) + ">";
+		return "<%s, %s, %s>".formatted(this.x, this.y, this.z);
 	}
 
 	public Vec add(double x, double y, double z) {
