@@ -1,6 +1,6 @@
 package com.yyon.grapplinghook.client;
 
-import com.yyon.grapplinghook.blocks.modifierblock.GuiModifier;
+import com.yyon.grapplinghook.client.gui.GuiGrappleHookModifier;
 import com.yyon.grapplinghook.blocks.modifierblock.TileEntityGrappleModifier;
 import com.yyon.grapplinghook.common.CommonSetup;
 import com.yyon.grapplinghook.config.GrappleConfig;
@@ -88,7 +88,7 @@ public class ClientProxy extends ClientProxyInterface {
 
 	@Override
 	public void openModifierScreen(TileEntityGrappleModifier tileent) {
-		Minecraft.getInstance().setScreen(new GuiModifier(tileent));
+		Minecraft.getInstance().setScreen(new GuiGrappleHookModifier(tileent));
 
 	}
 	
