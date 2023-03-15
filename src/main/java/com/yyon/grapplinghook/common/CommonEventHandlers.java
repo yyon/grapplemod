@@ -30,10 +30,10 @@ import net.minecraftforge.network.PacketDistributor;
 import java.util.HashSet;
 
 public class CommonEventHandlers {
+
 	public CommonEventHandlers() {
 	    MinecraftForge.EVENT_BUS.register(this);
-
-		AutoConfig.register(GrappleConfig.class, Toml4jConfigSerializer<GrappleConfig>::new);
+		AutoConfig.register(GrappleConfig.class, Toml4jConfigSerializer::new);
 	}
 
 	@SubscribeEvent

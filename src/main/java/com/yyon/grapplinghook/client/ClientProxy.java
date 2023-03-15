@@ -27,7 +27,6 @@ import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.RecipeManager;
 import net.minecraft.world.level.Level;
@@ -124,25 +123,24 @@ public class ClientProxy extends ClientProxyInterface {
 	List<ItemStack> grapplingHookVariants = null;
 
 	@Override
-	public void fillGrappleVariants(CreativeModeTab tab, NonNullList<ItemStack> items) {
-		if (Minecraft.getInstance().isRunning() == false || Minecraft.getInstance().player == null || Minecraft.getInstance().player.level == null || Minecraft.getInstance().player.level.getRecipeManager() == null) {
+	public void fillGrappleVariants(NonNullList<ItemStack> output) {
+		if (!Minecraft.getInstance().isRunning() || Minecraft.getInstance().player == null || Minecraft.getInstance().player.level.getRecipeManager() == null)
 			return;
-		}
-		
+
 		if (grapplingHookVariants == null) {
-			grapplingHookVariants = new ArrayList<ItemStack>();
+			grapplingHookVariants = new ArrayList<>();
 			RecipeManager recipemanager = Minecraft.getInstance().player.level.getRecipeManager();
+
 			recipemanager.getRecipeIds().filter(loc -> loc.getNamespace().equals(grapplemod.MODID)).forEach(loc -> {
 				ItemStack stack = recipemanager.byKey(loc).get().getResultItem();
-				if (stack.getItem() instanceof GrapplehookItem) {
-					if (!CommonSetup.grapplingHookItem.get().getCustomization(stack).equals(new GrappleCustomization())) {
-						grapplingHookVariants.add(stack);
-					}
-				}
+				if (!(stack.getItem() instanceof GrapplehookItem)) return;
+				if (CommonSetup.grapplingHookItem.get().getCustomization(stack).equals(new GrappleCustomization())) return;
+
+				grapplingHookVariants.add(stack);
 			});
 		}
 		
-		items.addAll(grapplingHookVariants);
+		output.addAll(grapplingHookVariants);
 	}
 	
 	public Screen onConfigScreen(Minecraft mc, Screen screen) {

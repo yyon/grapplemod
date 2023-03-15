@@ -1,6 +1,7 @@
 package com.yyon.grapplinghook;
 
 import com.yyon.grapplinghook.common.CommonSetup;
+import com.yyon.grapplinghook.common.CreativeTabHandler;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
@@ -39,11 +40,11 @@ public class grapplemod {
 
     public grapplemod() {
         IEventBus bus = FMLJavaModLoadingContext.get().getModEventBus();
+        CreativeTabHandler.nudge();
         CommonSetup.BLOCKS.register(bus);
         CommonSetup.ITEMS.register(bus);
         CommonSetup.ENTITY_TYPES.register(bus);
         CommonSetup.ENCHANTMENTS.register(bus);
         CommonSetup.BLOCK_ENTITY_TYPES.register(bus);
-
     }
 }

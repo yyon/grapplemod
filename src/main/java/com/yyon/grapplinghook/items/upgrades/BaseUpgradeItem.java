@@ -1,6 +1,5 @@
 package com.yyon.grapplinghook.items.upgrades;
 
-import com.yyon.grapplinghook.common.CommonSetup;
 import com.yyon.grapplinghook.utils.GrappleCustomization;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -10,7 +9,7 @@ public class BaseUpgradeItem extends Item {
 	boolean craftingRemaining = false;
 
 	public BaseUpgradeItem(int maxStackSize, GrappleCustomization.upgradeCategories theCategory) {
-		super(new Item.Properties().stacksTo(maxStackSize).tab(CommonSetup.tabGrapplemod));
+		super(new Item.Properties().stacksTo(maxStackSize));
 		
 		this.category = theCategory;
 		

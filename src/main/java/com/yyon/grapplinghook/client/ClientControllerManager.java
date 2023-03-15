@@ -473,7 +473,7 @@ public class ClientControllerManager {
 			}
 		}
 		
-		RocketSound sound = new RocketSound(controller, new SoundEvent(new ResourceLocation("grapplemod", "rocket")), SoundSource.PLAYERS);
+		RocketSound sound = new RocketSound(controller, SoundEvent.createVariableRangeEvent(new ResourceLocation("grapplemod", "rocket")), SoundSource.PLAYERS);
 		Minecraft.getInstance().getSoundManager().play(sound);
 	}
 

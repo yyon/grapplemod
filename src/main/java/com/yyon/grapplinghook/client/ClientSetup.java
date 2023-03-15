@@ -78,11 +78,7 @@ public class ClientSetup {
 	}
 	
 	public void onClientSetup() {
-//		// register all the key bindings
-//		for (int i = 0; i < keyBindings.size(); ++i)
-//		{
-//		    ClientRegistry.registerKeyBinding(keyBindings.get(i));
-//		}
+		clientEventHandlers = new ClientEventHandlers();
 		
 	    EntityRenderers.register(CommonSetup.grapplehookEntityType.get(), new GrapplehookEntityRenderFactory());
 
@@ -93,7 +89,6 @@ public class ClientSetup {
 	    
 		crosshairRenderer = new CrosshairRenderer();
 		clientControllerManager = new ClientControllerManager();
-		clientEventHandlers = new ClientEventHandlers();
 	}
 	
 	public void registerPropertyOverride() {

@@ -5,6 +5,7 @@ import com.yyon.grapplinghook.config.GrappleConfig;
 import com.yyon.grapplinghook.controllers.AirfrictionController;
 import com.yyon.grapplinghook.controllers.ForcefieldController;
 import com.yyon.grapplinghook.controllers.GrappleController;
+import com.yyon.grapplinghook.grapplemod;
 import com.yyon.grapplinghook.items.KeypressItem;
 import com.yyon.grapplinghook.utils.Vec;
 import net.minecraft.client.Minecraft;
@@ -17,6 +18,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
+import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.ClientPlayerNetworkEvent.LoggingOut;
 import net.minecraftforge.client.event.InputEvent.Key;
 import net.minecraftforge.client.event.MovementInputUpdateEvent;
@@ -26,6 +28,7 @@ import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.level.BlockEvent.BreakEvent;
 import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.common.Mod;
 
 public class ClientEventHandlers {
 	public static ClientEventHandlers instance = null;
@@ -223,6 +226,4 @@ public class ClientEventHandlers {
 		}
 		return false;
 	}
-	
-	
 }

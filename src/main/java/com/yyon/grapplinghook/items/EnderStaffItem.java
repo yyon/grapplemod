@@ -1,7 +1,6 @@
 package com.yyon.grapplinghook.items;
 
 import com.yyon.grapplinghook.client.ClientProxyInterface;
-import com.yyon.grapplinghook.common.CommonSetup;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResultHolder;
@@ -36,7 +35,7 @@ import java.util.List;
 public class EnderStaffItem extends Item {
 	
 	public EnderStaffItem() {
-		super(new Item.Properties().stacksTo(1).tab(CommonSetup.tabGrapplemod));
+		super(new Item.Properties().stacksTo(1));
 	}
 	
 	public void doRightClick(ItemStack stack, Level worldIn, Player player) {

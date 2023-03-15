@@ -10,7 +10,6 @@ import net.minecraft.core.NonNullList;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.fml.DistExecutor;
@@ -61,7 +60,7 @@ public abstract class ClientProxyInterface {
 
 	public abstract void onMessageReceivedClient(BaseMessageClient baseMessage, NetworkEvent.Context ctx);
 
-	public abstract void fillGrappleVariants(CreativeModeTab tab, NonNullList<ItemStack> items);
+	public abstract void fillGrappleVariants(NonNullList<ItemStack> items);
 	
 	public enum GrappleKeys {
 		key_boththrow,

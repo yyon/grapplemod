@@ -1,7 +1,6 @@
 package com.yyon.grapplinghook.items;
 
 import com.yyon.grapplinghook.client.ClientProxyInterface;
-import com.yyon.grapplinghook.common.CommonSetup;
 import com.yyon.grapplinghook.controllers.GrappleController;
 import com.yyon.grapplinghook.utils.GrapplemodUtils;
 import com.yyon.grapplinghook.utils.Vec;
@@ -21,7 +20,7 @@ import java.util.List;
 
 public class ForcefieldItem extends Item {
 	public ForcefieldItem() {
-		super(new Item.Properties().stacksTo(1).tab(CommonSetup.tabGrapplemod));
+		super(new Item.Properties().stacksTo(1));
 	}
 	
 	public void doRightClick(ItemStack stack, Level worldIn, Player player) {
