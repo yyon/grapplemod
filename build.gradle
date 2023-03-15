@@ -1,9 +1,8 @@
 plugins {
     id 'eclipse'
-    id 'maven-publish'
     id 'net.minecraftforge.gradle' version '5.1.+'
     id 'org.parchmentmc.librarian.forgegradle' version '1.+'
-    //id 'com.github.johnrengelman.shadow' version '7.1.0'
+    id 'maven-publish'
 }
 
 version = "${minecraft_version}-${mod_version}"
@@ -20,8 +19,9 @@ minecraft {
     accessTransformer = file('src/main/resources/META-INF/accesstransformer.cfg')
 
     runs {
+
         client {
-            workingDirectory project.file('clientRunEnv')
+            workingDirectory = project.file('clientRunEnv')
 
             // "SCAN": For mods scan.
             // "REGISTRIES": For firing of registry events.
@@ -45,7 +45,7 @@ minecraft {
         }
 
         server {
-            workingDirectory project.file('serverRunEnv')
+            workingDirectory = project.file('serverRunEnv')
 
             property 'forge.logging.markers', 'REGISTRIES'
             property 'forge.logging.console.level', 'debug'
@@ -57,7 +57,7 @@ minecraft {
         }
 
         gameTestServer {
-            workingDirectory project.file('serverRunEnv')
+            workingDirectory = project.file('serverRunEnv')
 
             property 'forge.logging.markers', 'REGISTRIES'
             property 'forge.logging.console.level', 'debug'
@@ -69,7 +69,7 @@ minecraft {
         }
 
         data {
-            workingDirectory project.file('dataRunEnv')
+            workingDirectory = project.file('dataRunEnv')
 
             property 'forge.logging.markers', 'REGISTRIES'
             property 'forge.logging.console.level', 'debug'
@@ -95,37 +95,19 @@ dependencies {
     // Mixin annotation processor - generates the refmap
     annotationProcessor "org.spongepowered:mixin:${mixin_version}:processor"
 
-    // Capability Syncer
-    //shadow fg.deobf("dev._100media.capabilitysyncer:capabilitysyncer:${capabilitysyncer_version}")
-    implementation fg.deobf("me.shedaniel.cloth:cloth-config-forge:9.0.94")
+    implementation fg.deobf("me.shedaniel.cloth:cloth-config-forge:${clothconfig_version}")
 }
 
-// This block of code expands all the gradle properties in the specified resource targets.
-// It copies them into the targets and expands all the defined properties.
-def resourceTargets = ['META-INF/mods.toml', 'pack.mcmeta', "${mod_id}.mixins.json".toString()]
-def intoTargets = ["$rootDir/out/production/resources/", "$rootDir/out/production/${project.name}.main/", "$rootDir/bin/main/"]
-def replaceProperties = [mod_id: mod_id, mod_name: mod_name, mod_version: mod_version,
-                         mod_authors: mod_authors, mod_description: mod_description,
-                         minecraft_version_range: minecraft_version_range, forge_version_range: forge_version_range,
-                         loader_version_range: loader_version_range]
 processResources {
-    inputs.properties replaceProperties
-    replaceProperties.put 'project', project
+    inputs.property "version", project.version
+    filteringCharset "UTF-8"
 
-    filesMatching(resourceTargets) {
-        expand replaceProperties
-    }
+    HashMap modifiedSrc = new HashMap<>(project.properties)
 
-    intoTargets.each { target ->
-        if (file(target).exists()) {
-            copy {
-                from(sourceSets.main.resources) {
-                    include resourceTargets
-                    expand replaceProperties
-                }
-                into target
-            }
-        }
+    // Modify the properties here
+
+    filesMatching(['META-INF/mods.toml', 'pack.mcmeta', "${mod_id}.mixins.json".toString()]) {
+        expand modifiedSrc
     }
 }
 
