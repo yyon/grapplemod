@@ -3,7 +3,7 @@ package com.yyon.grapplinghook.utils;
 import com.yyon.grapplinghook.client.ClientProxyInterface;
 import com.yyon.grapplinghook.common.CommonSetup;
 import com.yyon.grapplinghook.config.GrappleConfig;
-import com.yyon.grapplinghook.grapplemod;
+import com.yyon.grapplinghook.GrappleMod;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.item.Item;
@@ -13,8 +13,8 @@ import java.util.zip.CRC32;
 import java.util.zip.Checksum;
 
 public class GrappleCustomization {
-	public static final String[] booleanoptions = new String[] {"phaserope", "motor", "motorwhencrouching", "motorwhennotcrouching", "smartmotor", "enderstaff", "repel", "attract", "doublehook", "smartdoublemotor", "motordampener", "reelin", "pullbackwards", "oneropepull", "sticky", "detachonkeyrelease", "rocket"};
-	public static final String[] doubleoptions = new String[] {"maxlen", "hookgravity", "throwspeed", "motormaxspeed", "motoracceleration", "playermovementmult", "repelforce", "attractradius", "angle", "sneakingangle", "verticalthrowangle", "sneakingverticalthrowangle", "rocket_force", "rocket_active_time", "rocket_refuel_ratio", "rocket_vertical_angle"};
+	public static final String[] BOOLEAN_IDS = new String[] {"phaserope", "motor", "motorwhencrouching", "motorwhennotcrouching", "smartmotor", "enderstaff", "repel", "attract", "doublehook", "smartdoublemotor", "motordampener", "reelin", "pullbackwards", "oneropepull", "sticky", "detachonkeyrelease", "rocket"};
+	public static final String[] DOUBLE_IDS = new String[] {"maxlen", "hookgravity", "throwspeed", "motormaxspeed", "motoracceleration", "playermovementmult", "repelforce", "attractradius", "angle", "sneakingangle", "verticalthrowangle", "sneakingverticalthrowangle", "rocket_force", "rocket_active_time", "rocket_refuel_ratio", "rocket_vertical_angle"};
 	
 	// rope
 	public double maxlen;
@@ -67,7 +67,7 @@ public class GrappleCustomization {
 	public double rocket_refuel_ratio;
 	public double rocket_vertical_angle;
 	
-	public enum upgradeCategories {
+	public enum UpgradeCategory {
 		ROPE ("rope"), 
 		THROW ("throw"), 
 		MOTOR ("motor"), 
@@ -79,8 +79,8 @@ public class GrappleCustomization {
 		LIMITS ("limits"),
 		ROCKET ("rocket");
 		
-		private String nameUnlocalized;
-		private upgradeCategories(String name) {
+		private final String nameUnlocalized;
+		UpgradeCategory(String name) {
 			this.nameUnlocalized = name;
 		}
 		
@@ -92,108 +92,113 @@ public class GrappleCustomization {
 			}
 		}
 		
-		public static upgradeCategories fromInt(int i) {
-			return upgradeCategories.values()[i];
+		public static UpgradeCategory fromInt(int i) {
+			return UpgradeCategory.values()[i];
 		}
 		public int toInt() {
 			for (int i = 0; i < size(); i++) {
-				if (upgradeCategories.values()[i] == this) {
+				if (UpgradeCategory.values()[i] == this) {
 					return i;
 				}
 			}
 			return -1;
 		}
 		public static int size() {
-			return upgradeCategories.values().length;
+			return UpgradeCategory.values().length;
 		}
 		public Item getItem() {
-			if (this == upgradeCategories.ROPE) {
+			if (this == UpgradeCategory.ROPE) {
 				return CommonSetup.ropeUpgradeItem.get();
-			} else if (this == upgradeCategories.THROW) {
+			} else if (this == UpgradeCategory.THROW) {
 				return CommonSetup.throwUpgradeItem.get();
-			} else if (this == upgradeCategories.MOTOR) {
+			} else if (this == UpgradeCategory.MOTOR) {
 				return CommonSetup.motorUpgradeItem.get();
-			} else if (this == upgradeCategories.SWING) {
+			} else if (this == UpgradeCategory.SWING) {
 				return CommonSetup.swingUpgradeItem.get();
-			} else if (this == upgradeCategories.STAFF) {
+			} else if (this == UpgradeCategory.STAFF) {
 				return CommonSetup.staffUpgradeItem.get();
-			} else if (this == upgradeCategories.FORCEFIELD) {
+			} else if (this == UpgradeCategory.FORCEFIELD) {
 				return CommonSetup.forcefieldUpgradeItem.get();
-			} else if (this == upgradeCategories.MAGNET) {
+			} else if (this == UpgradeCategory.MAGNET) {
 				return CommonSetup.magnetUpgradeItem.get();
-			} else if (this == upgradeCategories.DOUBLE) {
+			} else if (this == UpgradeCategory.DOUBLE) {
 				return CommonSetup.doubleUpgradeItem.get();
-			} else if (this == upgradeCategories.LIMITS) {
+			} else if (this == UpgradeCategory.LIMITS) {
 				return CommonSetup.limitsUpgradeItem.get();
-			} else if (this == upgradeCategories.ROCKET) {
+			} else if (this == UpgradeCategory.ROCKET) {
 				return CommonSetup.rocketUpgradeItem.get();
 			}
 			return null;
 		}
-	};
+	}
 	
 	public GrappleCustomization() {
 		this.setDefaults();
 	}
 	
 	public void setDefaults() {
-		for (String option : booleanoptions) {
+		for (String option : BOOLEAN_IDS) {
 			GrappleConfig.Config.GrapplingHook.Custom.BooleanCustomizationOption optionconfig = getBooleanConfig(option);
 			this.setBoolean(option, optionconfig.default_value);
 		}
-		for (String option : doubleoptions) {
+		for (String option : DOUBLE_IDS) {
 			GrappleConfig.Config.GrapplingHook.Custom.DoubleCustomizationOption optionconfig = getDoubleConfig(option);
 			this.setDouble(option, optionconfig.default_value);
 		}
 	}
 	
 	public GrappleConfig.Config.GrapplingHook.Custom.BooleanCustomizationOption getBooleanConfig(String option) {
-		if (option.equals("phaserope")) {return GrappleConfig.getConf().grapplinghook.custom.rope.phaserope;}
-		else if (option.equals("motor")) {return GrappleConfig.getConf().grapplinghook.custom.motor.motor;}
-		else if (option.equals("motorwhencrouching")) {return GrappleConfig.getConf().grapplinghook.custom.motor.motorwhencrouching;}
-		else if (option.equals("motorwhennotcrouching")) {return GrappleConfig.getConf().grapplinghook.custom.motor.motorwhennotcrouching;}
-		else if (option.equals("smartmotor")) {return GrappleConfig.getConf().grapplinghook.custom.motor.smartmotor;}
-		else if (option.equals("enderstaff")) {return GrappleConfig.getConf().grapplinghook.custom.enderstaff.enderstaff;}
-		else if (option.equals("repel")) {return GrappleConfig.getConf().grapplinghook.custom.forcefield.repel;}
-		else if (option.equals("attract")) {return GrappleConfig.getConf().grapplinghook.custom.magnet.attract;}
-		else if (option.equals("doublehook")) {return GrappleConfig.getConf().grapplinghook.custom.doublehook.doublehook;}
-		else if (option.equals("smartdoublemotor")) {return GrappleConfig.getConf().grapplinghook.custom.doublehook.smartdoublemotor;}
-		else if (option.equals("motordampener")) {return GrappleConfig.getConf().grapplinghook.custom.motor.motordampener;}
-		else if (option.equals("reelin")) {return GrappleConfig.getConf().grapplinghook.custom.hookthrower.reelin;}
-		else if (option.equals("pullbackwards")) {return GrappleConfig.getConf().grapplinghook.custom.motor.pullbackwards;}
-		else if (option.equals("oneropepull")) {return GrappleConfig.getConf().grapplinghook.custom.doublehook.oneropepull;}
-		else if (option.equals("sticky")) {return GrappleConfig.getConf().grapplinghook.custom.rope.sticky;}
-		else if (option.equals("detachonkeyrelease")) {return GrappleConfig.getConf().grapplinghook.custom.hookthrower.detachonkeyrelease;}
-		else if (option.equals("rocket")) {return GrappleConfig.getConf().grapplinghook.custom.rocket.rocketenabled;}
-		return null;
+		return switch (option) {
+			case "phaserope" -> GrappleConfig.getConf().grapplinghook.custom.rope.phaserope;
+			case "motor" -> GrappleConfig.getConf().grapplinghook.custom.motor.motor;
+			case "motorwhencrouching" -> GrappleConfig.getConf().grapplinghook.custom.motor.motorwhencrouching;
+			case "motorwhennotcrouching" -> GrappleConfig.getConf().grapplinghook.custom.motor.motorwhennotcrouching;
+			case "smartmotor" -> GrappleConfig.getConf().grapplinghook.custom.motor.smartmotor;
+			case "enderstaff" -> GrappleConfig.getConf().grapplinghook.custom.enderstaff.enderstaff;
+			case "repel" -> GrappleConfig.getConf().grapplinghook.custom.forcefield.repel;
+			case "attract" -> GrappleConfig.getConf().grapplinghook.custom.magnet.attract;
+			case "doublehook" -> GrappleConfig.getConf().grapplinghook.custom.doublehook.doublehook;
+			case "smartdoublemotor" -> GrappleConfig.getConf().grapplinghook.custom.doublehook.smartdoublemotor;
+			case "motordampener" -> GrappleConfig.getConf().grapplinghook.custom.motor.motordampener;
+			case "reelin" -> GrappleConfig.getConf().grapplinghook.custom.hookthrower.reelin;
+			case "pullbackwards" -> GrappleConfig.getConf().grapplinghook.custom.motor.pullbackwards;
+			case "oneropepull" -> GrappleConfig.getConf().grapplinghook.custom.doublehook.oneropepull;
+			case "sticky" -> GrappleConfig.getConf().grapplinghook.custom.rope.sticky;
+			case "detachonkeyrelease" -> GrappleConfig.getConf().grapplinghook.custom.hookthrower.detachonkeyrelease;
+			case "rocket" -> GrappleConfig.getConf().grapplinghook.custom.rocket.rocketenabled;
+			default -> null;
+		};
 	}
 
 	public GrappleConfig.Config.GrapplingHook.Custom.DoubleCustomizationOption getDoubleConfig(String option) {
-		if (option.equals("maxlen")) {return GrappleConfig.getConf().grapplinghook.custom.rope.maxlen;}
-		else if (option.equals("hookgravity")) {return GrappleConfig.getConf().grapplinghook.custom.hookthrower.hookgravity;}
-		else if (option.equals("throwspeed")) {return GrappleConfig.getConf().grapplinghook.custom.hookthrower.throwspeed;}
-		else if (option.equals("motormaxspeed")) {return GrappleConfig.getConf().grapplinghook.custom.motor.motormaxspeed;}
-		else if (option.equals("motoracceleration")) {return GrappleConfig.getConf().grapplinghook.custom.motor.motoracceleration;}
-		else if (option.equals("playermovementmult")) {return GrappleConfig.getConf().grapplinghook.custom.swing.playermovementmult;}
-		else if (option.equals("repelforce")) {return GrappleConfig.getConf().grapplinghook.custom.forcefield.repelforce;}
-		else if (option.equals("attractradius")) {return GrappleConfig.getConf().grapplinghook.custom.magnet.attractradius;}
-		else if (option.equals("angle")) {return GrappleConfig.getConf().grapplinghook.custom.doublehook.angle;}
-		else if (option.equals("sneakingangle")) {return GrappleConfig.getConf().grapplinghook.custom.doublehook.sneakingangle;}
-		else if (option.equals("verticalthrowangle")) {return GrappleConfig.getConf().grapplinghook.custom.hookthrower.verticalthrowangle;}
-		else if (option.equals("sneakingverticalthrowangle")) {return GrappleConfig.getConf().grapplinghook.custom.hookthrower.sneakingverticalthrowangle;}
-		else if (option.equals("rocket_force")) {return GrappleConfig.getConf().grapplinghook.custom.rocket.rocket_force;}
-		else if (option.equals("rocket_active_time")) {return GrappleConfig.getConf().grapplinghook.custom.rocket.rocket_active_time;}
-		else if (option.equals("rocket_refuel_ratio")) {return GrappleConfig.getConf().grapplinghook.custom.rocket.rocket_refuel_ratio;}
-		else if (option.equals("rocket_vertical_angle")) {return GrappleConfig.getConf().grapplinghook.custom.rocket.rocket_vertical_angle;}
-		return null;
+		return switch (option) {
+			case "maxlen" -> GrappleConfig.getConf().grapplinghook.custom.rope.maxlen;
+			case "hookgravity" -> GrappleConfig.getConf().grapplinghook.custom.hookthrower.hookgravity;
+			case "throwspeed" -> GrappleConfig.getConf().grapplinghook.custom.hookthrower.throwspeed;
+			case "motormaxspeed" -> GrappleConfig.getConf().grapplinghook.custom.motor.motormaxspeed;
+			case "motoracceleration" -> GrappleConfig.getConf().grapplinghook.custom.motor.motoracceleration;
+			case "playermovementmult" -> GrappleConfig.getConf().grapplinghook.custom.swing.playermovementmult;
+			case "repelforce" -> GrappleConfig.getConf().grapplinghook.custom.forcefield.repelforce;
+			case "attractradius" -> GrappleConfig.getConf().grapplinghook.custom.magnet.attractradius;
+			case "angle" -> GrappleConfig.getConf().grapplinghook.custom.doublehook.angle;
+			case "sneakingangle" -> GrappleConfig.getConf().grapplinghook.custom.doublehook.sneakingangle;
+			case "verticalthrowangle" -> GrappleConfig.getConf().grapplinghook.custom.hookthrower.verticalthrowangle;
+			case "sneakingverticalthrowangle" ->
+					GrappleConfig.getConf().grapplinghook.custom.hookthrower.sneakingverticalthrowangle;
+			case "rocket_force" -> GrappleConfig.getConf().grapplinghook.custom.rocket.rocket_force;
+			case "rocket_active_time" -> GrappleConfig.getConf().grapplinghook.custom.rocket.rocket_active_time;
+			case "rocket_refuel_ratio" -> GrappleConfig.getConf().grapplinghook.custom.rocket.rocket_refuel_ratio;
+			case "rocket_vertical_angle" -> GrappleConfig.getConf().grapplinghook.custom.rocket.rocket_vertical_angle;
+			default -> null;
+		};
 	}
 
 	public CompoundTag writeNBT() {
 		CompoundTag compound = new CompoundTag();
-		for (String option : booleanoptions) {
+		for (String option : BOOLEAN_IDS) {
 			compound.putBoolean(option, this.getBoolean(option));
 		}
-		for (String option : doubleoptions) {
+		for (String option : DOUBLE_IDS) {
 			compound.putDouble(option, this.getDouble(option));
 		}
 		compound.putLong("crc32", this.getChecksum());
@@ -201,12 +206,12 @@ public class GrappleCustomization {
 	}
 	
 	public void loadNBT(CompoundTag compound) {
-		for (String option : booleanoptions) {
+		for (String option : BOOLEAN_IDS) {
 			if (compound.contains(option)) {
 				this.setBoolean(option, compound.getBoolean(option));
 			}
 		}
-		for (String option : doubleoptions) {
+		for (String option : DOUBLE_IDS) {
 			if (compound.contains(option)) {
 				this.setDouble(option, compound.getDouble(option));
 			}
@@ -214,7 +219,7 @@ public class GrappleCustomization {
 		if (compound.contains("crc32")) {
 			long recordedChecksum = compound.getLong("crc32");
 			if (this.getChecksum() != recordedChecksum) {
-				grapplemod.LOGGER.error("Error checksum reading from NBT");
+				GrappleMod.LOGGER.error("Error checksum reading from NBT");
 				this.setDefaults();
 			}
 		}
@@ -242,101 +247,113 @@ public class GrappleCustomization {
 	}
 	
 	public boolean getBoolean(String option) {
-		if (option.equals("phaserope")) {return this.phaserope;}
-		else if (option.equals("motor")) {return this.motor;}
-		else if (option.equals("motorwhencrouching")) {return this.motorwhencrouching;}
-		else if (option.equals("motorwhennotcrouching")) {return this.motorwhennotcrouching;}
-		else if (option.equals("smartmotor")) {return this.smartmotor;}
-		else if (option.equals("enderstaff")) {return this.enderstaff;}
-		else if (option.equals("repel")) {return this.repel;}
-		else if (option.equals("attract")) {return this.attract;}
-		else if (option.equals("doublehook")) {return this.doublehook;}
-		else if (option.equals("smartdoublemotor")) {return this.smartdoublemotor;}
-		else if (option.equals("motordampener")) {return this.motordampener;}
-		else if (option.equals("reelin")) {return this.reelin;}
-		else if (option.equals("pullbackwards")) {return this.pullbackwards;}
-		else if (option.equals("oneropepull")) {return this.oneropepull;}
-		else if (option.equals("sticky")) {return this.sticky;}
-		else if (option.equals("detachonkeyrelease")) {return this.detachonkeyrelease;}
-		else if (option.equals("rocket")) {return this.rocket;}
-		System.out.println("Option doesn't exist: " + option);
-		return false;
+		return switch (option) {
+			case "phaserope" -> this.phaserope;
+			case "motor" -> this.motor;
+			case "motorwhencrouching" -> this.motorwhencrouching;
+			case "motorwhennotcrouching" -> this.motorwhennotcrouching;
+			case "smartmotor" -> this.smartmotor;
+			case "enderstaff" -> this.enderstaff;
+			case "repel" -> this.repel;
+			case "attract" -> this.attract;
+			case "doublehook" -> this.doublehook;
+			case "smartdoublemotor" -> this.smartdoublemotor;
+			case "motordampener" -> this.motordampener;
+			case "reelin" -> this.reelin;
+			case "pullbackwards" -> this.pullbackwards;
+			case "oneropepull" -> this.oneropepull;
+			case "sticky" -> this.sticky;
+			case "detachonkeyrelease" -> this.detachonkeyrelease;
+			case "rocket" -> this.rocket;
+			default -> {
+				System.out.println("Option doesn't exist: " + option);
+				yield false;
+			}
+		};
 	}
 	
 	public void setDouble(String option, double d) {
-		if (option.equals("maxlen")) {this.maxlen = d;}
-		else if (option.equals("hookgravity")) {this.hookgravity = d;}
-		else if (option.equals("throwspeed")) {this.throwspeed = d;}
-		else if (option.equals("motormaxspeed")) {this.motormaxspeed = d;}
-		else if (option.equals("motoracceleration")) {this.motoracceleration = d;}
-		else if (option.equals("playermovementmult")) {this.playermovementmult = d;}
-		else if (option.equals("repelforce")) {this.repelforce = d;}
-		else if (option.equals("attractradius")) {this.attractradius = d;}
-		else if (option.equals("angle")) {this.angle = d;}
-		else if (option.equals("sneakingangle")) {this.sneakingangle = d;}
-		else if (option.equals("verticalthrowangle")) {this.verticalthrowangle = d;}
-		else if (option.equals("sneakingverticalthrowangle")) {this.sneakingverticalthrowangle = d;}
-		else if (option.equals("rocket_force")) {this.rocket_force = d;}
-		else if (option.equals("rocket_active_time")) {this.rocket_active_time = d;}
-		else if (option.equals("rocket_refuel_ratio")) {this.rocket_refuel_ratio = d;}
-		else if (option.equals("rocket_vertical_angle")) {this.rocket_vertical_angle = d;}
-		else {System.out.println("Option doesn't exist: " + option);}
+		switch (option) {
+			case "maxlen" -> this.maxlen = d;
+			case "hookgravity" -> this.hookgravity = d;
+			case "throwspeed" -> this.throwspeed = d;
+			case "motormaxspeed" -> this.motormaxspeed = d;
+			case "motoracceleration" -> this.motoracceleration = d;
+			case "playermovementmult" -> this.playermovementmult = d;
+			case "repelforce" -> this.repelforce = d;
+			case "attractradius" -> this.attractradius = d;
+			case "angle" -> this.angle = d;
+			case "sneakingangle" -> this.sneakingangle = d;
+			case "verticalthrowangle" -> this.verticalthrowangle = d;
+			case "sneakingverticalthrowangle" -> this.sneakingverticalthrowangle = d;
+			case "rocket_force" -> this.rocket_force = d;
+			case "rocket_active_time" -> this.rocket_active_time = d;
+			case "rocket_refuel_ratio" -> this.rocket_refuel_ratio = d;
+			case "rocket_vertical_angle" -> this.rocket_vertical_angle = d;
+			default -> System.out.println("Option doesn't exist: " + option);
+		}
 	}
 	
 	public double getDouble(String option) {
-		if (option.equals("maxlen")) {return maxlen;}
-		else if (option.equals("hookgravity")) {return hookgravity;}
-		else if (option.equals("throwspeed")) {return throwspeed;}
-		else if (option.equals("motormaxspeed")) {return motormaxspeed;}
-		else if (option.equals("motoracceleration")) {return motoracceleration;}
-		else if (option.equals("playermovementmult")) {return playermovementmult;}
-		else if (option.equals("repelforce")) {return repelforce;}
-		else if (option.equals("attractradius")) {return attractradius;}
-		else if (option.equals("angle")) {return angle;}
-		else if (option.equals("sneakingangle")) {return sneakingangle;}
-		else if (option.equals("verticalthrowangle")) {return verticalthrowangle;}
-		else if (option.equals("sneakingverticalthrowangle")) {return sneakingverticalthrowangle;}
-		else if (option.equals("rocket_force")) {return this.rocket_force;}
-		else if (option.equals("rocket_active_time")) {return rocket_active_time;}
-		else if (option.equals("rocket_refuel_ratio")) {return rocket_refuel_ratio;}
-		else if (option.equals("rocket_vertical_angle")) {return rocket_vertical_angle;}
-		System.out.println("Option doesn't exist: " + option);
-		return 0;
+		return switch (option) {
+			case "maxlen" -> this.maxlen;
+			case "hookgravity" -> this.hookgravity;
+			case "throwspeed" -> this.throwspeed;
+			case "motormaxspeed" -> this.motormaxspeed;
+			case "motoracceleration" -> this.motoracceleration;
+			case "playermovementmult" -> this.playermovementmult;
+			case "repelforce" -> this.repelforce;
+			case "attractradius" -> this.attractradius;
+			case "angle" -> this.angle;
+			case "sneakingangle" -> this.sneakingangle;
+			case "verticalthrowangle" -> this.verticalthrowangle;
+			case "sneakingverticalthrowangle" -> this.sneakingverticalthrowangle;
+			case "rocket_force" -> this.rocket_force;
+			case "rocket_active_time" -> this.rocket_active_time;
+			case "rocket_refuel_ratio" -> this.rocket_refuel_ratio;
+			case "rocket_vertical_angle" -> this.rocket_vertical_angle;
+			default -> {
+				System.out.println("Option doesn't exist: " + option);
+				yield 0;
+			}
+		};
 	}
 	
 	public long getChecksum() {
 		Checksum checker = new CRC32();
-		for (String option : booleanoptions) {
+		for (String option : BOOLEAN_IDS) {
 			checker.update(this.getBoolean(option) ? 1 : 0);
 		}
-		for (String option : doubleoptions) {
+
+		for (String option : DOUBLE_IDS) {
 			// https://stackoverflow.com/questions/13071777/convert-double-to-byte-array
 			checker.update(ByteBuffer.allocate(8).putDouble(this.getDouble(option)).array());
 		}
+
 		checker.update(54902349);
 		return checker.getValue();
 	}
 	
 	public void writeToBuf(ByteBuf buf) {
-		for (String option : booleanoptions) {
+		for (String option : BOOLEAN_IDS) {
 			buf.writeBoolean(this.getBoolean(option));
 		}
-		for (String option : doubleoptions) {
+		for (String option : DOUBLE_IDS) {
 			buf.writeDouble(this.getDouble(option));
 		}
 		buf.writeLong(this.getChecksum());
 	}
 	
 	public void readFromBuf(ByteBuf buf) {
-		for (String option : booleanoptions) {
+		for (String option : BOOLEAN_IDS) {
 			this.setBoolean(option, buf.readBoolean());
 		}
-		for (String option : doubleoptions) {
+		for (String option : DOUBLE_IDS) {
 			this.setDouble(option, buf.readDouble());
 		}
 		long recordedChecksum = buf.readLong();
 		if (this.getChecksum() != recordedChecksum) {
-			grapplemod.LOGGER.error("Error checksum reading from buffer");
+			GrappleMod.LOGGER.error("Error checksum reading from buffer");
 			this.setDefaults();
 		}
 	}
@@ -404,12 +421,12 @@ public class GrappleCustomization {
 	}
 	
 	public boolean equals(GrappleCustomization other) {
-		for (String option : booleanoptions) {
+		for (String option : BOOLEAN_IDS) {
 			if (this.getBoolean(option) != other.getBoolean(option)) {
 				return false;
 			}
 		}
-		for (String option : doubleoptions) {
+		for (String option : DOUBLE_IDS) {
 			if (this.getDouble(option) != other.getDouble(option)) {
 				return false;
 			}

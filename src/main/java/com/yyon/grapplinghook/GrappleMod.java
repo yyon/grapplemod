@@ -32,13 +32,13 @@ import org.apache.logging.log4j.Logger;
 // smart motor acts erratically when aiming above hook
 // key events
 
-@Mod(grapplemod.MODID)
-public class grapplemod {
+@Mod(GrappleMod.MODID)
+public class GrappleMod {
     public static final String MODID = "grapplemod";
 
     public static final Logger LOGGER = LogManager.getLogger();
 
-    public grapplemod() {
+    public GrappleMod() {
         IEventBus bus = FMLJavaModLoadingContext.get().getModEventBus();
         CreativeTabHandler.nudge();
         CommonSetup.BLOCKS.register(bus);

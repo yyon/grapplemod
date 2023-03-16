@@ -316,7 +316,7 @@ public class ClientControllerManager {
 		GrappleController control = null;
 		if (controllerId == GrapplemodUtils.GRAPPLEID) {
 			if (!multi) {
-				control = new GrappleController(grapplehookEntityId, playerId, world, pos, controllerId, custom);
+				control = new GrappleController(grapplehookEntityId, playerId, world, controllerId, custom);
 			} else {
 				control = controllers.get(playerId);
 				boolean created = false;
@@ -332,7 +332,7 @@ public class ClientControllerManager {
 					}
 				}
 				if (!created) {
-					control = new GrappleController(grapplehookEntityId, playerId, world, pos, controllerId, custom);
+					control = new GrappleController(grapplehookEntityId, playerId, world, controllerId, custom);
 				}
 			}
 		} else if (controllerId == GrapplemodUtils.REPELID) {

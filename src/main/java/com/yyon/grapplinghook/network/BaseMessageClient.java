@@ -1,7 +1,7 @@
 package com.yyon.grapplinghook.network;
 
 import com.yyon.grapplinghook.client.ClientProxyInterface;
-import com.yyon.grapplinghook.grapplemod;
+import com.yyon.grapplinghook.GrappleMod;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
@@ -29,7 +29,7 @@ public abstract class BaseMessageClient {
         NetworkEvent.Context ctx = ctxSupplier.get();
         LogicalSide sideReceived = ctx.getDirection().getReceptionSide();
         if (sideReceived != LogicalSide.CLIENT) {
-			grapplemod.LOGGER.warn("message received on wrong side:" + ctx.getDirection().getReceptionSide());
+			GrappleMod.LOGGER.warn("message received on wrong side:" + ctx.getDirection().getReceptionSide());
 			return;
         }
         

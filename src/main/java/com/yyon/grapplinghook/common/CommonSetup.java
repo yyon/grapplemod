@@ -6,7 +6,7 @@ import com.yyon.grapplinghook.enchantments.DoublejumpEnchantment;
 import com.yyon.grapplinghook.enchantments.SlidingEnchantment;
 import com.yyon.grapplinghook.enchantments.WallrunEnchantment;
 import com.yyon.grapplinghook.entities.grapplehook.GrapplehookEntity;
-import com.yyon.grapplinghook.grapplemod;
+import com.yyon.grapplinghook.GrappleMod;
 import com.yyon.grapplinghook.items.EnderStaffItem;
 import com.yyon.grapplinghook.items.ForcefieldItem;
 import com.yyon.grapplinghook.items.GrapplehookItem;
@@ -33,10 +33,8 @@ import net.minecraftforge.registries.RegistryObject;
 import java.util.*;
 import java.util.function.Supplier;
 
-@Mod.EventBusSubscriber(modid = grapplemod.MODID, bus=Mod.EventBusSubscriber.Bus.MOD)
+@Mod.EventBusSubscriber(modid = GrappleMod.MODID, bus=Mod.EventBusSubscriber.Bus.MOD)
 public class CommonSetup {
-
-	public static final CommonEventHandlers EVENTS = new CommonEventHandlers();
 
 	public static final DeferredRegister<Item> ITEMS = DeferredRegister.create(ForgeRegistries.ITEMS, "grapplemod");
 	public static final DeferredRegister<Enchantment> ENCHANTMENTS = DeferredRegister.create(ForgeRegistries.ENCHANTMENTS, "grapplemod");

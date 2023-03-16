@@ -5,7 +5,6 @@ import com.yyon.grapplinghook.config.GrappleConfig;
 import com.yyon.grapplinghook.controllers.AirfrictionController;
 import com.yyon.grapplinghook.controllers.ForcefieldController;
 import com.yyon.grapplinghook.controllers.GrappleController;
-import com.yyon.grapplinghook.grapplemod;
 import com.yyon.grapplinghook.items.KeypressItem;
 import com.yyon.grapplinghook.utils.Vec;
 import net.minecraft.client.Minecraft;
@@ -18,7 +17,6 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
-import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.ClientPlayerNetworkEvent.LoggingOut;
 import net.minecraftforge.client.event.InputEvent.Key;
 import net.minecraftforge.client.event.MovementInputUpdateEvent;
@@ -28,16 +26,14 @@ import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.level.BlockEvent.BreakEvent;
 import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
 
 public class ClientEventHandlers {
-	public static ClientEventHandlers instance = null;
 	
 	public ClientEventHandlers() {
 	    MinecraftForge.EVENT_BUS.register(this);
 	}
 
-	public boolean prevKeys[] = {false, false, false, false, false};
+	public boolean[] prevKeys = { false, false, false, false, false };
 	
 	@SubscribeEvent
 	public void onClientTick(TickEvent.ClientTickEvent event) {
@@ -48,7 +44,13 @@ public class ClientEventHandlers {
 				
 				if (Minecraft.getInstance().screen == null) {
 					// keep in same order as enum from KeypressItem
-					boolean keys[] = {ClientSetup.key_enderlaunch.isDown(), ClientSetup.key_leftthrow.isDown(), ClientSetup.key_rightthrow.isDown(), ClientSetup.key_boththrow.isDown(), ClientSetup.key_rocket.isDown()};
+					boolean[] keys = {
+							ClientSetup.key_enderlaunch.isDown(),
+							ClientSetup.key_leftthrow.isDown(),
+							ClientSetup.key_rightthrow.isDown(),
+							ClientSetup.key_boththrow.isDown(),
+							ClientSetup.key_rocket.isDown()
+					};
 					
 					for (int i = 0; i < keys.length; i++) {
 						boolean iskeydown = keys[i];
@@ -163,8 +165,7 @@ public class ClientEventHandlers {
 		int targetCameraTilt = 0;
 		if (ClientControllerManager.controllers.containsKey(id)) {
 			GrappleController controller = ClientControllerManager.controllers.get(id);
-			if (controller instanceof AirfrictionController) {
-				AirfrictionController afcontroller = (AirfrictionController) controller;
+			if (controller instanceof AirfrictionController afcontroller) {
 				if (afcontroller.wasWallrunning) {
 					Vec walldirection = afcontroller.getWallDirection();
 					if (walldirection != null) {
@@ -196,21 +197,18 @@ public class ClientEventHandlers {
 
 	public ItemStack getKeypressStack(Player player) {
 		if (player != null) {
+			Item item;
            ItemStack stack = player.getItemInHand(InteractionHand.MAIN_HAND);
-           if (stack != null) {
-               Item item = stack.getItem();
-               if (item instanceof KeypressItem) {
-            	   return stack;
-               }
-           }
+			item = stack.getItem();
+			if (item instanceof KeypressItem) {
+				return stack;
+			}
            
-           stack = player.getItemInHand(InteractionHand.OFF_HAND);
-           if (stack != null) {
-        	   Item item = stack.getItem();
-        	   if (item instanceof KeypressItem) {
-        		   return stack;
-        	   }
-           }
+			stack = player.getItemInHand(InteractionHand.OFF_HAND);
+			item = stack.getItem();
+			if (item instanceof KeypressItem) {
+				return stack;
+			}
 		}
 		return null;
 	}

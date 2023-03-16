@@ -4,6 +4,6 @@ import com.yyon.grapplinghook.utils.GrappleCustomization;
 
 public class ThrowUpgradeItem extends BaseUpgradeItem {
 	public ThrowUpgradeItem() {
-		super(1, GrappleCustomization.upgradeCategories.THROW);
+		super(1, GrappleCustomization.UpgradeCategory.THROW);
 	}
 }

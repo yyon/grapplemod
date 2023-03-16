@@ -1,10 +1,10 @@
 package com.yyon.grapplinghook.controllers;
 
+import com.yyon.grapplinghook.GrappleMod;
 import com.yyon.grapplinghook.client.ClientProxyInterface;
 import com.yyon.grapplinghook.common.CommonSetup;
 import com.yyon.grapplinghook.config.GrappleConfig;
 import com.yyon.grapplinghook.entities.grapplehook.GrapplehookEntity;
-import com.yyon.grapplinghook.grapplemod;
 import com.yyon.grapplinghook.network.GrappleEndMessage;
 import com.yyon.grapplinghook.network.PlayerMovementMessage;
 import com.yyon.grapplinghook.utils.GrappleCustomization;
@@ -55,7 +55,7 @@ public class GrappleController {
 	
 	public GrappleCustomization custom;
 	
-	public GrappleController(int grapplehookEntityId, int entityId, Level world, Vec pos, int controllerid, GrappleCustomization custom) {
+	public GrappleController(int grapplehookEntityId, int entityId, Level world, int controllerid, GrappleCustomization custom) {
 		this.entityId = entityId;
 		this.world = world;
 		this.custom = custom;
@@ -83,7 +83,7 @@ public class GrappleController {
 			if (grapplehookEntity != null && grapplehookEntity.isAlive() && grapplehookEntity instanceof GrapplehookEntity) {
 				this.addHookEntity((GrapplehookEntity)grapplehookEntity);
 			} else {
-				grapplemod.LOGGER.warn("no hook entity");
+				GrappleMod.LOGGER.warn("no hook entity");
 				this.unattach();
 			}
 		}
@@ -196,8 +196,7 @@ public class GrappleController {
 					}
 
 					// snap to rope length
-					if (oldspherevec.length() < remaininglength) {
-					} else {
+					if (oldspherevec.length() >= remaininglength) {
 						if (oldspherevec.length() - remaininglength > GrappleConfig.getConf().grapplinghook.other.rope_snap_buffer) {
 							// if rope is too long, the rope snaps
 
@@ -215,8 +214,7 @@ public class GrappleController {
 					this.calcTaut(dist, hookEntity);
 
 					// handle keyboard input (jumping and climbing)
-					if (entity instanceof Player) {
-						Player player = (Player) entity;
+					if (entity instanceof Player player) {
 						boolean isjumping = ClientProxyInterface.proxy.isKeyDown(ClientProxyInterface.GrappleKeys.key_jumpanddetach);
 						isjumping = isjumping && !playerJump; // only jump once when key is first pressed
 						playerJump = ClientProxyInterface.proxy.isKeyDown(ClientProxyInterface.GrappleKeys.key_jumpanddetach);

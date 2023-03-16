@@ -61,7 +61,7 @@ public class BlockGrappleModifier extends BaseEntityBlock {
 		}
 		TileEntityGrappleModifier tileent = (TileEntityGrappleModifier) ent;
 		
-		for (GrappleCustomization.upgradeCategories category : GrappleCustomization.upgradeCategories.values()) {
+		for (GrappleCustomization.UpgradeCategory category : GrappleCustomization.UpgradeCategory.values()) {
 			if (tileent.unlockedCategories.containsKey(category) && tileent.unlockedCategories.get(category)) {
 				drops.add(new ItemStack(category.getItem()));
 			}
@@ -79,7 +79,7 @@ public class BlockGrappleModifier extends BaseEntityBlock {
 				BlockEntity ent = worldIn.getBlockEntity(pos);
 				TileEntityGrappleModifier tileent = (TileEntityGrappleModifier) ent;
 				
-				GrappleCustomization.upgradeCategories category = ((BaseUpgradeItem) helditem).category;
+				GrappleCustomization.UpgradeCategory category = ((BaseUpgradeItem) helditem).category;
 				if (category != null) {
 					if (tileent.isUnlocked(category)) {
 						playerIn.sendSystemMessage(Component.literal("Already has upgrade: " + category.getName()));
@@ -100,7 +100,7 @@ public class BlockGrappleModifier extends BaseEntityBlock {
 				TileEntityGrappleModifier tileent = (TileEntityGrappleModifier) ent;
 				
 				GrappleCustomization custom = tileent.customization;
-				CommonSetup.grapplingHookItem.get().setCustomOnServer(helditemstack, custom, playerIn);
+				CommonSetup.grapplingHookItem.get().setCustomOnServer(helditemstack, custom);
 				
 				playerIn.sendSystemMessage(Component.literal("Applied configuration"));
 			}

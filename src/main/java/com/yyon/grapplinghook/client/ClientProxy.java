@@ -5,7 +5,7 @@ import com.yyon.grapplinghook.blocks.modifierblock.TileEntityGrappleModifier;
 import com.yyon.grapplinghook.common.CommonSetup;
 import com.yyon.grapplinghook.config.GrappleConfig;
 import com.yyon.grapplinghook.controllers.GrappleController;
-import com.yyon.grapplinghook.grapplemod;
+import com.yyon.grapplinghook.GrappleMod;
 import com.yyon.grapplinghook.items.GrapplehookItem;
 import com.yyon.grapplinghook.network.BaseMessageClient;
 import com.yyon.grapplinghook.utils.GrappleCustomization;
@@ -124,15 +124,16 @@ public class ClientProxy extends ClientProxyInterface {
 
 	@Override
 	public void fillGrappleVariants(NonNullList<ItemStack> output) {
-		if (!Minecraft.getInstance().isRunning() || Minecraft.getInstance().player == null || Minecraft.getInstance().player.level.getRecipeManager() == null)
+		if (!Minecraft.getInstance().isRunning() || Minecraft.getInstance().player == null) {
 			return;
+		}
 
 		if (grapplingHookVariants == null) {
 			grapplingHookVariants = new ArrayList<>();
 			Level level = Minecraft.getInstance().player.level;
 			RecipeManager recipemanager = level.getRecipeManager();
 
-			recipemanager.getRecipeIds().filter(loc -> loc.getNamespace().equals(grapplemod.MODID)).forEach(loc -> {
+			recipemanager.getRecipeIds().filter(loc -> loc.getNamespace().equals(GrappleMod.MODID)).forEach(loc -> {
 				ItemStack stack = recipemanager
 						.byKey(loc)
 						.orElseThrow()
@@ -253,6 +254,10 @@ public class ClientProxy extends ClientProxyInterface {
 	@Override
 	public void playSound(ResourceLocation loc, float volume) {
 		Player player = Minecraft.getInstance().player;
+
+		if(player == null)
+			return;
+
 		Minecraft.getInstance().getSoundManager().play(new SimpleSoundInstance(loc, SoundSource.PLAYERS, volume, 1.0F, RandomSource.create(),false, 0, SoundInstance.Attenuation.NONE, player.getX(), player.getY(), player.getZ(), false));
 	}
 

@@ -3,7 +3,7 @@ package com.yyon.grapplinghook.blocks.modifierblock;
 import com.yyon.grapplinghook.common.CommonSetup;
 import com.yyon.grapplinghook.network.GrappleModifierMessage;
 import com.yyon.grapplinghook.utils.GrappleCustomization;
-import com.yyon.grapplinghook.utils.GrappleCustomization.upgradeCategories;
+import com.yyon.grapplinghook.utils.GrappleCustomization.UpgradeCategory;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.Connection;
@@ -15,7 +15,7 @@ import javax.annotation.Nullable;
 import java.util.HashMap;
 
 public class TileEntityGrappleModifier extends BlockEntity {
-	public HashMap<GrappleCustomization.upgradeCategories, Boolean> unlockedCategories = new HashMap<GrappleCustomization.upgradeCategories, Boolean>();
+	public HashMap<UpgradeCategory, Boolean> unlockedCategories = new HashMap<UpgradeCategory, Boolean>();
 	public GrappleCustomization customization;
 
 	public TileEntityGrappleModifier(BlockPos pos, BlockState state) {
@@ -23,7 +23,7 @@ public class TileEntityGrappleModifier extends BlockEntity {
 		this.customization = new GrappleCustomization();
 	}
 
-	public void unlockCategory(upgradeCategories category) {
+	public void unlockCategory(UpgradeCategory category) {
 		unlockedCategories.put(category, true);
 		this.sendUpdates();
 		this.getLevel().sendBlockUpdated(this.getBlockPos(), this.getBlockState(), this.getBlockState(), 3);
@@ -44,7 +44,7 @@ public class TileEntityGrappleModifier extends BlockEntity {
 		this.setChanged();
 	}
 
-	public boolean isUnlocked(upgradeCategories category) {
+	public boolean isUnlocked(UpgradeCategory category) {
 		return this.unlockedCategories.containsKey(category) && this.unlockedCategories.get(category);
 	}
 
@@ -54,7 +54,7 @@ public class TileEntityGrappleModifier extends BlockEntity {
 
 		CompoundTag unlockedNBT = nbtTagCompound.getCompound("unlocked");
 
-		for (GrappleCustomization.upgradeCategories category : GrappleCustomization.upgradeCategories.values()) {
+		for (UpgradeCategory category : UpgradeCategory.values()) {
 			String num = String.valueOf(category.toInt());
 			boolean unlocked = this.isUnlocked(category);
 
@@ -71,7 +71,7 @@ public class TileEntityGrappleModifier extends BlockEntity {
 
 		CompoundTag unlockedNBT = parentNBTTagCompound.getCompound("unlocked");
 
-		for (GrappleCustomization.upgradeCategories category : GrappleCustomization.upgradeCategories.values()) {
+		for (UpgradeCategory category : UpgradeCategory.values()) {
 			String num = String.valueOf(category.toInt());
 			boolean unlocked = unlockedNBT.getBoolean(num);
 

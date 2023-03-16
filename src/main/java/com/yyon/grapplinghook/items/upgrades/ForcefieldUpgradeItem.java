@@ -4,6 +4,6 @@ import com.yyon.grapplinghook.utils.GrappleCustomization;
 
 public class ForcefieldUpgradeItem extends BaseUpgradeItem {
 	public ForcefieldUpgradeItem() {
-		super(1, GrappleCustomization.upgradeCategories.FORCEFIELD);
+		super(1, GrappleCustomization.UpgradeCategory.FORCEFIELD);
 	}
 }

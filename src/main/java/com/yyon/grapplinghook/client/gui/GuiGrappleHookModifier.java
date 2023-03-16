@@ -32,7 +32,7 @@ public class GuiGrappleHookModifier extends Screen {
 
 	private HashMap<AbstractWidget, String> options;
 	private GrappleCustomization customization;
-	private GrappleCustomization.upgradeCategories category = null;
+	private GrappleCustomization.UpgradeCategory category = null;
 
 	public GuiGrappleHookModifier(TileEntityGrappleModifier tileent) {
 		super(Component.literal(ClientProxyInterface.proxy.localize("grapplemodifier.title.desc")));
@@ -81,11 +81,11 @@ public class GuiGrappleHookModifier extends Screen {
 
 		int y = 0;
 		int x = 0;
-		for (int i = 0; i < GrappleCustomization.upgradeCategories.size(); i++) {
-			GrappleCustomization.upgradeCategories category = GrappleCustomization.upgradeCategories.fromInt(i);
-			if (category == GrappleCustomization.upgradeCategories.LIMITS) continue;
+		for (int i = 0; i < GrappleCustomization.UpgradeCategory.size(); i++) {
+			GrappleCustomization.UpgradeCategory category = GrappleCustomization.UpgradeCategory.fromInt(i);
+			if (category == GrappleCustomization.UpgradeCategory.LIMITS) continue;
 
-			if (i == GrappleCustomization.upgradeCategories.size() / 2) {
+			if (i == GrappleCustomization.UpgradeCategory.size() / 2) {
 				y = 0;
 				x += 1;
 			}
@@ -111,7 +111,7 @@ public class GuiGrappleHookModifier extends Screen {
 		this.addRenderableWidget(new BackgroundWidget(this.guiLeft, this.guiTop, this.menuSizeX, this.menuSizeY));
 	}
 
-	public void notAllowedScreen(GrappleCustomization.upgradeCategories category) {
+	public void notAllowedScreen(GrappleCustomization.UpgradeCategory category) {
 		this.clearScreen();
 		this.addRenderableWidget(
 				Button.builder(Component.literal(ClientProxyInterface.proxy.localize("grapplemodifier.back.desc")), actionGoBack)
@@ -165,7 +165,7 @@ public class GuiGrappleHookModifier extends Screen {
 		this.options.put(slider, option);
 	}
 
-	public void showCategoryScreen(GrappleCustomization.upgradeCategories category) {
+	public void showCategoryScreen(GrappleCustomization.UpgradeCategory category) {
 		this.clearScreen();
 
 		this.addRenderableWidget(
@@ -279,7 +279,7 @@ public class GuiGrappleHookModifier extends Screen {
 	
 	public int getLimits() {
 		if(Minecraft.getInstance().player == null) return 0;
-		return this.tileEnt.isUnlocked(GrappleCustomization.upgradeCategories.LIMITS) || Minecraft.getInstance().player.isCreative()
+		return this.tileEnt.isUnlocked(GrappleCustomization.UpgradeCategory.LIMITS) || Minecraft.getInstance().player.isCreative()
 				? 1
 				: 0;
 	}
@@ -293,7 +293,7 @@ public class GuiGrappleHookModifier extends Screen {
 		return this.guiTop + this.widgetPosYIncrementor - 22;
 	}
 
-	protected OnPress createCategoryActionHandler(GrappleCustomization.upgradeCategories category) {
+	protected OnPress createCategoryActionHandler(GrappleCustomization.UpgradeCategory category) {
 		return button -> {
 			if(Minecraft.getInstance().player == null) return;
 
