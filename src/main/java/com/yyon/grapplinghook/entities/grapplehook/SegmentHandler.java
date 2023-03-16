@@ -195,10 +195,8 @@ public class SegmentHandler {
 				Vec cornerhitpos = new Vec(cornerraytraceresult.getLocation());
 				Direction cornerside = cornerraytraceresult.getDirection();
 
-				if (cornerside == bottomside || cornerside.getOpposite() == bottomside) {
-					System.out.println("Warning: corner is same or opposite of bottomside"); // should not happen
-					continue;
-				}
+				// Sanity check - should not happen?
+				if (cornerside == bottomside || cornerside.getOpposite() == bottomside) continue;
 
 				// add a bend around the corner
 				Vec actualcorner = cornerhitpos.add(bottomnormal.changeLen(INTO_BLOCK));
@@ -235,8 +233,6 @@ public class SegmentHandler {
 
 				if (numberrecursions < 10) {
 					updateSegment(top, prevtop, bend, prevbend, index, numberrecursions+1);
-				} else {
-					System.out.println("Warning: number recursions exceeded");
 				}
 
 				break;
