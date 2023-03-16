@@ -40,8 +40,8 @@ public class CustomizationSlider extends AbstractSliderButton implements CustomT
     }
 
     @Override
-    public void renderButton(PoseStack matrix, int mouseX, int mouseY, float partialTicks) {
-        super.renderButton(matrix, mouseX, mouseY, partialTicks);
+    public void renderWidget(PoseStack matrix, int mouseX, int mouseY, float partialTicks) {
+        super.renderWidget(matrix, mouseX, mouseY, partialTicks);
         if (this.isHovered) this.displayTooltip(this.context, matrix, mouseX, mouseY);
     }
 

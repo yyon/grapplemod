@@ -19,7 +19,8 @@ public class TextWidget extends AbstractWidget {
         this(x, y, 50, 15 * text.getString().split("\n").length + 5, text);
     }
 
-    public void renderButton(PoseStack p_230431_1_, int p_230431_2_, int p_230431_3_, float p_230431_4_) {
+    @Override
+    public void renderWidget(PoseStack p_230431_1_, int p_230431_2_, int p_230431_3_, float p_230431_4_) {
         Minecraft minecraft = Minecraft.getInstance();
         Font fontrenderer = minecraft.font;
         RenderSystem.setShaderTexture(0,WIDGETS_LOCATION);
