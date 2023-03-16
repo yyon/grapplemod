@@ -57,32 +57,6 @@ import java.util.HashMap;
  */
 
 public class GrapplehookEntity extends ThrowableItemProjectile implements IEntityAdditionalSpawnData {
-	public GrapplehookEntity(EntityType<? extends GrapplehookEntity> type, Level world) {
-		super(type, world);
-
-		this.segmentHandler = new SegmentHandler(this.level, this, Vec.positionVec(this), Vec.positionVec(this));
-		this.customization = new GrappleCustomization();
-	}
-
-	public GrapplehookEntity(Level world, LivingEntity shooter,
-			boolean righthand, GrappleCustomization customization, boolean isdouble) {
-		super(CommonSetup.grapplehookEntityType.get(), shooter.position().x, shooter.position().y + shooter.getEyeHeight(), shooter.position().z, world);
-		
-		this.shootingEntity = shooter;
-		this.shootingEntityID = this.shootingEntity.getId();
-		
-		this.isDouble = isdouble;
-		
-		Vec pos = Vec.positionVec(this.shootingEntity).add(new Vec(0, this.shootingEntity.getEyeHeight(), 0));
-
-		this.segmentHandler = new SegmentHandler(this.level, this, new Vec(pos), new Vec(pos));
-
-		this.customization = customization;
-		this.r = customization.maxlen;
-		
-		this.rightHand = righthand;
-	}
-
 	public Entity shootingEntity = null;
 	public int shootingEntityID;
 	
@@ -112,10 +86,36 @@ public class GrapplehookEntity extends ThrowableItemProjectile implements IEntit
 	public BlockPos magnetBlock = null;
 	
 	public Vec attach_dir = null;
-	
+
+
+	public GrapplehookEntity(EntityType<? extends GrapplehookEntity> type, Level world) {
+		super(type, world);
+
+		this.segmentHandler = new SegmentHandler(this.level, this, Vec.positionVec(this), Vec.positionVec(this));
+		this.customization = new GrappleCustomization();
+	}
+
+	public GrapplehookEntity(Level world, LivingEntity shooter, boolean righthand, GrappleCustomization customization, boolean isdouble) {
+		super(CommonSetup.grapplehookEntityType.get(), shooter.position().x, shooter.position().y + shooter.getEyeHeight(), shooter.position().z, world);
+
+		this.shootingEntity = shooter;
+		this.shootingEntityID = this.shootingEntity.getId();
+
+		this.isDouble = isdouble;
+
+		Vec pos = Vec.positionVec(this.shootingEntity).add(new Vec(0, this.shootingEntity.getEyeHeight(), 0));
+
+		this.segmentHandler = new SegmentHandler(this.level, this, new Vec(pos), new Vec(pos));
+
+		this.customization = customization;
+		this.r = customization.maxlen;
+
+		this.rightHand = righthand;
+	}
+
+
 	@Override
-    public void writeSpawnData(FriendlyByteBuf data)
-    {
+    public void writeSpawnData(FriendlyByteBuf data) {
 	    data.writeInt(this.shootingEntity != null ? this.shootingEntity.getId() : 0);
 	    data.writeBoolean(this.rightHand);
 	    data.writeBoolean(this.isDouble);
@@ -124,10 +124,9 @@ public class GrapplehookEntity extends ThrowableItemProjectile implements IEntit
 	    }
 	    this.customization.writeToBuf(data);
     }
-	
+
 	@Override
-    public void readSpawnData(FriendlyByteBuf data)
-    {
+    public void readSpawnData(FriendlyByteBuf data) {
     	this.shootingEntityID = data.readInt();
 	    this.shootingEntity = this.level.getEntity(this.shootingEntityID);
 	    this.rightHand = data.readBoolean();
@@ -135,11 +134,6 @@ public class GrapplehookEntity extends ThrowableItemProjectile implements IEntit
 	    this.customization = new GrappleCustomization();
 	    this.customization.readFromBuf(data);
     }
-
-	@Override
-	public void defineSynchedData() {
-		super.defineSynchedData();
-	}
 	
 	public void removeServer() {
 		this.remove(RemovalReason.DISCARDED);
@@ -518,11 +512,11 @@ public class GrapplehookEntity extends ThrowableItemProjectile implements IEntit
     		return checkedset.get(pos);
     	}
 	}
-	
+
 	@Nonnull
 	@Override
 	public Packet<ClientGamePacketListener> getAddEntityPacket() {
-		  return NetworkHooks.getEntitySpawningPacket(this);
+		return NetworkHooks.getEntitySpawningPacket(this);
 	}
 
 	@Override

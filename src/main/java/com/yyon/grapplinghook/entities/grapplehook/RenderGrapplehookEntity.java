@@ -6,7 +6,6 @@ import com.yyon.grapplinghook.utils.Vec;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
-import net.minecraft.client.renderer.block.model.ItemTransforms;
 import net.minecraft.client.renderer.culling.Frustum;
 import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
@@ -18,6 +17,7 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.entity.HumanoidArm;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
@@ -234,7 +234,7 @@ public class RenderGrapplehookEntity<T extends GrapplehookEntity> extends Entity
 		// draw hook
 		ItemStack stack = this.getStackToRender();
 		BakedModel bakedModel = this.context.getItemRenderer().getModel(stack, hookEntity.level, null, hookEntity.getId());
-		this.context.getItemRenderer().render(stack, ItemTransforms.TransformType.NONE, false, matrix, renderType, packedLight, OverlayTexture.NO_OVERLAY, bakedModel);
+		this.context.getItemRenderer().render(stack, ItemDisplayContext.FIXED, false, matrix, renderType, packedLight, OverlayTexture.NO_OVERLAY, bakedModel);
 
 		// revert transformation
 		matrix.popPose();
