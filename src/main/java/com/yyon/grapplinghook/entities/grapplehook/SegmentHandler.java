@@ -22,20 +22,20 @@ public class SegmentHandler {
 	public Level world;
 	public GrapplehookEntity hookEntity;
 	
-	Vec prevHookPos = null;
-	Vec prevPlayerPos = null;;
+	private Vec prevHookPos;
+	private Vec prevPlayerPos;
 	
-	final double bendOffset = 0.05;
-	final double intoBlock = 0.05;
+	private static final double BEND_OFFSET = 0.05D;
+	private static final double INTO_BLOCK = 0.05D;
 	
 	public SegmentHandler(Level w, GrapplehookEntity hookEntity, Vec hookpos, Vec playerpos) {
-		segments = new LinkedList<Vec>();
+		segments = new LinkedList<>();
 		segments.add(hookpos);
 		segments.add(playerpos);
-		segmentBottomSides = new LinkedList<Direction>();
+		segmentBottomSides = new LinkedList<>();
 		segmentBottomSides.add(null);
 		segmentBottomSides.add(null);
-		segmentTopSides = new LinkedList<Direction>();
+		segmentTopSides = new LinkedList<>();
 		segmentTopSides.add(null);
 		segmentTopSides.add(null);
 		this.world = w;
@@ -95,7 +95,7 @@ public class SegmentHandler {
 			}
 		}
 		
-		Vec farthest = segments.get(1);
+		Vec farthest;
 		
 		if (movinghook) {
 			while (true) {
@@ -158,7 +158,7 @@ public class SegmentHandler {
 		if (!this.world.isClientSide) {
 			SegmentMessage addmessage = new SegmentMessage(this.hookEntity.getId(), false, index, new Vec(0, 0, 0), Direction.DOWN, Direction.DOWN);
 			Vec playerpoint = Vec.positionVec(this.hookEntity.shootingEntity);
-			CommonSetup.network.send(PacketDistributor.TRACKING_CHUNK.with(() -> world.getChunkAt(new BlockPos(playerpoint.x, playerpoint.y, playerpoint.z))), addmessage);
+			CommonSetup.network.send(PacketDistributor.TRACKING_CHUNK.with(() -> world.getChunkAt(BlockPos.containing(playerpoint.toVec3d()))), addmessage);
 		}
 	}
 	
@@ -179,72 +179,67 @@ public class SegmentHandler {
             // calculate where bottomhitvec was along the rope in the previous tick
             double prevropelen = prevtop.sub(prevbottom).length();
             
-            Vec cornerbound1 = bottomhitvec.add(bottomnormal.changeLen(-intoBlock));
+            Vec cornerbound1 = bottomhitvec.add(bottomnormal.changeLen(-INTO_BLOCK));
             
             Vec bound_option1 = linePlaneIntersection(prevtop, prevbottom, cornerbound1, bottomnormal);
             Vec bound_option2 = linePlaneIntersection(top, prevtop, cornerbound1, bottomnormal);
             Vec bound_option3 = linePlaneIntersection(prevbottom, bottom, cornerbound1, bottomnormal);
             
-            for (Vec cornerbound2 : new Vec[] {bound_option1, bound_option2, bound_option3}) {
-            	if (cornerbound2 == null) {
-            		continue;
-            	}
-            	
+            for (Vec cornerbound2 : new Vec[] { bound_option1, bound_option2, bound_option3 }) {
+            	if (cornerbound2 == null) continue;
+
             	// the corner must be in the line (cornerbound2, cornerbound1)
             	BlockHitResult cornerraytraceresult = GrapplemodUtils.rayTraceBlocks(this.world, cornerbound2, cornerbound1);
-                if (cornerraytraceresult != null) {
-                	Vec cornerhitpos = new Vec(cornerraytraceresult.getLocation());
-                	Direction cornerside = cornerraytraceresult.getDirection();
-                	
-                	if (cornerside == bottomside || 
-                			cornerside.getOpposite() == bottomside) {
-                		// this should not happen
-//                		System.out.println("Warning: corner is same or opposite of bottomside");
-                		continue;
-                	} else {
-                		// add a bend around the corner
-                		Vec actualcorner = cornerhitpos.add(bottomnormal.changeLen(intoBlock));
-                		Vec bend = actualcorner.add(bottomnormal.changeLen(bendOffset)).add(getNormal(cornerside).changeLen(bendOffset));
-                		Vec topropevec = bend.sub(top);
-                		Vec bottomropevec = bend.sub(bottom);
-                		
-                		// ignore bends that are too close to another bend
-                		if (topropevec.length() < 0.05) {
-                			if (this.segmentBottomSides.get(index - 1) == bottomside && this.segmentTopSides.get(index - 1) == cornerside) {
-//                    			System.out.println("Warning: top bend is too close");
-                    			continue;
-                			}
-                		}
-                		if (bottomropevec.length() < 0.05) {
-                			if (this.segmentBottomSides.get(index) == bottomside && this.segmentTopSides.get(index) == cornerside) {
-//                    			System.out.println("Warning: bottom bend is too close");
-                    			continue;
-                			}
-                		}
-                		
-                		this.actuallyAddSegment(index, bend, bottomside, cornerside);
-                		
-                		// if not enough rope length left, undo
-                		if(this.getDistToAnchor() + .2 > this.ropeLen) {
-//                			System.out.println("Warning: not enough length left, removing");
-                			this.removeSegment(index);
-                			continue;
-                		}
-                		
-                		// now to recurse on top section of rope
-                		double newropelen = topropevec.length() + bottomropevec.length();
-                		
-                		double prevtoptobend = topropevec.length() * prevropelen / newropelen;
-                		Vec prevbend = prevtop.add(prevbottom.sub(prevtop).changeLen(prevtoptobend));
-                		
-                		if (numberrecursions < 10) {
-                    		updateSegment(top, prevtop, bend, prevbend, index, numberrecursions+1);
-                		} else {
-                			System.out.println("Warning: number recursions exceeded");
-                		}
-                		break;
-                	}
-                }
+                if (cornerraytraceresult == null) continue;
+
+				Vec cornerhitpos = new Vec(cornerraytraceresult.getLocation());
+				Direction cornerside = cornerraytraceresult.getDirection();
+
+				if (cornerside == bottomside || cornerside.getOpposite() == bottomside) {
+					System.out.println("Warning: corner is same or opposite of bottomside"); // should not happen
+					continue;
+				}
+
+				// add a bend around the corner
+				Vec actualcorner = cornerhitpos.add(bottomnormal.changeLen(INTO_BLOCK));
+				Vec bend = actualcorner.add(bottomnormal.changeLen(BEND_OFFSET)).add(getNormal(cornerside).changeLen(BEND_OFFSET));
+				Vec topropevec = bend.sub(top);
+				Vec bottomropevec = bend.sub(bottom);
+
+				// ignore bends that are too close to another bend
+				if (topropevec.length() < 0.05) {
+					if (this.segmentBottomSides.get(index - 1) == bottomside && this.segmentTopSides.get(index - 1) == cornerside) {
+						continue;
+					}
+				}
+
+				if (bottomropevec.length() < 0.05) {
+					if (this.segmentBottomSides.get(index) == bottomside && this.segmentTopSides.get(index) == cornerside)
+						continue;
+
+				}
+
+				this.actuallyAddSegment(index, bend, bottomside, cornerside);
+
+				// if not enough rope length left, undo
+				if(this.getDistToAnchor() + .2 > this.ropeLen) {
+					this.removeSegment(index);
+					continue;
+				}
+
+				// now to recurse on top section of rope
+				double newropelen = topropevec.length() + bottomropevec.length();
+
+				double prevtoptobend = topropevec.length() * prevropelen / newropelen;
+				Vec prevbend = prevtop.add(prevbottom.sub(prevtop).changeLen(prevtoptobend));
+
+				if (numberrecursions < 10) {
+					updateSegment(top, prevtop, bend, prevbend, index, numberrecursions+1);
+				} else {
+					System.out.println("Warning: number recursions exceeded");
+				}
+
+				break;
             }
         }
 	}
@@ -273,10 +268,10 @@ public class SegmentHandler {
 	}
 	
 	public BlockPos getBendBlock(int index) {
-		Vec bendpos = this.segments.get(index);
-		bendpos.add_ip(this.getNormal(this.segmentBottomSides.get(index)).changeLen(-this.intoBlock * 2));
-		bendpos.add_ip(this.getNormal(this.segmentTopSides.get(index)).changeLen(-this.intoBlock * 2));
-		return new BlockPos(bendpos.x, bendpos.y, bendpos.z);
+		Vec bendPos = this.segments.get(index);
+		bendPos.add_ip(this.getNormal(this.segmentBottomSides.get(index)).changeLen(-this.INTO_BLOCK * 2));
+		bendPos.add_ip(this.getNormal(this.segmentTopSides.get(index)).changeLen(-this.INTO_BLOCK * 2));
+		return BlockPos.containing(bendPos.toVec3d());
 	}
 	
 	public void actuallyAddSegment(int index, Vec bendpoint, Direction bottomside, Direction topside) {
@@ -287,7 +282,7 @@ public class SegmentHandler {
 		if (!this.world.isClientSide) {
 			SegmentMessage addmessage = new SegmentMessage(this.hookEntity.getId(), true, index, bendpoint, topside, bottomside);
 			Vec playerpoint = Vec.positionVec(this.hookEntity.shootingEntity);
-			CommonSetup.network.send(PacketDistributor.TRACKING_CHUNK.with(() -> world.getChunkAt(new BlockPos(playerpoint.x, playerpoint.y, playerpoint.z))), addmessage);
+			CommonSetup.network.send(PacketDistributor.TRACKING_CHUNK.with(() -> world.getChunkAt(BlockPos.containing(playerpoint.toVec3d()))), addmessage);
 		}
 	}
 	
@@ -364,7 +359,7 @@ public class SegmentHandler {
 				maxvec.z = segpos.z;
 			}
 		}
-		AABB bb = new AABB(minvec.x, minvec.y, minvec.z, maxvec.x, maxvec.y, maxvec.z);
-		return bb;
+
+		return new AABB(minvec.x, minvec.y, minvec.z, maxvec.x, maxvec.y, maxvec.z);
 	}
 }

@@ -30,8 +30,8 @@ public class GrappleController {
 	public Level world;
 	public Entity entity;
 	
-	public HashSet<GrapplehookEntity> grapplehookEntities = new HashSet<GrapplehookEntity>();
-	public HashSet<Integer> grapplehookEntityIds = new HashSet<Integer>();
+	public HashSet<GrapplehookEntity> grapplehookEntities = new HashSet<>();
+	public HashSet<Integer> grapplehookEntityIds = new HashSet<>();
 	
 	public boolean attached = true;
 	
@@ -44,7 +44,7 @@ public class GrappleController {
 	public Vec playerMovementUnrotated = new Vec(0,0,0);
 	public Vec playerMovement = new Vec(0,0,0);
 	
-	public int onGroundTimer = 0;
+	public int onGroundTimer;
 	public int maxOnGroundTimer = 3;
 	
 	public double maxLen;
@@ -53,7 +53,7 @@ public class GrappleController {
 	
 	public int controllerId;
 	
-	public GrappleCustomization custom = null;
+	public GrappleCustomization custom;
 	
 	public GrappleController(int grapplehookEntityId, int entityId, Level world, Vec pos, int controllerid, GrappleCustomization custom) {
 		this.entityId = entityId;
@@ -115,8 +115,7 @@ public class GrappleController {
 		}
 	}
 		
-	public void receivePlayerMovementMessage(float strafe,
-			float forward, boolean jump, boolean sneak) {
+	public void receivePlayerMovementMessage(float strafe, float forward, boolean jump, boolean sneak) {
 		playerForward = forward;
 		playerStrafe = strafe;
 		playerSneak = sneak;
@@ -129,391 +128,390 @@ public class GrappleController {
 		
 		if (this.attached) {
 			if(entity != null) {
-				if (true) {
-					if (entity.getVehicle() != null) {
-						this.unattach();						
-						this.updateServerPos();
-						return;
+				if (entity.getVehicle() != null) {
+					this.unattach();
+					this.updateServerPos();
+					return;
+				}
+
+				this.normalGround(false);
+				this.normalCollisions(false);
+				this.applyAirFriction();
+
+				Vec playerpos = Vec.positionVec(entity);
+				playerpos = playerpos.add(new Vec(0, entity.getEyeHeight(), 0));
+
+
+				Vec additionalmotion = new Vec(0,0,0);
+
+				Vec gravity = new Vec(0, -0.05, 0);
+
+				motion.add_ip(gravity);
+
+				boolean doJump = false;
+				double jumpSpeed = 0;
+				boolean isClimbing = false;
+
+				// is motor active? (check motorwhencrouching / motorwhennotcrouching)
+				boolean motor = false;
+				if (this.custom.motor) {
+					if (ClientProxyInterface.proxy.isKeyDown(ClientProxyInterface.GrappleKeys.key_motoronoff) && this.custom.motorwhencrouching) {
+						motor = true;
+					} else if (!ClientProxyInterface.proxy.isKeyDown(ClientProxyInterface.GrappleKeys.key_motoronoff) && this.custom.motorwhennotcrouching) {
+						motor = true;
 					}
-					
-					this.normalGround(false);
-					this.normalCollisions(false);
-					this.applyAirFriction();
-					
-					Vec playerpos = Vec.positionVec(entity);
-					playerpos = playerpos.add(new Vec(0, entity.getEyeHeight(), 0));
-					
-					
-					Vec additionalmotion = new Vec(0,0,0);
-					
-					Vec gravity = new Vec(0, -0.05, 0);
+				}
 
-					motion.add_ip(gravity);
-					
-					boolean doJump = false;
-					double jumpSpeed = 0;
-					boolean isClimbing = false;
-					
-					// is motor active? (check motorwhencrouching / motorwhennotcrouching)
-					boolean motor = false;
-					if (this.custom.motor) {
-						if (ClientProxyInterface.proxy.isKeyDown(ClientProxyInterface.GrappleKeys.key_motoronoff) && this.custom.motorwhencrouching) {
-							motor = true;
-						} else if (!ClientProxyInterface.proxy.isKeyDown(ClientProxyInterface.GrappleKeys.key_motoronoff) && this.custom.motorwhennotcrouching) {
-							motor = true;
-						}
+				boolean close = false;
+
+				Vec averagemotiontowards = new Vec(0, 0, 0);
+
+				double min_spherevec_dist = 99999;
+
+				for (GrapplehookEntity hookEntity : this.grapplehookEntities) {
+					Vec hookPos = Vec.positionVec(hookEntity);
+
+					// Update segment handler (handles rope bends)
+					if (this.custom.phaserope) {
+						hookEntity.segmentHandler.updatePos(hookPos, playerpos, hookEntity.r);
+					} else {
+						hookEntity.segmentHandler.update(hookPos, playerpos, hookEntity.r, false);
 					}
-					
-					boolean close = false;
-					
-					Vec averagemotiontowards = new Vec(0, 0, 0);
-					
-					double min_spherevec_dist = 99999;
-					
-					for (GrapplehookEntity hookEntity : this.grapplehookEntities) {
-						Vec hookPos = Vec.positionVec(hookEntity);
-						
-						// Update segment handler (handles rope bends)
-						if (this.custom.phaserope) {
-							hookEntity.segmentHandler.updatePos(hookPos, playerpos, hookEntity.r);
-						} else {
-							hookEntity.segmentHandler.update(hookPos, playerpos, hookEntity.r, false);
-						}
-						
-						// vectors along rope
-						Vec anchor = hookEntity.segmentHandler.getClosest(hookPos);
-						double distToAnchor = hookEntity.segmentHandler.getDistToAnchor();
-						double remaininglength = motor ? Math.max(this.custom.maxlen, hookEntity.r) - distToAnchor : hookEntity.r - distToAnchor;
-						
-						Vec oldspherevec = playerpos.sub(anchor);
-						Vec spherevec = oldspherevec.changeLen(remaininglength);
-						Vec spherechange = spherevec.sub(oldspherevec);
-						
-						if (spherevec.length() < min_spherevec_dist) {min_spherevec_dist = spherevec.length();}
-						
-						averagemotiontowards.add_ip(spherevec.changeLen(-1));
-						
-						if (motor) {
-							hookEntity.r = distToAnchor + oldspherevec.length();
-						}
-						
-						// snap to rope length
-						if (oldspherevec.length() < remaininglength) {
-						} else {
-							if (oldspherevec.length() - remaininglength > GrappleConfig.getConf().grapplinghook.other.rope_snap_buffer) {
-								// if rope is too long, the rope snaps
-								
-								this.unattach();
-								
-								this.updateServerPos();
-								return;
-							} else {
-								additionalmotion = spherechange;
-							}
-						}
-						
-						double dist = oldspherevec.length();
-						
-						this.calcTaut(dist, hookEntity);
 
-						// handle keyboard input (jumping and climbing)
-						if (entity instanceof Player) {
-							Player player = (Player) entity;
-							boolean isjumping = ClientProxyInterface.proxy.isKeyDown(ClientProxyInterface.GrappleKeys.key_jumpanddetach);
-							isjumping = isjumping && !playerJump; // only jump once when key is first pressed
-							playerJump = ClientProxyInterface.proxy.isKeyDown(ClientProxyInterface.GrappleKeys.key_jumpanddetach);
-							if (isjumping) {
-								// jumping
-								if (onGroundTimer > 0) { // on ground: jump normally
-									
-								} else {
-									double timer = ClientProxyInterface.proxy.getTimeSinceLastRopeJump(this.entity.level);
-									if (timer > GrappleConfig.getConf().grapplinghook.other.rope_jump_cooldown_s * 20.0) {
-										doJump = true;
-										jumpSpeed = this.getJumpPower(player, spherevec, hookEntity);
-									}
-								}
-							}
-							if (ClientProxyInterface.proxy.isKeyDown(ClientProxyInterface.GrappleKeys.key_slow)) {
-								// slow down
-								Vec motiontorwards = spherevec.changeLen(-0.1);
-								motiontorwards = new Vec(motiontorwards.x, 0, motiontorwards.z);
-								if (motion.dot(motiontorwards) < 0) {
-									motion.add_ip(motiontorwards);
-								}
+					// vectors along rope
+					Vec anchor = hookEntity.segmentHandler.getClosest(hookPos);
+					double distToAnchor = hookEntity.segmentHandler.getDistToAnchor();
+					double remaininglength = motor ? Math.max(this.custom.maxlen, hookEntity.r) - distToAnchor : hookEntity.r - distToAnchor;
 
-								Vec newmotion = dampenMotion(motion, motiontorwards);
-								motion = new Vec(newmotion.x, motion.y, newmotion.z);
+					Vec oldspherevec = playerpos.sub(anchor);
+					Vec spherevec = oldspherevec.changeLen(remaininglength);
+					Vec spherechange = spherevec.sub(oldspherevec);
 
-							}
-							if ((ClientProxyInterface.proxy.isKeyDown(ClientProxyInterface.GrappleKeys.key_climb) || ClientProxyInterface.proxy.isKeyDown(ClientProxyInterface.GrappleKeys.key_climbup) || ClientProxyInterface.proxy.isKeyDown(ClientProxyInterface.GrappleKeys.key_climbdown)) && !motor) {
-								isClimbing = true;
-								if (anchor.y > playerpos.y) {
-									// climb up/down rope
-									double climbup = 0;
-									if (ClientProxyInterface.proxy.isKeyDown(ClientProxyInterface.GrappleKeys.key_climb)) {
-										climbup = playerForward;
-										if (ClientProxyInterface.proxy.isMovingSlowly(this.entity)) {
-											climbup = climbup / 0.3D;
-										}
-										if (climbup > 1) {climbup = 1;} else if (climbup < -1) {climbup = -1;}
-									}
-									else if (ClientProxyInterface.proxy.isKeyDown(ClientProxyInterface.GrappleKeys.key_climbup)) { climbup = 1.0; }
-									else if (ClientProxyInterface.proxy.isKeyDown(ClientProxyInterface.GrappleKeys.key_climbdown)) { climbup = -1.0; }
-									if (climbup != 0) {
-											if (dist + distToAnchor < maxLen || climbup > 0 || maxLen == 0) {
-												hookEntity.r = dist + distToAnchor;
-												hookEntity.r -= climbup*GrappleConfig.getConf().grapplinghook.other.climb_speed;
-												if (hookEntity.r < distToAnchor) {
-													hookEntity.r = dist + distToAnchor;
-												}
-												
-												Vec additionalmovementdown = spherevec.changeLen(-climbup * GrappleConfig.getConf().grapplinghook.other.climb_speed).proj(new Vec(0,1,0));
-												if (additionalmovementdown.y < 0) {
-													additionalmotion.add_ip(additionalmovementdown);
-												}
-											}
-									}
-								}
-							}
-						}
-						if (dist + distToAnchor < 2) {
-							close = true;
-						}
-						
-						// swing along max rope length
-						if (anchor.sub(playerpos.add(motion)).length() > remaininglength) { // moving away
-							motion = motion.removeAlong(spherevec);
-						}
-					}
-					averagemotiontowards.changeLen_ip(1);
-					
-		        	Vec facing = new Vec(entity.getLookAngle()).normalize();
-		        	
-		        	// Motor
+					if (spherevec.length() < min_spherevec_dist) {min_spherevec_dist = spherevec.length();}
+
+					averagemotiontowards.add_ip(spherevec.changeLen(-1));
+
 					if (motor) {
-						boolean dopull = true;
-						
-						// if only one rope is pulling and not oneropepull, disable motor
-						if (this.custom.doublehook && this.grapplehookEntities.size() == 1) {
-							boolean isdouble = true;
-							for (GrapplehookEntity hookEntity : this.grapplehookEntities) {
-								if (!hookEntity.isDouble) {
-									isdouble = false;
-								}
-							}
-							if (isdouble && !this.custom.oneropepull) {
-								dopull = false;
+						hookEntity.r = distToAnchor + oldspherevec.length();
+					}
+
+					// snap to rope length
+					if (oldspherevec.length() < remaininglength) {
+					} else {
+						if (oldspherevec.length() - remaininglength > GrappleConfig.getConf().grapplinghook.other.rope_snap_buffer) {
+							// if rope is too long, the rope snaps
+
+							this.unattach();
+
+							this.updateServerPos();
+							return;
+						} else {
+							additionalmotion = spherechange;
+						}
+					}
+
+					double dist = oldspherevec.length();
+
+					this.calcTaut(dist, hookEntity);
+
+					// handle keyboard input (jumping and climbing)
+					if (entity instanceof Player) {
+						Player player = (Player) entity;
+						boolean isjumping = ClientProxyInterface.proxy.isKeyDown(ClientProxyInterface.GrappleKeys.key_jumpanddetach);
+						isjumping = isjumping && !playerJump; // only jump once when key is first pressed
+						playerJump = ClientProxyInterface.proxy.isKeyDown(ClientProxyInterface.GrappleKeys.key_jumpanddetach);
+
+						if (isjumping && onGroundTimer <= 0) {
+
+							double timer = ClientProxyInterface.proxy.getTimeSinceLastRopeJump(this.entity.level);
+							if (timer > GrappleConfig.getConf().grapplinghook.other.rope_jump_cooldown_s * 20.0) {
+								doJump = true;
+								jumpSpeed = this.getJumpPower(player, spherevec, hookEntity);
 							}
 						}
-						
-						Vec totalpull = new Vec(0, 0, 0);
-						
-						double accel = this.custom.motoracceleration / this.grapplehookEntities.size();
-						
-						double minabssidewayspull = 999;
-						
-						boolean firstpull = true;
-						boolean pullispositive = true;
-						boolean pullissameway = true;
-						
-						// set all motors to maximum pull and precalculate some stuff for smart motor / smart double motor
+
+						if (ClientProxyInterface.proxy.isKeyDown(ClientProxyInterface.GrappleKeys.key_slow)) {
+							// slow down
+							Vec motiontorwards = spherevec.changeLen(-0.1);
+							motiontorwards = new Vec(motiontorwards.x, 0, motiontorwards.z);
+							if (motion.dot(motiontorwards) < 0) {
+								motion.add_ip(motiontorwards);
+							}
+
+							Vec newmotion = dampenMotion(motion, motiontorwards);
+							motion = new Vec(newmotion.x, motion.y, newmotion.z);
+
+						}
+						if ((ClientProxyInterface.proxy.isKeyDown(ClientProxyInterface.GrappleKeys.key_climb) || ClientProxyInterface.proxy.isKeyDown(ClientProxyInterface.GrappleKeys.key_climbup) || ClientProxyInterface.proxy.isKeyDown(ClientProxyInterface.GrappleKeys.key_climbdown)) && !motor) {
+							isClimbing = true;
+							if (anchor.y > playerpos.y) {
+								// climb up/down rope
+								double climbup = 0;
+								if (ClientProxyInterface.proxy.isKeyDown(ClientProxyInterface.GrappleKeys.key_climb)) {
+									climbup = playerForward;
+									if (ClientProxyInterface.proxy.isMovingSlowly(this.entity)) {
+										climbup = climbup / 0.3D;
+									}
+									if (climbup > 1) {climbup = 1;} else if (climbup < -1) {climbup = -1;}
+								}
+								else if (ClientProxyInterface.proxy.isKeyDown(ClientProxyInterface.GrappleKeys.key_climbup)) { climbup = 1.0; }
+								else if (ClientProxyInterface.proxy.isKeyDown(ClientProxyInterface.GrappleKeys.key_climbdown)) { climbup = -1.0; }
+								if (climbup != 0) {
+										if (dist + distToAnchor < maxLen || climbup > 0 || maxLen == 0) {
+											hookEntity.r = dist + distToAnchor;
+											hookEntity.r -= climbup*GrappleConfig.getConf().grapplinghook.other.climb_speed;
+											if (hookEntity.r < distToAnchor) {
+												hookEntity.r = dist + distToAnchor;
+											}
+
+											Vec additionalmovementdown = spherevec.changeLen(-climbup * GrappleConfig.getConf().grapplinghook.other.climb_speed).proj(new Vec(0,1,0));
+											if (additionalmovementdown.y < 0) {
+												additionalmotion.add_ip(additionalmovementdown);
+											}
+										}
+								}
+							}
+						}
+					}
+					if (dist + distToAnchor < 2) {
+						close = true;
+					}
+
+					// swing along max rope length
+					if (anchor.sub(playerpos.add(motion)).length() > remaininglength) { // moving away
+						motion = motion.removeAlong(spherevec);
+					}
+				}
+				averagemotiontowards.changeLen_ip(1);
+
+				Vec facing = new Vec(entity.getLookAngle()).normalize();
+
+				// Motor
+				if (motor) {
+					boolean dopull = true;
+
+					// if only one rope is pulling and not oneropepull, disable motor
+					if (this.custom.doublehook && this.grapplehookEntities.size() == 1) {
+						boolean isdouble = true;
+
+						for (GrapplehookEntity hookEntity : this.grapplehookEntities) {
+							if (!hookEntity.isDouble) {
+								isdouble = false;
+								break;
+							}
+						}
+
+						if (isdouble && !this.custom.oneropepull) {
+							dopull = false;
+						}
+					}
+
+					Vec totalpull = new Vec(0, 0, 0);
+
+					double accel = this.custom.motoracceleration / this.grapplehookEntities.size();
+
+					double minabssidewayspull = 999;
+
+					boolean firstpull = true;
+					boolean pullispositive = true;
+					boolean pullissameway = true;
+
+					// set all motors to maximum pull and precalculate some stuff for smart motor / smart double motor
+					for (GrapplehookEntity hookEntity : this.grapplehookEntities) {
+						Vec hookPos = Vec.positionVec(hookEntity);//this.getPositionVector();
+						Vec anchor = hookEntity.segmentHandler.getClosest(hookPos);
+						Vec spherevec = playerpos.sub(anchor);
+						Vec pull = spherevec.mult(-1);
+
+						hookEntity.pull = accel;
+
+						totalpull.add_ip(pull.changeLen(accel));
+
+						pull.changeLen_ip(hookEntity.pull);
+
+						// precalculate some stuff for smart double motor
+						// For smart double motor: the motors should pull left and right equally
+						// one side will be less able to pull to its side due to the angle
+						// therefore the other side should slow down in order to match and have both sides pull left/right equally
+						// the amount each should pull (the lesser of the two) is minabssidewayspull
+						if (pull.dot(facing) > 0 || this.custom.pullbackwards) {
+							if (this.custom.smartdoublemotor && this.grapplehookEntities.size() > 1) {
+								Vec facingxy = new Vec(facing.x, 0, facing.z);
+								Vec facingside = facingxy.cross(new Vec(0, 1, 0)).normalize();
+//									vec pullxy = new vec(pull.x, 0, pull.z);
+								Vec sideways = pull.proj(facingside); // pullxy.removealong(facing);
+								Vec currentsideways = motion.proj(facingside);
+								sideways.add_ip(currentsideways);
+								double sidewayspull = sideways.dot(facingside); // facingxy.cross(sideways).y;
+
+								if (Math.abs(sidewayspull) < minabssidewayspull) {
+									minabssidewayspull = Math.abs(sidewayspull);
+								}
+
+								if (firstpull) {
+									firstpull = false;
+									pullispositive = (sidewayspull >= 0);
+								} else {
+									if (pullispositive != (sidewayspull >= 0)) {
+										pullissameway = false;
+									}
+								}
+							}
+
+						}
+					}
+
+					// Smart double motor - calculate the speed each motor should pull at
+					if (this.custom.smartdoublemotor && this.grapplehookEntities.size() > 1) {
+						totalpull = new Vec(0, 0, 0);
+
+						for (GrapplehookEntity hookEntity : this.grapplehookEntities) {
+							Vec hookPos = Vec.positionVec(hookEntity);
+							Vec anchor = hookEntity.segmentHandler.getClosest(hookPos);
+							Vec spherevec = playerpos.sub(anchor);
+							Vec pull = spherevec.mult(-1);
+							pull.changeLen_ip(hookEntity.pull);
+
+							if (pull.dot(facing) > 0 || this.custom.pullbackwards) {
+								Vec facingxy = new Vec(facing.x, 0, facing.z);
+								Vec facingside = facingxy.cross(new Vec(0, 1, 0)).normalize();
+								Vec sideways = pull.proj(facingside);
+								Vec currentsideways = motion.proj(facingside);
+								sideways.add_ip(currentsideways);
+								double sidewayspull = sideways.dot(facingside);
+
+								if (pullissameway) {
+									// only 1 rope pulls
+									if (Math.abs(sidewayspull) > minabssidewayspull+0.05) {
+										hookEntity.pull = 0;
+									}
+								} else {
+									hookEntity.pull = hookEntity.pull * minabssidewayspull / Math.abs(sidewayspull);
+								}
+								totalpull.add_ip(pull.changeLen(hookEntity.pull));
+							} else {
+								if (hookEntity.isDouble) {
+									if (!this.custom.oneropepull) {
+										dopull = false;
+									}
+								}
+							}
+						}
+					}
+
+					// smart motor - angle of motion = angle facing
+					// match angle (the ratio of pulling upwards to pulling sideways)
+					// between the motion (after pulling and gravity) vector and the facing vector
+					// if double hooks, all hooks are scaled by the same amount (to prevent pulling to the left/right)
+					double pullmult = 1;
+					if (this.custom.smartmotor && totalpull.y > 0 && !(this.onGroundTimer > 0 || entity.isOnGround())) {
+						Vec pullxzvector = new Vec(totalpull.x, 0, totalpull.z);
+						double pullxz = pullxzvector.length();
+						double motionxz = motion.proj(pullxzvector).dot(pullxzvector.normalize());
+						double facingxz = facing.proj(pullxzvector).dot(pullxzvector.normalize());
+
+						pullmult = (facingxz * (motion.y + gravity.y) - motionxz * facing.y)/(facing.y * pullxz - facingxz * totalpull.y); // (gravity.y * facingxz) / (facing.y * pullxz - facingxz * totalpull.y);
+
+						if ((facing.y * pullxz - facingxz * totalpull.y) == 0) {
+							// division by zero
+							pullmult = 9999;
+						}
+
+						double pulll = pullmult * totalpull.length();
+
+						if (pulll > this.custom.motoracceleration) {
+							pulll = this.custom.motoracceleration;
+						}
+						if (pulll < 0) {
+							pulll = 0;
+						}
+
+						pullmult = pulll / totalpull.length();
+					}
+
+					// Prevent motor from moving too fast (motormaxspeed)
+					if (this.motion.dot(totalpull) > 0) {
+						if (this.motion.proj(totalpull).length() + totalpull.mult(pullmult).length() > this.custom.motormaxspeed) {
+							pullmult = (this.custom.motormaxspeed - this.motion.proj(totalpull).length()) / totalpull.length();
+							if (pullmult < 0) {
+								pullmult = 0;
+							}
+						}
+					}
+
+					// sideways dampener
+					if (this.custom.motordampener && totalpull.length() != 0) {
+						motion = dampenMotion(motion, totalpull);
+					}
+
+					// actually pull with the motor
+					if (dopull) {
 						for (GrapplehookEntity hookEntity : this.grapplehookEntities) {
 							Vec hookPos = Vec.positionVec(hookEntity);//this.getPositionVector();
 							Vec anchor = hookEntity.segmentHandler.getClosest(hookPos);
 							Vec spherevec = playerpos.sub(anchor);
 							Vec pull = spherevec.mult(-1);
-							
-							hookEntity.pull = accel;
-							
-							totalpull.add_ip(pull.changeLen(accel));
-							
-							pull.changeLen_ip(hookEntity.pull);
+							pull.changeLen_ip(hookEntity.pull * pullmult);
 
-							// precalculate some stuff for smart double motor
-							// For smart double motor: the motors should pull left and right equally
-							// one side will be less able to pull to its side due to the angle
-							// therefore the other side should slow down in order to match and have both sides pull left/right equally
-							// the amount each should pull (the lesser of the two) is minabssidewayspull
 							if (pull.dot(facing) > 0 || this.custom.pullbackwards) {
-								if (this.custom.smartdoublemotor && this.grapplehookEntities.size() > 1) {
-									Vec facingxy = new Vec(facing.x, 0, facing.z);
-									Vec facingside = facingxy.cross(new Vec(0, 1, 0)).normalize();
-//									vec pullxy = new vec(pull.x, 0, pull.z);
-									Vec sideways = pull.proj(facingside); // pullxy.removealong(facing);
-									Vec currentsideways = motion.proj(facingside);
-									sideways.add_ip(currentsideways);
-									double sidewayspull = sideways.dot(facingside); // facingxy.cross(sideways).y;
-									
-									if (Math.abs(sidewayspull) < minabssidewayspull) {
-										minabssidewayspull = Math.abs(sidewayspull);
-									}
-									
-									if (firstpull) {
-										firstpull = false;
-										pullispositive = (sidewayspull >= 0);
-									} else {
-										if (pullispositive != (sidewayspull >= 0)) {
-											pullissameway = false;
-										}
-									}
-								}
-								
-							}
-						}
-						
-						// Smart double motor - calculate the speed each motor should pull at
-						if (this.custom.smartdoublemotor && this.grapplehookEntities.size() > 1) {
-							totalpull = new Vec(0, 0, 0);
-							
-							for (GrapplehookEntity hookEntity : this.grapplehookEntities) {
-								Vec hookPos = Vec.positionVec(hookEntity);
-								Vec anchor = hookEntity.segmentHandler.getClosest(hookPos);
-								Vec spherevec = playerpos.sub(anchor);
-								Vec pull = spherevec.mult(-1);
-								pull.changeLen_ip(hookEntity.pull);
-								
-								if (pull.dot(facing) > 0 || this.custom.pullbackwards) {
-									Vec facingxy = new Vec(facing.x, 0, facing.z);
-									Vec facingside = facingxy.cross(new Vec(0, 1, 0)).normalize();
-									Vec sideways = pull.proj(facingside);
-									Vec currentsideways = motion.proj(facingside);
-									sideways.add_ip(currentsideways);
-									double sidewayspull = sideways.dot(facingside);
-									
-									if (pullissameway) {
-										// only 1 rope pulls
-										if (Math.abs(sidewayspull) > minabssidewayspull+0.05) {
-											hookEntity.pull = 0;
-										}
-									} else {
-										hookEntity.pull = hookEntity.pull * minabssidewayspull / Math.abs(sidewayspull);
-									}
-									totalpull.add_ip(pull.changeLen(hookEntity.pull));
-								} else {
-									if (hookEntity.isDouble) {
-										if (!this.custom.oneropepull) {
-											dopull = false;
-										}
-									}
+								if (hookEntity.pull > 0) {
+									motion.add_ip(pull);
 								}
 							}
 						}
-						
-						// smart motor - angle of motion = angle facing
-						// match angle (the ratio of pulling upwards to pulling sideways)
-						// between the motion (after pulling and gravity) vector and the facing vector
-						// if double hooks, all hooks are scaled by the same amount (to prevent pulling to the left/right)
-						double pullmult = 1;
-						if (this.custom.smartmotor && totalpull.y > 0 && !(this.onGroundTimer > 0 || entity.isOnGround())) {
-							Vec pullxzvector = new Vec(totalpull.x, 0, totalpull.z);
-							double pullxz = pullxzvector.length();
-							double motionxz = motion.proj(pullxzvector).dot(pullxzvector.normalize());
-							double facingxz = facing.proj(pullxzvector).dot(pullxzvector.normalize());
-							
-							pullmult = (facingxz * (motion.y + gravity.y) - motionxz * facing.y)/(facing.y * pullxz - facingxz * totalpull.y); // (gravity.y * facingxz) / (facing.y * pullxz - facingxz * totalpull.y);
-							
-							if ((facing.y * pullxz - facingxz * totalpull.y) == 0) {
-								// division by zero
-								pullmult = 9999;
-							}
-									
-							double pulll = pullmult * totalpull.length();
-							
-							if (pulll > this.custom.motoracceleration) {
-								pulll = this.custom.motoracceleration;
-							}
-							if (pulll < 0) {
-								pulll = 0;
-							}
-							
-							pullmult = pulll / totalpull.length();
-						}
-						
-						// Prevent motor from moving too fast (motormaxspeed)
-						if (this.motion.dot(totalpull) > 0) {
-							if (this.motion.proj(totalpull).length() + totalpull.mult(pullmult).length() > this.custom.motormaxspeed) {
-								pullmult = (this.custom.motormaxspeed - this.motion.proj(totalpull).length()) / totalpull.length();
-								if (pullmult < 0) {
-									pullmult = 0;
-								}
-							}
-						}
-						
-						// sideways dampener
-						if (this.custom.motordampener && totalpull.length() != 0) {
-							motion = dampenMotion(motion, totalpull);
-						}
-						
-						// actually pull with the motor
-						if (dopull) {
-							for (GrapplehookEntity hookEntity : this.grapplehookEntities) {
-								Vec hookPos = Vec.positionVec(hookEntity);//this.getPositionVector();
-								Vec anchor = hookEntity.segmentHandler.getClosest(hookPos);
-								Vec spherevec = playerpos.sub(anchor);
-								Vec pull = spherevec.mult(-1);
-								pull.changeLen_ip(hookEntity.pull * pullmult);
-								
-								if (pull.dot(facing) > 0 || this.custom.pullbackwards) {
-									if (hookEntity.pull > 0) {
-										motion.add_ip(pull);
-									}
-								}
-							}
-						}
-						
-						// if player is at the destination, slow down
-						if (close && !(this.grapplehookEntities.size() > 1)) {
-							if (entity.horizontalCollision || entity.verticalCollision || entity.isOnGround()) {
-								motion.mult_ip(0.6);
-							}
+					}
+
+					// if player is at the destination, slow down
+					if (close && !(this.grapplehookEntities.size() > 1)) {
+						if (entity.horizontalCollision || entity.verticalCollision || entity.isOnGround()) {
+							motion.mult_ip(0.6);
 						}
 					}
-					
-					// forcefield
-					if (this.custom.repel) {
-						Vec blockpush = checkRepel(playerpos, entity.level);
-						blockpush.mult_ip(this.custom.repelforce * 0.5);
-						blockpush = new Vec(blockpush.x*0.5, blockpush.y*2, blockpush.z*0.5);
-						this.motion.add_ip(blockpush);
-					}
-					
-					// rocket
-					if (this.custom.rocket) {
-						this.motion.add_ip(this.rocket(entity));
-					}
-					
-					// WASD movement
-					if (!doJump && !isClimbing) {
-						applyPlayerMovement();
-					}
-					
-					// jump
-					if (doJump) {
-						if (jumpSpeed <= 0) {
-							jumpSpeed = 0;
-						}
-						if (jumpSpeed > GrappleConfig.getConf().grapplinghook.other.rope_jump_power) {
-							jumpSpeed = GrappleConfig.getConf().grapplinghook.other.rope_jump_power;
-						}
-						this.doJump(entity, jumpSpeed, averagemotiontowards, min_spherevec_dist);
-						ClientProxyInterface.proxy.resetRopeJumpTime(this.entity.level);
-						return;
-					}
-					
-					// now to actually apply everything to the player
-					Vec newmotion = motion.add(additionalmotion);
-					
-					if (Double.isNaN(newmotion.x) || Double.isNaN(newmotion.y) || Double.isNaN(newmotion.z)) {
-						newmotion = new Vec(0, 0, 0);
-						motion = new Vec(0, 0, 0);
-						System.out.println("error: motion is NaN");
-					}
-					
-					entity.setDeltaMovement(newmotion.x, newmotion.y, newmotion.z);
-					
-					this.updateServerPos();
 				}
+
+				// forcefield
+				if (this.custom.repel) {
+					Vec blockpush = checkRepel(playerpos, entity.level);
+					blockpush.mult_ip(this.custom.repelforce * 0.5);
+					blockpush = new Vec(blockpush.x*0.5, blockpush.y*2, blockpush.z*0.5);
+					this.motion.add_ip(blockpush);
+				}
+
+				// rocket
+				if (this.custom.rocket) {
+					this.motion.add_ip(this.rocket(entity));
+				}
+
+				// WASD movement
+				if (!doJump && !isClimbing) {
+					applyPlayerMovement();
+				}
+
+				// jump
+				if (doJump) {
+					if (jumpSpeed <= 0) {
+						jumpSpeed = 0;
+					}
+					if (jumpSpeed > GrappleConfig.getConf().grapplinghook.other.rope_jump_power) {
+						jumpSpeed = GrappleConfig.getConf().grapplinghook.other.rope_jump_power;
+					}
+					this.doJump(entity, jumpSpeed, averagemotiontowards, min_spherevec_dist);
+					ClientProxyInterface.proxy.resetRopeJumpTime(this.entity.level);
+					return;
+				}
+
+				// now to actually apply everything to the player
+				Vec newmotion = motion.add(additionalmotion);
+
+				if (Double.isNaN(newmotion.x) || Double.isNaN(newmotion.y) || Double.isNaN(newmotion.z)) {
+					newmotion = new Vec(0, 0, 0);
+					motion = new Vec(0, 0, 0);
+					System.out.println("error: motion is NaN");
+				}
+
+				entity.setDeltaMovement(newmotion.x, newmotion.y, newmotion.z);
+
+				this.updateServerPos();
 			}
 		}
 	}
@@ -577,7 +575,7 @@ public class GrappleController {
 	
 	public boolean tryStepUp(Vec collisionmotion) {
 		if (collisionmotion.length() == 0) {return false;}
-		Vec moveoffset = collisionmotion.changeLen(0.05).add(0, entity.maxUpStep+0.01, 0);
+		Vec moveoffset = collisionmotion.changeLen(0.05D).add(0, entity.maxUpStep() + 0.01D, 0);
 		Iterable<VoxelShape> collisions = this.entity.level.getCollisions(this.entity, this.entity.getBoundingBox().move(moveoffset.x, moveoffset.y, moveoffset.z));
 		if (!collisions.iterator().hasNext()) {
 			if (!this.entity.isOnGround()) {
@@ -721,7 +719,7 @@ public class GrappleController {
 
 	public void addHookEntity(GrapplehookEntity hookEntity) {
 		this.grapplehookEntities.add(hookEntity);
-		hookEntity.r = ((GrapplehookEntity) hookEntity).segmentHandler.getDist(Vec.positionVec(hookEntity), Vec.positionVec(entity).add(new Vec(0, entity.getEyeHeight(), 0)));
+		hookEntity.r = hookEntity.segmentHandler.getDist(Vec.positionVec(hookEntity), Vec.positionVec(entity).add(new Vec(0, entity.getEyeHeight(), 0)));
 		this.grapplehookEntityIds.add(hookEntity.getId());
 	}
 	
@@ -735,7 +733,7 @@ public class GrappleController {
     	
     	double t = (1.0 + Math.sqrt(5.0)) / 2.0;
     	
-		BlockPos pos = new BlockPos(Math.floor(p.x), Math.floor(p.y), Math.floor(p.z));
+		BlockPos pos = BlockPos.containing(p.toVec3d());
 		if (hasBlock(pos, w)) {
 			v.add_ip(0, 1, 0);
 		} else {
@@ -764,12 +762,14 @@ public class GrappleController {
     public Vec vecDist(Vec p, Vec v, Level w) {
     	for (double i = 0.5; i < 10; i += 0.5) {
     		Vec v2 = v.changeLen(i);
-    		BlockPos pos = new BlockPos(Math.floor(p.x + v2.x), Math.floor(p.y + v2.y), Math.floor(p.z + v2.z));
-    		if (hasBlock(pos, w)) {
-    			Vec v3 = new Vec(pos.getX() + 0.5 - p.x, pos.getY() + 0.5 - p.y, pos.getZ() + 0.5 - p.z);
-    			v3.changeLen_ip(-1 / Math.pow(v3.length(), 2));
-    			return v3;
-    		}
+			Vec combined = p.add(v2);
+    		BlockPos pos = BlockPos.containing(combined.toVec3d());
+
+    		if (!hasBlock(pos, w)) continue;
+
+			Vec v3 = new Vec(pos.getX() + 0.5 - p.x, pos.getY() + 0.5 - p.y, pos.getZ() + 0.5 - p.z);
+			v3.changeLen_ip(-1 / Math.pow(v3.length(), 2));
+			return v3;
     	}
     	
     	return new Vec(0, 0, 0);
@@ -777,12 +777,7 @@ public class GrappleController {
     
 	public boolean hasBlock(BlockPos pos, Level w) {
     	BlockState blockstate = w.getBlockState(pos);
-//    	Block b = blockstate.getBlock();
-    	if (blockstate.isAir()) {
-    		return false;
-    	}
-		
-    	return true;
+    	return !blockstate.isAir();
 	}
 
 	public void receiveGrappleDetachHook(int hookid) {
@@ -911,10 +906,7 @@ public class GrappleController {
 			if (!(playerSneak)) {
 				// continue wallrun
 				if (isOnWall && !this.entity.isOnGround() && this.entity.horizontalCollision) {
-					if (entity instanceof LivingEntity && ((LivingEntity) entity).onClimbable()) {
-						return false;
-					}
-					return true;
+					return !(entity instanceof LivingEntity) || !((LivingEntity) entity).onClimbable();
 				}
 				
 				// start wallrun
@@ -1032,7 +1024,8 @@ public class GrappleController {
 	public void applySlidingFriction() {
 		double dragforce = GrappleConfig.getConf().enchantments.slide.sliding_friction;
 		
-		if (dragforce > this.motion.length()) {dragforce = this.motion.length(); };
+		if (dragforce > this.motion.length())
+			dragforce = this.motion.length();
 		
 		Vec airfric = new Vec(this.motion.x, this.motion.y, this.motion.z);
 		airfric.changeLen_ip(-dragforce);

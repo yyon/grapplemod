@@ -19,10 +19,10 @@ public class CreativeTabHandler {
 
     @SubscribeEvent
     public static void buildContents(CreativeModeTabEvent.Register event) {
-        CreativeModeTab MOD_CREATIVE_ITEMS = event.registerCreativeModeTab(new ResourceLocation(grapplemod.MODID, "grappling_equip"), builder -> builder
+        event.registerCreativeModeTab(new ResourceLocation(grapplemod.MODID, "grappling_equip"), builder -> builder
                 .title(Component.translatable("itemGroup.tabGrapplemod"))
                 .icon(() -> new ItemStack(CommonSetup.grapplingHookItem.get()))
-                .displayItems((flags, output, operatorTabEnabled) ->
+                .displayItems((displayParams, output) ->
                         CommonSetup.queuedCreativeTabStacks.stream()
                                 .map(Supplier::get) // unpack
                                 .flatMap(Collection::stream) // combine

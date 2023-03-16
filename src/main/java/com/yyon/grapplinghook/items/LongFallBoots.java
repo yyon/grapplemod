@@ -33,7 +33,7 @@ import java.util.List;
 
 public class LongFallBoots extends ArmorItem {
 	public LongFallBoots() {
-	    super(ArmorMaterials.DIAMOND, EquipmentSlot.FEET, new Item.Properties().stacksTo(1));
+	    super(ArmorMaterials.DIAMOND, Type.BOOTS, new Item.Properties().stacksTo(1));
 	}
 	
 	@Override
