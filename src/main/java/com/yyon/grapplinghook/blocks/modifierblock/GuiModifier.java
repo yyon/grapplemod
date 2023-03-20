@@ -120,12 +120,14 @@ public class GuiModifier extends Screen {
 			super(p_i232254_1_, p_i232254_2_, p_i232254_3_, p_i232254_4_, p_i232254_5_);
 			this.active = false;
 		}
-		
+
+
+
 		public BackgroundWidget(int x, int y, int w, int h) {
 			this(x, y, w, h, Component.literal(""));
 		}
 		
-	   public void renderButton(PoseStack p_230431_1_, int p_230431_2_, int p_230431_3_, float p_230431_4_) {
+	   public void renderWidget(PoseStack p_230431_1_, int p_230431_2_, int p_230431_3_, float p_230431_4_) {
 		RenderSystem.setShaderTexture(0,texture);
 		RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
 		this.blit(p_230431_1_, this.getX(), this.getY(), 0, 0, this.width, this.height);
@@ -158,7 +160,7 @@ public class GuiModifier extends Screen {
 			this(x, y, 50, 15 * text.getString().split("\n").length + 5, text);
 		}
 		
-	   public void renderButton(PoseStack p_230431_1_, int p_230431_2_, int p_230431_3_, float p_230431_4_) {
+	   public void renderWidget(PoseStack p_230431_1_, int p_230431_2_, int p_230431_3_, float p_230431_4_) {
 	      Minecraft minecraft = Minecraft.getInstance();
 	      Font fontrenderer = minecraft.font;
 	      RenderSystem.setShaderTexture(0,WIDGETS_LOCATION);
@@ -227,8 +229,8 @@ public class GuiModifier extends Screen {
 		}
 		
 		@Override
-		public void renderButton(PoseStack p_230431_1_, int p_230431_2_, int p_230431_3_, float p_230431_4_) {
-			super.renderButton(p_230431_1_, p_230431_2_, p_230431_3_, p_230431_4_);
+		public void renderWidget(PoseStack p_230431_1_, int p_230431_2_, int p_230431_3_, float p_230431_4_) {
+			super.renderWidget(p_230431_1_, p_230431_2_, p_230431_3_, p_230431_4_);
 			
 			if (this.isHovered) {
 				String tooltiptext = tooltip.getString();
@@ -280,8 +282,8 @@ public class GuiModifier extends Screen {
 		}
 		
 		@Override
-		public void renderButton(PoseStack p_230431_1_, int p_230431_2_, int p_230431_3_, float p_230431_4_) {
-			super.renderButton(p_230431_1_, p_230431_2_, p_230431_3_, p_230431_4_);
+		public void renderWidget(PoseStack p_230431_1_, int p_230431_2_, int p_230431_3_, float p_230431_4_) {
+			super.renderWidget(p_230431_1_, p_230431_2_, p_230431_3_, p_230431_4_);
 			
 			if (this.isHovered) {
 				String tooltiptext = tooltip.getString();

@@ -132,7 +132,7 @@ public class ClientProxy extends ClientProxyInterface {
 			grapplingHookVariants = new ArrayList<ItemStack>();
 			RecipeManager recipemanager = Minecraft.getInstance().player.level.getRecipeManager();
 			recipemanager.getRecipeIds().filter(loc -> loc.getNamespace().equals(grapplemod.MODID)).forEach(loc -> {
-				ItemStack stack = recipemanager.byKey(loc).get().getResultItem();
+				ItemStack stack = recipemanager.byKey(loc).get().getResultItem(Minecraft.getInstance().level.registryAccess());
 				if (stack.getItem() instanceof GrapplehookItem) {
 					if (!CommonSetup.grapplingHookItem.get().getCustomization(stack).equals(new GrappleCustomization())) {
 						grapplingHookVariants.add(stack);

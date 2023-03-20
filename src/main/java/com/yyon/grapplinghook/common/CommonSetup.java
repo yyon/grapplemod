@@ -114,7 +114,7 @@ public class CommonSetup {
 		tabGrapplemod = event.registerCreativeModeTab(new ResourceLocation(grapplemod.MODID, "grapplemod"),builder -> builder
 				.icon(() -> new ItemStack(grapplingHookItem.get()))
 				.title(Component.translatable("tabs.grapplemod.main_tab"))
-				.displayItems((featureFlags, output, hasOp) -> {
+				.displayItems((featureFlags, output) -> {
 					ITEMS.getEntries().stream().map(RegistryObject::get).forEach(output::accept);
 					ClientProxyInterface.proxy.fillGrappleVariants(output);
 					LongFallBoots.addToTab(output);

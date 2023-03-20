@@ -13,6 +13,7 @@ import me.shedaniel.autoconfig.serializer.Toml4jConfigSerializer;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.damagesource.DamageSources;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
@@ -86,7 +87,7 @@ public class CommonEventHandlers {
 			for (ItemStack armor : player.getArmorSlots()) {
 			    if (armor != null && armor.getItem() instanceof LongFallBoots)
 			    {
-			    	if (event.getSource() == DamageSource.FLY_INTO_WALL) {
+			    	if (event.getSource() == event.getEntity().level.damageSources().flyIntoWall()) {
 						// this cancels the fall event so you take no damage
 						event.setCanceled(true);
 			    	}
