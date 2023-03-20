@@ -1,6 +1,6 @@
 {
     "parent": "item/handheld",
     "textures": {
-        "layer0": "grapplemod:items/throwupgradeitem"
+        "layer0": "grapplemod:item/throwupgradeitem"
     }
 }

@@ -2,16 +2,19 @@ package com.yyon.grapplinghook.common;
 
 import com.yyon.grapplinghook.blocks.modifierblock.BlockGrappleModifier;
 import com.yyon.grapplinghook.blocks.modifierblock.TileEntityGrappleModifier;
+import com.yyon.grapplinghook.client.ClientProxyInterface;
 import com.yyon.grapplinghook.enchantments.DoublejumpEnchantment;
 import com.yyon.grapplinghook.enchantments.SlidingEnchantment;
 import com.yyon.grapplinghook.enchantments.WallrunEnchantment;
 import com.yyon.grapplinghook.entities.grapplehook.GrapplehookEntity;
+import com.yyon.grapplinghook.grapplemod;
 import com.yyon.grapplinghook.items.EnderStaffItem;
 import com.yyon.grapplinghook.items.ForcefieldItem;
 import com.yyon.grapplinghook.items.GrapplehookItem;
 import com.yyon.grapplinghook.items.LongFallBoots;
 import com.yyon.grapplinghook.items.upgrades.*;
 import com.yyon.grapplinghook.network.*;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MobCategory;
@@ -21,6 +24,7 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
+import net.minecraftforge.event.CreativeModeTabEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
@@ -37,12 +41,7 @@ import java.util.function.Supplier;
 
 @Mod.EventBusSubscriber(bus=Mod.EventBusSubscriber.Bus.MOD)
 public class CommonSetup {
-	public static final CreativeModeTab tabGrapplemod = new CreativeModeTab("grapplemod") {
-		@OnlyIn(Dist.CLIENT)
-		public ItemStack makeIcon() {
-			return new ItemStack(grapplingHookItem.get());
-		}
-	};
+
 	public static final DeferredRegister<Item> ITEMS = DeferredRegister.create(ForgeRegistries.ITEMS, "grapplemod");
 	public static final DeferredRegister<Enchantment> ENCHANTMENTS = DeferredRegister.create(ForgeRegistries.ENCHANTMENTS, "grapplemod");
 	public static final DeferredRegister<Block> BLOCKS = DeferredRegister.create(ForgeRegistries.BLOCKS, "grapplemod");
@@ -75,7 +74,7 @@ public class CommonSetup {
 	public static final ResourceLocation simpleChannelRL = new ResourceLocation("grapplemod", "channel");
 
 	public static RegistryObject<Block> grappleModifierBlock = BLOCKS.register("block_grapple_modifier", BlockGrappleModifier::new);
-	public static RegistryObject<BlockItem> grappleModifierBlockItem = ITEMS.register("block_grapple_modifier", ()->new BlockItem(grappleModifierBlock.get(),new Item.Properties().stacksTo(64).tab(tabGrapplemod)));
+	public static RegistryObject<BlockItem> grappleModifierBlockItem = ITEMS.register("block_grapple_modifier", ()->new BlockItem(grappleModifierBlock.get(),new Item.Properties().stacksTo(64)));
 	
 
 	
@@ -106,11 +105,22 @@ public class CommonSetup {
 	public static RegistryObject<EntityType<GrapplehookEntity>> grapplehookEntityType = ENTITY_TYPES.register("grapplehook", ()->EntityType.Builder.<GrapplehookEntity>of(GrapplehookEntity::new, MobCategory.MISC)
 			.sized(0.25F, 0.25F)
 			.build("grapplemod:grapplehook"));
-	
 
 
-
-
+	public static CreativeModeTab tabGrapplemod;
+	@SubscribeEvent
+	public static void registerTabs(CreativeModeTabEvent.Register event)
+	{
+		tabGrapplemod = event.registerCreativeModeTab(new ResourceLocation(grapplemod.MODID, "grapplemod"),builder -> builder
+				.icon(() -> new ItemStack(grapplingHookItem.get()))
+				.title(Component.translatable("tabs.grapplemod.main_tab"))
+				.displayItems((featureFlags, output, hasOp) -> {
+					ITEMS.getEntries().stream().map(RegistryObject::get).forEach(output::accept);
+					ClientProxyInterface.proxy.fillGrappleVariants(output);
+					LongFallBoots.addToTab(output);
+				})
+		);
+	}
 	
 
 }

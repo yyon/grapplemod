@@ -2,9 +2,6 @@ package com.yyon.grapplinghook.entities.grapplehook;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
-import com.mojang.math.Matrix3f;
-import com.mojang.math.Matrix4f;
-import com.mojang.math.Quaternion;
 import com.yyon.grapplinghook.utils.Vec;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
@@ -24,6 +21,9 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
+import org.joml.Matrix3f;
+import org.joml.Matrix4f;
+import org.joml.Quaternionf;
 
 
 /*
@@ -47,7 +47,7 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 public class RenderGrapplehookEntity<T extends GrapplehookEntity> extends EntityRenderer<T>
 {
     protected final Item item;
-    private static final ResourceLocation HOOK_TEXTURES = new ResourceLocation("grapplemod", "textures/entity/hook.png");
+    private static final ResourceLocation HOOK_TEXTURES = new ResourceLocation("grapplemod", "textures/entity/entity_hook.png");
     private static final RenderType HOOK_RENDER = RenderType.entityCutoutNoCull(HOOK_TEXTURES, false);
     private static final ResourceLocation ROPE_TEXTURES = new ResourceLocation("grapplemod", "textures/entity/rope.png");
     private static final RenderType ROPE_RENDER = RenderType.entitySolid(ROPE_TEXTURES);
@@ -156,10 +156,10 @@ public class RenderGrapplehookEntity<T extends GrapplehookEntity> extends Entity
 		matrix.pushPose();
 		matrix.scale(0.5F, 0.5F, 0.5F);
 		
-		matrix.mulPose(new Quaternion(new Vec(0, 1, 0).toVector3f(), (float) (-attach_dir.getYaw()), true));
-		matrix.mulPose(new Quaternion(new Vec(1, 0, 0).toVector3f(), (float) (attach_dir.getPitch() - 90), true));
-		matrix.mulPose(new Quaternion(new Vec(0, 1, 0).toVector3f(), (float) (45 * hand_right), true));
-		matrix.mulPose(new Quaternion(new Vec(0, 0, 1).toVector3f(), (float) (-45), true));
+		matrix.mulPose(new Quaternionf().setAngleAxis((float) (-attach_dir.getYaw()),0, 1, 0 ));
+		matrix.mulPose(new Quaternionf().setAngleAxis((float) (attach_dir.getPitch() - 90), 1, 0, 0 ));
+		matrix.mulPose(new Quaternionf().setAngleAxis((float) (45 * hand_right), 0, 1, 0 ));
+		matrix.mulPose(new Quaternionf().setAngleAxis((float) (-45), 0, 0, 1 ));
 		
 		// draw hook
 		ItemStack stack = this.getStackToRender(hookEntity);

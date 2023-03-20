@@ -1,6 +1,6 @@
 {
     "parent": "item/handheld",
     "textures": {
-        "layer0": "grapplemod:items/magnetupgradeitem"
+        "layer0": "grapplemod:item/magnetupgradeitem"
     }
 }

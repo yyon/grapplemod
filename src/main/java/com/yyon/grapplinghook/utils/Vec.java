@@ -1,9 +1,9 @@
 package com.yyon.grapplinghook.utils;
 
-import com.mojang.math.Vector3f;
 import com.yyon.grapplinghook.grapplemod;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.phys.Vec3;
+import org.joml.Vector3f;
 
 public class Vec {
 	public double x;

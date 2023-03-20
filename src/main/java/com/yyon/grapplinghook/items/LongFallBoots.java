@@ -3,10 +3,14 @@ package com.yyon.grapplinghook.items;
 import com.yyon.grapplinghook.client.ClientProxyInterface;
 import com.yyon.grapplinghook.common.CommonSetup;
 import com.yyon.grapplinghook.config.GrappleConfig;
-import net.minecraft.core.NonNullList;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.EquipmentSlot;
-import net.minecraft.world.item.*;
+import net.minecraft.world.item.ArmorItem;
+import net.minecraft.world.item.ArmorMaterials;
+import net.minecraft.world.item.CreativeModeTab;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
@@ -32,32 +36,29 @@ import java.util.List;
  */
 
 public class LongFallBoots extends ArmorItem {
-	public LongFallBoots(ArmorMaterials material, int type) {
-	    super(material, EquipmentSlot.FEET, new Item.Properties().stacksTo(1).tab(CommonSetup.tabGrapplemod));
-	}
-	
-	@Override
-	@OnlyIn(Dist.CLIENT)
-	public void appendHoverText(ItemStack stack, @Nullable Level world, List<Component> list, TooltipFlag par4) {
-		if (!stack.isEnchanted()) {
-			if (GrappleConfig.getConf().longfallboots.longfallbootsrecipe) {
-				list.add(Component.literal(ClientProxyInterface.proxy.localize("grappletooltip.longfallbootsrecipe.desc")));
-			}
-		}
-		list.add(Component.literal(ClientProxyInterface.proxy.localize("grappletooltip.longfallboots.desc")));
-	}
+    public LongFallBoots(ArmorMaterials material, int type) {
+        super(material, EquipmentSlot.FEET, new Item.Properties().stacksTo(1));
+    }
 
-	@Override
-	public void fillItemCategory(CreativeModeTab tab, NonNullList<ItemStack> items) {
-			if (this.allowedIn(tab)) {
-	        	ItemStack stack = new ItemStack(this);
-	            items.add(stack);
-	            
-	        	stack = new ItemStack(this);
-	        	stack.enchant(CommonSetup.wallrunEnchantment.get(), 1);
-	        	stack.enchant(CommonSetup.doubleJumpEnchantment.get(), 1);
-	        	stack.enchant(CommonSetup.slidingEnchantment.get(), 1);
-	            items.add(stack);
-			}
-	}
+    @Override
+    @OnlyIn(Dist.CLIENT)
+    public void appendHoverText(ItemStack stack, @Nullable Level world, List<Component> list, TooltipFlag par4) {
+        if (!stack.isEnchanted()) {
+            if (GrappleConfig.getConf().longfallboots.longfallbootsrecipe) {
+                list.add(Component.literal(ClientProxyInterface.proxy.localize("grappletooltip.longfallbootsrecipe.desc")));
+            }
+        }
+        list.add(Component.literal(ClientProxyInterface.proxy.localize("grappletooltip.longfallboots.desc")));
+    }
+
+
+    public static void addToTab(CreativeModeTab.Output items) {
+        ItemStack stack = new ItemStack(CommonSetup.longFallBootsItem.get());
+        items.accept(stack);
+        stack = new ItemStack(CommonSetup.longFallBootsItem.get());
+        stack.enchant(CommonSetup.wallrunEnchantment.get(), 1);
+        stack.enchant(CommonSetup.doubleJumpEnchantment.get(), 1);
+        stack.enchant(CommonSetup.slidingEnchantment.get(), 1);
+        items.accept(stack);
+    }
 }

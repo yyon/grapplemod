@@ -21,7 +21,6 @@ import net.minecraft.client.resources.language.I18n;
 import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.client.resources.sounds.SoundInstance;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.NonNullList;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.RandomSource;
@@ -124,7 +123,7 @@ public class ClientProxy extends ClientProxyInterface {
 	List<ItemStack> grapplingHookVariants = null;
 
 	@Override
-	public void fillGrappleVariants(CreativeModeTab tab, NonNullList<ItemStack> items) {
+	public void fillGrappleVariants(CreativeModeTab.Output items) {
 		if (Minecraft.getInstance().isRunning() == false || Minecraft.getInstance().player == null || Minecraft.getInstance().player.level == null || Minecraft.getInstance().player.level.getRecipeManager() == null) {
 			return;
 		}
@@ -141,8 +140,8 @@ public class ClientProxy extends ClientProxyInterface {
 				}
 			});
 		}
-		
-		items.addAll(grapplingHookVariants);
+
+		items.acceptAll(grapplingHookVariants);
 	}
 	
 	public Screen onConfigScreen(Minecraft mc, Screen screen) {

@@ -1,7 +1,7 @@
 {
     "parent": "item/handheld",
     "textures": {
-        "layer0": "grapplemod:items/grapplinghook"
+        "layer0": "grapplemod:item/grapplinghook"
     },
 	"overrides": [
 	    { "predicate": { "attached": 1 }, "model": "grapplemod:item/rope" },

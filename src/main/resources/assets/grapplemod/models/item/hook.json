@@ -1,6 +1,6 @@
 {
     "parent": "item/handheld",
     "textures": {
-        "layer0": "grapplemod:entity/hook"
+        "layer0": "grapplemod:item/entity_hook"
     }
 }

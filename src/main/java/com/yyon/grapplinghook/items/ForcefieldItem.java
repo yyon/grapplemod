@@ -21,7 +21,7 @@ import java.util.List;
 
 public class ForcefieldItem extends Item {
 	public ForcefieldItem() {
-		super(new Item.Properties().stacksTo(1).tab(CommonSetup.tabGrapplemod));
+		super(new Item.Properties().stacksTo(1));
 	}
 	
 	public void doRightClick(ItemStack stack, Level worldIn, Player player) {
