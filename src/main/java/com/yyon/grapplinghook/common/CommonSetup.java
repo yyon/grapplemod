@@ -116,7 +116,9 @@ public class CommonSetup {
 				.title(Component.translatable("tabs.grapplemod.main_tab"))
 				.displayItems((featureFlags, output) -> {
 					ITEMS.getEntries().stream().map(RegistryObject::get).forEach(output::accept);
-					ClientProxyInterface.proxy.fillGrappleVariants(output);
+					if(ClientProxyInterface.proxy != null) {
+						ClientProxyInterface.proxy.fillGrappleVariants(output);
+					}
 					LongFallBoots.addToTab(output);
 				})
 		);
