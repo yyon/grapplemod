@@ -81,20 +81,20 @@ public class GuiModifier extends Screen {
 	public void mainScreen() {
 		clearScreen();
 
-		Button.builder(Component.literal(ClientProxyInterface.proxy.localize("grapplemodifier.close.desc")),
+		this.addRenderableWidget(Button.builder(Component.literal(ClientProxyInterface.proxy.localize("grapplemodifier.close.desc")),
 		button-> onClose()
-		).pos(this.guiLeft + 10, this.guiTop + this.ySize - 20 - 10).size(50, 20).build();
-		Button.builder(Component.literal(ClientProxyInterface.proxy.localize("grapplemodifier.reset.desc")),button->
+		).pos(this.guiLeft + 10, this.guiTop + this.ySize - 20 - 10).size(50, 20).build());
+		this.addRenderableWidget(Button.builder(Component.literal(ClientProxyInterface.proxy.localize("grapplemodifier.reset.desc")),button->
 						{
 							customization = new GrappleCustomization();
 							mainScreen();
 						}
-						).pos(this.guiLeft + this.xSize - 50 - 10, this.guiTop + this.ySize - 20 - 10).size(50, 20).build();
-		Button.builder(Component.literal(ClientProxyInterface.proxy.localize("grapplemodifier.helpbutton.desc")),button->
+						).pos(this.guiLeft + this.xSize - 50 - 10, this.guiTop + this.ySize - 20 - 10).size(50, 20).build());
+		this.addRenderableWidget(Button.builder(Component.literal(ClientProxyInterface.proxy.localize("grapplemodifier.helpbutton.desc")),button->
 						{
 							helpScreen();
 						}
-						).pos(this.guiLeft + 10 + 75, this.guiTop + this.ySize - 20 - 10).size(50, 20).build();
+						).pos(this.guiLeft + 10 + 75, this.guiTop + this.ySize - 20 - 10).size(50, 20).build());
 		int y = 0;
 		int x = 0;
 		for (int i = 0; i < GrappleCustomization.upgradeCategories.size(); i++) {
@@ -106,7 +106,10 @@ public class GuiModifier extends Screen {
 				}
 				this.addRenderableWidget(
 						Button.builder(Component.literal(category.getName()), new PressCategory(category))
-						.pos(this.guiLeft + 10 + 105*x, this.guiTop + 15 + 30 * y).build());
+						.pos(this.guiLeft + 10 + 105*x, this.guiTop + 15 + 30 * y)
+						.size(100, 20)
+								.build()
+				);
 				y += 1;
 			}
 		}

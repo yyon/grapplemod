@@ -24,7 +24,7 @@
     "item.grapplemod.limitsupgradeitem": "Limits Grappling Hook Upgrade",
     "item.grapplemod.rocketupgradeitem": "Rocket Grappling Hook Upgrade",
     
-    "itemGroup.grapplemod": "Grappling Hook Mod",
+    "tabs.grapplemod.main_tab": "Grappling Hook Mod",
 
     "block.grapplemod.block_grapple_modifier": "Grappling Hook Modifier",
 
