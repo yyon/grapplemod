@@ -132,7 +132,7 @@ dependencies {
 
     // Capability Syncer
     shadow fg.deobf("dev._100media.capabilitysyncer:capabilitysyncer:${capabilitysyncer_version}")
-    implementation fg.deobf("me.shedaniel.cloth:cloth-config-forge:8.0.75")
+    implementation fg.deobf("me.shedaniel.cloth:cloth-config-forge:10.0.96")
 }
 
 // This block of code expands all the gradle properties in the specified resource targets.
