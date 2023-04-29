@@ -62,7 +62,9 @@ public class ClientSetup {
 	@SubscribeEvent
 	public static void clientSetup(final FMLClientSetupEvent event) {
 	    instance = new ClientSetup();
-	    instance.onClientSetup();
+            // The onclientSetup method calls ItemProperties::register which is
+            // not thread-safe, so enqueue it.
+	    event.enqueueWork(instance::onClientSetup);
 	}
 	
 	private static class GrapplehookEntityRenderFactory implements EntityRendererProvider<GrapplehookEntity> {
