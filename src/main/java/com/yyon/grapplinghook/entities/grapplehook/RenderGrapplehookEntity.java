@@ -164,7 +164,7 @@ public class RenderGrapplehookEntity<T extends GrapplehookEntity> extends Entity
 		
 		// draw hook
 		ItemStack stack = this.getStackToRender(hookEntity);
-		BakedModel bakedmodel = context.getItemRenderer().getModel(stack, hookEntity.level, (LivingEntity)null, hookEntity.getId());
+		BakedModel bakedmodel = context.getItemRenderer().getModel(stack, hookEntity.level(), (LivingEntity)null, hookEntity.getId());
         context.getItemRenderer().render(stack, ItemDisplayContext.NONE, false, matrix, rendertype, p_225623_6_, OverlayTexture.NO_OVERLAY, bakedmodel);
 
 		// revert transformation

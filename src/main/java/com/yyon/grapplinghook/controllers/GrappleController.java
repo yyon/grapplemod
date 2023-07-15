@@ -100,7 +100,7 @@ public class GrappleController {
 			
 			if (this.controllerId != GrapplemodUtils.AIRID) {
 				CommonSetup.network.sendToServer(new GrappleEndMessage(this.entityId, this.grapplehookEntityIds));
-				ClientProxyInterface.proxy.createControl(GrapplemodUtils.AIRID, -1, this.entityId, this.entity.level, new Vec(0,0,0), null, this.custom);
+				ClientProxyInterface.proxy.createControl(GrapplemodUtils.AIRID, -1, this.entityId, this.entity.level(), new Vec(0,0,0), null, this.custom);
 			}
 		}
 	}
@@ -228,7 +228,7 @@ public class GrappleController {
 								if (onGroundTimer > 0) { // on ground: jump normally
 									
 								} else {
-									double timer = ClientProxyInterface.proxy.getTimeSinceLastRopeJump(this.entity.level);
+									double timer = ClientProxyInterface.proxy.getTimeSinceLastRopeJump(this.entity.level());
 									if (timer > GrappleConfig.getConf().grapplinghook.other.rope_jump_cooldown_s * 20.0) {
 										doJump = true;
 										jumpSpeed = this.getJumpPower(player, spherevec, hookEntity);
@@ -406,7 +406,7 @@ public class GrappleController {
 						// between the motion (after pulling and gravity) vector and the facing vector
 						// if double hooks, all hooks are scaled by the same amount (to prevent pulling to the left/right)
 						double pullmult = 1;
-						if (this.custom.smartmotor && totalpull.y > 0 && !(this.onGroundTimer > 0 || entity.isOnGround())) {
+						if (this.custom.smartmotor && totalpull.y > 0 && !(this.onGroundTimer > 0 || entity.onGround())) {
 							Vec pullxzvector = new Vec(totalpull.x, 0, totalpull.z);
 							double pullxz = pullxzvector.length();
 							double motionxz = motion.proj(pullxzvector).dot(pullxzvector.normalize());
@@ -465,7 +465,7 @@ public class GrappleController {
 						
 						// if player is at the destination, slow down
 						if (close && !(this.grapplehookEntities.size() > 1)) {
-							if (entity.horizontalCollision || entity.verticalCollision || entity.isOnGround()) {
+							if (entity.horizontalCollision || entity.verticalCollision || entity.onGround()) {
 								motion.mult_ip(0.6);
 							}
 						}
@@ -473,7 +473,7 @@ public class GrappleController {
 					
 					// forcefield
 					if (this.custom.repel) {
-						Vec blockpush = checkRepel(playerpos, entity.level);
+						Vec blockpush = checkRepel(playerpos, entity.level());
 						blockpush.mult_ip(this.custom.repelforce * 0.5);
 						blockpush = new Vec(blockpush.x*0.5, blockpush.y*2, blockpush.z*0.5);
 						this.motion.add_ip(blockpush);
@@ -498,7 +498,7 @@ public class GrappleController {
 							jumpSpeed = GrappleConfig.getConf().grapplinghook.other.rope_jump_power;
 						}
 						this.doJump(entity, jumpSpeed, averagemotiontowards, min_spherevec_dist);
-						ClientProxyInterface.proxy.resetRopeJumpTime(this.entity.level);
+						ClientProxyInterface.proxy.resetRopeJumpTime(this.entity.level());
 						return;
 					}
 					
@@ -558,7 +558,7 @@ public class GrappleController {
 		}
 		
 		if (entity.verticalCollision) {
-			if (entity.isOnGround()) {
+			if (entity.onGround()) {
 				if (!sliding && Minecraft.getInstance().options.keyJump.isDown()) {
 					this.motion.y = entity.getDeltaMovement().y;
 				} else {
@@ -578,10 +578,10 @@ public class GrappleController {
 	
 	public boolean tryStepUp(Vec collisionmotion) {
 		if (collisionmotion.length() == 0) {return false;}
-		Vec moveoffset = collisionmotion.changeLen(0.05).add(0, entity.maxUpStep+0.01, 0);
-		Iterable<VoxelShape> collisions = this.entity.level.getCollisions(this.entity, this.entity.getBoundingBox().move(moveoffset.x, moveoffset.y, moveoffset.z));
+		Vec moveoffset = collisionmotion.changeLen(0.05).add(0, entity.getStepHeight()+0.01, 0);
+		Iterable<VoxelShape> collisions = this.entity.level().getCollisions(this.entity, this.entity.getBoundingBox().move(moveoffset.x, moveoffset.y, moveoffset.z));
 		if (!collisions.iterator().hasNext()) {
-			if (!this.entity.isOnGround()) {
+			if (!this.entity.onGround()) {
 				Vec pos = Vec.positionVec(entity);
 				pos.add_ip(moveoffset);
 				pos.setPos(entity);
@@ -598,14 +598,14 @@ public class GrappleController {
 	boolean prevOnGround = false;
 
 	public void normalGround(boolean sliding) {
-		if (entity.isOnGround()) {
+		if (entity.onGround()) {
 			onGroundTimer = maxOnGroundTimer;
 		} else {
 			if (this.onGroundTimer > 0) {
 				onGroundTimer--;
 			}
 		}
-		if (entity.isOnGround() || onGroundTimer > 0) {
+		if (entity.onGround() || onGroundTimer > 0) {
 			if (!sliding) {
 				this.motion = Vec.motionVec(entity);
 				if (ClientProxyInterface.proxy.isKeyDown(ClientProxyInterface.McKeys.keyBindJump)) {
@@ -613,7 +613,7 @@ public class GrappleController {
 				}
 			}
 		}
-		prevOnGround = entity.isOnGround();
+		prevOnGround = entity.onGround();
 	}
 
 	private double getJumpPower(Entity player, double jumppower) {
@@ -622,7 +622,7 @@ public class GrappleController {
 			onGroundTimer = 20;
 			return 0;
 		}
-		if (player.isOnGround()) {
+		if (player.onGround()) {
 			jumppower = 0;
 		}
 		if (player.horizontalCollision || player.verticalCollision) {
@@ -837,7 +837,7 @@ public class GrappleController {
 		float entitywidth = this.entity.getBbWidth();
 		
 		for (Vec direction : new Vec[] {tryfirst, trysecond, tryfirst.mult(-1), trysecond.mult(-1)}) {
-			BlockHitResult raytraceresult = GrapplemodUtils.rayTraceBlocks(this.entity.level, Vec.positionVec(this.entity), Vec.positionVec(this.entity).add(direction.changeLen(entitywidth/2 + extra)));
+			BlockHitResult raytraceresult = GrapplemodUtils.rayTraceBlocks(this.entity.level(), Vec.positionVec(this.entity), Vec.positionVec(this.entity).add(direction.changeLen(entitywidth/2 + extra)));
 			if (raytraceresult != null) {
 				wallrunRaytraceResult = raytraceresult;
 				return direction;
@@ -886,7 +886,7 @@ public class GrappleController {
 			Vec corner1 = getCorner(i, v1, v2);
 			Vec corner2 = getCorner((i + 1) % 4, v1, v2);
 			
-			BlockHitResult raytraceresult = GrapplemodUtils.rayTraceBlocks(this.entity.level, Vec.positionVec(this.entity).add(corner1), Vec.positionVec(this.entity).add(corner2));
+			BlockHitResult raytraceresult = GrapplemodUtils.rayTraceBlocks(this.entity.level(), Vec.positionVec(this.entity).add(corner1), Vec.positionVec(this.entity).add(corner2));
 			if (raytraceresult != null) {
 				return true;
 			}
@@ -911,7 +911,7 @@ public class GrappleController {
 		if (ClientProxyInterface.proxy.getWallrunTicks() < GrappleConfig.getConf().enchantments.wallrun.max_wallrun_time * 40) {
 			if (!(playerSneak)) {
 				// continue wallrun
-				if (isOnWall && !this.entity.isOnGround() && this.entity.horizontalCollision) {
+				if (isOnWall && !this.entity.onGround() && this.entity.horizontalCollision) {
 					if (entity instanceof LivingEntity && ((LivingEntity) entity).onClimbable()) {
 						return false;
 					}
@@ -928,7 +928,7 @@ public class GrappleController {
 			isOnWall = false;
 		}
 		
-		if (ClientProxyInterface.proxy.getWallrunTicks() > 0 && (this.entity.isOnGround() || (!this.entity.horizontalCollision && !wallNearby(0.2)))) {
+		if (ClientProxyInterface.proxy.getWallrunTicks() > 0 && (this.entity.onGround() || (!this.entity.horizontalCollision && !wallNearby(0.2)))) {
 			ticksSinceLastWallrunSoundEffect = 0;
 		}
 		
@@ -980,7 +980,7 @@ public class GrappleController {
 				if (wallrunRaytraceResult != null) {
 					BlockPos blockpos = wallrunRaytraceResult.getBlockPos();
 					
-					BlockState blockState = this.entity.level.getBlockState(blockpos);
+					BlockState blockState = this.entity.level().getBlockState(blockpos);
 					Block blockIn = blockState.getBlock();
 					
 			        SoundType soundtype = blockIn.getSoundType(blockState, world, blockpos, this.entity);

@@ -116,7 +116,7 @@ public class GrapplehookItem extends Item implements KeypressItem {
 
 	@Override
 	public void onCustomKeyDown(ItemStack stack, Player player, KeypressItem.Keys key, boolean ismainhand) {
-		if (player.level.isClientSide) {
+		if (player.level().isClientSide) {
 			if (key == KeypressItem.Keys.LAUNCHER) {
 				if (this.getCustomization(stack).enderstaff) {
 					ClientProxyInterface.proxy.launchPlayer(player);
@@ -133,7 +133,7 @@ public class GrapplehookItem extends Item implements KeypressItem {
 	    	GrappleCustomization custom = this.getCustomization(stack);
 
 			if (key == KeypressItem.Keys.THROWBOTH || (!custom.doublehook && (key == KeypressItem.Keys.THROWLEFT || key == KeypressItem.Keys.THROWRIGHT))) {
-	        	throwBoth(stack, player.level, player, ismainhand);
+	        	throwBoth(stack, player.level(), player, ismainhand);
 			} else if (key == KeypressItem.Keys.THROWLEFT) {
 				GrapplehookEntity hookLeft = getHookEntityLeft(player);
 
@@ -147,10 +147,10 @@ public class GrapplehookItem extends Item implements KeypressItem {
 					return;
 				}
 				
-				boolean threw = throwLeft(stack, player.level, player, ismainhand);
+				boolean threw = throwLeft(stack, player.level(), player, ismainhand);
 
 				if (threw) {
-			        player.level.playSound((Player) null, player.position().x, player.position().y, player.position().z, SoundEvents.ARROW_SHOOT, SoundSource.NEUTRAL, 1.0F, 1.0F / (player.getRandom().nextFloat() * 0.4F + 1.2F) + 2.0F * 0.5F);
+			        player.level().playSound((Player) null, player.position().x, player.position().y, player.position().z, SoundEvents.ARROW_SHOOT, SoundSource.NEUTRAL, 1.0F, 1.0F / (player.getRandom().nextFloat() * 0.4F + 1.2F) + 2.0F * 0.5F);
 				}
 			} else if (key == KeypressItem.Keys.THROWRIGHT) {
 				GrapplehookEntity hookRight = getHookEntityRight(player);
@@ -165,16 +165,16 @@ public class GrapplehookItem extends Item implements KeypressItem {
 					return;
 				}
 				
-				throwRight(stack, player.level, player, ismainhand);
+				throwRight(stack, player.level(), player, ismainhand);
 
-		        player.level.playSound((Player) null, player.position().x, player.position().y, player.position().z, SoundEvents.ARROW_SHOOT, SoundSource.NEUTRAL, 1.0F, 1.0F / (player.getRandom().nextFloat() * 0.4F + 1.2F) + 2.0F * 0.5F);
+		        player.level().playSound((Player) null, player.position().x, player.position().y, player.position().z, SoundEvents.ARROW_SHOOT, SoundSource.NEUTRAL, 1.0F, 1.0F / (player.getRandom().nextFloat() * 0.4F + 1.2F) + 2.0F * 0.5F);
 			}
 		}
 	}
 	
 	@Override
 	public void onCustomKeyUp(ItemStack stack, Player player, KeypressItem.Keys key, boolean ismainhand) {
-		if (player.level.isClientSide) {
+		if (player.level().isClientSide) {
 			if (key == KeypressItem.Keys.THROWLEFT || key == KeypressItem.Keys.THROWRIGHT || key == KeypressItem.Keys.THROWBOTH) {
 				CommonSetup.network.sendToServer(new KeypressMessage(key, false));
 			}
@@ -223,7 +223,7 @@ public class GrapplehookItem extends Item implements KeypressItem {
     	}
 		throwRight(stack, worldIn, entityLiving, righthand);
 
-		entityLiving.level.playSound((Player) null, entityLiving.position().x, entityLiving.position().y, entityLiving.position().z, SoundEvents.ARROW_SHOOT, SoundSource.NEUTRAL, 1.0F, 1.0F / (worldIn.random.nextFloat() * 0.4F + 1.2F) + 2.0F * 0.5F);
+		entityLiving.level().playSound((Player) null, entityLiving.position().x, entityLiving.position().y, entityLiving.position().z, SoundEvents.ARROW_SHOOT, SoundSource.NEUTRAL, 1.0F, 1.0F / (worldIn.random.nextFloat() * 0.4F + 1.2F) + 2.0F * 0.5F);
 	}
 	
 	public boolean throwLeft(ItemStack stack, Level worldIn, LivingEntity entityLiving, boolean righthand) {
@@ -313,7 +313,7 @@ public class GrapplehookItem extends Item implements KeypressItem {
 		}
 
 		int id = entityLiving.getId();
-		GrapplemodUtils.sendToCorrectClient(new GrappleDetachMessage(id), entityLiving.getId(), entityLiving.level);
+		GrapplemodUtils.sendToCorrectClient(new GrappleDetachMessage(id), entityLiving.getId(), entityLiving.level());
 
 		if (ServerControllerManager.attached.contains(id)) {
 			ServerControllerManager.attached.remove(id);
@@ -333,9 +333,9 @@ public class GrapplehookItem extends Item implements KeypressItem {
 		
 		// remove controller if hook is attached
 		if (getHookEntityRight(entityLiving) == null) {
-			GrapplemodUtils.sendToCorrectClient(new GrappleDetachMessage(id), id, entityLiving.level);
+			GrapplemodUtils.sendToCorrectClient(new GrappleDetachMessage(id), id, entityLiving.level());
 		} else {
-			GrapplemodUtils.sendToCorrectClient(new DetachSingleHookMessage(id, hookLeft.getId()), id, entityLiving.level);
+			GrapplemodUtils.sendToCorrectClient(new DetachSingleHookMessage(id, hookLeft.getId()), id, entityLiving.level());
 		}
 		
 		if (ServerControllerManager.attached.contains(id)) {
@@ -356,9 +356,9 @@ public class GrapplehookItem extends Item implements KeypressItem {
 		
 		// remove controller if hook is attached
 		if (getHookEntityLeft(entityLiving) == null) {
-			GrapplemodUtils.sendToCorrectClient(new GrappleDetachMessage(id), id, entityLiving.level);
+			GrapplemodUtils.sendToCorrectClient(new GrappleDetachMessage(id), id, entityLiving.level());
 		} else {
-			GrapplemodUtils.sendToCorrectClient(new DetachSingleHookMessage(id, hookRight.getId()), id, entityLiving.level);
+			GrapplemodUtils.sendToCorrectClient(new DetachSingleHookMessage(id, hookRight.getId()), id, entityLiving.level());
 		}
 		
 		if (ServerControllerManager.attached.contains(id)) {
@@ -514,9 +514,9 @@ public class GrapplehookItem extends Item implements KeypressItem {
 	@Override
 	public boolean onDroppedByPlayer(ItemStack item, Player player) {
 		int id = player.getId();
-		GrapplemodUtils.sendToCorrectClient(new GrappleDetachMessage(id), id, player.level);
+		GrapplemodUtils.sendToCorrectClient(new GrappleDetachMessage(id), id, player.level());
 		
-		if (!player.level.isClientSide) {
+		if (!player.level().isClientSide) {
 			if (ServerControllerManager.attached.contains(id)) {
 				ServerControllerManager.attached.remove(id);
 			}

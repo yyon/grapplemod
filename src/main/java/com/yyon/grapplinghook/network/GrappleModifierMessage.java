@@ -46,7 +46,7 @@ public class GrappleModifierMessage extends BaseMessageServer {
     }
 
     public void processMessage(NetworkEvent.Context ctx) {
-		Level w = ctx.getSender().level;
+		Level w = ctx.getSender().level();
 		
 		BlockEntity ent = w.getBlockEntity(this.pos);
 

@@ -81,7 +81,7 @@ public class PlayerMovementMessage extends BaseMessageServer {
 
 			referencedPlayer.connection.resetPosition();
 			
-			if (!referencedPlayer.isOnGround()) {
+			if (!referencedPlayer.onGround()) {
 				if (this.my >= 0) {
 					referencedPlayer.fallDistance = 0;
 				} else {

@@ -6,6 +6,8 @@ import com.yyon.grapplinghook.client.ClientProxyInterface;
 import com.yyon.grapplinghook.utils.GrappleCustomization;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
+import net.minecraft.client.gui.Gui;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractSliderButton;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.Button;
@@ -129,10 +131,10 @@ public class GuiModifier extends Screen {
 			this(x, y, w, h, Component.literal(""));
 		}
 		
-	   public void renderWidget(PoseStack p_230431_1_, int p_230431_2_, int p_230431_3_, float p_230431_4_) {
+	   public void renderWidget(GuiGraphics p_230431_1_, int p_230431_2_, int p_230431_3_, float p_230431_4_) {
 		RenderSystem.setShaderTexture(0,texture);
 		RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
-		this.blit(p_230431_1_, this.getX(), this.getY(), 0, 0, this.width, this.height);
+		   p_230431_1_.blit(texture, this.getX(), this.getY(), 0, 0, this.width, this.height);
 	   }
 
 
@@ -157,12 +159,14 @@ public class GuiModifier extends Screen {
 				Component p_i232254_5_) {
 			super(p_i232254_1_, p_i232254_2_, p_i232254_3_, p_i232254_4_, p_i232254_5_);
 		}
-		
+
+
+
 		public TextWidget(Component text, int x, int y) {
 			this(x, y, 50, 15 * text.getString().split("\n").length + 5, text);
 		}
 		
-	   public void renderWidget(PoseStack p_230431_1_, int p_230431_2_, int p_230431_3_, float p_230431_4_) {
+	   public void renderWidget(GuiGraphics guiGraphics, int p_230431_2_, int p_230431_3_, float p_230431_4_) {
 	      Minecraft minecraft = Minecraft.getInstance();
 	      Font fontrenderer = minecraft.font;
 	      RenderSystem.setShaderTexture(0,WIDGETS_LOCATION);
@@ -173,7 +177,7 @@ public class GuiModifier extends Screen {
 	      int j = this.getFGColor();
 	      int lineno = 0;
 	      for (String s : this.getMessage().getString().split("\n")) {
-		      drawString(p_230431_1_, fontrenderer, Component.literal(s), this.getX(), this.getY() + lineno*15, j | Mth.ceil(this.alpha * 255.0F) << 24);
+		      guiGraphics.drawString(fontrenderer, Component.literal(s), this.getX(), this.getY() + lineno*15, j | Mth.ceil(this.alpha * 255.0F) << 24);
 	    	  lineno++;
 	      }
 	   }
@@ -231,7 +235,7 @@ public class GuiModifier extends Screen {
 		}
 		
 		@Override
-		public void renderWidget(PoseStack p_230431_1_, int p_230431_2_, int p_230431_3_, float p_230431_4_) {
+		public void renderWidget(GuiGraphics p_230431_1_, int p_230431_2_, int p_230431_3_, float p_230431_4_) {
 			super.renderWidget(p_230431_1_, p_230431_2_, p_230431_3_, p_230431_4_);
 			
 			if (this.isHovered) {
@@ -240,7 +244,7 @@ public class GuiModifier extends Screen {
 				for (String line : tooltiptext.split("\n")) {
 					lines.add(Component.literal(line));
 				}
-				renderTooltip(p_230431_1_, lines, Optional.empty(), p_230431_2_, p_230431_3_);
+				p_230431_1_.renderTooltip(font,lines, Optional.empty(), p_230431_2_, p_230431_3_);
 			}
 		}
 	}
@@ -284,7 +288,7 @@ public class GuiModifier extends Screen {
 		}
 		
 		@Override
-		public void renderWidget(PoseStack p_230431_1_, int p_230431_2_, int p_230431_3_, float p_230431_4_) {
+		public void renderWidget(GuiGraphics p_230431_1_, int p_230431_2_, int p_230431_3_, float p_230431_4_) {
 			super.renderWidget(p_230431_1_, p_230431_2_, p_230431_3_, p_230431_4_);
 			
 			if (this.isHovered) {
@@ -293,7 +297,7 @@ public class GuiModifier extends Screen {
 				for (String line : tooltiptext.split("\n")) {
 					lines.add(Component.literal(line));
 				}
-				renderTooltip(p_230431_1_, lines, Optional.empty(), p_230431_2_, p_230431_3_);
+				p_230431_1_.renderTooltip(font, lines, Optional.empty(), p_230431_2_, p_230431_3_);
 			}
 		}
 	}

@@ -54,7 +54,7 @@ public class CommonEventHandlers {
     
     @SubscribeEvent
     public void onLivingDeath(LivingDeathEvent event) {
-    	if (!event.getEntity().level.isClientSide) {
+    	if (!event.getEntity().level().isClientSide) {
     		Entity entity = event.getEntity();
     		int id = entity.getId();
     		boolean isconnected = ServerControllerManager.allGrapplehookEntities.containsKey(id);
@@ -74,7 +74,7 @@ public class CommonEventHandlers {
     				GrapplehookItem.grapplehookEntitiesRight.remove(entity);
     			}
     			
-    			GrapplemodUtils.sendToCorrectClient(new GrappleDetachMessage(id), id, entity.level);
+    			GrapplemodUtils.sendToCorrectClient(new GrappleDetachMessage(id), id, entity.level());
     		}
     	}
 	}
@@ -87,7 +87,7 @@ public class CommonEventHandlers {
 			for (ItemStack armor : player.getArmorSlots()) {
 			    if (armor != null && armor.getItem() instanceof LongFallBoots)
 			    {
-			    	if (event.getSource() == event.getEntity().level.damageSources().flyIntoWall()) {
+			    	if (event.getSource() == event.getEntity().level().damageSources().flyIntoWall()) {
 						// this cancels the fall event so you take no damage
 						event.setCanceled(true);
 			    	}

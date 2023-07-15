@@ -46,6 +46,7 @@ public class grapplemod {
         CommonSetup.ENTITY_TYPES.register(bus);
         CommonSetup.ENCHANTMENTS.register(bus);
         CommonSetup.BLOCK_ENTITY_TYPES.register(bus);
+        CommonSetup.TABS.register(bus);
 
     }
 }

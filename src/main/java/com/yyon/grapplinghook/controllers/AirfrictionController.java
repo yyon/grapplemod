@@ -52,7 +52,7 @@ public class AirfrictionController extends GrappleController {
 
 		Vec additionalmotion = new Vec(0,0,0);
 		
-		if (GrappleConfig.getConf().other.dont_override_movement_in_air && !entity.isOnGround() && !wasSliding && !wasWallrunning && !wasRocket && !firstTickSinceCreated) {
+		if (GrappleConfig.getConf().other.dont_override_movement_in_air && !entity.onGround() && !wasSliding && !wasWallrunning && !wasRocket && !firstTickSinceCreated) {
 			motion = Vec.motionVec(entity);
 			this.unattach();
 			return;
@@ -166,7 +166,7 @@ public class AirfrictionController extends GrappleController {
 			
 			this.updateServerPos();
 			
-			if (entity.isOnGround()) {
+			if (entity.onGround()) {
 				if (!issliding) {
 					if (!wallrun) {
 						if (!doesrocket) {

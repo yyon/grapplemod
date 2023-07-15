@@ -124,13 +124,13 @@ public class ClientProxy extends ClientProxyInterface {
 
 	@Override
 	public void fillGrappleVariants(CreativeModeTab.Output items) {
-		if (Minecraft.getInstance().isRunning() == false || Minecraft.getInstance().player == null || Minecraft.getInstance().player.level == null || Minecraft.getInstance().player.level.getRecipeManager() == null) {
+		if (Minecraft.getInstance().isRunning() == false || Minecraft.getInstance().player == null || Minecraft.getInstance().player.level() == null || Minecraft.getInstance().player.level().getRecipeManager() == null) {
 			return;
 		}
 		
 		if (grapplingHookVariants == null) {
 			grapplingHookVariants = new ArrayList<ItemStack>();
-			RecipeManager recipemanager = Minecraft.getInstance().player.level.getRecipeManager();
+			RecipeManager recipemanager = Minecraft.getInstance().player.level().getRecipeManager();
 			recipemanager.getRecipeIds().filter(loc -> loc.getNamespace().equals(grapplemod.MODID)).forEach(loc -> {
 				ItemStack stack = recipemanager.byKey(loc).get().getResultItem(Minecraft.getInstance().level.registryAccess());
 				if (stack.getItem() instanceof GrapplehookItem) {

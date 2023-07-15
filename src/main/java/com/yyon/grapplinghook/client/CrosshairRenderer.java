@@ -3,14 +3,21 @@ package com.yyon.grapplinghook.client;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.platform.Window;
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.*;
+import com.mojang.blaze3d.vertex.BufferBuilder;
+import com.mojang.blaze3d.vertex.BufferUploader;
+import com.mojang.blaze3d.vertex.DefaultVertexFormat;
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.vertex.Tesselator;
+import com.mojang.blaze3d.vertex.VertexFormat;
 import com.yyon.grapplinghook.common.CommonSetup;
 import com.yyon.grapplinghook.items.GrapplehookItem;
 import com.yyon.grapplinghook.utils.GrappleCustomization;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.Options;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.GameRenderer;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.client.event.RenderGuiOverlayEvent;
@@ -19,6 +26,7 @@ import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 
 public class CrosshairRenderer {
+	protected static final ResourceLocation GUI_ICONS_LOCATION = new ResourceLocation("textures/gui/icons.png");
 	public Minecraft mc;
 	
 	float zLevel = -90.0F;
@@ -30,7 +38,7 @@ public class CrosshairRenderer {
 	
 	@SubscribeEvent
 	public void onRenderGameOverlayPost(RenderGuiOverlayEvent.Post event) {
-		PoseStack mStack = event.getPoseStack();
+		PoseStack mStack = event.getGuiGraphics().pose();
 		
 		Options gamesettings = this.mc.options;
         if (!gamesettings.getCameraType().isFirstPerson()) return;
@@ -71,15 +79,15 @@ public class CrosshairRenderer {
 	            	int offset = (int) (Math.tan(angle) * l);
 	            	int verticaloffset = (int) (-Math.tan(verticalangle) * l);
 	            	
-	            	drawCrosshair(mStack, w / 2 + offset, h / 2 + verticaloffset);
+	            	drawCrosshair(event.getGuiGraphics(), w / 2 + offset, h / 2 + verticaloffset);
 	                if (angle != 0) {
-		            	drawCrosshair(mStack, w / 2 - offset, h / 2 + verticaloffset);
+		            	drawCrosshair(event.getGuiGraphics(), w / 2 - offset, h / 2 + verticaloffset);
 	                }
 		        }
             	
             	if (custom.rocket && custom.rocket_vertical_angle != 0) {
 	            	int verticaloffset = (int) (-Math.tan(Math.toRadians(custom.rocket_vertical_angle)) * l);
-	            	drawCrosshair(mStack, w / 2, h / 2 + verticaloffset);
+	            	drawCrosshair(event.getGuiGraphics(), w / 2, h / 2 + verticaloffset);
             	}
 			}
 
@@ -105,9 +113,9 @@ public class CrosshairRenderer {
 		}
 	}
 	
-    private void drawCrosshair(PoseStack mStack, int x, int y) {
+    private void drawCrosshair(GuiGraphics mStack, int x, int y) {
         RenderSystem.blendFuncSeparate(GlStateManager.SourceFactor.ONE_MINUS_DST_COLOR, GlStateManager.DestFactor.ONE_MINUS_SRC_COLOR, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
-        Minecraft.getInstance().gui.blit(mStack, (int) (x - (15.0F/2)), (int) (y - (15.0F/2)), 0, 0, 15, 15);
+		mStack.blit(GUI_ICONS_LOCATION, (int) (x - (15.0F/2)), (int) (y - (15.0F/2)), 0, 0, 15, 15);
         RenderSystem.defaultBlendFunc();
 	}
 

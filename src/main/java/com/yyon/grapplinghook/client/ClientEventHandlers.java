@@ -128,7 +128,7 @@ public class ClientEventHandlers {
 			control.receivePlayerMovementMessage(input.leftImpulse, input.forwardImpulse, input.jumping, input.shiftKeyDown);
 			
 			boolean overrideMovement = true;
-			if (Minecraft.getInstance().player.isOnGround()) {
+			if (Minecraft.getInstance().player.onGround()) {
 				if (!(control instanceof AirfrictionController) && !(control instanceof ForcefieldController)) {
 					overrideMovement = false;
 				}
@@ -217,7 +217,7 @@ public class ClientEventHandlers {
 		if (raytraceresult != null && raytraceresult.getType() == HitResult.Type.BLOCK) {
 			BlockHitResult bray = (BlockHitResult) raytraceresult;
 			BlockPos pos = bray.getBlockPos();
-			BlockState state = player.level.getBlockState(pos);
+			BlockState state = player.level().getBlockState(pos);
 			
 			return (state.getBlock() == CommonSetup.grappleModifierBlock.get());
 		}

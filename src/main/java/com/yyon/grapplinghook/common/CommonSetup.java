@@ -2,7 +2,7 @@ package com.yyon.grapplinghook.common;
 
 import com.yyon.grapplinghook.blocks.modifierblock.BlockGrappleModifier;
 import com.yyon.grapplinghook.blocks.modifierblock.TileEntityGrappleModifier;
-import com.yyon.grapplinghook.client.ClientProxyInterface;
+import com.yyon.grapplinghook.client.ClientProxy;
 import com.yyon.grapplinghook.enchantments.DoublejumpEnchantment;
 import com.yyon.grapplinghook.enchantments.SlidingEnchantment;
 import com.yyon.grapplinghook.enchantments.WallrunEnchantment;
@@ -12,19 +12,40 @@ import com.yyon.grapplinghook.items.EnderStaffItem;
 import com.yyon.grapplinghook.items.ForcefieldItem;
 import com.yyon.grapplinghook.items.GrapplehookItem;
 import com.yyon.grapplinghook.items.LongFallBoots;
-import com.yyon.grapplinghook.items.upgrades.*;
-import com.yyon.grapplinghook.network.*;
+import com.yyon.grapplinghook.items.upgrades.BaseUpgradeItem;
+import com.yyon.grapplinghook.items.upgrades.DoubleUpgradeItem;
+import com.yyon.grapplinghook.items.upgrades.ForcefieldUpgradeItem;
+import com.yyon.grapplinghook.items.upgrades.LimitsUpgradeItem;
+import com.yyon.grapplinghook.items.upgrades.MagnetUpgradeItem;
+import com.yyon.grapplinghook.items.upgrades.MotorUpgradeItem;
+import com.yyon.grapplinghook.items.upgrades.RocketUpgradeItem;
+import com.yyon.grapplinghook.items.upgrades.RopeUpgradeItem;
+import com.yyon.grapplinghook.items.upgrades.StaffUpgradeItem;
+import com.yyon.grapplinghook.items.upgrades.SwingUpgradeItem;
+import com.yyon.grapplinghook.items.upgrades.ThrowUpgradeItem;
+import com.yyon.grapplinghook.network.DetachSingleHookMessage;
+import com.yyon.grapplinghook.network.GrappleAttachMessage;
+import com.yyon.grapplinghook.network.GrappleAttachPosMessage;
+import com.yyon.grapplinghook.network.GrappleDetachMessage;
+import com.yyon.grapplinghook.network.GrappleEndMessage;
+import com.yyon.grapplinghook.network.GrappleModifierMessage;
+import com.yyon.grapplinghook.network.KeypressMessage;
+import com.yyon.grapplinghook.network.LoggedInMessage;
+import com.yyon.grapplinghook.network.PlayerMovementMessage;
+import com.yyon.grapplinghook.network.SegmentMessage;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MobCategory;
-import net.minecraft.world.item.*;
+import net.minecraft.world.item.ArmorMaterials;
+import net.minecraft.world.item.BlockItem;
+import net.minecraft.world.item.CreativeModeTab;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntityType;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.event.CreativeModeTabEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
@@ -33,11 +54,9 @@ import net.minecraftforge.network.NetworkRegistry;
 import net.minecraftforge.network.simple.SimpleChannel;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
-import net.minecraftforge.registries.RegisterEvent;
 import net.minecraftforge.registries.RegistryObject;
 
 import java.util.Optional;
-import java.util.function.Supplier;
 
 @Mod.EventBusSubscriber(bus=Mod.EventBusSubscriber.Bus.MOD)
 public class CommonSetup {
@@ -107,22 +126,32 @@ public class CommonSetup {
 			.build("grapplemod:grapplehook"));
 
 
-	public static CreativeModeTab tabGrapplemod;
-	@SubscribeEvent
-	public static void registerTabs(CreativeModeTabEvent.Register event)
-	{
-		tabGrapplemod = event.registerCreativeModeTab(new ResourceLocation(grapplemod.MODID, "grapplemod"),builder -> builder
-				.icon(() -> new ItemStack(grapplingHookItem.get()))
-				.title(Component.translatable("tabs.grapplemod.main_tab"))
-				.displayItems((featureFlags, output) -> {
-					ITEMS.getEntries().stream().map(RegistryObject::get).forEach(output::accept);
-					if(ClientProxyInterface.proxy != null) {
-						ClientProxyInterface.proxy.fillGrappleVariants(output);
-					}
-					LongFallBoots.addToTab(output);
-				})
-		);
-	}
+
+	public static final DeferredRegister<CreativeModeTab> TABS = DeferredRegister.create(Registries.CREATIVE_MODE_TAB, grapplemod.MODID);
+	public static final RegistryObject<CreativeModeTab> GRAPPLE_TAB = TABS.register("grapplemod", () -> CreativeModeTab.builder().displayItems(
+			(itemDisplayParameters,output)-> {
+				ITEMS.getEntries().forEach((registryObject)-> output.accept(new ItemStack(registryObject.get()))
+				);
+				ClientProxy.proxy.fillGrappleVariants(output);
+			}).icon(()->new ItemStack(grapplingHookItem.get())).title(Component.translatable("itemGroup.tabGrapplemod")).build());
+
+
+//	public static CreativeModeTab tabGrapplemod;
+//	@SubscribeEvent
+//	public static void registerTabs(CreativeModeTabEvent.Register event)
+//	{
+//		tabGrapplemod = event.registerCreativeModeTab(new ResourceLocation(grapplemod.MODID, "grapplemod"),builder -> builder
+//				.icon(() -> new ItemStack(grapplingHookItem.get()))
+//				.title(Component.translatable("tabs.grapplemod.main_tab"))
+//				.displayItems((featureFlags, output) -> {
+//					ITEMS.getEntries().stream().map(RegistryObject::get).forEach(output::accept);
+//					if(ClientProxyInterface.proxy != null) {
+//						ClientProxyInterface.proxy.fillGrappleVariants(output);
+//					}
+//					LongFallBoots.addToTab(output);
+//				})
+//		);
+//	}
 	
 
 }

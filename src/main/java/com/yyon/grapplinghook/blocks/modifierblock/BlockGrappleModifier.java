@@ -28,8 +28,8 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.RenderShape;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.material.Material;
-import net.minecraft.world.level.storage.loot.LootContext;
+import net.minecraft.world.level.material.MapColor;
+import net.minecraft.world.level.storage.loot.LootParams;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
 import net.minecraft.world.phys.BlockHitResult;
 import org.jetbrains.annotations.Nullable;
@@ -41,7 +41,7 @@ import java.util.Map;
 public class BlockGrappleModifier extends BaseEntityBlock {
 
 	public BlockGrappleModifier() {
-		super(Block.Properties.of(Material.STONE).strength(1.5f));
+		super(Block.Properties.of().mapColor(MapColor.STONE).strength(1.5f));
 	}
 
 
@@ -50,9 +50,11 @@ public class BlockGrappleModifier extends BaseEntityBlock {
 	public BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
 		return new TileEntityGrappleModifier(pos,state);
 	}
-	
+
+
+
 	@Override
-	public List<ItemStack> getDrops(BlockState state, LootContext.Builder lootctx) {
+	public List<ItemStack> getDrops(BlockState state, LootParams.Builder lootctx) {
 		List<ItemStack> drops = new ArrayList<ItemStack>();
 		drops.add(new ItemStack(this.asItem()));
 		BlockEntity ent = lootctx.getOptionalParameter(LootContextParams.BLOCK_ENTITY);
