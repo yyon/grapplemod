@@ -11,11 +11,14 @@ import com.yyon.grapplinghook.utils.GrappleCustomization;
 import com.yyon.grapplinghook.utils.GrapplemodUtils;
 import com.yyon.grapplinghook.utils.Vec;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.multiplayer.PlayerInfo;
+import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.GameType;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.SoundType;
@@ -93,16 +96,27 @@ public class GrappleController {
 			ClientProxyInterface.proxy.updateRocketRegen(custom.rocket_active_time, custom.rocket_refuel_ratio);
 		}
 	}
-	
+
+
 	public void unattach() {
-		if (ClientProxyInterface.proxy.unregisterController(this.entityId) != null) {
-			this.attached = false;
-			
-			if (this.controllerId != GrapplemodUtils.AIRID) {
-				CommonSetup.network.sendToServer(new GrappleEndMessage(this.entityId, this.grapplehookEntityIds));
-				ClientProxyInterface.proxy.createControl(GrapplemodUtils.AIRID, -1, this.entityId, this.entity.level(), new Vec(0,0,0), null, this.custom);
-			}
-		}
+		// old behaviour was always true to trigger air friction - retain this unless
+		// there's a good reason to change it.
+		this.unattach(true);
+	}
+	
+	public void unattach(boolean allowFollowupControllers) {
+		if (ClientProxyInterface.proxy.unregisterController(this.entityId) == null)
+			return;
+
+		this.attached = false;
+
+		if (this.controllerId == GrapplemodUtils.AIRID)
+			return;
+
+		CommonSetup.network.sendToServer(new GrappleEndMessage(this.entityId, this.grapplehookEntityIds));
+
+		if(allowFollowupControllers)
+			ClientProxyInterface.proxy.createControl(GrapplemodUtils.AIRID, -1, this.entityId, this.entity.level(), new Vec(0,0,0), null, this.custom);
 	}
 	
 	
