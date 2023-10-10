@@ -14,9 +14,12 @@ import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.GameType;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
+import net.minecraftforge.client.event.ClientPlayerChangeGameTypeEvent;
 import net.minecraftforge.client.event.ClientPlayerNetworkEvent.LoggingOut;
 import net.minecraftforge.client.event.InputEvent.Key;
 import net.minecraftforge.client.event.MovementInputUpdateEvent;
@@ -26,6 +29,8 @@ import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.level.BlockEvent.BreakEvent;
 import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
+
+import java.util.UUID;
 
 public class ClientEventHandlers {
 	public static ClientEventHandlers instance = null;
@@ -188,6 +193,27 @@ public class ClientEventHandlers {
 		
 		if (currentCameraTilt != 0) {
 		    event.setRoll(event.getRoll() + currentCameraTilt*GrappleConfig.getClientConf().camera.wallrun_camera_tilt_degrees);
+		}
+	}
+
+	@SubscribeEvent
+	public void onGameModeChange(ClientPlayerChangeGameTypeEvent event) {
+		Level level = Minecraft.getInstance().level;
+
+		if(level == null) return;
+
+		if(event.getNewGameType() == GameType.SPECTATOR) {
+			UUID profile = event.getInfo().getProfile().getId();
+			Player p = level.getPlayerByUUID(profile);
+
+			if (p == null) return;
+
+			int id = p.getId();
+
+			GrappleController controller = ClientControllerManager.controllers.get(id);
+
+			if (controller != null)
+				controller.unattach(false);
 		}
 	}
 
