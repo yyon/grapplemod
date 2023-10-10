@@ -1027,7 +1027,8 @@ public class GrappleController {
 			this.motion.y = 0;
 		}
 		this.motion.y += GrappleConfig.getConf().enchantments.doublejump.doublejumpforce;
-		motion.setMotion(this.entity);
+		this.motion.setMotion(this.entity);
+		this.entity.resetFallDistance();
 	}
 	
 	public void applySlidingFriction() {
