@@ -6,7 +6,6 @@ import com.yyon.grapplinghook.utils.Vec;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
-import net.minecraft.client.renderer.block.model.ItemTransforms;
 import net.minecraft.client.renderer.culling.Frustum;
 import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
@@ -25,6 +24,7 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 import org.joml.Matrix3f;
 import org.joml.Matrix4f;
 import org.joml.Quaternionf;
+import org.joml.Vector3f;
 
 
 /*
@@ -53,6 +53,12 @@ public class RenderGrapplehookEntity<T extends GrapplehookEntity> extends Entity
     private static final ResourceLocation ROPE_TEXTURES = new ResourceLocation("grapplemod", "textures/entity/rope.png");
     private static final RenderType ROPE_RENDER = RenderType.entitySolid(ROPE_TEXTURES);
     EntityRendererProvider.Context context;
+
+
+	public static final Vector3f X_AXIS = new Vector3f(1, 0, 0);
+	public static final Vector3f Y_AXIS = new Vector3f(0, 1, 0);
+	public static final Vector3f Z_AXIS = new Vector3f(0, 0, 1);
+
 
 	public RenderGrapplehookEntity(EntityRendererProvider.Context context, Item itemIn) {
 		super(context);
@@ -157,10 +163,10 @@ public class RenderGrapplehookEntity<T extends GrapplehookEntity> extends Entity
 		matrix.pushPose();
 		matrix.scale(0.5F, 0.5F, 0.5F);
 		
-		matrix.mulPose(new Quaternionf().setAngleAxis((float) (-attach_dir.getYaw()),0, 1, 0 ));
-		matrix.mulPose(new Quaternionf().setAngleAxis((float) (attach_dir.getPitch() - 90), 1, 0, 0 ));
-		matrix.mulPose(new Quaternionf().setAngleAxis((float) (45 * hand_right), 0, 1, 0 ));
-		matrix.mulPose(new Quaternionf().setAngleAxis((float) (-45), 0, 0, 1 ));
+		matrix.mulPose(rotatedAxis(-attach_dir.getYaw(), Y_AXIS));
+		matrix.mulPose(rotatedAxis(attach_dir.getPitch() - 90, X_AXIS));
+		matrix.mulPose(rotatedAxis(45.0f * hand_right, Y_AXIS));
+		matrix.mulPose(rotatedAxis(-45.0f, Z_AXIS));
 		
 		// draw hook
 		ItemStack stack = this.getStackToRender(hookEntity);
@@ -358,14 +364,17 @@ public class RenderGrapplehookEntity<T extends GrapplehookEntity> extends Entity
 		return true;
 	}
 
-	public ItemStack getStackToRender(T entityIn)
-    {
+	public ItemStack getStackToRender(T entityIn) {
 		ItemStack stack = new ItemStack(this.item);
 		CompoundTag tag = stack.getOrCreateTag();
 		tag.putBoolean("hook", true);
 		stack.setTag(tag);
         return stack;
     }
+
+	public static Quaternionf rotatedAxis(double angleDegrees, Vector3f axis) {
+		return new Quaternionf().rotateAxis((float) Math.toRadians(angleDegrees), axis);
+	}
 
     /**
      * Returns the location of an entity's texture. Doesn't seem to be called unless you call Render.bindEntityTexture.
