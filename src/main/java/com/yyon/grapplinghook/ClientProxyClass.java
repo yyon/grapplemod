@@ -45,12 +45,12 @@ public class ClientProxyClass extends CommonProxyClass {
 	public boolean prevleftclick = false;
 	public HashMap<Integer, Long> enderlaunchtimer = new HashMap<Integer, Long>();
 	public final int reusetime = 50;
-	
+
 	@Override
 	public void preInit(FMLPreInitializationEvent event) {
 		super.preInit(event);
 	}
-	
+
 	/*
 	public ModelResourceLocation grapplinghookloc = new ModelResourceLocation("grapplemod:grapplinghook", "inventory");
 	public ModelResourceLocation hookshotloc = new ModelResourceLocation("grapplemod:hookshot", "inventory");
@@ -64,7 +64,7 @@ public class ClientProxyClass extends CommonProxyClass {
 	public ModelResourceLocation repelleronloc = new ModelResourceLocation("grapplemod:repelleron", "inventory");
 	public ModelResourceLocation multihookloc = new ModelResourceLocation("grapplemod:multihook", "inventory");
 	public ModelResourceLocation multihookropeloc = new ModelResourceLocation("grapplemod:multihookrope", "inventory");
-	
+
 	private void setgrapplebowtextures(Item item, final ModelResourceLocation notinusetexture, final ModelResourceLocation inusetexture) {
 		ModelLoader.setCustomMeshDefinition(item, new ItemMeshDefinition() {
 		    @Override
@@ -78,7 +78,7 @@ public class ClientProxyClass extends CommonProxyClass {
 		ModelBakery.registerItemVariants(item, notinusetexture);
 		ModelBakery.registerItemVariants(item, inusetexture);
 	}
-	
+
 	private void registerItemModels() {
 		setgrapplebowtextures(grapplemod.grapplebowitem, grapplinghookloc, ropeloc);
 		setgrapplebowtextures(grapplemod.hookshotitem, hookshotloc, hookshotropeloc);
@@ -101,7 +101,7 @@ public class ClientProxyClass extends CommonProxyClass {
 		ModelLoader.setCustomModelResourceLocation(item, 0, fullModelLocation);
 	}
 	*/
-	
+
 	@Override
 	public void init(FMLInitializationEvent event, grapplemod grappleModInst) {
 		super.init(event, grappleModInst);
@@ -113,16 +113,16 @@ public class ClientProxyClass extends CommonProxyClass {
 //		Minecraft.getMinecraft().getRenderItem().getItemModelMesher().register(grapplemod.longfallboots, 0, new ModelResourceLocation("grapplemod:longfallboots", "inventory"));
 //		Minecraft.getMinecraft().getRenderItem().getItemModelMesher().register(grapplemod.enderhookitem, 0, new ModelResourceLocation("grapplemod:enderhook", "inventory"));
 	}
-	
+
 	public crosshairRenderer crosshairrenderer;
-	
+
 	@Override
 	public void postInit(FMLPostInitializationEvent event) {
 		super.postInit(event);
-		
+
 		crosshairrenderer = new crosshairRenderer();
 	}
-	
+
 	@Override
 	public void getplayermovement(grappleController control, int playerid) {
 		Entity entity = control.entity;
@@ -131,7 +131,7 @@ public class ClientProxyClass extends CommonProxyClass {
 			control.receivePlayerMovementMessage(player.moveStrafing, player.moveForward, player.movementInput.jump);
 		}
 	}
-	
+
 	@SubscribeEvent
 	public void onClientTick(TickEvent.ClientTickEvent event) {
 		EntityPlayer player = Minecraft.getMinecraft().thePlayer;
@@ -143,9 +143,9 @@ public class ClientProxyClass extends CommonProxyClass {
 						controller.doClientTick();
 					}
 				} catch (ConcurrentModificationException e) {
-					System.out.println("ConcurrentModificationException caught");
+                    grapplemod.LOGGER.error("ConcurrentModificationException caught");
 				}
-				
+
 				leftclick = (GameSettings.isKeyDown(Minecraft.getMinecraft().gameSettings.keyBindAttack) && Minecraft.getMinecraft().currentScreen == null);
 				if (prevleftclick != leftclick) {
 					if (player != null) {
@@ -162,9 +162,9 @@ public class ClientProxyClass extends CommonProxyClass {
 						}
 					}
 				}
-				
+
 				prevleftclick = leftclick;
-				
+
 				if (player.onGround) {
 					if (enderlaunchtimer.containsKey(player.getEntityId())) {
 						long timer = player.worldObj.getTotalWorldTime() - enderlaunchtimer.get(player.getEntityId());
@@ -176,7 +176,7 @@ public class ClientProxyClass extends CommonProxyClass {
 			}
 		}
 	}
-	
+
 	@Override
 	public void launchplayer(EntityPlayer player) {
 		long prevtime;
@@ -189,17 +189,17 @@ public class ClientProxyClass extends CommonProxyClass {
 		if (timer > reusetime) {
 			if (player.getHeldItem() != null && (player.getHeldItem().getItem() instanceof enderBow || player.getHeldItem().getItem() instanceof launcherItem)) {
 				enderlaunchtimer.put(player.getEntityId(), player.worldObj.getTotalWorldTime());
-				
+
 	        	vec facing = new vec(player.getLookVec());
 //				vec playermotion = vec.motionvec(player);
 //				vec newvec = playermotion.add(facing.mult(3));
-				
+
 				/*
 				if (!grapplemod.controllers.containsKey(player.getEntityId())) {
 					player.motionX = newvec.x;
 					player.motionY = newvec.y;
 					player.motionZ = newvec.z;
-					
+
 					if (player instanceof EntityPlayerMP) {
 						((EntityPlayerMP) player).connection.sendPacket(new SPacketEntityVelocity(player));
 					} else {
@@ -219,14 +219,14 @@ public class ClientProxyClass extends CommonProxyClass {
 			}
 		}
 	}
-	
+
 	@Override
 	public void resetlaunchertime(int playerid) {
 		if (enderlaunchtimer.containsKey(playerid)) {
 			enderlaunchtimer.put(playerid, (long) 0);
 		}
 	}
-	
+
 	@Override
 	public boolean isSneaking(Entity entity) {
 		if (entity == Minecraft.getMinecraft().thePlayer) {
@@ -235,7 +235,7 @@ public class ClientProxyClass extends CommonProxyClass {
 			return entity.isSneaking();
 		}
 	}
-	
+
 	@Override
     public void blockbreak(BreakEvent event) {
 		BlockPos pos = new BlockPos(event.x, event.y, event.z);
@@ -244,12 +244,12 @@ public class ClientProxyClass extends CommonProxyClass {
 				grappleController control = grapplemod.controllerpos.get(pos);
 
 				control.unattach();
-				
+
 				grapplemod.controllerpos.remove(pos);
 			}
 		}
     }
-	
+
 	@Override
 	public void handleDeath(Entity entity) {
 		int id = entity.getEntityId();
@@ -258,13 +258,13 @@ public class ClientProxyClass extends CommonProxyClass {
 			controller.unattach();
 		}
 	}
-	
+
 	@Override
 	public String getkeyname(CommonProxyClass.keys keyenum) {
 		KeyBinding binding = null;
-		
+
 		GameSettings gs = Minecraft.getMinecraft().gameSettings;
-		
+
 		if (keyenum == keys.keyBindAttack) {
 			binding = gs.keyBindAttack;
 		} else if (keyenum == keys.keyBindBack) {
@@ -282,11 +282,11 @@ public class ClientProxyClass extends CommonProxyClass {
 		} else if (keyenum == keys.keyBindUseItem) {
 			binding = gs.keyBindUseItem;
 		}
-		
+
 		if (binding == null) {
 			return "";
 		}
-		
+
 		String displayname;
 		int keycode = binding.getKeyCode();
 		if (keycode == -99) {

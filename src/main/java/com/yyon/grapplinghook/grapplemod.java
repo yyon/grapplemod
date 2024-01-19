@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Random;
 
+import com.yyon.grapplemod.Tags;
 import net.minecraft.block.Block;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
@@ -64,6 +65,8 @@ import cpw.mods.fml.common.network.simpleimpl.SimpleNetworkWrapper;
 import cpw.mods.fml.common.registry.EntityRegistry;
 import cpw.mods.fml.common.registry.GameRegistry;
 import cpw.mods.fml.relauncher.Side;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /*
  * This file is part of GrappleMod.
@@ -86,14 +89,12 @@ import cpw.mods.fml.relauncher.Side;
 // Pull mobs
 // Attach 2 things together
 
-@Mod(modid = grapplemod.MODID, version = grapplemod.VERSION)
+@Mod(modid = Tags.MODID, version = Tags.VERSION)
 public class grapplemod {
 
-	public grapplemod(){}
+    public static final Logger LOGGER = LogManager.getLogger("grapplemod");
 
-    public static final String MODID = "grapplemod";
-    
-    public static final String VERSION = "1.7.10-v10";
+	public grapplemod(){}
 
     public static Item grapplebowitem;
     public static Item hookshotitem;
@@ -104,15 +105,15 @@ public class grapplemod {
     public static Item magnetbowitem;
     public static Item repelleritem;
     public static Item multihookitem;
-    
+
 	public static Object instance;
-	
+
 	public static SimpleNetworkWrapper network;
-	
+
 	public static HashMap<Integer, grappleController> controllers = new HashMap<Integer, grappleController>(); // client side
 	public static HashMap<BlockPos, grappleController> controllerpos = new HashMap<BlockPos, grappleController>();
 	public static HashSet<Integer> attached = new HashSet<Integer>(); // server side
-	
+
 	private static int controllerid = 0;
 	public static int GRAPPLEID = controllerid++;
 	public static int ENDERID = controllerid++;
@@ -123,59 +124,59 @@ public class grapplemod {
 	public static int MULTISUBID = controllerid++;
 	public static int AIRID = controllerid++;
 	public static int SMARTHOOKID = controllerid++;
-	
+
 	public static int REPELCONFIGS = 0;
 //	public static int REPELSPEED = REPELCONFIGS++;
 	public static int REPELSTRONG = REPELCONFIGS++;
 	public static int REPELWEAK = REPELCONFIGS++;
 	public static int REPELNONE = REPELCONFIGS++;
-	
+
 	public static int grapplingLength = 0;
 	public static boolean anyblocks = true;
 	public static ArrayList<Block> grapplingblocks;
 	public static boolean removeblocks = false;
-	
+
 	@SidedProxy(clientSide="com.yyon.grapplinghook.ClientProxyClass", serverSide="com.yyon.grapplinghook.ServerProxyClass")
 	public static CommonProxyClass proxy;
-	
+
 	@EventHandler
 	public void load(FMLInitializationEvent event){
 		GameRegistry.addRecipe(new ItemStack(grapplebowitem, 1), new Object[]{
-			"X2", 
-			"4X", Character.valueOf('2'), new ItemStack(Items.iron_pickaxe, 1), Character.valueOf('4'), new ItemStack(Items.lead, 1), 
+			"X2",
+			"4X", Character.valueOf('2'), new ItemStack(Items.iron_pickaxe, 1), Character.valueOf('4'), new ItemStack(Items.lead, 1),
 		});
 		GameRegistry.addRecipe(new ItemStack(hookshotitem, 1), new Object[]{
-			"X2", 
-			"4X", Character.valueOf('2'), new ItemStack(grapplebowitem, 1), Character.valueOf('4'), new ItemStack(Blocks.piston, 1), 
+			"X2",
+			"4X", Character.valueOf('2'), new ItemStack(grapplebowitem, 1), Character.valueOf('4'), new ItemStack(Blocks.piston, 1),
 		});
 		GameRegistry.addRecipe(new ItemStack(smarthookitem, 1), new Object[]{
-			"X2", 
-			"4X", Character.valueOf('2'), new ItemStack(hookshotitem, 1), Character.valueOf('4'), new ItemStack(Items.redstone, 1), 
+			"X2",
+			"4X", Character.valueOf('2'), new ItemStack(hookshotitem, 1), Character.valueOf('4'), new ItemStack(Items.redstone, 1),
 		});
 		GameRegistry.addRecipe(new ItemStack(launcheritem, 1), new Object[]{
-			"X2", 
-			"4X", Character.valueOf('2'), new ItemStack(Items.ender_pearl, 1), Character.valueOf('4'), new ItemStack(Blocks.piston, 1), 
+			"X2",
+			"4X", Character.valueOf('2'), new ItemStack(Items.ender_pearl, 1), Character.valueOf('4'), new ItemStack(Blocks.piston, 1),
 		});
 		GameRegistry.addRecipe(new ItemStack(enderhookitem, 1), new Object[]{
-			"X2", 
-			"4X", Character.valueOf('2'), new ItemStack(grapplebowitem, 1), Character.valueOf('4'), new ItemStack(launcheritem, 1), 
+			"X2",
+			"4X", Character.valueOf('2'), new ItemStack(grapplebowitem, 1), Character.valueOf('4'), new ItemStack(launcheritem, 1),
 		});
 		GameRegistry.addRecipe(new ItemStack(repelleritem, 1), new Object[]{
-			"X2X", 
+			"X2X",
 			"242",
-			"X2X", Character.valueOf('2'), new ItemStack(Items.iron_ingot, 1), Character.valueOf('4'), new ItemStack(Items.compass, 1), 
+			"X2X", Character.valueOf('2'), new ItemStack(Items.iron_ingot, 1), Character.valueOf('4'), new ItemStack(Items.compass, 1),
 		});
 		GameRegistry.addRecipe(new ItemStack(magnetbowitem, 1), new Object[]{
-			"X2", 
-			"4X", Character.valueOf('2'), new ItemStack(grapplebowitem, 1), Character.valueOf('4'), new ItemStack(repelleritem, 1), 
+			"X2",
+			"4X", Character.valueOf('2'), new ItemStack(grapplebowitem, 1), Character.valueOf('4'), new ItemStack(repelleritem, 1),
 		});
 		GameRegistry.addRecipe(new ItemStack(longfallboots, 1), new Object[]{
-			"2", 
-			"4", Character.valueOf('2'), new ItemStack(Items.diamond_boots, 1), Character.valueOf('4'), new ItemStack(Blocks.wool, 1), 
+			"2",
+			"4", Character.valueOf('2'), new ItemStack(Items.diamond_boots, 1), Character.valueOf('4'), new ItemStack(Blocks.wool, 1),
 		});
 		GameRegistry.addRecipe(new ItemStack(multihookitem, 1), new Object[]{
-			"X2", 
-			"2X", Character.valueOf('2'), new ItemStack(hookshotitem, 1), 
+			"X2",
+			"2X", Character.valueOf('2'), new ItemStack(hookshotitem, 1),
 		});
 	}
 
@@ -193,14 +194,14 @@ public class grapplemod {
 		event.getServer().worldServerForDimension(0).getGameRules().addGameRule("grapplingBlocks", "any");
 		event.getServer().worldServerForDimension(0).getGameRules().addGameRule("grapplingNonBlocks", "none");
 	}
-	
+
 	public static void updateMaxLen(World world) {
 		String s = MinecraftServer.getServer().worldServerForDimension(0).getGameRules().getGameRuleStringValue("grapplingLength");
 		if (!s.equals("")) {
 			grapplemod.grapplingLength = Integer.parseInt(s);
 		}
 	}
-	
+
 	public static void updateGrapplingBlocks(World world) {
 		String s = MinecraftServer.getServer().worldServerForDimension(0).getGameRules().getGameRuleStringValue("grapplingBlocks");
 		if (s.equals("any") || s.equals("")) {
@@ -215,12 +216,12 @@ public class grapplemod {
 			anyblocks = false;
 			removeblocks = false;
 		}
-	
+
 		if (!anyblocks) {
 			String[] blockstr = s.split(",");
-			
+
 			grapplingblocks = new ArrayList<Block>();
-			
+
 		    for(String str:blockstr){
 		    	str = str.trim();
 		    	String modid;
@@ -233,14 +234,14 @@ public class grapplemod {
 		    		modid = "minecraft";
 		    		name = str;
 		    	}
-		    	
+
 		    	Block b = GameRegistry.findBlock(modid, name);
-		    	
+
 		        grapplingblocks.add(b);
 		    }
 		}
 	}
-	
+
 	@EventHandler
 	public void preInit(FMLPreInitializationEvent event){
 		grapplebowitem = new grappleBow();
@@ -261,14 +262,14 @@ public class grapplemod {
 		GameRegistry.registerItem(repelleritem, "repeller");
 		multihookitem = new multiBow();
 		GameRegistry.registerItem(multihookitem, "multihook");
-		
+
 		registerEntity(grappleArrow.class, "grappleArrow");
 		registerEntity(enderArrow.class, "enderArrow");
 		registerEntity(hookArrow.class, "hookArrow");
 		registerEntity(magnetArrow.class, "magnetArrow");
 		registerEntity(multihookArrow.class, "multihookArrow");
 		registerEntity(smartHookArrow.class, "smartHookArrow");
-		
+
 		proxy.preInit(event);
 		network = NetworkRegistry.INSTANCE.newSimpleChannel("grapplemodchannel");
 		byte id = 0;
@@ -280,31 +281,31 @@ public class grapplemod {
 		network.registerMessage(MultiHookMessage.Handler.class, MultiHookMessage.class, id++, Side.SERVER);
 		network.registerMessage(ToolConfigMessage.Handler.class, ToolConfigMessage.class, id++, Side.SERVER);
 	}
-	
+
 	@EventHandler
 	public void Init(FMLInitializationEvent event) {
 		proxy.init(event, this);
 	}
-	
+
 	@EventHandler
 	public void postInit(FMLPostInitializationEvent event) {
 		proxy.postInit(event);
 	}
-	
+
 	int entityID = 0;
 	public void registerEntity(Class<? extends Entity> entityClass, String name)
 	{
 		EntityRegistry.registerModEntity(entityClass, name, entityID++, this, 900, 1, true);
 	}
-	
+
 	public static void registerController(int entityId, grappleController controller) {
 		if (controllers.containsKey(entityId)) {
 			controllers.get(entityId).unattach();
 		}
-		
+
 		controllers.put(entityId, controller);
 	}
-	
+
 	public static void unregisterController(int entityId) {
 		controllers.remove(entityId);
 	}
@@ -315,7 +316,7 @@ public class grapplemod {
 		if (controller != null) {
 			controller.receiveGrappleClick(leftclick);
 		} else {
-			System.out.println("Couldn't find controller");
+            grapplemod.LOGGER.error("Couldn't find controller");
 		}
 	}
 
@@ -324,19 +325,19 @@ public class grapplemod {
 		if (controller != null) {
 			controller.receiveEnderLaunch(x, y, z);
 		} else {
-			System.out.println("Couldn't find controller");
+            grapplemod.LOGGER.error("Couldn't find controller");
 		}
 	}
-	
+
 	public static void sendtocorrectclient(IMessage message, int playerid, World w) {
 		Entity entity = w.getEntityByID(playerid);
 		if (entity instanceof EntityPlayerMP) {
 			grapplemod.network.sendTo(message, (EntityPlayerMP) entity);
 		} else {
-			System.out.println("ERROR! couldn't find player");
+            grapplemod.LOGGER.error("ERROR! couldn't find player");
 		}
 	}
-	
+
 	public static grappleController createControl(int id, int arrowid, int entityid, World world, vec pos, int maxlen, BlockPos blockpos) {
 
 		grappleArrow arrow = null;
@@ -344,16 +345,16 @@ public class grapplemod {
 		if (arrowentity != null && arrowentity instanceof grappleArrow) {
 			arrow = (grappleArrow) arrowentity;
 		}
-		
+
 		if (id != MULTISUBID) {
 			grappleController currentcontroller = controllers.get(entityid);
 			if (currentcontroller != null) {
 				currentcontroller.unattach();
 			}
 		}
-		
-		System.out.println(blockpos);
-		
+
+		//grapplemod.LOGGER.debug(blockpos);
+
 		grappleController control = null;
 		if (id == GRAPPLEID) {
 			control = new grappleController(arrowid, entityid, world, pos, maxlen, id);
@@ -389,20 +390,20 @@ public class grapplemod {
 				}
 			}
 			if (!created) {
-				System.out.println("Couldn't create");
+                grapplemod.LOGGER.error("Couldn't create");
 				grapplemod.removesubarrow(arrowid);
 			}
 		} else if (id == AIRID) {
-			System.out.println("AIR FRICTION CONTROLLER");
+			//System.out.println("AIR FRICTION CONTROLLER");
 			control = new airfrictionController(arrowid, entityid, world, pos, maxlen, id);
 		}
 		if (blockpos != null && control != null) {
 			grapplemod.controllerpos.put(blockpos, control);
 		}
-		
+
 		return control;
 	}
-	
+
 	public static void removesubarrow(int id) {
 		grapplemod.network.sendToServer(new GrappleEndMessage(-1, id));
 	}
@@ -413,21 +414,21 @@ public class grapplemod {
 					(id));
 		} else {
 		}
-		
+
 		if (arrowid != -1) {
 	      	Entity grapple = world.getEntityByID(arrowid);
 	  		if (grapple instanceof grappleArrow) {
 	  			((grappleArrow) grapple).removeServer();
 	  		} else {
-	
+
 	  		}
 		}
-  		
+
   		Entity entity = world.getEntityByID(id);
   		if (entity != null) {
       		entity.fallDistance = 0;
   		}
-  		
+
   		grapplemod.removeallmultihookarrows();
 	}
 
@@ -436,53 +437,53 @@ public class grapplemod {
       	Entity e = w.getEntityByID(id);
       	if (e != null && e instanceof EntityLivingBase) {
       		EntityLivingBase player = (EntityLivingBase) e;
-      		
+
       		float angle = multiBow.getAngle(player);
-      		
+
       		//vec look = new vec(player.getLookVec());
-      		
-      		//System.out.println(player.rotationPitch);
-      		//System.out.println(player.rotationYaw);
-      		
+
+      		//grapplemod.LOGGER.debug(player.rotationPitch);
+      		//grapplemod.LOGGER.debug(player.rotationYaw);
+
       		/*
       		grappleArrow arrow = new grappleArrow(w, player, false);
       		arrow.setHeadingFromThrower(player, (float)look.getPitch(), (float)look.getYaw(), 0.0F, arrow.getVelocity(), 0.0F);
 			w.spawnEntityInWorld(arrow);
 			*/
-      		
+
       		vec anglevec = new vec(0,0,1).rotate_yaw(Math.toRadians(-angle));
       		anglevec = anglevec.rotate_pitch(Math.toRadians(-player.rotationPitch));
       		anglevec = anglevec.rotate_yaw(Math.toRadians(player.rotationYaw));
 			multihookArrow entityarrow = new multihookArrow(w, player, false);
             entityarrow.setHeadingFromThrower(player, (float) anglevec.getPitch(), (float)anglevec.getYaw(), 0.0F, entityarrow.func_70182_d(), 0.0F);
-            
+
             /*
             vec pos = vec.positionvec(entityarrow);
             pos.add_ip(new vec(0.36, -0.175, 0.45).rotate_yaw(Math.toRadians(player.rotationYaw)));
             entityarrow.setPosition(pos.x, pos.y, pos.z);
             */
-            
+
 			w.spawnEntityInWorld(entityarrow);
 			multihookarrows.add(entityarrow);
-			
-			
+
+
       		anglevec = new vec(0,0,1).rotate_yaw(Math.toRadians(angle));
       		anglevec = anglevec.rotate_pitch(Math.toRadians(-player.rotationPitch));
       		anglevec = anglevec.rotate_yaw(Math.toRadians(player.rotationYaw));
 			entityarrow = new multihookArrow(w, player, true);
             entityarrow.setHeadingFromThrower(player, (float) anglevec.getPitch(), (float)anglevec.getYaw(), 0.0F, entityarrow.func_70182_d(), 0.0F);
-            
+
             /*
             pos = vec.positionvec(entityarrow);
             pos.add_ip(new vec(-0.36, -0.175, 0.45).rotate_yaw(Math.toRadians(player.rotationYaw)));
             entityarrow.setPosition(pos.x, pos.y, pos.z);
             */
-            
+
 			w.spawnEntityInWorld(entityarrow);
 			multihookarrows.add(entityarrow);
       	}
 	}
-		
+
 	public static void removeallmultihookarrows() {
 		for (multihookArrow arrow : multihookarrows) {
 			if (arrow != null && !arrow.isDead) {
@@ -495,7 +496,7 @@ public class grapplemod {
       	Entity e = w.getEntityByID(id);
       	if (e != null && e instanceof EntityPlayer) {
       		EntityPlayer player = (EntityPlayer) e;
-      		
+
       		ItemStack stack = player.getHeldItem();
       		Item item = stack.getItem();
       		if (item instanceof multiBow) {
@@ -507,7 +508,7 @@ public class grapplemod {
     			boolean slow = compound.getBoolean("slow");
     			slow = !slow;
     			compound.setBoolean("slow", slow);
-    			
+
     			if (slow) {
     				player.addChatMessage(new ChatComponentText("Set to slow mode"));
     			} else {
@@ -525,7 +526,7 @@ public class grapplemod {
     				repelconf = 0;
     			}
     			compound.setInteger("repelconf", repelconf);
-    			
+
 //    			if (repelconf == REPELSPEED) {
 //    				player.addChatMessage(new TextComponentString("Repel force set to speed based"));
     			if (repelconf == REPELSTRONG) {
@@ -544,7 +545,7 @@ public class grapplemod {
     			boolean slow = compound.getBoolean("slow");
     			slow = !slow;
     			compound.setBoolean("slow", slow);
-    			
+
     			if (slow) {
     				player.addChatMessage(new ChatComponentText("Set to slow mode"));
     			} else {
