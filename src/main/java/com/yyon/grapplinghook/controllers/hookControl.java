@@ -32,22 +32,22 @@ public class hookControl extends grappleController {
 	public double acceleration = 0.2;
 	public float oldstepheight;
 	public final double playermovementmult = 1;
-		
+
 	@Override
 	public void updatePlayerPos() {
-		
+
 		/*
 		super.updatePlayerPos(theplayer);
 		if (r > 1) {
 			r -= 1;
 		}
 		*/
-		
+
 		Entity entity = this.entity;
-		
-//		System.out.println(entity == theplayer);
-//		System.out.println(entity.worldObj.isRemote);
-		
+
+//		grapplemod.LOGGER.debug(entity == theplayer);
+//		grapplemod.LOGGER.debug(entity.worldObj.isRemote);
+
 		if (this.attached) {
 			if(entity != null && entity instanceof EntityPlayer) {
 				EntityPlayer player = (EntityPlayer) entity;
@@ -57,17 +57,17 @@ public class hookControl extends grappleController {
 //					this.normalGround();
 					this.normalCollisions();
 //					this.applyAirFriction();
-					
+
 					vec arrowpos = this.pos;
 					vec playerpos = vec.positionvec(player);
-					
+
 					vec oldspherevec = playerpos.sub(arrowpos);
 					vec spherevec = oldspherevec.changelen(r);
 //					Vec3 spherechange = spherevec.subtract(oldspherevec);
 //					Vec3 spherepos = spherevec.add(arrowpos);
-					
+
 					double dist = oldspherevec.length();
-					
+
 					if (this.isjumping()) {
 						this.dojump(player, spherevec);
 						return;
@@ -82,14 +82,14 @@ public class hookControl extends grappleController {
 					} else {
 						applyPlayerMovement();
 					}
-					
+
 					vec newmotion;
-					
+
 					if (dist < 4) {
 						if (motion.length() > 0.3) {
 							motion.mult_ip(0.6);
 						}
-						
+
 //						if (this.playermovement.lengthVector() > 0.05) {
 //							this.unattach();
 //						}
@@ -98,19 +98,19 @@ public class hookControl extends grappleController {
 							entity.motionY = 0;
 							entity.motionZ = 0;
 							this.updateServerPos();
-							
+
 //							this.unattach();
 						}
 					}
-					
+
 					motion.add_ip(arrowpos.sub(playerpos).changelen(acceleration));
-					
+
 					double speed = motion.proj(oldspherevec).length();
-					
+
 					if (speed > maxspeed) {
 						motion.changelen_ip(maxspeed);
 					}
-					
+
 					/*
 					if (!player.onGround) {
 						motion = motion.addVector(0, -0.05, 0);
@@ -120,29 +120,29 @@ public class hookControl extends grappleController {
 						}
 					}
 					*/
-					
+
 					newmotion = motion;
-					
+
 					vec motiontorwards = spherevec.changelen(-1);
 					motion = dampenmotion(motion, motiontorwards);
-					
+
 //					entity.setVelocity(newmotion.xCoord, newmotion.yCoord, newmotion.zCoord);
 					entity.motionX = newmotion.x;
 					entity.motionY = newmotion.y;
 					entity.motionZ = newmotion.z;
-					
+
 //					if (player instanceof EntityPlayerMP) {
-						
+
 //						((EntityPlayerMP) entity).playerNetServerHandler.sendPacket(new S12PacketEntityVelocity(entity));
 //					}
-					
+
 					player.fallDistance = 0;
-					
+
 					this.updateServerPos();
 				}
 			}
 		}
 	}
-	
+
 
 }

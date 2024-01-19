@@ -1,5 +1,6 @@
 package com.yyon.grapplinghook.network;
 
+import com.yyon.grapplinghook.grapplemod;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -61,7 +62,7 @@ public class PlayerMovementMessage implements IMessage {
             this.my = buf.readDouble();
             this.mz = buf.readDouble();
         } catch (Exception e) {
-            System.out.println(buf);
+            grapplemod.LOGGER.error(buf);
         }
     }
 

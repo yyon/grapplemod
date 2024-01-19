@@ -27,19 +27,19 @@ public class enderArrow extends grappleArrow
 	public enderArrow(World worldIn) {
 		super(worldIn);
 	}
-	
+
 	public enderArrow(World worldIn, EntityLivingBase shooter,
 			boolean righthand) {
 		super(worldIn, shooter, righthand);
 	}
-	
+
 	@Override
     protected float func_70182_d()
     {
         return 20F;
     }
-    
-	
+
+
     @Override
 	public int getControlId() {
 		return grapplemod.ENDERID;
@@ -47,7 +47,7 @@ public class enderArrow extends grappleArrow
     /*
     @Override
 	public void createControl() {
-		System.out.println("Creating ender controller");
+		grapplemod.LOGGER.debug("Creating ender controller");
 		this.control = new enderController(this.getEntityId(), this.shootingEntity.getEntityId(), this.worldObj, new Vec3(this.posX, this.posY, this.posZ));
 	}
 	*/

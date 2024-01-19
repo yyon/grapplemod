@@ -65,6 +65,8 @@ import cpw.mods.fml.common.network.simpleimpl.SimpleNetworkWrapper;
 import cpw.mods.fml.common.registry.EntityRegistry;
 import cpw.mods.fml.common.registry.GameRegistry;
 import cpw.mods.fml.relauncher.Side;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /*
  * This file is part of GrappleMod.
@@ -89,6 +91,8 @@ import cpw.mods.fml.relauncher.Side;
 
 @Mod(modid = Tags.MODID, version = Tags.VERSION)
 public class grapplemod {
+
+    public static final Logger LOGGER = LogManager.getLogger("grapplemod");
 
 	public grapplemod(){}
 
@@ -312,7 +316,7 @@ public class grapplemod {
 		if (controller != null) {
 			controller.receiveGrappleClick(leftclick);
 		} else {
-			System.out.println("Couldn't find controller");
+            grapplemod.LOGGER.error("Couldn't find controller");
 		}
 	}
 
@@ -321,7 +325,7 @@ public class grapplemod {
 		if (controller != null) {
 			controller.receiveEnderLaunch(x, y, z);
 		} else {
-			System.out.println("Couldn't find controller");
+            grapplemod.LOGGER.error("Couldn't find controller");
 		}
 	}
 
@@ -330,7 +334,7 @@ public class grapplemod {
 		if (entity instanceof EntityPlayerMP) {
 			grapplemod.network.sendTo(message, (EntityPlayerMP) entity);
 		} else {
-			System.out.println("ERROR! couldn't find player");
+            grapplemod.LOGGER.error("ERROR! couldn't find player");
 		}
 	}
 
@@ -349,7 +353,7 @@ public class grapplemod {
 			}
 		}
 
-		System.out.println(blockpos);
+		//grapplemod.LOGGER.debug(blockpos);
 
 		grappleController control = null;
 		if (id == GRAPPLEID) {
@@ -386,11 +390,11 @@ public class grapplemod {
 				}
 			}
 			if (!created) {
-				System.out.println("Couldn't create");
+                grapplemod.LOGGER.error("Couldn't create");
 				grapplemod.removesubarrow(arrowid);
 			}
 		} else if (id == AIRID) {
-			System.out.println("AIR FRICTION CONTROLLER");
+			//System.out.println("AIR FRICTION CONTROLLER");
 			control = new airfrictionController(arrowid, entityid, world, pos, maxlen, id);
 		}
 		if (blockpos != null && control != null) {
@@ -438,8 +442,8 @@ public class grapplemod {
 
       		//vec look = new vec(player.getLookVec());
 
-      		//System.out.println(player.rotationPitch);
-      		//System.out.println(player.rotationYaw);
+      		//grapplemod.LOGGER.debug(player.rotationPitch);
+      		//grapplemod.LOGGER.debug(player.rotationYaw);
 
       		/*
       		grappleArrow arrow = new grappleArrow(w, player, false);
