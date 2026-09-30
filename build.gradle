@@ -1,222 +1,24 @@
-buildscript {
-    repositories {
-        // These repositories are only for Gradle plugins, put any other repositories in the repository block further below
-        maven { url = 'https://maven.minecraftforge.net' }
-        maven { url = 'https://maven.parchmentmc.org' }
-        mavenCentral()
-    }
-    dependencies {
-        classpath group: 'net.minecraftforge.gradle', name: 'ForgeGradle', version: '5.1.+', changing: true
-        classpath 'org.parchmentmc:librarian:1.+'
-        classpath group: 'org.spongepowered', name: 'mixingradle', version: '0.7.+'
-    }
-}
 plugins {
-    id 'com.github.johnrengelman.shadow' version '7.1.0'
+    id "org.jetbrains.gradle.plugin.idea-ext" version "1.1.7"
+    alias(nyfs.plugins.loom) apply false
+    alias(nyfs.plugins.mdg) apply false
+    alias(nyfs.plugins.regutils)
 }
-apply plugin: 'net.minecraftforge.gradle'
-apply plugin: 'org.parchmentmc.librarian.forgegradle'
-apply plugin: 'org.spongepowered.mixin'
-// Only edit below this line, the above code adds and enables the necessary things for Forge to be setup.
-apply plugin: 'eclipse'
-apply plugin: 'maven-publish'
 
-version = "${minecraft_version}-${mod_version}"
-group = mod_base_package // http://maven.apache.org/guides/mini/guide-naming-conventions.html
-archivesBaseName = mod_archive_base
+def legacy = nyfs.versions.era.get() == "legacy"
 
-// Mojang ships Java 17 to end users in 1.18+, so your mod should target Java 17.
-java.toolchain.languageVersion = JavaLanguageVersion.of(17)
-
-println('Java: ' + System.getProperty('java.version') + ' JVM: ' + System.getProperty('java.vm.version') + '(' + System.getProperty('java.vendor') + ') Arch: ' + System.getProperty('os.arch'))
-minecraft {
-
-    mappings channel: mappings_channel, version: mappings_version
-
-    accessTransformer = file('src/main/resources/META-INF/accesstransformer.cfg') // Currently, this location cannot be changed from the default.
-
-    runs {
-        client {
-            workingDirectory project.file('run')
-
-
-            property 'forge.logging.markers', 'REGISTRIES'
-
-
-            property 'forge.logging.console.level', 'debug'
-
-
-            if (project.hasProperty('mc_uuid')) {
-
-                args '--uuid', project.getProperty('mc_uuid')
-            }
-            if (project.hasProperty('mc_username')) {
-                // Your Minecraft in-game username, not email
-                args '--username', project.getProperty('mc_username')
-            }
-            if (project.hasProperty('mc_accessToken')) {
-
-                args '--accessToken', project.getProperty('mc_accessToken')
-            }
-
-            mods {
-                "${mod_id}" {
-                    source sourceSets.main
-                }
-            }
+registrationUtils {
+    group "${project.group}.${project.mod_id}.registration"
+    projects {
+        fabric {
+            type 'fabric'
         }
-
-        server {
-            workingDirectory project.file('run')
-
-            property 'forge.logging.markers', 'REGISTRIES'
-
-            property 'forge.logging.console.level', 'debug'
-
-            mods {
-                "${mod_id}" {
-                    source sourceSets.main
-                }
-            }
+        neoforge {
+            type legacy ? 'forge' : 'neoforge'
         }
-
-        data {
-            workingDirectory project.file('run')
-
-            property 'forge.logging.markers', 'REGISTRIES'
-
-            property 'forge.logging.console.level', 'debug'
-
-            args '--mod', mod_id, '--all', '--output', file('src/generated/resources/'), '--existing', file('src/main/resources/')
-
-            mods {
-                "${mod_id}" {
-                    source sourceSets.main
-                }
-            }
+        common {
+            type 'common'
         }
     }
 }
-
-sourceSets.main.resources { srcDir 'src/generated/resources' }
-
-repositories {
-    maven { url 'https://dl.cloudsmith.io/public/geckolib3/geckolib/maven/' }
-    maven {
-        name = '100Media'
-        url = 'https://maven.100media.dev/'
-    }
-    maven { url "https://maven.shedaniel.me/" }
-    mavenLocal()
-}
-
-mixin {
-    add sourceSets.main, "${mod_id}.refmap.json"
-
-    config "${mod_id}.mixins.json"
-
-    debug.export = true
-}
-
-configurations {
-    implementation.extendsFrom shadow
-}
-
-dependencies {
-
-    minecraft "net.minecraftforge:forge:${minecraft_version}-${forge_version}"
-
-    // Mixin annotation processor - generates the refmap
-    annotationProcessor "org.spongepowered:mixin:${mixin_version}:processor"
-
-    // Capability Syncer
-    shadow fg.deobf("dev._100media.capabilitysyncer:capabilitysyncer:${capabilitysyncer_version}")
-    implementation fg.deobf("me.shedaniel.cloth:cloth-config-forge:11.1.106")
-}
-
-// This block of code expands all the gradle properties in the specified resource targets.
-// It copies them into the targets and expands all the defined properties.
-def resourceTargets = ['META-INF/mods.toml', 'pack.mcmeta', "${mod_id}.mixins.json".toString()]
-def intoTargets = ["$rootDir/out/production/resources/", "$rootDir/out/production/${project.name}.main/", "$rootDir/bin/main/"]
-def replaceProperties = [mod_id: mod_id, mod_name: mod_name, mod_version: mod_version,
-                         mod_authors: mod_authors, mod_description: mod_description,
-                         minecraft_version_range: minecraft_version_range, forge_version_range: forge_version_range,
-                         loader_version_range: loader_version_range]
-processResources {
-    inputs.properties replaceProperties
-    replaceProperties.put 'project', project
-
-    filesMatching(resourceTargets) {
-        expand replaceProperties
-    }
-
-    intoTargets.each { target ->
-        if (file(target).exists()) {
-            copy {
-                from(sourceSets.main.resources) {
-                    include resourceTargets
-                    expand replaceProperties
-                }
-                into target
-            }
-        }
-    }
-}
-
-jar {
-    manifest {
-        attributes([
-                'Specification-Title': mod_id,
-                'Specification-Vendor': mod_authors,
-                'Specification-Version': '1', // We are version 1 of ourselves
-                'Implementation-Title': project.name,
-                'Implementation-Version': mod_version,
-                'Implementation-Vendor': mod_authors,
-                'Implementation-Timestamp': new Date().format('yyyy-MM-dd\'T\'HH:mm:ssZ')
-        ])
-    }
-}
-
-def relocateTargets = ['dev._100media.capabilitysyncer']
-shadowJar {
-    archiveClassifier = ''
-    configurations = [project.configurations.shadow]
-    relocateTargets.forEach {
-        relocate it, "${project.group}.relocated.$it"
-    }
-    finalizedBy 'reobfShadowJar'
-}
-
-artifacts {
-    shadowJar
-}
-
-reobf {
-    shadowJar {}
-}
-
-afterEvaluate {
-    jar.finalizedBy reobfJar
-    reobfShadowJar.dependsOn shadowJar
-}
-
-// Example configuration to allow publishing using the maven-publish plugin
-// This is the preferred method to reobfuscate your jar file
-jar.finalizedBy('reobfJar')
-// However if you are in a multi-project build, dev time needs unobfed jar files, so you can delay the obfuscation until publishing by doing
-// publish.dependsOn('reobfJar')
-
-publishing {
-    publications {
-        mavenJava(MavenPublication) {
-            artifact jar
-        }
-    }
-    repositories {
-        maven {
-            url "file://${project.projectDir}/mcmodsrepo"
-        }
-    }
-}
-
 

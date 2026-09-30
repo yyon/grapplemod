@@ -1,0 +1,44 @@
+def era = nyfs.versions.era.get()
+def accessTransformer = file('src/main/resources/META-INF/accesstransformer.cfg')
+
+if (era == "legacy") {
+    legacyForge {
+        mcpVersion = minecraft_version
+        if (accessTransformer.exists()) {
+            accessTransformers = [accessTransformer]
+        }
+        parchment {
+            minecraftVersion = nyfs.versions.parchmentMinecraft.get()
+            mappingsVersion = nyfs.versions.parchmentVersion.get()
+        }
+    }
+} else {
+    neoForge {
+        neoFormVersion = nyfs.versions.neoFormVersion.get()
+        if (accessTransformer.exists()) {
+            accessTransformers.from(accessTransformer.absolutePath)
+        }
+        if (era != "deobf") {
+            parchment {
+                minecraftVersion = nyfs.versions.parchmentMinecraft.get()
+                mappingsVersion = nyfs.versions.parchmentVersion.get()
+            }
+        }
+    }
+}
+
+configurations {
+    commonJava {
+        canBeResolved = false
+        canBeConsumed = true
+    }
+    commonResources {
+        canBeResolved = false
+        canBeConsumed = true
+    }
+}
+
+artifacts {
+    commonJava sourceSets.main.java.sourceDirectories.singleFile
+    commonResources sourceSets.main.resources.sourceDirectories.singleFile
+}

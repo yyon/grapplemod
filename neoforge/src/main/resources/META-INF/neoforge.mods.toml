@@ -1,0 +1,27 @@
+modLoader = "javafml"
+loaderVersion = "${neoforge_loader_version_range}"
+license = "${license}"
+issueTrackerURL = "https://github.com/yyon/grapplemod/issues"
+[[mods]]
+modId = "${mod_id}"
+version = "${version}"
+displayName = "${mod_name}"
+displayURL = "https://www.curseforge.com/minecraft/mc-mods/grappling-hook-mod"
+logoFile = "${mod_id}.png"
+credits = "${credits}"
+authors = "${mod_author}"
+description = '''${description}'''
+[[mixins]]
+config = "${mod_id}.mixins.json"
+[[dependencies.${mod_id}]]
+modId = "neoforge"
+type = "required"
+versionRange = "${neoforge_loader_version_range}"
+ordering = "NONE"
+side = "BOTH"
+[[dependencies.${mod_id}]]
+modId = "minecraft"
+type = "required"
+versionRange = "${minecraft_version_range}"
+ordering = "NONE"
+side = "BOTH"

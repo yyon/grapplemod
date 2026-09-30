@@ -1,0 +1,12 @@
+plugins {
+    id 'multiloader-loader'
+    alias(nyfs.plugins.loom.loader)
+    alias(nyfs.plugins.regutils.loader)
+    id("com.nyfaria.moddingtools.dependencies")
+    id("com.nyfaria.moddingtools.publishing")
+    id 'multiloader-fabric'
+}
+
+dependencies {
+    modImplementation nyfs.config.api.fabric
+}

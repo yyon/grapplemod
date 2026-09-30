@@ -1,0 +1,40 @@
+def deobf = nyfs.versions.era.get() == "deobf"
+
+dependencies {
+    minecraft "com.mojang:minecraft:${minecraft_version}"
+    if (deobf) {
+        implementation nyfs.fabric.loader
+        implementation nyfs.fabric.api
+    } else {
+        mappings loom.layered() {
+            officialMojangMappings()
+            parchment("org.parchmentmc.data:parchment-${nyfs.versions.parchmentMinecraft.get()}:${nyfs.versions.parchmentVersion.get()}@zip")
+        }
+        modImplementation nyfs.fabric.loader
+        modImplementation nyfs.fabric.api
+    }
+}
+
+loom {
+    def aw = project(":common").file("src/main/resources/${mod_id}.accesswidener")
+    if (aw.exists()) {
+        accessWidenerPath.set(aw)
+    }
+    mixin {
+        defaultRefmapName.set("${mod_id}.refmap.json")
+    }
+    runs {
+        client {
+            client()
+            setConfigName("Fabric Client")
+            ideConfigGenerated(true)
+            runDir("runs/client")
+        }
+        server {
+            server()
+            setConfigName("Fabric Server")
+            ideConfigGenerated(true)
+            runDir("runs/server")
+        }
+    }
+}

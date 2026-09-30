@@ -1,0 +1,24 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "com.yyon.grapplemod.mixin",
+  "refmap": "${mod_id}.refmap.json",
+  "compatibilityLevel": "JAVA_21",
+  "mixins": [
+    "ItemAccessor",
+    "LivingEntityMixin",
+    "PlayerMixin",
+    "ServerPlayerMixin"
+  ],
+  "client": [
+    "client.GuiMixin",
+    "client.ItemPropertiesInvoker",
+    "client.KeyMappingAccessor",
+    "client.KeyboardHandlerMixin",
+    "client.LocalPlayerMixin"
+  ],
+  "server": [],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

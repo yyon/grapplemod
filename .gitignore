@@ -11,7 +11,8 @@ out
 *.ipr
 *.iws
 *.iml
-.idea
+.idea/*
+!.idea/scopes
 
 # gradle
 build
@@ -20,4 +21,4 @@ build
 # other
 eclipse
 run
-/mcmodsrepo/
+runs

@@ -1,0 +1,7 @@
+plugins {
+    id 'multiloader-loader'
+    alias(nyfs.plugins.mdg.loader)
+    alias(nyfs.plugins.regutils.loader)
+    id 'multiloader-moddev'
+    id 'com.nyfaria.moddingtools.publishing'
+}

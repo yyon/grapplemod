@@ -1,0 +1,21 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [
+    {
+      "item": "grapplemod:grapplinghook"
+    },
+    {
+      "item": "grapplemod:staffupgradeitem"
+    }
+  ],
+  "result": {
+    "id": "grapplemod:grapplinghook",
+    "components": {
+      "grapplemod:custom": {
+        "throwspeed": 3.5,
+        "maxlen": 60,
+        "enderstaff": true
+      }
+    }
+  }
+}

@@ -1,0 +1,8 @@
+{
+  "replace": false,
+  "values": [
+    "grapplemod:wallrunenchantment",
+    "grapplemod:doublejumpenchantment",
+    "grapplemod:slidingenchantment"
+  ]
+}

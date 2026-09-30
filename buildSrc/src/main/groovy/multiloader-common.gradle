@@ -1,0 +1,112 @@
+plugins {
+    id 'java-library'
+    id 'maven-publish'
+}
+
+base {
+    archivesName = "${mod_id}-${project.name}-${minecraft_version}"
+}
+
+java {
+    toolchain.languageVersion = JavaLanguageVersion.of(java_version)
+    withSourcesJar()
+    withJavadocJar()
+}
+
+repositories {
+    exclusiveContent {
+        forRepository {
+            maven {
+                name = 'Sponge'
+                url = 'https://repo.spongepowered.org/repository/maven-public'
+            }
+        }
+        filter { includeGroupAndSubgroups("org.spongepowered") }
+    }
+    maven {
+        name = "Fuzs Mod Resources"
+        url = "https://raw.githubusercontent.com/Fuzss/modresources/main/maven/"
+    }
+}
+
+['apiElements', 'runtimeElements', 'sourcesElements', 'javadocElements'].each { variant ->
+    configurations."$variant".outgoing {
+        capability("$group:${base.archivesName.get()}:$version")
+        capability("$group:$mod_id-${project.name}-${minecraft_version}:$version")
+        capability("$group:$mod_id:$version")
+    }
+    publishing.publications.configureEach {
+        suppressPomMetadataWarningsFor(variant)
+    }
+}
+
+sourcesJar {
+    from(rootProject.file("LICENSE")) {
+        rename { "${it}_${mod_name}" }
+    }
+}
+
+jar {
+    from(rootProject.file("LICENSE")) {
+        rename { "${it}_${mod_name}" }
+    }
+
+    manifest {
+        attributes([
+                'Specification-Title'   : mod_name,
+                'Specification-Vendor'  : mod_author,
+                'Specification-Version' : project.jar.archiveVersion,
+                'Implementation-Title'  : project.name,
+                'Implementation-Version': project.jar.archiveVersion,
+                'Implementation-Vendor' : mod_author,
+                'Built-On-Minecraft'    : minecraft_version
+        ])
+    }
+}
+
+processResources {
+    def legacy = nyfs.versions.era.get() == "legacy"
+
+    def expandProps = [
+            "version"                      : version,
+            "group"                        : project.group,
+            "minecraft_version"            : minecraft_version,
+            "minecraft_version_range"      : nyfs.versions.minecraftVersionRange.get(),
+            "fabric_version"               : nyfs.versions.fabric.api.get(),
+            "fabric_loader_version"        : nyfs.versions.fabric.loader.get(),
+            "mod_name"                     : mod_name,
+            "mod_author"                   : mod_author,
+            "mod_id"                       : mod_id,
+            "license"                      : license,
+            "description"                  : project.description,
+            "credits"                      : credits,
+            "java_version"                 : java_version
+    ]
+
+    if (legacy) {
+        expandProps["forge_version"] = nyfs.versions.forgeVersion.get()
+        expandProps["forge_loader_version_range"] = nyfs.versions.forgeLoaderRange.get()
+    } else {
+        expandProps["neoforge_version"] = nyfs.versions.neoforgeVersion.get()
+        expandProps["neoforge_loader_version_range"] = nyfs.versions.neoforgeLoaderRange.get()
+    }
+
+    filesMatching(['pack.mcmeta', 'fabric.mod.json', 'META-INF/mods.toml', 'META-INF/neoforge.mods.toml', '*.mixins.json']) {
+        expand expandProps
+    }
+    inputs.properties(expandProps)
+}
+
+publishing {
+    publications {
+        register('mavenJava', MavenPublication) {
+            artifactId base.archivesName.get()
+            from components.java
+        }
+    }
+    repositories {
+        maven {
+            url System.getenv("local_maven_url")
+        }
+    }
+}
