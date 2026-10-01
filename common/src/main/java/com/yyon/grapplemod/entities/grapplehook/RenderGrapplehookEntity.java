@@ -148,10 +148,10 @@ public class RenderGrapplehookEntity<T extends GrapplehookEntity> extends Entity
 		matrix.pushPose();
 		matrix.scale(0.5F, 0.5F, 0.5F);
 		
-		matrix.mulPose(new Quaternionf().setAngleAxis((float) (-attach_dir.getYaw()),0, 1, 0 ));
-		matrix.mulPose(new Quaternionf().setAngleAxis((float) (attach_dir.getPitch() - 90), 1, 0, 0 ));
-		matrix.mulPose(new Quaternionf().setAngleAxis((float) (45 * hand_right), 0, 1, 0 ));
-		matrix.mulPose(new Quaternionf().setAngleAxis((float) (-45), 0, 0, 1 ));
+		matrix.mulPose(new Quaternionf().setAngleAxis((float) Math.toRadians(-attach_dir.getYaw()),0, 1, 0 ));
+		matrix.mulPose(new Quaternionf().setAngleAxis((float) Math.toRadians(attach_dir.getPitch() - 90), 1, 0, 0 ));
+		matrix.mulPose(new Quaternionf().setAngleAxis((float) Math.toRadians(45 * hand_right), 0, 1, 0 ));
+		matrix.mulPose(new Quaternionf().setAngleAxis((float) Math.toRadians(-45), 0, 0, 1 ));
 		
 		// draw hook
 		ItemStack stack = this.getStackToRender(hookEntity);

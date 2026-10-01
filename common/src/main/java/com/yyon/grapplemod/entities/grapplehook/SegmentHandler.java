@@ -151,6 +151,10 @@ public class SegmentHandler {
 	}
 	
 	public void removeSegment(int index) {
+		if (segments.size() <= 2 || index <= 0 || index >= segments.size() - 1) {
+			return;
+		}
+
 		segments.remove(index);
 		segmentBottomSides.remove(index);
 		segmentTopSides.remove(index);
@@ -280,6 +284,10 @@ public class SegmentHandler {
 	}
 	
 	public void actuallyAddSegment(int index, Vec bendpoint, Direction bottomside, Direction topside) {
+		if (index <= 0 || index > segments.size() - 1) {
+			return;
+		}
+
         segments.add(index, bendpoint);
         segmentBottomSides.add(index, bottomside);
         segmentTopSides.add(index, topside);
