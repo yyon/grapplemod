@@ -3,6 +3,7 @@ package com.yyon.grapplinghook.client;
 import com.mojang.blaze3d.platform.InputConstants;
 import net.minecraft.client.KeyMapping;
 import net.minecraftforge.client.settings.IKeyConflictContext;
+import net.minecraftforge.client.settings.KeyConflictContext;
 
 public class NonConflictingKeyBinding extends KeyMapping {
 	public NonConflictingKeyBinding(String description, int keyCode, String category) {
@@ -15,7 +16,8 @@ public class NonConflictingKeyBinding extends KeyMapping {
 		this.setKeyConflictContext(new IKeyConflictContext() {
 			@Override
 			public boolean isActive() {
-				return false;
+				// newer Forge only presses keys whose context is active, so this must not always be false
+				return KeyConflictContext.IN_GAME.isActive();
 			}
 			@Override
 			public boolean conflicts(IKeyConflictContext other) {
